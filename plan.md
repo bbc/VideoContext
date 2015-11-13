@@ -71,6 +71,9 @@ videoNode.clearTimelineState(); // stops playback and sets state to "waiting"
 
 ## Processing nodes
 
+
+
+```
 var presenterSource = ctx.createVideoSourceNode("presenter.mp4");
 var backgroundSource = ctx.createVideoSourceNode("background.png");
 var titleSource = ctx.createVideoSourceNode("title.mp4");
@@ -84,12 +87,11 @@ var compositNode = ctx.createCompositNode(VideoContext.Composit.AlphaBlend);
 presenterSource.connect(effectNode);
 effectNode.connect(compositNode,0);
 backgroundSource.connect(compositeNode,1)
+```
 
 
 
-
-
-
+```
 0           2      3           5      6           8
  _________________________________________________
 | V1        |V1->V2| V2        |V2->V3| V3        |
@@ -120,7 +122,6 @@ v2v3Tranisition.connect(outputComposit,1);
 
 
 
-
 ctx.registeLisner("render", function(currentTime){
    tranistionNode.progres = 0.0 - 1.0; 
 });
@@ -130,7 +131,7 @@ transistion.transition(time, duration, function(progress){
     return 0.0-10;
 });
 transiston.progress = 0.5;
-
+```
 
 ## Utils
 ```JavaScript
