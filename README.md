@@ -4,7 +4,7 @@
 ## Build
 
 Live reload development version
-``
+```
 npm install
 npm run dev
 ```
