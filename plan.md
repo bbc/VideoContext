@@ -69,8 +69,43 @@ videoNode.clearTimelineState(); // stops playback and sets state to "waiting"
 
 
 
-## Processing nodes
+## ProcessingNode API
 
+### Sketch
+```
+ProcessingNode
+    |_TransitionNode
+    |_EffectNode
+    |_CompositionNode
+
+
+TransitionNode - 2 inputs, 1 output, 1 required parameter.
+    Inputs:
+        0 - Video to transistion from.
+        1 - Video to transistion to.
+    Required parameters:
+        progress - value from 0 to 1. 0 is full input 0, 1 is full input 1.
+    Outputs:
+        0 - The result of the transition process
+
+
+EffectNode - 1 Input, 1 Output, 0 required parameters.
+    Inputs:
+        0 - Video to apply effect too.
+    Output:
+        0 - The results of the effect.
+
+
+CompositionNode - * inputs, 1 output, 0 required parameters
+    Inputs:
+        * - Any number of input nodes, render order is determined by index, which can be a float.
+    Output:
+        0 - The result of the composition.
+```
+### Issues
+Max number of 8 framebuffers & 16 or 32 texture units for a single WebGL context. Will need to heavily optimize the render graph. Maybe have a central manager for processing nodes to request free framebuffers or textures.
+
+To minimise resource use effects should be defined as webgl functions 
 
 
 ```

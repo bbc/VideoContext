@@ -12,7 +12,7 @@
         "build_all":"./node_modules/webpack/bin/webpack.js --optimize-minimize --config webpack.config.js && ./node_modules/webpack/bin/webpack.js --config webpack.commonjs2.config.js && node ./node_modules/esdoc/out/src/ESDocCLI.js -c esdoc.json",
         "doc":"node ./node_modules/esdoc/out/src/ESDocCLI.js -c esdoc.json",
         "build":"./node_modules/webpack/bin/webpack.js --optimize-minimize --config webpack.config.js && ./node_modules/webpack/bin/webpack.js --config webpack.commonjs2.config.js",
-        "dev":"./node_modules/webpack/bin/webpack.js --watch --config webpack.config.js"
+        "dev":"./node_modules/webpack/bin/webpack.js --watch --config webpack.config.js & ./node_modules/http-server/bin/http-server"
   },
   "dependencies": {},
   "devDependencies": {
@@ -20,6 +20,7 @@
     "babel-loader": "^5.1.4",
     "node-libs-browser": "^0.5.2",
     "webpack": "^1.9.11",
-    "esdoc": "^0.3.1"
+    "esdoc": "^0.3.1",
+    "http-server":"^0.8.5"
   }
 }

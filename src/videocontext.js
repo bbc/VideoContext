@@ -1,3 +1,6 @@
+import VideoNode from "./SourceNodes/videonode.js";
+
+
 let updateables = [];
 let previousTime;
 function registerUpdateable(updateable){
@@ -15,13 +18,21 @@ function update(time){
 update();
 
 
-class VideoCompositor(){
+let STATE = {"playing":0, "paused":1, "stalled":2, "ended":3, "broken":4};
+//playing - all sources are active
+//paused - all sources are paused
+//stalled - one or more sources is unable to play
+//ended - all sources have finished playing
+//broken - the render graph is in a broken state
+
+
+class VideoContext{
     constructor(){
         this._sourceNodes = [];
         this._processingNodes = [];
         this._timeline = [];
         this._currentTime = 0;
-
+        this._state = STATE.paused;
         registerUpdateable(this);        
     }
 
@@ -30,6 +41,10 @@ class VideoCompositor(){
             currentTime = parseFloat(currentTime);
         }
         console.debug("Seeking to", currentTime);
+
+        for (let i = 0; i < this._sourceNodes.length; i++) {
+            this._sourceNodes[i]._seek(this._currentTime);
+        }
         this._currentTime = currentTime;
     }
 
@@ -54,10 +69,65 @@ class VideoCompositor(){
         return this._currentTime;
     }
 
-    _update(){
+    play(){
+        for (let i = 0; i < this._sourceNodes.length; i++) {
+            this._sourceNodes[i]._play();
+        }
+        this._state = STATE.playing;
+    }
 
+    pause(){
+        for (let i = 0; i < this._sourceNodes.length; i++) {
+            this._sourceNodes[i]._pause();
+        }
+        this._state = STATE.paused;
+    }
+
+
+    createVideoSourceNode(src){
+        let videoNode = new VideoNode(src);
+        this._sourceNodes.push(videoNode);
+        return videoNode;
+    }
+
+    _isStalled(){
+        for (let i = 0; i < this._sourceNodes.length; i++) {
+            let sourceNode = this._sourceNodes[i];
+            if (!sourceNode._isReady()){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    _update(dt){
+
+        if (this._state === STATE.playing || this._state === STATE.stalled) {
+            
+            if (this._isStalled()){
+                this._state = STATE.stalled;
+            }else{
+                this._state = STATE.playing;
+            }
+
+            if(this._state === STATE.stalled){
+                for (let i = 0; i < this._sourceNodes.length; i++) {
+                    let sourceNode = this._sourceNodes[i];
+                    if (sourceNode._isReady()) sourceNode.pause();
+                }
+            }
+            if(this._state === STATE.playing){
+                this._currentTime += dt;
+
+                for (let i = 0; i < this._sourceNodes.length; i++) {
+                    let sourceNode = this._sourceNodes[i];
+                    sourceNode.update(this._currentTime);
+                }   
+            }
+        }
     }
 
 
 }
 
+export default VideoContext;
