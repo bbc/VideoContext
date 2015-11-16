@@ -1,6 +1,5 @@
 import VideoNode from "./SourceNodes/videonode.js";
 
-
 let updateables = [];
 let previousTime;
 function registerUpdateable(updateable){
@@ -27,7 +26,8 @@ let STATE = {"playing":0, "paused":1, "stalled":2, "ended":3, "broken":4};
 
 
 class VideoContext{
-    constructor(){
+    constructor(canvas){
+        this._gl = canvas.getContext("webgl");
         this._sourceNodes = [];
         this._processingNodes = [];
         this._timeline = [];
@@ -37,13 +37,14 @@ class VideoContext{
     }
 
     set currentTime(currentTime){
+        console.debug("VideoContext - seeking to", currentTime);
+
         if (typeof currentTime === 'string' || currentTime instanceof String){
             currentTime = parseFloat(currentTime);
         }
-        console.debug("Seeking to", currentTime);
 
         for (let i = 0; i < this._sourceNodes.length; i++) {
-            this._sourceNodes[i]._seek(this._currentTime);
+            this._sourceNodes[i]._seek(currentTime);
         }
         this._currentTime = currentTime;
     }
@@ -69,23 +70,43 @@ class VideoContext{
         return this._currentTime;
     }
 
+
+
+    get duration(){
+        let maxTime = 0;
+        for (let i = 0; i < this._sourceNodes.length; i++) {
+            if (this._sourceNodes[i]._stopTime > maxTime){
+                maxTime = this._sourceNodes[i]._stopTime;
+            }
+        }
+        return maxTime;
+    }
+
     play(){
+        console.debug("VideoContext - playing");
+        if(this._state === STATE.ended || this._state === STATE.broken) return false;
+
         for (let i = 0; i < this._sourceNodes.length; i++) {
             this._sourceNodes[i]._play();
         }
         this._state = STATE.playing;
+        return true;
     }
 
     pause(){
+        console.debug("VideoContext - pausing");
+        if(this._state === STATE.ended || this._state === STATE.broken) return false;
+
         for (let i = 0; i < this._sourceNodes.length; i++) {
             this._sourceNodes[i]._pause();
         }
         this._state = STATE.paused;
+        return true;
     }
 
 
-    createVideoSourceNode(src){
-        let videoNode = new VideoNode(src);
+    createVideoSourceNode(src, sourceOffset=0){
+        let videoNode = new VideoNode(src, this._gl, sourceOffset);
         this._sourceNodes.push(videoNode);
         return videoNode;
     }
@@ -102,32 +123,39 @@ class VideoContext{
 
     _update(dt){
 
-        if (this._state === STATE.playing || this._state === STATE.stalled) {
+        if (this._state === STATE.playing || this._state === STATE.stalled || this._state === STATE.paused) {
             
-            if (this._isStalled()){
-                this._state = STATE.stalled;
-            }else{
-                this._state = STATE.playing;
+            if (this._state !== STATE.paused){
+                if (this._isStalled()){
+                    this._state = STATE.stalled;
+                }else{
+                    this._state = STATE.playing;
+                }    
             }
+            
 
-            if(this._state === STATE.stalled){
-                for (let i = 0; i < this._sourceNodes.length; i++) {
-                    let sourceNode = this._sourceNodes[i];
-                    if (sourceNode._isReady()) sourceNode.pause();
-                }
-            }
             if(this._state === STATE.playing){
-                this._currentTime += dt;
+                    this._currentTime += dt;
+                    if(this._currentTime > this.duration)this._state = STATE.ended;
+            }
 
-                for (let i = 0; i < this._sourceNodes.length; i++) {
-                    let sourceNode = this._sourceNodes[i];
-                    sourceNode.update(this._currentTime);
-                }   
+
+            for (let i = 0; i < this._sourceNodes.length; i++) {
+                let sourceNode = this._sourceNodes[i];
+                sourceNode._update(this._currentTime);
+
+                if(this._state === STATE.stalled){
+                    if (sourceNode._isReady()) sourceNode._pause();
+                }
+                if(this._state === STATE.paused){
+                    sourceNode._pause();
+                }
+                if(this._state === STATE.playing){
+                    sourceNode._play();
+                }
             }
         }
     }
-
-
 }
 
 export default VideoContext;

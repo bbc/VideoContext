@@ -85,9 +85,10 @@ var VideoContext =
 	//broken - the render graph is in a broken state
 
 	var VideoContext = (function () {
-	    function VideoContext() {
+	    function VideoContext(canvas) {
 	        _classCallCheck(this, VideoContext);
 
+	        this._gl = canvas.getContext("webgl");
 	        this._sourceNodes = [];
 	        this._processingNodes = [];
 	        this._timeline = [];
@@ -99,23 +100,33 @@ var VideoContext =
 	    _createClass(VideoContext, [{
 	        key: "play",
 	        value: function play() {
+	            console.debug("VideoContext - playing");
+	            if (this._state === STATE.ended || this._state === STATE.broken) return false;
+
 	            for (var i = 0; i < this._sourceNodes.length; i++) {
 	                this._sourceNodes[i]._play();
 	            }
 	            this._state = STATE.playing;
+	            return true;
 	        }
 	    }, {
 	        key: "pause",
 	        value: function pause() {
+	            console.debug("VideoContext - pausing");
+	            if (this._state === STATE.ended || this._state === STATE.broken) return false;
+
 	            for (var i = 0; i < this._sourceNodes.length; i++) {
 	                this._sourceNodes[i]._pause();
 	            }
 	            this._state = STATE.paused;
+	            return true;
 	        }
 	    }, {
 	        key: "createVideoSourceNode",
 	        value: function createVideoSourceNode(src) {
-	            var videoNode = new _SourceNodesVideonodeJs2["default"](src);
+	            var sourceOffset = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+
+	            var videoNode = new _SourceNodesVideonodeJs2["default"](src, this._gl, sourceOffset);
 	            this._sourceNodes.push(videoNode);
 	            return videoNode;
 	        }
@@ -134,26 +145,33 @@ var VideoContext =
 	        key: "_update",
 	        value: function _update(dt) {
 
-	            if (this._state === STATE.playing || this._state === STATE.stalled) {
+	            if (this._state === STATE.playing || this._state === STATE.stalled || this._state === STATE.paused) {
 
-	                if (this._isStalled()) {
-	                    this._state = STATE.stalled;
-	                } else {
-	                    this._state = STATE.playing;
-	                }
-
-	                if (this._state === STATE.stalled) {
-	                    for (var i = 0; i < this._sourceNodes.length; i++) {
-	                        var sourceNode = this._sourceNodes[i];
-	                        if (sourceNode._isReady()) sourceNode.pause();
+	                if (this._state !== STATE.paused) {
+	                    if (this._isStalled()) {
+	                        this._state = STATE.stalled;
+	                    } else {
+	                        this._state = STATE.playing;
 	                    }
 	                }
+
 	                if (this._state === STATE.playing) {
 	                    this._currentTime += dt;
+	                    if (this._currentTime > this.duration) this._state = STATE.ended;
+	                }
 
-	                    for (var i = 0; i < this._sourceNodes.length; i++) {
-	                        var sourceNode = this._sourceNodes[i];
-	                        sourceNode.update(this._currentTime);
+	                for (var i = 0; i < this._sourceNodes.length; i++) {
+	                    var sourceNode = this._sourceNodes[i];
+	                    sourceNode._update(this._currentTime);
+
+	                    if (this._state === STATE.stalled) {
+	                        if (sourceNode._isReady()) sourceNode._pause();
+	                    }
+	                    if (this._state === STATE.paused) {
+	                        sourceNode._pause();
+	                    }
+	                    if (this._state === STATE.playing) {
+	                        sourceNode._play();
 	                    }
 	                }
 	            }
@@ -161,13 +179,14 @@ var VideoContext =
 	    }, {
 	        key: "currentTime",
 	        set: function set(currentTime) {
+	            console.debug("VideoContext - seeking to", currentTime);
+
 	            if (typeof currentTime === 'string' || currentTime instanceof String) {
 	                currentTime = parseFloat(currentTime);
 	            }
-	            console.debug("Seeking to", currentTime);
 
 	            for (var i = 0; i < this._sourceNodes.length; i++) {
-	                this._sourceNodes[i]._seek(this._currentTime);
+	                this._sourceNodes[i]._seek(currentTime);
 	            }
 	            this._currentTime = currentTime;
 	        },
@@ -191,6 +210,17 @@ var VideoContext =
 	        get: function get() {
 	            return this._currentTime;
 	        }
+	    }, {
+	        key: "duration",
+	        get: function get() {
+	            var maxTime = 0;
+	            for (var i = 0; i < this._sourceNodes.length; i++) {
+	                if (this._sourceNodes[i]._stopTime > maxTime) {
+	                    maxTime = this._sourceNodes[i]._stopTime;
+	                }
+	            }
+	            return maxTime;
+	        }
 	    }]);
 
 	    return VideoContext;
@@ -211,7 +241,7 @@ var VideoContext =
 
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-	var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+	var _get = function get(_x3, _x4, _x5) { var _again = true; _function: while (_again) { var object = _x3, property = _x4, receiver = _x5; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x3 = parent; _x4 = property; _x5 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
@@ -226,13 +256,15 @@ var VideoContext =
 	var VideoNode = (function (_SourceNode) {
 	    _inherits(VideoNode, _SourceNode);
 
-	    function VideoNode(src) {
-	        var preloadTime = arguments.length <= 1 || arguments[1] === undefined ? 4 : arguments[1];
+	    function VideoNode(src, gl) {
+	        var sourceOffset = arguments.length <= 2 || arguments[2] === undefined ? 0 : arguments[2];
+	        var preloadTime = arguments.length <= 3 || arguments[3] === undefined ? 4 : arguments[3];
 
 	        _classCallCheck(this, VideoNode);
 
-	        _get(Object.getPrototypeOf(VideoNode.prototype), "constructor", this).call(this, src);
+	        _get(Object.getPrototypeOf(VideoNode.prototype), "constructor", this).call(this, src, gl);
 	        this._preloadTime = preloadTime;
+	        this._sourceOffset = sourceOffset;
 	    }
 
 	    _createClass(VideoNode, [{
@@ -246,6 +278,7 @@ var VideoContext =
 	            }
 	            this._element = document.createElement("video");
 	            this._element.src = this._elementURL;
+	            this._element.currentTime = this._sourceOffset;
 	        }
 	    }, {
 	        key: "_destroy",
@@ -257,9 +290,9 @@ var VideoContext =
 	    }, {
 	        key: "_seek",
 	        value: function _seek(time) {
-	            _get(Object.getPrototypeOf(VideoNode.prototype), "seek", this).call(this, time);
+	            _get(Object.getPrototypeOf(VideoNode.prototype), "_seek", this).call(this, time);
 	            if (this.state === _sourcenode.SOURCENODESTATE.playing || this.state === _sourcenode.SOURCENODESTATE.paused) {
-	                this._element.currentTime = this._currentTime - this._startTime;
+	                this._element.currentTime = this._currentTime - this._startTime + this._sourceOffset;
 	            }
 	        }
 	    }, {
@@ -354,6 +387,7 @@ var VideoContext =
 	                return false;
 	            }
 	            this._stopTime = this._currentTime + time;
+	            console.debug("stop time", this._stopTime);
 	            return true;
 	        }
 	    }, {
@@ -379,7 +413,7 @@ var VideoContext =
 	    }, {
 	        key: "_isReady",
 	        value: function _isReady() {
-	            if (this._state === SOURCENODESTATE.playing || this._state === SOURCENODESTATE.paused) {
+	            if (this._state === STATE.playing || this._state === STATE.paused) {
 	                return this._ready;
 	            }
 	            return true;
@@ -387,13 +421,16 @@ var VideoContext =
 	    }, {
 	        key: "_update",
 	        value: function _update(currentTime) {
-	            if (this._state === STATE.waiting) return false;
+	            if (this._state === STATE.waiting || this._state === STATE.ended) return false;
+
 	            if (currentTime < this._startTime) {
 	                this._state = STATE.sequenced;
 	            }
+
 	            if (currentTime >= this._startTime && this._state !== STATE.paused) {
 	                this._state = STATE.playing;
 	            }
+
 	            if (currentTime >= this._stopTime) {
 	                this._state = STATE.ended;
 	            }

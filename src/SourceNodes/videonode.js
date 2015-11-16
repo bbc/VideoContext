@@ -1,9 +1,10 @@
-import SourceNode, {SOURCENODESTATE} from "./sourcenode";
+import SourceNode, { SOURCENODESTATE } from "./sourcenode";
 
 class VideoNode extends SourceNode{
-    constructor(src, preloadTime = 4){
-        super(src);
+    constructor(src, gl, sourceOffset=0, preloadTime = 4){
+        super(src, gl);
         this._preloadTime = preloadTime;
+        this._sourceOffset = sourceOffset;
     }
 
     _load(){
@@ -15,6 +16,7 @@ class VideoNode extends SourceNode{
         }
         this._element = document.createElement("video");
         this._element.src = this._elementURL;
+        this._element.currentTime = this._sourceOffset;
     }
 
     _destroy(){
@@ -24,9 +26,9 @@ class VideoNode extends SourceNode{
     }
 
     _seek(time){
-        super.seek(time);
+        super._seek(time);
         if (this.state === SOURCENODESTATE.playing || this.state === SOURCENODESTATE.paused){
-            this._element.currentTime = this._currentTime - this._startTime;
+            this._element.currentTime = this._currentTime - this._startTime + this._sourceOffset;
         }
     }
 

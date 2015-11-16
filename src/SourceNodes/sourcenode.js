@@ -49,6 +49,7 @@ class SourceNode {
             return false;
         }
         this._stopTime = this._currentTime + time;
+        console.debug("stop time", this._stopTime);
         return true;
     }
 
@@ -69,20 +70,23 @@ class SourceNode {
     }
 
     _isReady(){
-        if (this._state === SOURCENODESTATE.playing || this._state === SOURCENODESTATE.paused){
+        if (this._state === STATE.playing || this._state === STATE.paused){
             return this._ready;
         }
         return true;
     }
 
     _update(currentTime){
-        if (this._state === STATE.waiting) return false;
+        if (this._state === STATE.waiting || this._state === STATE.ended) return false;
+        
         if (currentTime < this._startTime){
             this._state = STATE.sequenced;
         }
+        
         if (currentTime >= this._startTime && this._state !== STATE.paused){
             this._state = STATE.playing;
         }
+
         if (currentTime >= this._stopTime){
             this._state = STATE.ended;
         }
