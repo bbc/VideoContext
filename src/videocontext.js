@@ -1,4 +1,6 @@
 import VideoNode from "./SourceNodes/videonode.js";
+import DestinationNode from "./DestinationNode/destinationnode.js";
+import RenderGraph from "./rendergraph.js";
 
 let updateables = [];
 let previousTime;
@@ -28,11 +30,13 @@ let STATE = {"playing":0, "paused":1, "stalled":2, "ended":3, "broken":4};
 class VideoContext{
     constructor(canvas){
         this._gl = canvas.getContext("webgl");
+        this._renderGraph = new RenderGraph();
         this._sourceNodes = [];
         this._processingNodes = [];
         this._timeline = [];
         this._currentTime = 0;
         this._state = STATE.paused;
+        this._destinationNode = new DestinationNode(this._gl, this._renderGraph);
         registerUpdateable(this);        
     }
 
@@ -49,7 +53,6 @@ class VideoContext{
         this._currentTime = currentTime;
     }
 
-    
     /**
     * Get how far through the internal timeline has been played.
     *
@@ -70,8 +73,6 @@ class VideoContext{
         return this._currentTime;
     }
 
-
-
     get duration(){
         let maxTime = 0;
         for (let i = 0; i < this._sourceNodes.length; i++) {
@@ -82,10 +83,12 @@ class VideoContext{
         return maxTime;
     }
 
+    get destination(){
+        return this._destinationNode;
+    }
+
     play(){
         console.debug("VideoContext - playing");
-        if(this._state === STATE.ended || this._state === STATE.broken) return false;
-
         for (let i = 0; i < this._sourceNodes.length; i++) {
             this._sourceNodes[i]._play();
         }
@@ -95,8 +98,6 @@ class VideoContext{
 
     pause(){
         console.debug("VideoContext - pausing");
-        if(this._state === STATE.ended || this._state === STATE.broken) return false;
-
         for (let i = 0; i < this._sourceNodes.length; i++) {
             this._sourceNodes[i]._pause();
         }
@@ -106,7 +107,7 @@ class VideoContext{
 
 
     createVideoSourceNode(src, sourceOffset=0){
-        let videoNode = new VideoNode(src, this._gl, sourceOffset);
+        let videoNode = new VideoNode(src, this._gl,this._renderGraph, sourceOffset);
         this._sourceNodes.push(videoNode);
         return videoNode;
     }
@@ -154,6 +155,8 @@ class VideoContext{
                     sourceNode._play();
                 }
             }
+
+            this._destinationNode._render();
         }
     }
 }

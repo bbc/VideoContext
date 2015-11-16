@@ -100,7 +100,6 @@ class SourceNode {
         this._stopTime = 0;
         this._state = STATE.waiting;
     }
-
 }
 
 

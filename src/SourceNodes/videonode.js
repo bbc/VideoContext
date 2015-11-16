@@ -1,8 +1,10 @@
-import SourceNode, { SOURCENODESTATE } from "./sourcenode";
+import { SOURCENODESTATE } from "./sourcenode";
+import RenderableSourceNode from "./renderablesourcenode";
 
-class VideoNode extends SourceNode{
-    constructor(src, gl, sourceOffset=0, preloadTime = 4){
-        super(src, gl);
+
+class VideoNode extends RenderableSourceNode{
+    constructor(src, gl, renderGraph, sourceOffset=0, preloadTime = 4){
+        super(src, gl, renderGraph);
         this._preloadTime = preloadTime;
         this._sourceOffset = sourceOffset;
     }
@@ -14,14 +16,18 @@ class VideoNode extends SourceNode{
             }
             return;
         }
-        this._element = document.createElement("video");
-        this._element.src = this._elementURL;
+        if (this._isResponsibleForElementLifeCycle){
+            this._element = document.createElement("video");
+            this._element.src = this._elementURL;
+        }
         this._element.currentTime = this._sourceOffset;
     }
 
     _destroy(){
-        this._element.src = "";
-        this._element = undefined;
+        if (this._isResponsibleForElementLifeCycle){
+            this._element.src = "";
+            this._element = undefined;    
+        }
         this._ready = false;
     }
 

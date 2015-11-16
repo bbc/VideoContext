@@ -61,6 +61,14 @@ var VideoContext =
 
 	var _SourceNodesVideonodeJs2 = _interopRequireDefault(_SourceNodesVideonodeJs);
 
+	var _DestinationNodeDestinationnodeJs = __webpack_require__(4);
+
+	var _DestinationNodeDestinationnodeJs2 = _interopRequireDefault(_DestinationNodeDestinationnodeJs);
+
+	var _rendergraphJs = __webpack_require__(5);
+
+	var _rendergraphJs2 = _interopRequireDefault(_rendergraphJs);
+
 	var updateables = [];
 	var previousTime = undefined;
 	function registerUpdateable(updateable) {
@@ -89,11 +97,13 @@ var VideoContext =
 	        _classCallCheck(this, VideoContext);
 
 	        this._gl = canvas.getContext("webgl");
+	        this._renderGraph = new _rendergraphJs2["default"]();
 	        this._sourceNodes = [];
 	        this._processingNodes = [];
 	        this._timeline = [];
 	        this._currentTime = 0;
 	        this._state = STATE.paused;
+	        this._destinationNode = new _DestinationNodeDestinationnodeJs2["default"](this._gl, this._renderGraph);
 	        registerUpdateable(this);
 	    }
 
@@ -101,8 +111,6 @@ var VideoContext =
 	        key: "play",
 	        value: function play() {
 	            console.debug("VideoContext - playing");
-	            if (this._state === STATE.ended || this._state === STATE.broken) return false;
-
 	            for (var i = 0; i < this._sourceNodes.length; i++) {
 	                this._sourceNodes[i]._play();
 	            }
@@ -113,8 +121,6 @@ var VideoContext =
 	        key: "pause",
 	        value: function pause() {
 	            console.debug("VideoContext - pausing");
-	            if (this._state === STATE.ended || this._state === STATE.broken) return false;
-
 	            for (var i = 0; i < this._sourceNodes.length; i++) {
 	                this._sourceNodes[i]._pause();
 	            }
@@ -126,7 +132,7 @@ var VideoContext =
 	        value: function createVideoSourceNode(src) {
 	            var sourceOffset = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
 
-	            var videoNode = new _SourceNodesVideonodeJs2["default"](src, this._gl, sourceOffset);
+	            var videoNode = new _SourceNodesVideonodeJs2["default"](src, this._gl, this._renderGraph, sourceOffset);
 	            this._sourceNodes.push(videoNode);
 	            return videoNode;
 	        }
@@ -174,6 +180,8 @@ var VideoContext =
 	                        sourceNode._play();
 	                    }
 	                }
+
+	                this._destinationNode._render();
 	            }
 	        }
 	    }, {
@@ -221,6 +229,11 @@ var VideoContext =
 	            }
 	            return maxTime;
 	        }
+	    }, {
+	        key: "destination",
+	        get: function get() {
+	            return this._destinationNode;
+	        }
 	    }]);
 
 	    return VideoContext;
@@ -251,18 +264,20 @@ var VideoContext =
 
 	var _sourcenode = __webpack_require__(2);
 
-	var _sourcenode2 = _interopRequireDefault(_sourcenode);
+	var _renderablesourcenode = __webpack_require__(3);
 
-	var VideoNode = (function (_SourceNode) {
-	    _inherits(VideoNode, _SourceNode);
+	var _renderablesourcenode2 = _interopRequireDefault(_renderablesourcenode);
 
-	    function VideoNode(src, gl) {
-	        var sourceOffset = arguments.length <= 2 || arguments[2] === undefined ? 0 : arguments[2];
-	        var preloadTime = arguments.length <= 3 || arguments[3] === undefined ? 4 : arguments[3];
+	var VideoNode = (function (_RenderableSourceNode) {
+	    _inherits(VideoNode, _RenderableSourceNode);
+
+	    function VideoNode(src, gl, renderGraph) {
+	        var sourceOffset = arguments.length <= 3 || arguments[3] === undefined ? 0 : arguments[3];
+	        var preloadTime = arguments.length <= 4 || arguments[4] === undefined ? 4 : arguments[4];
 
 	        _classCallCheck(this, VideoNode);
 
-	        _get(Object.getPrototypeOf(VideoNode.prototype), "constructor", this).call(this, src, gl);
+	        _get(Object.getPrototypeOf(VideoNode.prototype), "constructor", this).call(this, src, gl, renderGraph);
 	        this._preloadTime = preloadTime;
 	        this._sourceOffset = sourceOffset;
 	    }
@@ -276,15 +291,19 @@ var VideoContext =
 	                }
 	                return;
 	            }
-	            this._element = document.createElement("video");
-	            this._element.src = this._elementURL;
+	            if (this._isResponsibleForElementLifeCycle) {
+	                this._element = document.createElement("video");
+	                this._element.src = this._elementURL;
+	            }
 	            this._element.currentTime = this._sourceOffset;
 	        }
 	    }, {
 	        key: "_destroy",
 	        value: function _destroy() {
-	            this._element.src = "";
-	            this._element = undefined;
+	            if (this._isResponsibleForElementLifeCycle) {
+	                this._element.src = "";
+	                this._element = undefined;
+	            }
 	            this._ready = false;
 	        }
 	    }, {
@@ -316,7 +335,7 @@ var VideoContext =
 	    }]);
 
 	    return VideoNode;
-	})(_sourcenode2["default"]);
+	})(_renderablesourcenode2["default"]);
 
 	exports["default"] = VideoNode;
 	module.exports = exports["default"];
@@ -457,6 +476,302 @@ var VideoContext =
 
 	exports["default"] = SourceNode;
 	exports.SOURCENODESTATE = STATE;
+
+/***/ },
+/* 3 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _sourcenode = __webpack_require__(2);
+
+	var _sourcenode2 = _interopRequireDefault(_sourcenode);
+
+	var RenderableSourceNode = (function (_SourceNode) {
+	    _inherits(RenderableSourceNode, _SourceNode);
+
+	    function RenderableSourceNode(src, gl, renderGraph) {
+	        _classCallCheck(this, RenderableSourceNode);
+
+	        _get(Object.getPrototypeOf(RenderableSourceNode.prototype), "constructor", this).call(this, src);
+	        this._gl = gl;
+	        this._renderGraph = renderGraph;
+
+	        this._texture = gl.createTexture();
+	        gl.bindTexture(gl.TEXTURE_2D, this._texture);
+	        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+	        // Set the parameters so we can render any size image.
+	        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+	        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+	        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+	        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+	    }
+
+	    _createClass(RenderableSourceNode, [{
+	        key: "_update",
+	        value: function _update(currentTime) {
+	            if (!_get(Object.getPrototypeOf(RenderableSourceNode.prototype), "_update", this).call(this, currentTime)) return false;
+	            var gl = this._gl;
+	            //update this source nodes texture
+	            gl.bindTexture(gl.TEXTURE_2D, this._texture);
+	            gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+	            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this._element);
+	            return true;
+	        }
+	    }, {
+	        key: "connect",
+	        value: function connect(targetNode, zIndex) {
+	            if (zIndex === undefined) {
+	                var targetInputs = this._renderGraph.getSortedInputsForNode(targetNode);
+	                zIndex = targetInputs[targetInputs.length - 1] + 1.0;
+	            }
+	            this._renderGraph.registerConnection(this, targetNode, zIndex);
+	        }
+	    }, {
+	        key: "disconnect",
+	        value: function disconnect(targetNode) {
+	            if (targetNode === undefined) {
+	                var toRemove = this._renderGraph.getOutputsForNode(this);
+	                toRemove.forEach(function (targetNode) {
+	                    this._renderGraph.unregisterConnection(this, targetNode);
+	                });
+	                return;
+	            }
+	            this._renderGraph.unregisterConnection(this, targetNode);
+	        }
+	    }]);
+
+	    return RenderableSourceNode;
+	})(_sourcenode2["default"]);
+
+	exports["default"] = RenderableSourceNode;
+	module.exports = exports["default"];
+
+/***/ },
+/* 4 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var _utilsJs = __webpack_require__(6);
+
+	var DestinationNode = (function () {
+	    function DestinationNode(gl, renderGraph) {
+	        _classCallCheck(this, DestinationNode);
+
+	        this._gl = gl;
+	        this._renderGraph = renderGraph;
+
+	        var vertexShader = "\
+	            attribute vec2 a_position;\
+	            attribute vec2 a_texCoord;\
+	            varying vec2 v_texCoord;\
+	            void main() {\
+	                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+	                v_texCoord = a_texCoord;\
+	            }";
+
+	        var fragmentShader = "\
+	            precision mediump float;\
+	            uniform sampler2D u_image;\
+	            varying vec2 v_texCoord;\
+	            varying float v_progress;\
+	            void main(){\
+	                gl_FragColor = texture2D(u_image, v_texCoord);\
+	            }";
+
+	        this._program = (0, _utilsJs.createShaderProgram)(gl, vertexShader, fragmentShader);
+
+	        var positionLocation = gl.getAttribLocation(this._program, "a_position");
+	        var buffer = gl.createBuffer();
+	        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+	        gl.enableVertexAttribArray(positionLocation);
+	        gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+	        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0]), gl.STATIC_DRAW);
+	        var texCoordLocation = gl.getAttribLocation(this._program, "a_texCoord");
+	        gl.enableVertexAttribArray(texCoordLocation);
+	        gl.vertexAttribPointer(texCoordLocation, 2, gl.FLOAT, false, 0, 0);
+	    }
+
+	    _createClass(DestinationNode, [{
+	        key: "_render",
+	        value: function _render() {
+	            var inputs = this._renderGraph.getSortedInputsForNode(this);
+	            var gl = this._gl;
+	            gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+	            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+	            var _this = this;
+	            inputs.forEach(function (input) {
+	                gl.useProgram(_this._program);
+	                var texture = input.node._texture;
+	                gl.activeTexture(gl.TEXTURE0);
+	                var textureLocation = gl.getUniformLocation(_this._program, "u_image");
+	                gl.uniform1i(textureLocation, 0);
+	                gl.bindTexture(gl.TEXTURE_2D, texture);
+	                gl.drawArrays(gl.TRIANGLES, 0, 6);
+	            });
+	        }
+	    }]);
+
+	    return DestinationNode;
+	})();
+
+	exports["default"] = DestinationNode;
+	module.exports = exports["default"];
+
+/***/ },
+/* 5 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var RenderGraph = (function () {
+	    function RenderGraph() {
+	        _classCallCheck(this, RenderGraph);
+
+	        this.connections = [];
+	    }
+
+	    _createClass(RenderGraph, [{
+	        key: "getOutputsForNode",
+	        value: function getOutputsForNode(node) {
+	            var results = [];
+	            this.connections.forEach(function (connection) {
+	                if (connection.output === node) {
+	                    results.push({ "node": connection.input, "zIndex": connection.zIndex });
+	                }
+	            });
+	            return results;
+	        }
+	    }, {
+	        key: "getSortedOutputsForNode",
+	        value: function getSortedOutputsForNode(node) {
+	            var outputs = this.getOutputsForNode(node);
+	            outputs.sort(function (a, b) {
+	                return a.zIndex - b.zIndex;
+	            });
+	            return outputs;
+	        }
+	    }, {
+	        key: "getInputsForNode",
+	        value: function getInputsForNode(node) {
+	            var results = [];
+	            this.connections.forEach(function (connection) {
+	                if (connection.output === node) {
+	                    results.push({ "node": connection.input, "zIndex": connection.zIndex });
+	                }
+	            });
+	            return results;
+	        }
+	    }, {
+	        key: "getSortedInputsForNode",
+	        value: function getSortedInputsForNode(node) {
+	            var inputs = this.getInputsForNode(node);
+	            inputs.sort(function (a, b) {
+	                return a.zIndex - b.zIndex;
+	            });
+	            return inputs;
+	        }
+	    }, {
+	        key: "registerConnection",
+	        value: function registerConnection(inputNode, outputNode, zIndex) {
+	            console.debug("adding connection");
+	            this.connections.push({ "output": outputNode, "zIndex": zIndex, "input": inputNode });
+	        }
+	    }, {
+	        key: "unregsiterConnection",
+	        value: function unregsiterConnection(inputNode, outputNode) {
+	            var toRemove = [];
+
+	            this.connections.forEach(function (connection) {
+	                if (connection.input === inputNode && connection.output === outputNode) {
+	                    toRemove.push(connection);
+	                }
+	            });
+
+	            this.toRemove.forEach(function (removeNode) {
+	                var index = this.connections.indexOf(removeNode);
+	                this.connections.splice(index, 1);
+	            });
+	        }
+	    }]);
+
+	    return RenderGraph;
+	})();
+
+	exports["default"] = RenderGraph;
+	module.exports = exports["default"];
+
+/***/ },
+/* 6 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.compileShader = compileShader;
+	exports.createShaderProgram = createShaderProgram;
+
+	function compileShader(gl, shaderSource, shaderType) {
+	    var shader = gl.createShader(shaderType);
+	    gl.shaderSource(shader, shaderSource);
+	    gl.compileShader(shader);
+	    var success = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
+	    if (!success) {
+	        throw "could not compile shader:" + gl.getShaderInfoLog(shader);
+	    }
+	    return shader;
+	}
+
+	function createShaderProgram(gl, vertexShaderSource, fragmentShaderSource) {
+	    var vertexShader = compileShader(gl, vertexShaderSource, gl.VERTEX_SHADER);
+	    var fragmentShader = compileShader(gl, fragmentShaderSource, gl.FRAGMENT_SHADER);
+	    var program = gl.createProgram();
+
+	    gl.attachShader(program, vertexShader);
+	    gl.attachShader(program, fragmentShader);
+	    gl.linkProgram(program);
+
+	    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+	        throw { "error": 4, "msg": "Can't link shader program for track", toString: function toString() {
+	                return this.msg;
+	            } };
+	    }
+	    return program;
+	}
 
 /***/ }
 /******/ ]);
