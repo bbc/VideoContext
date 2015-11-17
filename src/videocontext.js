@@ -1,4 +1,5 @@
 import VideoNode from "./SourceNodes/videonode.js";
+import ProcessingNode from "./ProcessingNodes/processingnode.js";
 import DestinationNode from "./DestinationNode/destinationnode.js";
 import RenderGraph from "./rendergraph.js";
 
@@ -37,7 +38,38 @@ class VideoContext{
         this._currentTime = 0;
         this._state = STATE.paused;
         this._destinationNode = new DestinationNode(this._gl, this._renderGraph);
-        registerUpdateable(this);        
+        registerUpdateable(this);
+
+        let test = new ProcessingNode(this._gl, this._renderGraph, {
+            "fragmentShader":"\
+                precision mediump float;\
+                uniform sampler2D u_image;\
+                uniform float a;\
+                uniform float b;\
+                uniform vec4 c;\
+                varying vec2 v_texCoord;\
+                varying float v_progress;\
+                void main(){\
+                    vec4 color = texture2D(u_image, v_texCoord);\
+                    color[0] += a;\
+                    color+= c;\
+                    gl_FragColor = color;\
+                }", 
+            "vertexShader":"\
+                attribute vec2 a_position;\
+                attribute vec2 a_texCoord;\
+                varying vec2 v_texCoord;\
+                void main() {\
+                    gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+                    v_texCoord = a_texCoord;\
+                }",
+            "properties":{
+                "a":{value:1, type:"uniform"},
+                "b":{value:2, type:"uniform"},
+                "c":{value:[0.1,0.2,0.4,0.0], type:"uniform"}
+                //"lut":{value:element, target:"fragment", type:"uniform"},
+            }
+        });
     }
 
     set currentTime(currentTime){

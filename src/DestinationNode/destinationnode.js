@@ -4,7 +4,7 @@ import GraphNode from "../graphnode";
 
 class DestinationNode extends GraphNode {
     constructor(gl, renderGraph){
-        super(renderGraph, gl, undefined);
+        super(gl, renderGraph, undefined);
         
         let vertexShader = "\
             attribute vec2 a_position;\

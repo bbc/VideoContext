@@ -61,11 +61,15 @@ var VideoContext =
 
 	var _SourceNodesVideonodeJs2 = _interopRequireDefault(_SourceNodesVideonodeJs);
 
-	var _DestinationNodeDestinationnodeJs = __webpack_require__(4);
+	var _ProcessingNodesProcessingnodeJs = __webpack_require__(4);
+
+	var _ProcessingNodesProcessingnodeJs2 = _interopRequireDefault(_ProcessingNodesProcessingnodeJs);
+
+	var _DestinationNodeDestinationnodeJs = __webpack_require__(6);
 
 	var _DestinationNodeDestinationnodeJs2 = _interopRequireDefault(_DestinationNodeDestinationnodeJs);
 
-	var _rendergraphJs = __webpack_require__(6);
+	var _rendergraphJs = __webpack_require__(7);
 
 	var _rendergraphJs2 = _interopRequireDefault(_rendergraphJs);
 
@@ -105,6 +109,37 @@ var VideoContext =
 	        this._state = STATE.paused;
 	        this._destinationNode = new _DestinationNodeDestinationnodeJs2["default"](this._gl, this._renderGraph);
 	        registerUpdateable(this);
+
+	        var test = new _ProcessingNodesProcessingnodeJs2["default"](this._gl, this._renderGraph, {
+	            "fragmentShader": "\
+	                precision mediump float;\
+	                uniform sampler2D u_image;\
+	                uniform float a;\
+	                uniform float b;\
+	                uniform vec4 c;\
+	                varying vec2 v_texCoord;\
+	                varying float v_progress;\
+	                void main(){\
+	                    vec4 color = texture2D(u_image, v_texCoord);\
+	                    color[0] += a;\
+	                    color+= c;\
+	                    gl_FragColor = color;\
+	                }",
+	            "vertexShader": "\
+	                attribute vec2 a_position;\
+	                attribute vec2 a_texCoord;\
+	                varying vec2 v_texCoord;\
+	                void main() {\
+	                    gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+	                    v_texCoord = a_texCoord;\
+	                }",
+	            "properties": {
+	                "a": { value: 1, type: "uniform" },
+	                "b": { value: 2, type: "uniform" },
+	                "c": { value: [0.1, 0.2, 0.4, 0.0], type: "uniform" }
+	                //"lut":{value:element, target:"fragment", type:"uniform"},
+	            }
+	        });
 	    }
 
 	    _createClass(VideoContext, [{
@@ -370,7 +405,7 @@ var VideoContext =
 	    function SourceNode(src, gl, renderGraph) {
 	        _classCallCheck(this, SourceNode);
 
-	        _get(Object.getPrototypeOf(SourceNode.prototype), "constructor", this).call(this, renderGraph, gl, 0);
+	        _get(Object.getPrototypeOf(SourceNode.prototype), "constructor", this).call(this, gl, renderGraph, 0);
 	        this._element = undefined;
 	        this._elementURL = undefined;
 	        this._isResponsibleForElementLifeCycle = true;
@@ -513,7 +548,7 @@ var VideoContext =
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	var GraphNode = (function () {
-	    function GraphNode(renderGraph, gl, maxInputs) {
+	    function GraphNode(gl, renderGraph, maxInputs) {
 	        _classCallCheck(this, GraphNode);
 
 	        this._renderGraph = renderGraph;
@@ -604,6 +639,162 @@ var VideoContext =
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+	var _graphnode = __webpack_require__(3);
+
+	var _graphnode2 = _interopRequireDefault(_graphnode);
+
+	var _utilsJs = __webpack_require__(5);
+
+	var ProcessingNode = (function (_GraphNode) {
+	    _inherits(ProcessingNode, _GraphNode);
+
+	    function ProcessingNode(gl, renderGraph, definition, maxInputs) {
+	        var _this = this;
+
+	        _classCallCheck(this, ProcessingNode);
+
+	        _get(Object.getPrototypeOf(ProcessingNode.prototype), "constructor", this).call(this, gl, renderGraph, maxInputs);
+	        this._vertexShader = definition.vertexShader;
+	        this._fragmentShader = definition.fragmentShader;
+	        this._properties = definition.properties;
+
+	        //compile the shader
+	        this._program = (0, _utilsJs.createShaderProgram)(gl, this._vertexShader, this._fragmentShader);
+
+	        //create properties on this object for the passed properties
+
+	        var _loop = function (propertyName) {
+	            var propertyValue = _this._properties[propertyName];
+	            Object.defineProperty(_this, propertyName, {
+	                get: function get() {
+	                    return this._properties[propertyName].value;
+	                },
+	                set: function set(passedValue) {
+	                    this._properties[propertyName].value = passedValue;
+	                }
+	            });
+	        };
+
+	        for (var propertyName in this._properties) {
+	            _loop(propertyName);
+	        }
+
+	        //find the locations of the properties in the compiled shader
+	        for (var propertyName in this._properties) {
+	            if (this._properties[propertyName].type === "uniform") {
+	                this._properties[propertyName].location = this._gl.getUniformLocation(this._program, propertyName);
+	                console.debug(propertyName, this._properties[propertyName].location);
+	            }
+	        }
+
+	        this._currentTime = 0;
+	    }
+
+	    _createClass(ProcessingNode, [{
+	        key: "_update",
+	        value: function _update(currentTime) {
+	            this._currentTime = currentTime;
+	        }
+	    }, {
+	        key: "_render",
+	        value: function _render() {
+	            this.gl.useProgram(this._program);
+	            for (var propertyName in this._properties) {
+	                var propertyValue = this._properties[propertyName].value;
+	                var propertyType = this._properties[propertyName].type;
+	                var propertyLocation = this._properties[propertyName].location;
+	                if (propertyType !== 'uniform') continue;
+
+	                if (typeof propertyValue === "number") {
+	                    this.gl.uniform1f(propertyLocation, propertyValue);
+	                } else if (Object.prototype.toString.call(propertyValue) === '[object Array]') {
+	                    if (propertyValue.length === 1) {
+	                        this.gl.uniform1fv(propertyLocation, propertyValue);
+	                    } else if (propertyValue.length === 2) {
+	                        this.gl.uniform2fv(propertyLocation, propertyValue);
+	                    } else if (propertyValue.length === 3) {
+	                        this.gl.uniform3fv(propertyLocation, propertyValue);
+	                    } else if (propertyValue.length === 4) {
+	                        this.gl.uniform4fv(propertyLocation, propertyValue);
+	                    } else {
+	                        console.debug("Shader parameter", propertyName, "is too long an array:", propertyValue);
+	                    }
+	                } else {
+	                    //TODO - add tests for textures
+	                    /*this.gl.activeTexture(this.gl.TEXTURE0 + textureOffset);
+	                    this.gl.uniform1i(parameterLoctation, textureOffset);
+	                    this.gl.bindTexture(this.gl.TEXTURE_2D, textures[textureOffset-1]);*/
+	                }
+	            }
+	        }
+	    }]);
+
+	    return ProcessingNode;
+	})(_graphnode2["default"]);
+
+	exports["default"] = ProcessingNode;
+	module.exports = exports["default"];
+
+/***/ },
+/* 5 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.compileShader = compileShader;
+	exports.createShaderProgram = createShaderProgram;
+
+	function compileShader(gl, shaderSource, shaderType) {
+	    var shader = gl.createShader(shaderType);
+	    gl.shaderSource(shader, shaderSource);
+	    gl.compileShader(shader);
+	    var success = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
+	    if (!success) {
+	        throw "could not compile shader:" + gl.getShaderInfoLog(shader);
+	    }
+	    return shader;
+	}
+
+	function createShaderProgram(gl, vertexShaderSource, fragmentShaderSource) {
+	    var vertexShader = compileShader(gl, vertexShaderSource, gl.VERTEX_SHADER);
+	    var fragmentShader = compileShader(gl, fragmentShaderSource, gl.FRAGMENT_SHADER);
+	    var program = gl.createProgram();
+
+	    gl.attachShader(program, vertexShader);
+	    gl.attachShader(program, fragmentShader);
+	    gl.linkProgram(program);
+
+	    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+	        throw { "error": 4, "msg": "Can't link shader program for track", toString: function toString() {
+	                return this.msg;
+	            } };
+	    }
+	    return program;
+	}
+
+/***/ },
+/* 6 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 	var _utilsJs = __webpack_require__(5);
 
 	var _SourceNodesSourcenode = __webpack_require__(2);
@@ -618,7 +809,7 @@ var VideoContext =
 	    function DestinationNode(gl, renderGraph) {
 	        _classCallCheck(this, DestinationNode);
 
-	        _get(Object.getPrototypeOf(DestinationNode.prototype), "constructor", this).call(this, renderGraph, gl, undefined);
+	        _get(Object.getPrototypeOf(DestinationNode.prototype), "constructor", this).call(this, gl, renderGraph, undefined);
 
 	        var vertexShader = "\
 	            attribute vec2 a_position;\
@@ -679,47 +870,7 @@ var VideoContext =
 	module.exports = exports["default"];
 
 /***/ },
-/* 5 */
-/***/ function(module, exports) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	exports.compileShader = compileShader;
-	exports.createShaderProgram = createShaderProgram;
-
-	function compileShader(gl, shaderSource, shaderType) {
-	    var shader = gl.createShader(shaderType);
-	    gl.shaderSource(shader, shaderSource);
-	    gl.compileShader(shader);
-	    var success = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
-	    if (!success) {
-	        throw "could not compile shader:" + gl.getShaderInfoLog(shader);
-	    }
-	    return shader;
-	}
-
-	function createShaderProgram(gl, vertexShaderSource, fragmentShaderSource) {
-	    var vertexShader = compileShader(gl, vertexShaderSource, gl.VERTEX_SHADER);
-	    var fragmentShader = compileShader(gl, fragmentShaderSource, gl.FRAGMENT_SHADER);
-	    var program = gl.createProgram();
-
-	    gl.attachShader(program, vertexShader);
-	    gl.attachShader(program, fragmentShader);
-	    gl.linkProgram(program);
-
-	    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-	        throw { "error": 4, "msg": "Can't link shader program for track", toString: function toString() {
-	                return this.msg;
-	            } };
-	    }
-	    return program;
-	}
-
-/***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports) {
 
 	"use strict";

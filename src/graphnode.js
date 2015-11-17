@@ -1,5 +1,5 @@
 class GraphNode {
-    constructor(renderGraph, gl, maxInputs){
+    constructor(gl, renderGraph, maxInputs){
         this._renderGraph = renderGraph;
         this._maxInputs = maxInputs;
 
