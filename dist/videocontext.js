@@ -358,7 +358,7 @@ var VideoContext =
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var _graphnode = __webpack_require__(7);
+	var _graphnode = __webpack_require__(3);
 
 	var _graphnode2 = _interopRequireDefault(_graphnode);
 
@@ -370,7 +370,7 @@ var VideoContext =
 	    function SourceNode(src, gl, renderGraph) {
 	        _classCallCheck(this, SourceNode);
 
-	        _get(Object.getPrototypeOf(SourceNode.prototype), "constructor", this).call(this, renderGraph, 0);
+	        _get(Object.getPrototypeOf(SourceNode.prototype), "constructor", this).call(this, renderGraph, gl, 0);
 	        this._element = undefined;
 	        this._elementURL = undefined;
 	        this._isResponsibleForElementLifeCycle = true;
@@ -388,18 +388,6 @@ var VideoContext =
 	        this._startTime = 0;
 	        this._stopTime = 0;
 	        this._ready = false;
-
-	        //Setup WebGL texture
-	        this._gl = gl;
-	        this._renderGraph = renderGraph;
-	        this._texture = gl.createTexture();
-	        gl.bindTexture(gl.TEXTURE_2D, this._texture);
-	        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-	        // Set the parameters so we can render any size image.
-	        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-	        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-	        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-	        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 	    }
 
 	    _createClass(SourceNode, [{
@@ -482,6 +470,7 @@ var VideoContext =
 	            this._currentTime = currentTime;
 
 	            //update this source nodes texture
+	            if (this._element === undefined || this._ready === false) return true;
 	            var gl = this._gl;
 	            gl.bindTexture(gl.TEXTURE_2D, this._texture);
 	            gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
@@ -510,9 +499,8 @@ var VideoContext =
 	exports.SOURCENODESTATE = STATE;
 
 /***/ },
-/* 3 */,
-/* 4 */
-/***/ function(module, exports, __webpack_require__) {
+/* 3 */
+/***/ function(module, exports) {
 
 	"use strict";
 
@@ -524,16 +512,113 @@ var VideoContext =
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+	var GraphNode = (function () {
+	    function GraphNode(renderGraph, gl, maxInputs) {
+	        _classCallCheck(this, GraphNode);
+
+	        this._renderGraph = renderGraph;
+	        this._maxInputs = maxInputs;
+
+	        //Setup WebGL output texture
+	        this._gl = gl;
+	        this._renderGraph = renderGraph;
+	        this._texture = gl.createTexture();
+	        gl.bindTexture(gl.TEXTURE_2D, this._texture);
+	        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+	        // Set the parameters so we can render any size image.
+	        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+	        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+	        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+	        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+	        //Initialise the texture untit to clear.
+	        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 0]));
+	    }
+
+	    _createClass(GraphNode, [{
+	        key: "connect",
+	        value: function connect(targetNode, zIndex) {
+	            if (zIndex === undefined) {
+	                var targetInputs = this._renderGraph.getSortedInputsForNode(targetNode);
+	                zIndex = targetInputs[targetInputs.length - 1] + 1.0;
+	            }
+	            return this._renderGraph.registerConnection(this, targetNode, zIndex);
+	        }
+	    }, {
+	        key: "disconnect",
+	        value: function disconnect(targetNode) {
+	            if (targetNode === undefined) {
+	                var toRemove = this._renderGraph.getOutputsForNode(this);
+	                toRemove.forEach(function (target) {
+	                    this._renderGraph.unregisterConnection(this, target);
+	                });
+	                if (toRemove.length > 0) return true;
+	                return false;
+	            }
+	            return this._renderGraph.unregisterConnection(this, targetNode);
+	        }
+	    }, {
+	        key: "inputs",
+	        get: function get() {
+	            var inputConnections = this._renderGraph.getSortedInputsForNode(this);
+	            var results = [];
+	            inputConnections.forEach(function (connection) {
+	                results.push(connection.node);
+	            });
+	            return results;
+	        }
+	    }, {
+	        key: "outputs",
+	        get: function get() {
+	            var outputConnections = this._renderGraph.getSortedOutputsForNode(this);
+	            var results = [];
+	            outputConnections.forEach(function (connection) {
+	                results.push(connection.node);
+	            });
+	            return results;
+	        }
+	    }]);
+
+	    return GraphNode;
+	})();
+
+	exports["default"] = GraphNode;
+	module.exports = exports["default"];
+
+/***/ },
+/* 4 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 	var _utilsJs = __webpack_require__(5);
 
 	var _SourceNodesSourcenode = __webpack_require__(2);
 
-	var DestinationNode = (function () {
+	var _graphnode = __webpack_require__(3);
+
+	var _graphnode2 = _interopRequireDefault(_graphnode);
+
+	var DestinationNode = (function (_GraphNode) {
+	    _inherits(DestinationNode, _GraphNode);
+
 	    function DestinationNode(gl, renderGraph) {
 	        _classCallCheck(this, DestinationNode);
 
-	        this._gl = gl;
-	        this._renderGraph = renderGraph;
+	        _get(Object.getPrototypeOf(DestinationNode.prototype), "constructor", this).call(this, renderGraph, gl, undefined);
 
 	        var vertexShader = "\
 	            attribute vec2 a_position;\
@@ -569,16 +654,15 @@ var VideoContext =
 	    _createClass(DestinationNode, [{
 	        key: "_render",
 	        value: function _render() {
-	            var inputs = this._renderGraph.getSortedInputsForNode(this);
 	            var gl = this._gl;
 	            gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 	            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
 	            var _this = this;
-	            inputs.forEach(function (input) {
-	                if (input.node.state !== _SourceNodesSourcenode.SOURCENODESTATE.playing && input.node.state !== _SourceNodesSourcenode.SOURCENODESTATE.paused) return;
+	            this.inputs.forEach(function (node) {
+	                if (node.state !== _SourceNodesSourcenode.SOURCENODESTATE.playing && node.state !== _SourceNodesSourcenode.SOURCENODESTATE.paused) return;
 	                gl.useProgram(_this._program);
-	                var texture = input.node._texture;
+	                var texture = node._texture;
 	                gl.activeTexture(gl.TEXTURE0);
 	                var textureLocation = gl.getUniformLocation(_this._program, "u_image");
 	                gl.uniform1i(textureLocation, 0);
@@ -589,7 +673,7 @@ var VideoContext =
 	    }]);
 
 	    return DestinationNode;
-	})();
+	})(_graphnode2["default"]);
 
 	exports["default"] = DestinationNode;
 	module.exports = exports["default"];
@@ -736,78 +820,6 @@ var VideoContext =
 	})();
 
 	exports["default"] = RenderGraph;
-	module.exports = exports["default"];
-
-/***/ },
-/* 7 */
-/***/ function(module, exports) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	var GraphNode = (function () {
-	    function GraphNode(renderGraph, maxInputs) {
-	        _classCallCheck(this, GraphNode);
-
-	        this._renderGraph = renderGraph;
-	        this._maxInputs = maxInputs;
-	    }
-
-	    _createClass(GraphNode, [{
-	        key: "connect",
-	        value: function connect(targetNode, zIndex) {
-	            if (zIndex === undefined) {
-	                var targetInputs = this._renderGraph.getSortedInputsForNode(targetNode);
-	                zIndex = targetInputs[targetInputs.length - 1] + 1.0;
-	            }
-	            return this._renderGraph.registerConnection(this, targetNode, zIndex);
-	        }
-	    }, {
-	        key: "disconnect",
-	        value: function disconnect(targetNode) {
-	            if (targetNode === undefined) {
-	                var toRemove = this._renderGraph.getOutputsForNode(this);
-	                toRemove.forEach(function (target) {
-	                    this._renderGraph.unregisterConnection(this, target);
-	                });
-	                if (toRemove.length > 0) return true;
-	                return false;
-	            }
-	            return this._renderGraph.unregisterConnection(this, targetNode);
-	        }
-	    }, {
-	        key: "inputs",
-	        get: function get() {
-	            var inputConnections = this._renderGraph.getSortedInputsForNode(this);
-	            var results = [];
-	            inputConnections.forEach(function (connection) {
-	                results.push(connection.node);
-	            });
-	            return results;
-	        }
-	    }, {
-	        key: "outputs",
-	        get: function get() {
-	            var outputConnections = this._renderGraph.getSortedOutputsForNode(this);
-	            var results = [];
-	            outputConnections.forEach(function (connection) {
-	                results.push(connection.node);
-	            });
-	            return results;
-	        }
-	    }]);
-
-	    return GraphNode;
-	})();
-
-	exports["default"] = GraphNode;
 	module.exports = exports["default"];
 
 /***/ }

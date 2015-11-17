@@ -76,7 +76,7 @@ videoNode.clearTimelineState(); // stops playback and sets state to "waiting"
 ProcessingNode
     |_TransitionNode
     |_EffectNode
-    |_CompositionNode
+    |_CompositingNode
 
 
 TransitionNode - 2 inputs, 1 output, 1 required parameter.
@@ -116,12 +116,12 @@ var titleSource = ctx.createVideoSourceNode("title.mp4");
 
 var effectNode = ctx.createEffectNode(VideoContext.Effects.GreenScreen);
 var transitionNode = ctx.createTransitionNode(VideoContext.Transitions.Crossfade);
-var compositNode = ctx.createCompositNode(VideoContext.Composit.AlphaBlend);
+var compositingNode = ctx.createCompositingNode(VideoContext.Composit.AlphaBlend);
 
 
 presenterSource.connect(effectNode);
-effectNode.connect(compositNode,0);
-backgroundSource.connect(compositeNode,1)
+effectNode.connect(compositingNode,0);
+backgroundSource.connect(compositingNode,1)
 ```
 
 

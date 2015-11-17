@@ -1,11 +1,10 @@
 import { createShaderProgram } from "../utils.js";
 import { SOURCENODESTATE } from "../SourceNodes/sourcenode";
+import GraphNode from "../graphnode";
 
-
-class DestinationNode{
+class DestinationNode extends GraphNode {
     constructor(gl, renderGraph){
-        this._gl = gl;
-        this._renderGraph = renderGraph;
+        super(renderGraph, gl, undefined);
         
         let vertexShader = "\
             attribute vec2 a_position;\
@@ -48,16 +47,15 @@ class DestinationNode{
     }
 
     _render(){
-        let inputs = this._renderGraph.getSortedInputsForNode(this);
         let gl = this._gl;        
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         let _this = this;
-        inputs.forEach(function(input){
-            if (input.node.state !== SOURCENODESTATE.playing && input.node.state !== SOURCENODESTATE.paused) return;
+        this.inputs.forEach(function(node){
+            if (node.state !== SOURCENODESTATE.playing && node.state !== SOURCENODESTATE.paused) return;
             gl.useProgram(_this._program);
-            var texture = input.node._texture;
+            var texture = node._texture;
             gl.activeTexture(gl.TEXTURE0);
             let textureLocation = gl.getUniformLocation(_this._program, "u_image");
             gl.uniform1i(textureLocation, 0);

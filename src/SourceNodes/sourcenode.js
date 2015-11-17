@@ -5,7 +5,7 @@ let STATE = {"waiting":0, "sequenced":1, "playing":2, "paused":3, "ended":4};
 
 class SourceNode extends GraphNode{
     constructor(src, gl, renderGraph){
-        super(renderGraph, 0);
+        super(renderGraph, gl, 0);
         this._element = undefined;
         this._elementURL = undefined;
         this._isResponsibleForElementLifeCycle = true;
@@ -23,18 +23,6 @@ class SourceNode extends GraphNode{
         this._startTime = 0;
         this._stopTime = 0;
         this._ready = false;
-
-        //Setup WebGL texture
-        this._gl = gl;
-        this._renderGraph = renderGraph;
-        this._texture = gl.createTexture();
-        gl.bindTexture(gl.TEXTURE_2D, this._texture);
-        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-        // Set the parameters so we can render any size image.
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
     }
 
     get state(){        
@@ -113,6 +101,7 @@ class SourceNode extends GraphNode{
 
 
         //update this source nodes texture
+        if (this._element === undefined || this._ready === false) return true;
         let gl = this._gl;        
         gl.bindTexture(gl.TEXTURE_2D, this._texture);
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
@@ -127,8 +116,6 @@ class SourceNode extends GraphNode{
         this._state = STATE.waiting;
     }
 }
-
-
 
 export default SourceNode;
 export {STATE as SOURCENODESTATE};
