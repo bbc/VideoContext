@@ -25,26 +25,6 @@ class RenderableSourceNode extends SourceNode {
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this._element);
         return true;
     }
-
-    connect(targetNode, zIndex){
-        if (zIndex === undefined){
-            let targetInputs = this._renderGraph.getSortedInputsForNode(targetNode);
-            zIndex = targetInputs[targetInputs.length-1] + 1.0;
-        }
-        this._renderGraph.registerConnection(this, targetNode, zIndex);
-    }
-    
-    disconnect(targetNode){
-        if (targetNode === undefined){
-            let toRemove = this._renderGraph.getOutputsForNode(this);
-            toRemove.forEach(function(targetNode){
-                this._renderGraph.unregisterConnection(this, targetNode);
-            });
-            return;
-        }
-        this._renderGraph.unregisterConnection(this, targetNode);
-
-    }
 }
 
 

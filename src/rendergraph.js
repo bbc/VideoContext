@@ -1,3 +1,9 @@
+function ConnectException(message){
+    this.message = message;
+    this.name = "ConnectionException";
+}
+
+
 class RenderGraph {
     constructor(){
         this.connections = [];
@@ -6,8 +12,8 @@ class RenderGraph {
     getOutputsForNode(node){
         let results = [];
         this.connections.forEach(function(connection){
-            if (connection.output === node){
-                results.push({"node":connection.input, "zIndex":connection.zIndex});
+            if (connection.source === node){
+                results.push({"node":connection.destination, "zIndex":connection.zIndex});
             }
         });
         return results;
@@ -24,8 +30,8 @@ class RenderGraph {
     getInputsForNode(node){
         let results = [];
         this.connections.forEach(function(connection){
-            if (connection.output=== node){
-                results.push({"node":connection.input, "zIndex":connection.zIndex});
+            if (connection.destination === node){
+                results.push({"node":connection.source, "zIndex":connection.zIndex});
             }
         });
         return results;
@@ -39,25 +45,32 @@ class RenderGraph {
         return inputs;
     }
 
-    registerConnection(inputNode, outputNode, zIndex){
+    registerConnection(sourceNode, destinationNode, zIndex){
         console.debug("adding connection");
-        this.connections.push({"output":outputNode, "zIndex":zIndex, "input":inputNode});
-
+        if (destinationNode._maxInputs !== undefined && destinationNode.inputs.length >= destinationNode._maxInputs){
+            throw new ConnectException("Node has reached max number of inputs, can't connect");
+        }
+        this.connections.push({"source":sourceNode, "zIndex":zIndex, "destination":destinationNode});
+        return true;
     }
     
-    unregsiterConnection(inputNode, outputNode){
+    unregsiterConnection(sourceNode, destinationNode){
         let toRemove = [];
         
         this.connections.forEach(function(connection){
-            if (connection.input === inputNode && connection.output === outputNode){
+            if (connection.source === sourceNode && connection.destination === destinationNode){
                 toRemove.push(connection);
             }
         });
+
+        if (toRemove.length === 0) return false;
 
         this.toRemove.forEach(function(removeNode){
             let index = this.connections.indexOf(removeNode);
             this.connections.splice(index, 1);
         });
+
+        return true;
     }
 }
 

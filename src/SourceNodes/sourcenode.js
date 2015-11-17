@@ -1,7 +1,11 @@
+import GraphNode from "../graphnode";
+
 let STATE = {"waiting":0, "sequenced":1, "playing":2, "paused":3, "ended":4};
 
-class SourceNode {
-    constructor(src){
+
+class SourceNode extends GraphNode{
+    constructor(src, gl, renderGraph){
+        super(renderGraph, 0);
         this._element = undefined;
         this._elementURL = undefined;
         this._isResponsibleForElementLifeCycle = true;
@@ -19,6 +23,18 @@ class SourceNode {
         this._startTime = 0;
         this._stopTime = 0;
         this._ready = false;
+
+        //Setup WebGL texture
+        this._gl = gl;
+        this._renderGraph = renderGraph;
+        this._texture = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, this._texture);
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+        // Set the parameters so we can render any size image.
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
     }
 
     get state(){        
@@ -77,6 +93,7 @@ class SourceNode {
     }
 
     _update(currentTime){
+        //update the state
         if (this._state === STATE.waiting || this._state === STATE.ended) return false;
         
         if (currentTime < this._startTime){
@@ -91,7 +108,16 @@ class SourceNode {
             this._state = STATE.ended;
         }
 
+        //update the current time
         this._currentTime = currentTime;
+
+
+        //update this source nodes texture
+        let gl = this._gl;        
+        gl.bindTexture(gl.TEXTURE_2D, this._texture);
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this._element);
+
         return true;
     }
 

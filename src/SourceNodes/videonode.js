@@ -1,8 +1,6 @@
-import { SOURCENODESTATE } from "./sourcenode";
-import RenderableSourceNode from "./renderablesourcenode";
+import SourceNode, { SOURCENODESTATE } from "./sourcenode";
 
-
-class VideoNode extends RenderableSourceNode{
+class VideoNode extends SourceNode {
     constructor(src, gl, renderGraph, sourceOffset=0, preloadTime = 4){
         super(src, gl, renderGraph);
         this._preloadTime = preloadTime;

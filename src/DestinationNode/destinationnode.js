@@ -1,4 +1,6 @@
 import { createShaderProgram } from "../utils.js";
+import { SOURCENODESTATE } from "../SourceNodes/sourcenode";
+
 
 class DestinationNode{
     constructor(gl, renderGraph){
@@ -53,6 +55,7 @@ class DestinationNode{
 
         let _this = this;
         inputs.forEach(function(input){
+            if (input.node.state !== SOURCENODESTATE.playing && input.node.state !== SOURCENODESTATE.paused) return;
             gl.useProgram(_this._program);
             var texture = input.node._texture;
             gl.activeTexture(gl.TEXTURE0);
