@@ -25,7 +25,7 @@ export function createShaderProgram(gl, vertexShaderSource, fragmentShaderSource
     return program;
 }
 
-export function createElementTexutre(gl){
+export function createElementTexutre(gl, type=new Uint8Array([0,0,0,0]), width=1, height=1){
     let texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
@@ -35,7 +35,7 @@ export function createElementTexutre(gl){
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
     //Initialise the texture untit to clear.
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0,0,0,0]));
+    //gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, type);
 
     return texture;
 }

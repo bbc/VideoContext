@@ -113,39 +113,6 @@ var VideoContext =
 	        this._state = STATE.paused;
 	        this._destinationNode = new _DestinationNodeDestinationnodeJs2["default"](this._gl, this._renderGraph);
 	        registerUpdateable(this);
-	        var lutImage = new Image();
-
-	        var test = new _ProcessingNodesProcessingnodeJs2["default"](this._gl, this._renderGraph, {
-	            "fragmentShader": "\
-	                precision mediump float;\
-	                uniform sampler2D u_image;\
-	                uniform float a;\
-	                uniform float b;\
-	                uniform vec4 c;\
-	                varying vec2 v_texCoord;\
-	                varying float v_progress;\
-	                void main(){\
-	                    vec4 color = texture2D(u_image, v_texCoord);\
-	                    color[0] += a;\
-	                    color+= c;\
-	                    gl_FragColor = color;\
-	                }",
-	            "vertexShader": "\
-	                attribute vec2 a_position;\
-	                attribute vec2 a_texCoord;\
-	                varying vec2 v_texCoord;\
-	                void main() {\
-	                    gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
-	                    v_texCoord = a_texCoord;\
-	                }",
-	            "properties": {
-	                "a": { value: 1, type: "uniform" },
-	                "b": { value: 2, type: "uniform" },
-	                "c": { value: [0.1, 0.2, 0.4, 0.0], type: "uniform" },
-	                "lut": { value: lutImage, target: "fragment", type: "uniform" }
-	            },
-	            "inputs": ["u_image"]
-	        });
 	    }
 
 	    _createClass(VideoContext, [{
@@ -229,7 +196,6 @@ var VideoContext =
 	                    }
 	                }
 
-	                this._destinationNode._render();
 	                var _iteratorNormalCompletion = true;
 	                var _didIteratorError = false;
 	                var _iteratorError = undefined;
@@ -254,6 +220,8 @@ var VideoContext =
 	                        }
 	                    }
 	                }
+
+	                this._destinationNode._render();
 	            }
 	        }
 	    }, {
@@ -400,7 +368,6 @@ var VideoContext =
 	                this._element.pause();
 	                return true;
 	            } else if (this._state === _sourcenode.SOURCENODESTATE.ended) {
-	                //this._texture = createElementTexutre(this._gl);
 	                this._element.pause();
 	                this._destroy();
 	                return false;
@@ -466,6 +433,9 @@ var VideoContext =
 	        this._startTime = 0;
 	        this._stopTime = 0;
 	        this._ready = false;
+	        this._texture = (0, _utilsJs.createElementTexutre)(gl);
+	        //gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,512,512, gl.RGBA, gl.UNSIGNED_BYTE, this._element);
+	        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 0]));
 	    }
 
 	    _createClass(SourceNode, [{
@@ -579,7 +549,7 @@ var VideoContext =
 
 /***/ },
 /* 3 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
 	"use strict";
 
@@ -591,8 +561,6 @@ var VideoContext =
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var _utilsJs = __webpack_require__(5);
-
 	var GraphNode = (function () {
 	    function GraphNode(gl, renderGraph, maxInputs) {
 	        _classCallCheck(this, GraphNode);
@@ -603,7 +571,6 @@ var VideoContext =
 	        //Setup WebGL output texture
 	        this._gl = gl;
 	        this._renderGraph = renderGraph;
-	        this._texture = (0, _utilsJs.createElementTexutre)(gl);
 	    }
 
 	    _createClass(GraphNode, [{
@@ -701,7 +668,9 @@ var VideoContext =
 	        this._boundTextureUnits = 0;
 	        this._parameterTextureCount = 0;
 	        this._inputTextureCount = 0;
+	        this._texture = (0, _utilsJs.createElementTexutre)(gl, null, gl.canvas.width, gl.canvas.height);
 
+	        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.canvas.width, gl.canvas.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
 	        //compile the shader
 	        this._program = (0, _utilsJs.createShaderProgram)(gl, this._vertexShader, this._fragmentShader);
 
@@ -899,6 +868,10 @@ var VideoContext =
 	}
 
 	function createElementTexutre(gl) {
+	    var type = arguments.length <= 1 || arguments[1] === undefined ? new Uint8Array([0, 0, 0, 0]) : arguments[1];
+	    var width = arguments.length <= 2 || arguments[2] === undefined ? 1 : arguments[2];
+	    var height = arguments.length <= 3 || arguments[3] === undefined ? 1 : arguments[3];
+
 	    var texture = gl.createTexture();
 	    gl.bindTexture(gl.TEXTURE_2D, texture);
 	    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
@@ -908,7 +881,7 @@ var VideoContext =
 	    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
 	    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 	    //Initialise the texture untit to clear.
-	    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 0]));
+	    //gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, type);
 
 	    return texture;
 	}
@@ -944,8 +917,6 @@ var VideoContext =
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var _utilsJs = __webpack_require__(5);
 
 	var _SourceNodesSourcenode = __webpack_require__(2);
 
@@ -989,13 +960,13 @@ var VideoContext =
 
 	            var gl = this._gl;
 	            var _this = this;
-
+	            gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 	            this.inputs.forEach(function (node) {
-	                if (node.state !== _SourceNodesSourcenode.SOURCENODESTATE.playing && node.state !== _SourceNodesSourcenode.SOURCENODESTATE.paused) return;
 	                _get(Object.getPrototypeOf(DestinationNode.prototype), "_render", _this2).call(_this2);
-
 	                //map the input textures input the node
 	                var texture = node._texture;
+	                var textureOffset = 0;
+
 	                var _iteratorNormalCompletion = true;
 	                var _didIteratorError = false;
 	                var _iteratorError = undefined;
@@ -1006,7 +977,8 @@ var VideoContext =
 
 	                        gl.activeTexture(mapping.textureUnit);
 	                        var textureLocation = gl.getUniformLocation(_this._program, mapping.name);
-	                        gl.uniform1i(textureLocation, 0);
+	                        gl.uniform1i(textureLocation, _this._parameterTextureCount + textureOffset);
+	                        textureOffset += 1;
 	                        gl.bindTexture(gl.TEXTURE_2D, texture);
 	                    }
 	                } catch (err) {
@@ -1191,14 +1163,27 @@ var VideoContext =
 	        _classCallCheck(this, EffectNode);
 
 	        var maxInputs = definition.inputs.length;
+	        var placeholderTexture = (0, _utilsJs.createElementTexutre)(gl);
+	        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 0]));
+
 	        _get(Object.getPrototypeOf(EffectNode.prototype), "constructor", this).call(this, gl, renderGraph, definition, maxInputs);
-	        this._placeholderTexture = (0, _utilsJs.createElementTexutre)(gl);
+
+	        this._placeholderTexture = placeholderTexture;
+
+	        //create and setup the framebuffer
+	        this._framebuffer = gl.createFramebuffer();
+	        gl.bindFramebuffer(gl.FRAMEBUFFER, this._framebuffer);
+	        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this._texture, 0);
+	        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 	    }
 
 	    _createClass(EffectNode, [{
 	        key: "_render",
 	        value: function _render() {
 	            var gl = this._gl;
+	            gl.bindFramebuffer(gl.FRAMEBUFFER, this._framebuffer);
+	            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this._texture, 0);
+
 	            _get(Object.getPrototypeOf(EffectNode.prototype), "_render", this).call(this);
 
 	            var inputs = this.inputs;
@@ -1210,10 +1195,10 @@ var VideoContext =
 	                var textureName = this._inputTextureUnitMapping[i].name;
 	                if (i < inputs.length) {
 	                    inputTexture = inputs[i]._texture;
-	                    console.log(textureName, textureUnit);
+	                    //console.log(textureName, textureUnit);
 	                } else {
-	                    console.debug("VideoContext:Warning - not all inputs to effect node are connected");
-	                }
+	                        //console.debug("VideoContext:Warning - not all inputs to effect node are connected");
+	                    }
 
 	                gl.activeTexture(textureUnit);
 	                var textureLocation = gl.getUniformLocation(this._program, textureName);
@@ -1222,6 +1207,7 @@ var VideoContext =
 	                gl.bindTexture(gl.TEXTURE_2D, inputTexture);
 	            }
 	            gl.drawArrays(gl.TRIANGLES, 0, 6);
+	            gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 	        }
 	    }]);
 

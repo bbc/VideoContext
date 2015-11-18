@@ -1,5 +1,3 @@
-import { createElementTexutre } from "./utils.js";
-
 
 class GraphNode {
     constructor(gl, renderGraph, maxInputs){
@@ -9,7 +7,6 @@ class GraphNode {
         //Setup WebGL output texture
         this._gl = gl;
         this._renderGraph = renderGraph;
-        this._texture = createElementTexutre(gl);
     }
 
     get inputs(){

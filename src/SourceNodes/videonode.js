@@ -50,7 +50,6 @@ class VideoNode extends SourceNode {
             return true;
         }
         else if (this._state === SOURCENODESTATE.ended){
-            //this._texture = createElementTexutre(this._gl);
             this._element.pause();
             this._destroy();
             return false;

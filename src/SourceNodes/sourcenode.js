@@ -1,4 +1,4 @@
-import { updateTexture, clearTexture } from "../utils.js";
+import { updateTexture, clearTexture, createElementTexutre } from "../utils.js";
 import GraphNode from "../graphnode";
 
 let STATE = {"waiting":0, "sequenced":1, "playing":2, "paused":3, "ended":4};
@@ -24,6 +24,10 @@ class SourceNode extends GraphNode{
         this._startTime = 0;
         this._stopTime = 0;
         this._ready = false;
+        this._texture = createElementTexutre(gl);
+        //gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,512,512, gl.RGBA, gl.UNSIGNED_BYTE, this._element);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0,0,0,0]));
+
     }
 
     get state(){        
