@@ -1,7 +1,4 @@
-function ConnectException(message){
-    this.message = message;
-    this.name = "ConnectionException";
-}
+import { ConnectException } from "./exceptions.js";
 
 
 class RenderGraph {

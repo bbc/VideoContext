@@ -1,3 +1,4 @@
+import { updateTexture, clearTexture } from "../utils.js";
 import GraphNode from "../graphnode";
 
 let STATE = {"waiting":0, "sequenced":1, "playing":2, "paused":3, "ended":4};
@@ -93,6 +94,7 @@ class SourceNode extends GraphNode{
         }
 
         if (currentTime >= this._stopTime){
+            clearTexture(this._gl, this._texture);
             this._state = STATE.ended;
         }
 
@@ -101,11 +103,11 @@ class SourceNode extends GraphNode{
 
 
         //update this source nodes texture
-        if (this._element === undefined || this._ready === false) return true;
-        let gl = this._gl;        
-        gl.bindTexture(gl.TEXTURE_2D, this._texture);
-        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this._element);
+        if (this._element === undefined || this._ready === false) return true;      
+        
+        if(this._state === STATE.playing){
+            updateTexture(this._gl, this._texture, this._element);
+        }
 
         return true;
     }

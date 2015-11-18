@@ -5,6 +5,9 @@ class CompositingNode extends ProcessingNode{
         super(gl, renderGraph, definition);
 
     }
+    _render(){
+        
+    }
 }
 
 

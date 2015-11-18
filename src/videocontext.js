@@ -1,6 +1,7 @@
 import VideoNode from "./SourceNodes/videonode.js";
 import ProcessingNode from "./ProcessingNodes/processingnode.js";
 import DestinationNode from "./DestinationNode/destinationnode.js";
+import EffectNode from "./ProcessingNodes/effectnode.js";
 import RenderGraph from "./rendergraph.js";
 
 let updateables = [];
@@ -39,6 +40,7 @@ class VideoContext{
         this._state = STATE.paused;
         this._destinationNode = new DestinationNode(this._gl, this._renderGraph);
         registerUpdateable(this);
+        let lutImage = new Image();
 
         let test = new ProcessingNode(this._gl, this._renderGraph, {
             "fragmentShader":"\
@@ -66,9 +68,10 @@ class VideoContext{
             "properties":{
                 "a":{value:1, type:"uniform"},
                 "b":{value:2, type:"uniform"},
-                "c":{value:[0.1,0.2,0.4,0.0], type:"uniform"}
-                //"lut":{value:element, target:"fragment", type:"uniform"},
-            }
+                "c":{value:[0.1,0.2,0.4,0.0], type:"uniform"},
+                "lut":{value:lutImage, target:"fragment", type:"uniform"}
+            },
+            "inputs":["u_image"]
         });
     }
 
@@ -137,11 +140,16 @@ class VideoContext{
         return true;
     }
 
-
     createVideoSourceNode(src, sourceOffset=0){
         let videoNode = new VideoNode(src, this._gl,this._renderGraph, sourceOffset);
         this._sourceNodes.push(videoNode);
         return videoNode;
+    }
+
+    createEffectNode(definition){
+        let effectNode = new EffectNode(this._gl, this._renderGraph, definition);
+        this._processingNodes.push(effectNode);
+        return effectNode;
     }
 
     _isStalled(){
@@ -189,6 +197,9 @@ class VideoContext{
             }
 
             this._destinationNode._render();
+            for (let node of this._processingNodes) {
+                node._render();
+            }
         }
     }
 }

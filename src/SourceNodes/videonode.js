@@ -1,4 +1,5 @@
 import SourceNode, { SOURCENODESTATE } from "./sourcenode";
+import { createElementTexutre } from "../utils.js";
 
 class VideoNode extends SourceNode {
     constructor(src, gl, renderGraph, sourceOffset=0, preloadTime = 4){
@@ -37,7 +38,8 @@ class VideoNode extends SourceNode {
     }
 
     _update(currentTime){
-        if (!super._update(currentTime)) return false;
+        //if (!super._update(currentTime)) return false;
+        super._update(currentTime);
         if (this._startTime - this._currentTime < this._preloadTime)this._load();
 
         if (this._state === SOURCENODESTATE.playing){
@@ -48,6 +50,7 @@ class VideoNode extends SourceNode {
             return true;
         }
         else if (this._state === SOURCENODESTATE.ended){
+            //this._texture = createElementTexutre(this._gl);
             this._element.pause();
             this._destroy();
             return false;

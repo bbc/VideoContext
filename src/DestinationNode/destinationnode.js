@@ -1,11 +1,11 @@
 import { createShaderProgram } from "../utils.js";
 import { SOURCENODESTATE } from "../SourceNodes/sourcenode";
-import GraphNode from "../graphnode";
+//import GraphNode from "../graphnode";
+import ProcessingNode from "../ProcessingNodes/processingnode";
 
-class DestinationNode extends GraphNode {
-    constructor(gl, renderGraph){
-        super(gl, renderGraph, undefined);
-        
+class DestinationNode extends ProcessingNode {
+    constructor(gl, renderGraph){        
+  
         let vertexShader = "\
             attribute vec2 a_position;\
             attribute vec2 a_texCoord;\
@@ -24,42 +24,27 @@ class DestinationNode extends GraphNode {
                 gl_FragColor = texture2D(u_image, v_texCoord);\
             }";
 
-        this._program = createShaderProgram(gl, vertexShader, fragmentShader);
+        super(gl, renderGraph, {fragmentShader:fragmentShader, vertexShader:vertexShader, properties:{}, inputs:["u_image"]});
 
-        let positionLocation = gl.getAttribLocation(this._program, "a_position");
-        let buffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-        gl.enableVertexAttribArray(positionLocation);
-        gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
-        gl.bufferData(
-            gl.ARRAY_BUFFER,
-            new Float32Array([
-                1.0, 1.0,
-                0.0, 1.0,
-                1.0, 0.0,
-                1.0, 0.0,
-                0.0, 1.0,
-                0.0, 0.0]),
-            gl.STATIC_DRAW);
-        let texCoordLocation = gl.getAttribLocation(this._program, "a_texCoord");
-        gl.enableVertexAttribArray(texCoordLocation);
-        gl.vertexAttribPointer(texCoordLocation, 2, gl.FLOAT, false, 0, 0);
     }
 
     _render(){
         let gl = this._gl;        
-        gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
         let _this = this;
+
         this.inputs.forEach(function(node){
             if (node.state !== SOURCENODESTATE.playing && node.state !== SOURCENODESTATE.paused) return;
-            gl.useProgram(_this._program);
+            super._render();
+
+            //map the input textures input the node
             var texture = node._texture;
-            gl.activeTexture(gl.TEXTURE0);
-            let textureLocation = gl.getUniformLocation(_this._program, "u_image");
-            gl.uniform1i(textureLocation, 0);
-            gl.bindTexture(gl.TEXTURE_2D, texture);
+            for(let mapping of _this._inputTextureUnitMapping ){
+                gl.activeTexture(mapping.textureUnit);
+                let textureLocation = gl.getUniformLocation(_this._program, mapping.name);
+                gl.uniform1i(textureLocation, 0);
+                gl.bindTexture(gl.TEXTURE_2D, texture);
+            }
+
             gl.drawArrays(gl.TRIANGLES, 0, 6);
         });
     }
