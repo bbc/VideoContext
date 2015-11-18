@@ -31,7 +31,7 @@ let STATE = {"playing":0, "paused":1, "stalled":2, "ended":3, "broken":4};
 
 class VideoContext{
     constructor(canvas){
-        this._gl = canvas.getContext("webgl");
+        this._gl = canvas.getContext("experimental-webgl", { preserveDrawingBuffer: true, alpha: false });;
         this._renderGraph = new RenderGraph();
         this._sourceNodes = [];
         this._processingNodes = [];

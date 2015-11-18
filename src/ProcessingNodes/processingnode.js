@@ -20,6 +20,13 @@ class ProcessingNode extends GraphNode{
         gl.texImage2D( gl.TEXTURE_2D, 0, gl.RGBA, gl.canvas.width, gl.canvas.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
         //compile the shader
         this._program = createShaderProgram(gl, this._vertexShader, this._fragmentShader);
+        
+        //create and setup the framebuffer
+        this._framebuffer = gl.createFramebuffer();
+        gl.bindFramebuffer(gl.FRAMEBUFFER, this._framebuffer);
+        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this._texture,0);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+
 
         //create properties on this object for the passed properties
         for (let propertyName in this._properties){
@@ -94,7 +101,7 @@ class ProcessingNode extends GraphNode{
     _render(){
         let gl = this._gl;
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
         gl.useProgram(this._program);
 
         //upload the default uniforms

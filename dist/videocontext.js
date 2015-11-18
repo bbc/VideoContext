@@ -104,7 +104,7 @@ var VideoContext =
 	    function VideoContext(canvas) {
 	        _classCallCheck(this, VideoContext);
 
-	        this._gl = canvas.getContext("webgl");
+	        this._gl = canvas.getContext("experimental-webgl", { preserveDrawingBuffer: true, alpha: false });;
 	        this._renderGraph = new _rendergraphJs2["default"]();
 	        this._sourceNodes = [];
 	        this._processingNodes = [];
@@ -674,6 +674,12 @@ var VideoContext =
 	        //compile the shader
 	        this._program = (0, _utilsJs.createShaderProgram)(gl, this._vertexShader, this._fragmentShader);
 
+	        //create and setup the framebuffer
+	        this._framebuffer = gl.createFramebuffer();
+	        gl.bindFramebuffer(gl.FRAMEBUFFER, this._framebuffer);
+	        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this._texture, 0);
+	        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+
 	        //create properties on this object for the passed properties
 
 	        var _loop = function (propertyName) {
@@ -770,7 +776,7 @@ var VideoContext =
 	        value: function _render() {
 	            var gl = this._gl;
 	            gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-	            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
 	            gl.useProgram(this._program);
 
 	            //upload the default uniforms
@@ -960,7 +966,10 @@ var VideoContext =
 
 	            var gl = this._gl;
 	            var _this = this;
+
 	            gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+	            gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+	            gl.enable(gl.BLEND);
 	            this.inputs.forEach(function (node) {
 	                _get(Object.getPrototypeOf(DestinationNode.prototype), "_render", _this2).call(_this2);
 	                //map the input textures input the node
@@ -1169,12 +1178,6 @@ var VideoContext =
 	        _get(Object.getPrototypeOf(EffectNode.prototype), "constructor", this).call(this, gl, renderGraph, definition, maxInputs);
 
 	        this._placeholderTexture = placeholderTexture;
-
-	        //create and setup the framebuffer
-	        this._framebuffer = gl.createFramebuffer();
-	        gl.bindFramebuffer(gl.FRAMEBUFFER, this._framebuffer);
-	        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this._texture, 0);
-	        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 	    }
 
 	    _createClass(EffectNode, [{
@@ -1183,6 +1186,8 @@ var VideoContext =
 	            var gl = this._gl;
 	            gl.bindFramebuffer(gl.FRAMEBUFFER, this._framebuffer);
 	            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this._texture, 0);
+	            gl.clearColor(0, 1, 0, 0); // green;
+	            gl.clear(gl.COLOR_BUFFER_BIT);
 
 	            _get(Object.getPrototypeOf(EffectNode.prototype), "_render", this).call(this);
 

@@ -24,13 +24,15 @@ class DestinationNode extends ProcessingNode {
             }";
 
         super(gl, renderGraph, {fragmentShader:fragmentShader, vertexShader:vertexShader, properties:{}, inputs:["u_image"]});
-
     }
 
     _render(){
         let gl = this._gl;        
         let _this = this;
+
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+        gl.enable(gl.BLEND);
         this.inputs.forEach(function(node){
             super._render();
             //map the input textures input the node
