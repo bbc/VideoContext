@@ -33,6 +33,9 @@ class DestinationNode extends ProcessingNode {
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
         gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
         gl.enable(gl.BLEND);
+        gl.clearColor(0, 0, 0, 0.0); // green;
+        gl.clear(gl.COLOR_BUFFER_BIT);
+
         this.inputs.forEach(function(node){
             super._render();
             //map the input textures input the node

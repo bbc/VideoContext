@@ -970,6 +970,9 @@ var VideoContext =
 	            gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 	            gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 	            gl.enable(gl.BLEND);
+	            gl.clearColor(0, 0, 0, 0.0); // green;
+	            gl.clear(gl.COLOR_BUFFER_BIT);
+
 	            this.inputs.forEach(function (node) {
 	                _get(Object.getPrototypeOf(DestinationNode.prototype), "_render", _this2).call(_this2);
 	                //map the input textures input the node
@@ -1186,7 +1189,7 @@ var VideoContext =
 	            var gl = this._gl;
 	            gl.bindFramebuffer(gl.FRAMEBUFFER, this._framebuffer);
 	            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this._texture, 0);
-	            gl.clearColor(0, 1, 0, 0); // green;
+	            gl.clearColor(0, 0, 0, 0); // green;
 	            gl.clear(gl.COLOR_BUFFER_BIT);
 
 	            _get(Object.getPrototypeOf(EffectNode.prototype), "_render", this).call(this);

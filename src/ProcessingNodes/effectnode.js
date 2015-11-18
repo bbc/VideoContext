@@ -15,7 +15,7 @@ class EffectNode extends ProcessingNode{
         let gl = this._gl;
         gl.bindFramebuffer(gl.FRAMEBUFFER, this._framebuffer);
         gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this._texture,0);
-        gl.clearColor(0, 1, 0, 0); // green;
+        gl.clearColor(0, 0, 0, 0); // green;
         gl.clear(gl.COLOR_BUFFER_BIT);
 
         super._render();
