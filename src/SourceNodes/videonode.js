@@ -18,14 +18,18 @@ class VideoNode extends SourceNode {
         if (this._isResponsibleForElementLifeCycle){
             this._element = document.createElement("video");
             this._element.src = this._elementURL;
+            console.log("loading", this._element);
+
         }
         this._element.currentTime = this._sourceOffset;
     }
 
     _destroy(){
         if (this._isResponsibleForElementLifeCycle){
+            console.debug("destroying node");
             this._element.src = "";
             this._element = undefined;    
+            delete this._element;
         }
         this._ready = false;
     }
@@ -33,14 +37,16 @@ class VideoNode extends SourceNode {
     _seek(time){
         super._seek(time);
         if (this.state === SOURCENODESTATE.playing || this.state === SOURCENODESTATE.paused){
+            if (this._element === undefined) this._load();
             this._element.currentTime = this._currentTime - this._startTime + this._sourceOffset;
+            this._ready = false;
         }
     }
 
     _update(currentTime){
         //if (!super._update(currentTime)) return false;
-        super._update(currentTime);
-        if (this._startTime - this._currentTime < this._preloadTime)this._load();
+        let active = super._update(currentTime);
+        if (this._startTime - this._currentTime < this._preloadTime && this._state !== SOURCENODESTATE.waiting && this._state !== SOURCENODESTATE.ended)this._load();
 
         if (this._state === SOURCENODESTATE.playing){
             this._element.play();
@@ -49,7 +55,7 @@ class VideoNode extends SourceNode {
             this._element.pause();
             return true;
         }
-        else if (this._state === SOURCENODESTATE.ended){
+        else if (this._state === SOURCENODESTATE.ended && this._element !== undefined){
             this._element.pause();
             this._destroy();
             return false;

@@ -63,8 +63,20 @@ class SourceNode extends GraphNode{
     }
 
     _seek(time){
-        //this._currentTime = time;
-        this._update(time);
+        if (this._state === STATE.waiting) return;
+        if (time < this._startTime){
+            clearTexture(this._gl, this._texture);
+            this._state = STATE.sequenced;
+        }
+        if (time >= this._startTime && this._state !== STATE.paused){
+            this._state = STATE.playing;
+        }
+        if (time >= this._stopTime){
+            clearTexture(this._gl, this._texture);
+            this._state = STATE.ended;
+        }
+        //update the current time
+        this._currentTime = time;
     }
 
     _pause(){
@@ -86,10 +98,13 @@ class SourceNode extends GraphNode{
     }
 
     _update(currentTime){
+        this._rendered = true;
+
         //update the state
         if (this._state === STATE.waiting || this._state === STATE.ended) return false;
         
         if (currentTime < this._startTime){
+            clearTexture(this._gl, this._texture);
             this._state = STATE.sequenced;
         }
         

@@ -51,3 +51,40 @@ export function clearTexture(gl, texture){
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0,0,0,0]));
 }
+
+
+export function visualiseVideoContext(videoContext, canvas, currentTime){
+        let ctx = canvas.getContext('2d');
+        let w = canvas.width;
+        let h = canvas.height;
+        let trackHeight = h / videoContext._sourceNodes.length;
+        let playlistDuration = videoContext.duration;
+        let pixelsPerSecond = w / playlistDuration;
+        let mediaSourceStyle = {
+            "video":["#572A72", "#3C1255"],
+            "image":["#7D9F35", "#577714"],
+            "canvas":["#AA9639", "#806D15"]
+        };
+
+
+        ctx.clearRect(0,0,w,h);
+        ctx.fillStyle = "#999";
+        for (let i = 0; i < videoContext._sourceNodes.length; i++) {
+            let sourceNode = videoContext._sourceNodes[i];
+            let duration = sourceNode._stopTime - sourceNode._startTime;
+            let start = sourceNode._startTime;
+
+            let msW = duration * pixelsPerSecond;
+            let msH = trackHeight;
+            let msX = start * pixelsPerSecond;
+            let msY = trackHeight * i;
+            ctx.fillStyle = mediaSourceStyle.video[i%mediaSourceStyle.video.length];
+            ctx.fillRect(msX,msY,msW,msH);
+            ctx.fill();
+        }
+
+        if (currentTime !== undefined){
+            ctx.fillStyle = "#000";
+            ctx.fillRect(currentTime*pixelsPerSecond, 0, 1, h);
+        }
+    }

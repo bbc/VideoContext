@@ -16,7 +16,6 @@ class ProcessingNode extends GraphNode{
         this._parameterTextureCount = 0;
         this._inputTextureCount = 0;
         this._texture = createElementTexutre(gl, null, gl.canvas.width, gl.canvas.height);
-        
         gl.texImage2D( gl.TEXTURE_2D, 0, gl.RGBA, gl.canvas.width, gl.canvas.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
         //compile the shader
         this._program = createShaderProgram(gl, this._vertexShader, this._fragmentShader);
@@ -99,6 +98,7 @@ class ProcessingNode extends GraphNode{
     }
 
     _render(){
+        this._rendered = true;
         let gl = this._gl;
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 

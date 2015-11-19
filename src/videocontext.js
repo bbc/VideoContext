@@ -1,8 +1,9 @@
 import VideoNode from "./SourceNodes/videonode.js";
-import ProcessingNode from "./ProcessingNodes/processingnode.js";
+//import ProcessingNode from "./ProcessingNodes/processingnode.js";
 import DestinationNode from "./DestinationNode/destinationnode.js";
 import EffectNode from "./ProcessingNodes/effectnode.js";
 import RenderGraph from "./rendergraph.js";
+import { visualiseVideoContext } from "./utils.js";
 
 let updateables = [];
 let previousTime;
@@ -31,7 +32,7 @@ let STATE = {"playing":0, "paused":1, "stalled":2, "ended":3, "broken":4};
 
 class VideoContext{
     constructor(canvas){
-        this._gl = canvas.getContext("experimental-webgl", { preserveDrawingBuffer: true, alpha: false });;
+        this._gl = canvas.getContext("experimental-webgl", { preserveDrawingBuffer: true, alpha: false });
         this._renderGraph = new RenderGraph();
         this._sourceNodes = [];
         this._processingNodes = [];
@@ -44,7 +45,7 @@ class VideoContext{
 
     set currentTime(currentTime){
         console.debug("VideoContext - seeking to", currentTime);
-
+        if (currentTime < this._duration && this._state === STATE.ended) this._state = STATE.duration;
         if (typeof currentTime === 'string' || currentTime instanceof String){
             currentTime = parseFloat(currentTime);
         }
@@ -164,12 +165,17 @@ class VideoContext{
             }
 
             for (let node of this._processingNodes) {
+                node._update();
                 node._render();
             }
 
             this._destinationNode._render();
         }
     }
+
+
 }
+
+VideoContext.visualiseVideoContext = visualiseVideoContext;
 
 export default VideoContext;
