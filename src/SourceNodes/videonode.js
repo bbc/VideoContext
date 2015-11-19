@@ -16,17 +16,16 @@ class VideoNode extends SourceNode {
             return;
         }
         if (this._isResponsibleForElementLifeCycle){
+            super._load();
             this._element = document.createElement("video");
             this._element.src = this._elementURL;
-            console.log("loading", this._element);
-
         }
         this._element.currentTime = this._sourceOffset;
     }
 
     _destroy(){
+        super._destroy();
         if (this._isResponsibleForElementLifeCycle){
-            console.debug("destroying node");
             this._element.src = "";
             this._element = undefined;    
             delete this._element;

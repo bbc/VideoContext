@@ -61,7 +61,11 @@ var VideoContext =
 
 	var _SourceNodesVideonodeJs2 = _interopRequireDefault(_SourceNodesVideonodeJs);
 
-	//import ProcessingNode from "./ProcessingNodes/processingnode.js";
+	var _SourceNodesSourcenodeJs = __webpack_require__(2);
+
+	var _ProcessingNodesCompositingnodeJs = __webpack_require__(10);
+
+	var _ProcessingNodesCompositingnodeJs2 = _interopRequireDefault(_ProcessingNodesCompositingnodeJs);
 
 	var _DestinationNodeDestinationnodeJs = __webpack_require__(5);
 
@@ -119,9 +123,6 @@ var VideoContext =
 	        key: "play",
 	        value: function play() {
 	            console.debug("VideoContext - playing");
-	            for (var i = 0; i < this._sourceNodes.length; i++) {
-	                this._sourceNodes[i]._play();
-	            }
 	            this._state = STATE.playing;
 	            return true;
 	        }
@@ -129,9 +130,6 @@ var VideoContext =
 	        key: "pause",
 	        value: function pause() {
 	            console.debug("VideoContext - pausing");
-	            for (var i = 0; i < this._sourceNodes.length; i++) {
-	                this._sourceNodes[i]._pause();
-	            }
 	            this._state = STATE.paused;
 	            return true;
 	        }
@@ -150,6 +148,13 @@ var VideoContext =
 	            var effectNode = new _ProcessingNodesEffectnodeJs2["default"](this._gl, this._renderGraph, definition);
 	            this._processingNodes.push(effectNode);
 	            return effectNode;
+	        }
+	    }, {
+	        key: "createCompositingNode",
+	        value: function createCompositingNode(definition) {
+	            var compositingNode = new _ProcessingNodesCompositingnodeJs2["default"](this._gl, this._renderGraph, definition);
+	            this._processingNodes.push(compositingNode);
+	            return compositingNode;
 	        }
 	    }, {
 	        key: "_isStalled",
@@ -186,13 +191,13 @@ var VideoContext =
 	                    sourceNode._update(this._currentTime);
 
 	                    if (this._state === STATE.stalled) {
-	                        if (sourceNode._isReady()) sourceNode._pause();
+	                        if (sourceNode._isReady() && sourceNode._state === _SourceNodesSourcenodeJs.SOURCENODESTATE.playing) sourceNode._pause();
 	                    }
 	                    if (this._state === STATE.paused) {
-	                        sourceNode._pause();
+	                        if (sourceNode._state === _SourceNodesSourcenodeJs.SOURCENODESTATE.playing) sourceNode._pause();
 	                    }
 	                    if (this._state === STATE.playing) {
-	                        sourceNode._play();
+	                        if (sourceNode._state === _SourceNodesSourcenodeJs.SOURCENODESTATE.paused) sourceNode._play();
 	                    }
 	                }
 
@@ -280,7 +285,8 @@ var VideoContext =
 	    return VideoContext;
 	})();
 
-	VideoContext.visualiseVideoContext = _utilsJs.visualiseVideoContext;
+	VideoContext.visualiseVideoContextTimeline = _utilsJs.visualiseVideoContextTimeline;
+	VideoContext.visualiseVideoContextGraph = _utilsJs.visualiseVideoContextGraph;
 
 	exports["default"] = VideoContext;
 	module.exports = exports["default"];
@@ -335,17 +341,17 @@ var VideoContext =
 	                return;
 	            }
 	            if (this._isResponsibleForElementLifeCycle) {
+	                _get(Object.getPrototypeOf(VideoNode.prototype), "_load", this).call(this);
 	                this._element = document.createElement("video");
 	                this._element.src = this._elementURL;
-	                console.log("loading", this._element);
 	            }
 	            this._element.currentTime = this._sourceOffset;
 	        }
 	    }, {
 	        key: "_destroy",
 	        value: function _destroy() {
+	            _get(Object.getPrototypeOf(VideoNode.prototype), "_destroy", this).call(this);
 	            if (this._isResponsibleForElementLifeCycle) {
-	                console.debug("destroying node");
 	                this._element.src = "";
 	                this._element = undefined;
 	                delete this._element;
@@ -444,9 +450,126 @@ var VideoContext =
 	        this._texture = (0, _utilsJs.createElementTexutre)(gl);
 	        //gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,512,512, gl.RGBA, gl.UNSIGNED_BYTE, this._element);
 	        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 0]));
+	        this._callbacks = [];
 	    }
 
 	    _createClass(SourceNode, [{
+	        key: "_load",
+	        value: function _load() {
+	            var _iteratorNormalCompletion = true;
+	            var _didIteratorError = false;
+	            var _iteratorError = undefined;
+
+	            try {
+	                for (var _iterator = this._callbacks[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	                    var callback = _step.value;
+
+	                    if (callback.type === "load") callback.func(this);
+	                }
+	            } catch (err) {
+	                _didIteratorError = true;
+	                _iteratorError = err;
+	            } finally {
+	                try {
+	                    if (!_iteratorNormalCompletion && _iterator["return"]) {
+	                        _iterator["return"]();
+	                    }
+	                } finally {
+	                    if (_didIteratorError) {
+	                        throw _iteratorError;
+	                    }
+	                }
+	            }
+	        }
+	    }, {
+	        key: "_destroy",
+	        value: function _destroy() {
+	            var _iteratorNormalCompletion2 = true;
+	            var _didIteratorError2 = false;
+	            var _iteratorError2 = undefined;
+
+	            try {
+	                for (var _iterator2 = this._callbacks[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+	                    var callback = _step2.value;
+
+	                    if (callback.type === "destroy") callback.func(this);
+	                }
+	            } catch (err) {
+	                _didIteratorError2 = true;
+	                _iteratorError2 = err;
+	            } finally {
+	                try {
+	                    if (!_iteratorNormalCompletion2 && _iterator2["return"]) {
+	                        _iterator2["return"]();
+	                    }
+	                } finally {
+	                    if (_didIteratorError2) {
+	                        throw _iteratorError2;
+	                    }
+	                }
+	            }
+	        }
+	    }, {
+	        key: "attachCallback",
+	        value: function attachCallback(type, func) {
+	            this._callbacks.push({ type: type, func: func });
+	        }
+	    }, {
+	        key: "removeCallback",
+	        value: function removeCallback(func) {
+	            var toRemove = [];
+	            var _iteratorNormalCompletion3 = true;
+	            var _didIteratorError3 = false;
+	            var _iteratorError3 = undefined;
+
+	            try {
+	                for (var _iterator3 = this._callbacks[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+	                    var callback = _step3.value;
+
+	                    if (callback.func === func) toRemove.push(callback);
+	                }
+	            } catch (err) {
+	                _didIteratorError3 = true;
+	                _iteratorError3 = err;
+	            } finally {
+	                try {
+	                    if (!_iteratorNormalCompletion3 && _iterator3["return"]) {
+	                        _iterator3["return"]();
+	                    }
+	                } finally {
+	                    if (_didIteratorError3) {
+	                        throw _iteratorError3;
+	                    }
+	                }
+	            }
+
+	            var _iteratorNormalCompletion4 = true;
+	            var _didIteratorError4 = false;
+	            var _iteratorError4 = undefined;
+
+	            try {
+	                for (var _iterator4 = toRemove[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+	                    var callback = _step4.value;
+
+	                    var index = this._callbacks.indexOf(callback);
+	                    this._callbacks.splice(index, 1);
+	                }
+	            } catch (err) {
+	                _didIteratorError4 = true;
+	                _iteratorError4 = err;
+	            } finally {
+	                try {
+	                    if (!_iteratorNormalCompletion4 && _iterator4["return"]) {
+	                        _iterator4["return"]();
+	                    }
+	                } finally {
+	                    if (_didIteratorError4) {
+	                        throw _iteratorError4;
+	                    }
+	                }
+	            }
+	        }
+	    }, {
 	        key: "start",
 	        value: function start(time) {
 	            if (this._state !== STATE.waiting) {
@@ -473,12 +596,36 @@ var VideoContext =
 	                return false;
 	            }
 	            this._stopTime = this._currentTime + time;
-	            console.debug("stop time", this._stopTime);
 	            return true;
 	        }
 	    }, {
 	        key: "_seek",
 	        value: function _seek(time) {
+	            var _iteratorNormalCompletion5 = true;
+	            var _didIteratorError5 = false;
+	            var _iteratorError5 = undefined;
+
+	            try {
+	                for (var _iterator5 = this._callbacks[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+	                    var callback = _step5.value;
+
+	                    if (callback.type === "seek") callback.func(this, time);
+	                }
+	            } catch (err) {
+	                _didIteratorError5 = true;
+	                _iteratorError5 = err;
+	            } finally {
+	                try {
+	                    if (!_iteratorNormalCompletion5 && _iterator5["return"]) {
+	                        _iterator5["return"]();
+	                    }
+	                } finally {
+	                    if (_didIteratorError5) {
+	                        throw _iteratorError5;
+	                    }
+	                }
+	            }
+
 	            if (this._state === STATE.waiting) return;
 	            if (time < this._startTime) {
 	                (0, _utilsJs.clearTexture)(this._gl, this._texture);
@@ -497,6 +644,31 @@ var VideoContext =
 	    }, {
 	        key: "_pause",
 	        value: function _pause() {
+	            var _iteratorNormalCompletion6 = true;
+	            var _didIteratorError6 = false;
+	            var _iteratorError6 = undefined;
+
+	            try {
+	                for (var _iterator6 = this._callbacks[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+	                    var callback = _step6.value;
+
+	                    if (callback.type === "pause") callback.func(this);
+	                }
+	            } catch (err) {
+	                _didIteratorError6 = true;
+	                _iteratorError6 = err;
+	            } finally {
+	                try {
+	                    if (!_iteratorNormalCompletion6 && _iterator6["return"]) {
+	                        _iterator6["return"]();
+	                    }
+	                } finally {
+	                    if (_didIteratorError6) {
+	                        throw _iteratorError6;
+	                    }
+	                }
+	            }
+
 	            if (this._state === STATE.playing) {
 	                this._state = STATE.paused;
 	            }
@@ -504,6 +676,31 @@ var VideoContext =
 	    }, {
 	        key: "_play",
 	        value: function _play() {
+	            var _iteratorNormalCompletion7 = true;
+	            var _didIteratorError7 = false;
+	            var _iteratorError7 = undefined;
+
+	            try {
+	                for (var _iterator7 = this._callbacks[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+	                    var callback = _step7.value;
+
+	                    if (callback.type === "play") callback.func(this);
+	                }
+	            } catch (err) {
+	                _didIteratorError7 = true;
+	                _iteratorError7 = err;
+	            } finally {
+	                try {
+	                    if (!_iteratorNormalCompletion7 && _iterator7["return"]) {
+	                        _iterator7["return"]();
+	                    }
+	                } finally {
+	                    if (_didIteratorError7) {
+	                        throw _iteratorError7;
+	                    }
+	                }
+	            }
+
 	            if (this._state === STATE.paused) {
 	                this._state = STATE.playing;
 	            }
@@ -523,6 +720,31 @@ var VideoContext =
 
 	            //update the state
 	            if (this._state === STATE.waiting || this._state === STATE.ended) return false;
+
+	            var _iteratorNormalCompletion8 = true;
+	            var _didIteratorError8 = false;
+	            var _iteratorError8 = undefined;
+
+	            try {
+	                for (var _iterator8 = this._callbacks[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+	                    var callback = _step8.value;
+
+	                    if (callback.type === "render") callback.func(this, currentTime);
+	                }
+	            } catch (err) {
+	                _didIteratorError8 = true;
+	                _iteratorError8 = err;
+	            } finally {
+	                try {
+	                    if (!_iteratorNormalCompletion8 && _iterator8["return"]) {
+	                        _iterator8["return"]();
+	                    }
+	                } finally {
+	                    if (_didIteratorError8) {
+	                        throw _iteratorError8;
+	                    }
+	                }
+	            }
 
 	            if (currentTime < this._startTime) {
 	                (0, _utilsJs.clearTexture)(this._gl, this._texture);
@@ -584,7 +806,8 @@ var VideoContext =
 	exports.createElementTexutre = createElementTexutre;
 	exports.updateTexture = updateTexture;
 	exports.clearTexture = clearTexture;
-	exports.visualiseVideoContext = visualiseVideoContext;
+	exports.visualiseVideoContextGraph = visualiseVideoContextGraph;
+	exports.visualiseVideoContextTimeline = visualiseVideoContextTimeline;
 
 	function compileShader(gl, shaderSource, shaderType) {
 	    var shader = gl.createShader(shaderType);
@@ -645,7 +868,64 @@ var VideoContext =
 	    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 0]));
 	}
 
-	function visualiseVideoContext(videoContext, canvas, currentTime) {
+	function visualiseVideoContextGraph(videoContext, canvas) {
+	    var ctx = canvas.getContext('2d');
+	    var w = canvas.width;
+	    var h = canvas.height;
+	    var renderNodes = [];
+	    ctx.clearRect(0, 0, w, h);
+
+	    function getNodePos(node) {
+	        for (var i = 0; i < renderNodes.length; i++) {
+	            if (renderNodes[i].node === node) return renderNodes[i];
+	        }
+	        return undefined;
+	    }
+
+	    var nodeHeight = h / videoContext._sourceNodes.length / 2;
+	    var nodeWidth = nodeHeight * 1.618;
+
+	    var destinationNode = { w: nodeWidth, h: nodeHeight, y: h / 2 - nodeHeight / 2, x: w - nodeWidth, node: videoContext.destination, color: "#7D9F35" };
+	    renderNodes.push(destinationNode);
+
+	    for (var i = 0; i < videoContext._sourceNodes.length; i++) {
+	        var sourceNode = videoContext._sourceNodes[i];
+	        var nodeX = 0;
+	        var nodeY = i * (h / videoContext._sourceNodes.length);
+	        var renderNode = { w: nodeWidth, h: nodeHeight, x: nodeX, y: nodeY, node: sourceNode, color: "#572A72" };
+	        renderNodes.push(renderNode);
+	    }
+
+	    for (var i = 0; i < videoContext._processingNodes.length; i++) {
+	        var sourceNode = videoContext._processingNodes[i];
+	        var color = "#AA9639";
+	        if (sourceNode.constructor.name === "CompositingNode") color = "#000000";
+	        var nodeX = Math.random() * (w - nodeWidth * 4) + nodeWidth * 2;
+	        var nodeY = Math.random() * (h - nodeHeight * 2) + nodeHeight;
+	        var renderNode = { w: nodeWidth, h: nodeHeight, x: nodeX, y: nodeY, node: sourceNode, color: color };
+	        renderNodes.push(renderNode);
+	    }
+
+	    for (var i = 0; i < videoContext._renderGraph.connections.length; i++) {
+	        var conn = videoContext._renderGraph.connections[i];
+	        var source = getNodePos(conn.source);
+	        var destination = getNodePos(conn.destination);
+	        if (source !== undefined && destination !== undefined) {
+	            ctx.moveTo(source.x + nodeWidth / 2, source.y + nodeHeight / 2);
+	            ctx.lineTo(destination.x + nodeWidth / 2, destination.y + nodeHeight / 2);
+	            ctx.stroke();
+	        }
+	    }
+
+	    for (var i = 0; i < renderNodes.length; i++) {
+	        var n = renderNodes[i];
+	        ctx.fillStyle = n.color;
+	        ctx.fillRect(n.x, n.y, n.w, n.h);
+	        ctx.fill();
+	    }
+	}
+
+	function visualiseVideoContextTimeline(videoContext, canvas, currentTime) {
 	    var ctx = canvas.getContext('2d');
 	    var w = canvas.width;
 	    var h = canvas.height;
@@ -1250,7 +1530,6 @@ var VideoContext =
 	    }, {
 	        key: "registerConnection",
 	        value: function registerConnection(sourceNode, destinationNode, zIndex) {
-	            console.debug("adding connection");
 	            if (destinationNode._maxInputs !== undefined && destinationNode.inputs.length >= destinationNode._maxInputs) {
 	                throw new _exceptionsJs.ConnectException("Node has reached max number of inputs, can't connect");
 	            }
@@ -1283,6 +1562,105 @@ var VideoContext =
 	})();
 
 	exports["default"] = RenderGraph;
+	module.exports = exports["default"];
+
+/***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _processingnode = __webpack_require__(6);
+
+	var _processingnode2 = _interopRequireDefault(_processingnode);
+
+	var _utilsJs = __webpack_require__(3);
+
+	var CompositingNode = (function (_ProcessingNode) {
+	    _inherits(CompositingNode, _ProcessingNode);
+
+	    function CompositingNode(gl, renderGraph, definition) {
+	        _classCallCheck(this, CompositingNode);
+
+	        var placeholderTexture = (0, _utilsJs.createElementTexutre)(gl);
+	        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 0]));
+	        _get(Object.getPrototypeOf(CompositingNode.prototype), "constructor", this).call(this, gl, renderGraph, definition);
+	        this._placeholderTexture = placeholderTexture;
+	    }
+
+	    _createClass(CompositingNode, [{
+	        key: "_render",
+	        value: function _render() {
+	            var _this2 = this;
+
+	            var gl = this._gl;
+	            var _this = this;
+	            gl.bindFramebuffer(gl.FRAMEBUFFER, this._framebuffer);
+	            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this._texture, 0);
+	            gl.clearColor(0, 0, 0, 0); // green;
+	            gl.clear(gl.COLOR_BUFFER_BIT);
+
+	            this.inputs.forEach(function (node) {
+	                _get(Object.getPrototypeOf(CompositingNode.prototype), "_render", _this2).call(_this2);
+
+	                //map the input textures input the node
+	                var texture = node._texture;
+	                var textureOffset = 0;
+
+	                var _iteratorNormalCompletion = true;
+	                var _didIteratorError = false;
+	                var _iteratorError = undefined;
+
+	                try {
+	                    for (var _iterator = _this._inputTextureUnitMapping[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	                        var mapping = _step.value;
+
+	                        gl.activeTexture(mapping.textureUnit);
+	                        var textureLocation = gl.getUniformLocation(_this._program, mapping.name);
+	                        gl.uniform1i(textureLocation, _this._parameterTextureCount + textureOffset);
+	                        textureOffset += 1;
+	                        gl.bindTexture(gl.TEXTURE_2D, texture);
+	                    }
+	                } catch (err) {
+	                    _didIteratorError = true;
+	                    _iteratorError = err;
+	                } finally {
+	                    try {
+	                        if (!_iteratorNormalCompletion && _iterator["return"]) {
+	                            _iterator["return"]();
+	                        }
+	                    } finally {
+	                        if (_didIteratorError) {
+	                            throw _iteratorError;
+	                        }
+	                    }
+	                }
+
+	                gl.drawArrays(gl.TRIANGLES, 0, 6);
+	            });
+
+	            gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+	        }
+	    }]);
+
+	    return CompositingNode;
+	})(_processingnode2["default"]);
+
+	exports["default"] = CompositingNode;
 	module.exports = exports["default"];
 
 /***/ }

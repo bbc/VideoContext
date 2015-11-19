@@ -1,9 +1,10 @@
 import VideoNode from "./SourceNodes/videonode.js";
-//import ProcessingNode from "./ProcessingNodes/processingnode.js";
+import { SOURCENODESTATE } from "./SourceNodes/sourcenode.js";
+import CompositingNode from "./ProcessingNodes/compositingnode.js";
 import DestinationNode from "./DestinationNode/destinationnode.js";
 import EffectNode from "./ProcessingNodes/effectnode.js";
 import RenderGraph from "./rendergraph.js";
-import { visualiseVideoContext } from "./utils.js";
+import { visualiseVideoContextTimeline, visualiseVideoContextGraph } from "./utils.js";
 
 let updateables = [];
 let previousTime;
@@ -92,18 +93,12 @@ class VideoContext{
 
     play(){
         console.debug("VideoContext - playing");
-        for (let i = 0; i < this._sourceNodes.length; i++) {
-            this._sourceNodes[i]._play();
-        }
         this._state = STATE.playing;
         return true;
     }
 
     pause(){
         console.debug("VideoContext - pausing");
-        for (let i = 0; i < this._sourceNodes.length; i++) {
-            this._sourceNodes[i]._pause();
-        }
         this._state = STATE.paused;
         return true;
     }
@@ -118,6 +113,12 @@ class VideoContext{
         let effectNode = new EffectNode(this._gl, this._renderGraph, definition);
         this._processingNodes.push(effectNode);
         return effectNode;
+    }
+
+    createCompositingNode(definition){
+        let compositingNode = new CompositingNode(this._gl, this._renderGraph, definition);
+        this._processingNodes.push(compositingNode);
+        return compositingNode;
     }
 
     _isStalled(){
@@ -154,13 +155,13 @@ class VideoContext{
                 sourceNode._update(this._currentTime);
 
                 if(this._state === STATE.stalled){
-                    if (sourceNode._isReady()) sourceNode._pause();
+                    if (sourceNode._isReady() && sourceNode._state === SOURCENODESTATE.playing) sourceNode._pause();
                 }
                 if(this._state === STATE.paused){
-                    sourceNode._pause();
+                    if (sourceNode._state === SOURCENODESTATE.playing)sourceNode._pause();
                 }
                 if(this._state === STATE.playing){
-                    sourceNode._play();
+                    if (sourceNode._state === SOURCENODESTATE.paused)sourceNode._play();
                 }
             }
 
@@ -176,6 +177,7 @@ class VideoContext{
 
 }
 
-VideoContext.visualiseVideoContext = visualiseVideoContext;
+VideoContext.visualiseVideoContextTimeline = visualiseVideoContextTimeline;
+VideoContext.visualiseVideoContextGraph = visualiseVideoContextGraph;
 
 export default VideoContext;

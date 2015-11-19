@@ -27,11 +27,38 @@ class SourceNode extends GraphNode{
         this._texture = createElementTexutre(gl);
         //gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,512,512, gl.RGBA, gl.UNSIGNED_BYTE, this._element);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0,0,0,0]));
-
+        this._callbacks = [];
     }
 
     get state(){        
         return this._state;
+    }
+
+    _load(){
+        for(let callback of this._callbacks){
+            if (callback.type === "load") callback.func(this);
+        }
+    }
+
+    _destroy(){
+        for(let callback of this._callbacks){
+            if (callback.type === "destroy") callback.func(this);
+        }
+    }
+
+    attachCallback(type, func){
+        this._callbacks.push({type:type, func:func});
+    }
+
+    removeCallback(func){
+        let toRemove = [];
+        for(let callback of this._callbacks){
+            if (callback.func === func)toRemove.push(callback);
+        }
+        for(let callback of toRemove){
+            let index = this._callbacks.indexOf(callback);
+            this._callbacks.splice(index, 1);
+        }
     }
 
     start(time){
@@ -58,11 +85,13 @@ class SourceNode extends GraphNode{
             return false;
         }
         this._stopTime = this._currentTime + time;
-        console.debug("stop time", this._stopTime);
         return true;
     }
 
     _seek(time){
+        for(let callback of this._callbacks){
+            if (callback.type === "seek") callback.func(this, time);
+        }
         if (this._state === STATE.waiting) return;
         if (time < this._startTime){
             clearTexture(this._gl, this._texture);
@@ -80,11 +109,17 @@ class SourceNode extends GraphNode{
     }
 
     _pause(){
+        for(let callback of this._callbacks){
+            if (callback.type === "pause") callback.func(this);
+        }
         if(this._state === STATE.playing){
             this._state = STATE.paused;
         }
     }
     _play(){
+        for(let callback of this._callbacks){
+            if (callback.type === "play") callback.func(this);
+        }
         if(this._state === STATE.paused){
             this._state = STATE.playing;
         }
@@ -102,6 +137,10 @@ class SourceNode extends GraphNode{
 
         //update the state
         if (this._state === STATE.waiting || this._state === STATE.ended) return false;
+
+        for(let callback of this._callbacks){
+            if (callback.type === "render") callback.func(this, currentTime);
+        }
         
         if (currentTime < this._startTime){
             clearTexture(this._gl, this._texture);

@@ -52,8 +52,66 @@ export function clearTexture(gl, texture){
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0,0,0,0]));
 }
 
+export function visualiseVideoContextGraph(videoContext, canvas){
+    let ctx = canvas.getContext('2d');
+    let w = canvas.width;
+    let h = canvas.height;
+    let renderNodes = [];
+    ctx.clearRect(0,0,w,h);
 
-export function visualiseVideoContext(videoContext, canvas, currentTime){
+    function getNodePos(node){
+        for (var i = 0; i < renderNodes.length; i++) {
+            if (renderNodes[i].node === node) return renderNodes[i];
+        }
+        return undefined;
+    }
+
+    let nodeHeight = (h / videoContext._sourceNodes.length)/2;
+    let nodeWidth = nodeHeight * 1.618;
+
+    let destinationNode = {w:nodeWidth, h:nodeHeight, y:h/2 - nodeHeight/2, x:w-nodeWidth, node:videoContext.destination, color:"#7D9F35"};
+    renderNodes.push(destinationNode);
+
+    for (let i = 0; i < videoContext._sourceNodes.length; i++) {
+        let sourceNode = videoContext._sourceNodes[i];
+        let nodeX = 0;
+        let nodeY = i * (h / videoContext._sourceNodes.length);
+        let renderNode = {w:nodeWidth, h: nodeHeight, x:nodeX, y:nodeY, node:sourceNode, color:"#572A72"};
+        renderNodes.push(renderNode); 
+    }
+
+    for (let i = 0; i < videoContext._processingNodes.length; i++) {
+        let sourceNode = videoContext._processingNodes[i];
+        let color = "#AA9639";
+        if (sourceNode.constructor.name === "CompositingNode")color = "#000000";
+        let nodeX = (Math.random()*(w - nodeWidth*4)) + nodeWidth*2;
+        let nodeY = Math.random()*(h-nodeHeight*2) + nodeHeight;
+        let renderNode = {w:nodeWidth, h: nodeHeight, x:nodeX, y:nodeY, node:sourceNode, color:color};
+        renderNodes.push(renderNode); 
+    }
+
+
+    for (let i = 0; i < videoContext._renderGraph.connections.length; i++) {
+        let conn = videoContext._renderGraph.connections[i];
+        let source = getNodePos(conn.source);
+        let destination = getNodePos(conn.destination);
+        if (source !== undefined && destination !== undefined){
+            ctx.moveTo(source.x + nodeWidth/2, source.y + nodeHeight/2);
+            ctx.lineTo(destination.x + nodeWidth/2, destination.y + nodeHeight/2);
+            ctx.stroke();
+        }
+    }
+
+    for (let i = 0; i < renderNodes.length; i++) {
+        let n = renderNodes[i];
+        ctx.fillStyle = n.color;
+        ctx.fillRect(n.x,n.y,n.w,n.h);
+        ctx.fill();
+    }
+}
+
+
+export function visualiseVideoContextTimeline(videoContext, canvas, currentTime){
         let ctx = canvas.getContext('2d');
         let w = canvas.width;
         let h = canvas.height;
