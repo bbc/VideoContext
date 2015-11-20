@@ -298,6 +298,7 @@ var VideoContext =
 
 	VideoContext.visualiseVideoContextTimeline = _utilsJs.visualiseVideoContextTimeline;
 	VideoContext.visualiseVideoContextGraph = _utilsJs.visualiseVideoContextGraph;
+	VideoContext.createControlFormForNode = _utilsJs.createControlFormForNode;
 
 	exports["default"] = VideoContext;
 	module.exports = exports["default"];
@@ -819,6 +820,7 @@ var VideoContext =
 	exports.createElementTexutre = createElementTexutre;
 	exports.updateTexture = updateTexture;
 	exports.clearTexture = clearTexture;
+	exports.createControlFormForNode = createControlFormForNode;
 	exports.visualiseVideoContextGraph = visualiseVideoContextGraph;
 	exports.visualiseVideoContextTimeline = visualiseVideoContextTimeline;
 
@@ -879,6 +881,79 @@ var VideoContext =
 	    gl.bindTexture(gl.TEXTURE_2D, texture);
 	    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 	    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 0]));
+	}
+
+	function createControlFormForNode(node) {
+	    var rootDiv = document.createElement("div");
+
+	    var _loop = function (propertyName) {
+	        var propertyParagraph = document.createElement("p");
+	        var propertyTitleHeader = document.createElement("h3");
+	        propertyTitleHeader.innerHTML = propertyName;
+	        propertyParagraph.appendChild(propertyTitleHeader);
+
+	        var propertyValue = node._properties[propertyName].value;
+	        if (typeof propertyValue === "number") {
+	            (function () {
+	                var range = document.createElement("input");
+	                range.setAttribute("type", "range");
+	                range.setAttribute("min", "0");
+	                range.setAttribute("max", "1");
+	                range.setAttribute("value", propertyValue, toString());
+	                var mouseDown = false;
+	                range.onmousedown = function () {
+	                    mouseDown = true;
+	                };
+	                range.onmouseup = function () {
+	                    mouseDown = false;
+	                };
+	                range.onmousemove = function () {
+	                    if (mouseDown) node[propertyName] = parseFloat(range.value);
+	                };
+	                range.onchange = function () {
+	                    node[propertyName] = parseFloat(range.value);
+	                };
+	                propertyParagraph.appendChild(range);
+	            })();
+	        } else if (Object.prototype.toString.call(propertyValue) === '[object Array]') {
+	            var _loop2 = function () {
+	                var range = document.createElement("input");
+	                range.setAttribute("type", "range");
+	                range.setAttribute("min", "0");
+	                range.setAttribute("max", "1");
+	                range.setAttribute("step", "0.01");
+	                range.setAttribute("value", propertyValue[i], toString());
+	                var index = i;
+	                var mouseDown = false;
+	                range.onmousedown = function () {
+	                    mouseDown = true;
+	                };
+	                range.onmouseup = function () {
+	                    mouseDown = false;
+	                };
+	                range.onmousemove = function () {
+	                    if (mouseDown) node[propertyName][index] = parseFloat(range.value);
+	                };
+	                range.onchange = function () {
+	                    node[propertyName][index] = parseFloat(range.value);
+	                };
+	                propertyParagraph.appendChild(range);
+	            };
+
+	            for (i = 0; i < propertyValue.length; i++) {
+	                _loop2();
+	            }
+	        } else {}
+
+	        rootDiv.appendChild(propertyParagraph);
+	    };
+
+	    for (var propertyName in node._properties) {
+	        var i;
+
+	        _loop(propertyName);
+	    }
+	    return rootDiv;
 	}
 
 	function visualiseVideoContextGraph(videoContext, canvas) {
@@ -1266,6 +1341,10 @@ var VideoContext =
 	        //copy definition properties
 	        for (var propertyName in definition.properties) {
 	            var propertyValue = definition.properties[propertyName].value;
+	            //if an array then shallow copy it
+	            if (Object.prototype.toString.call(propertyValue) === '[object Array]') {
+	                propertyValue = definition.properties[propertyName].value.slice();
+	            }
 	            var propertyType = definition.properties[propertyName].type;
 	            this._properties[propertyName] = { type: propertyType, value: propertyValue };
 	        }

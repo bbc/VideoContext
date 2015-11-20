@@ -11,6 +11,10 @@ class ProcessingNode extends GraphNode{
         //copy definition properties
         for(let propertyName in definition.properties){
             let propertyValue = definition.properties[propertyName].value;
+            //if an array then shallow copy it
+            if(Object.prototype.toString.call(propertyValue) === '[object Array]'){
+                propertyValue = definition.properties[propertyName].value.slice();
+            }
             let propertyType = definition.properties[propertyName].type;
             this._properties[propertyName] = {type:propertyType, value:propertyValue};
         }

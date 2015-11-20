@@ -5,7 +5,7 @@ import DestinationNode from "./DestinationNode/destinationnode.js";
 import EffectNode from "./ProcessingNodes/effectnode.js";
 import TransitionNode from "./ProcessingNodes/transitionnode.js";
 import RenderGraph from "./rendergraph.js";
-import { visualiseVideoContextTimeline, visualiseVideoContextGraph } from "./utils.js";
+import { visualiseVideoContextTimeline, visualiseVideoContextGraph, createControlFormForNode } from "./utils.js";
 
 let updateables = [];
 let previousTime;
@@ -150,12 +150,10 @@ class VideoContext{
                 }    
             }
             
-
             if(this._state === STATE.playing){
                     this._currentTime += dt;
                     if(this._currentTime > this.duration)this._state = STATE.ended;
             }
-
 
             for (let i = 0; i < this._sourceNodes.length; i++) {
                 let sourceNode = this._sourceNodes[i];
@@ -176,7 +174,6 @@ class VideoContext{
                 node._update(this._currentTime);
                 node._render();
             }
-
             this._destinationNode._render();
         }
     }
@@ -186,5 +183,6 @@ class VideoContext{
 
 VideoContext.visualiseVideoContextTimeline = visualiseVideoContextTimeline;
 VideoContext.visualiseVideoContextGraph = visualiseVideoContextGraph;
+VideoContext.createControlFormForNode = createControlFormForNode;
 
 export default VideoContext;

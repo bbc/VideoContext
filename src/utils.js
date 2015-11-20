@@ -52,6 +52,54 @@ export function clearTexture(gl, texture){
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0,0,0,0]));
 }
 
+export function createControlFormForNode(node){
+    let rootDiv = document.createElement("div");
+    for(let propertyName in node._properties){
+        let propertyParagraph = document.createElement("p");
+        let propertyTitleHeader = document.createElement("h3");
+        propertyTitleHeader.innerHTML = propertyName;
+        propertyParagraph.appendChild(propertyTitleHeader);
+
+        let propertyValue = node._properties[propertyName].value;
+        if (typeof propertyValue === "number"){
+            let range = document.createElement("input");
+            range.setAttribute("type", "range");
+            range.setAttribute("min", "0");
+            range.setAttribute("max", "1");
+            range.setAttribute("value", propertyValue,toString());
+            let mouseDown = false;
+            range.onmousedown =function(){mouseDown=true;};
+            range.onmouseup =function(){mouseDown=false;};
+            range.onmousemove = function(){if(mouseDown)node[propertyName] = parseFloat(range.value);};
+            range.onchange = function(){node[propertyName] = parseFloat(range.value);};
+            propertyParagraph.appendChild(range);
+        }
+        else if(Object.prototype.toString.call(propertyValue) === '[object Array]'){
+            for (var i = 0; i < propertyValue.length; i++) {
+                let range = document.createElement("input");
+                range.setAttribute("type", "range");
+                range.setAttribute("min", "0");
+                range.setAttribute("max", "1");
+                range.setAttribute("step", "0.01");
+                range.setAttribute("value", propertyValue[i],toString());
+                let index = i;
+                let mouseDown = false;
+                range.onmousedown =function(){mouseDown=true;};
+                range.onmouseup =function(){mouseDown=false;};
+                range.onmousemove = function(){if(mouseDown)node[propertyName][index] = parseFloat(range.value);};
+                range.onchange = function(){node[propertyName][index] = parseFloat(range.value);};
+                propertyParagraph.appendChild(range);
+            }
+        }else{
+
+        }
+
+
+        rootDiv.appendChild(propertyParagraph);
+    }
+    return rootDiv;
+}
+
 export function visualiseVideoContextGraph(videoContext, canvas){
     let ctx = canvas.getContext('2d');
     let w = canvas.width;
