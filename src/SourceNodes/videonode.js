@@ -10,8 +10,10 @@ class VideoNode extends SourceNode {
 
     _load(){
         if (this._element !== undefined){
-            if (this._element.readyState > 3){
+            if (this._element.readyState > 3 && !this._element.seeking){
                 this._ready = true;
+            } else{
+                this._ready = false;
             }
             return;
         }

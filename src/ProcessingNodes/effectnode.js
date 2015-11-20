@@ -11,6 +11,7 @@ class EffectNode extends ProcessingNode{
         
         this._placeholderTexture = placeholderTexture;
     }
+    
     _render(){
         let gl = this._gl;
         gl.bindFramebuffer(gl.FRAMEBUFFER, this._framebuffer);

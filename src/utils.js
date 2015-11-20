@@ -127,6 +127,23 @@ export function visualiseVideoContextTimeline(videoContext, canvas, currentTime)
 
         ctx.clearRect(0,0,w,h);
         ctx.fillStyle = "#999";
+        
+        for(let node of videoContext._processingNodes){
+            if (node.constructor.name !== "TransitionNode") continue;
+            for(let propertyName in node._transitions){
+                for(let transition of node._transitions[propertyName]){
+                    let tW = (transition.end - transition.start) * pixelsPerSecond;
+                    let tH = h;
+                    let tX = transition.start * pixelsPerSecond;
+                    let tY = 0;
+                    ctx.fillStyle = "rgba(0,0,0, 0.3)";
+                    ctx.fillRect(tX, tY, tW, tH);
+                    ctx.fill();
+                }
+            }
+        }
+
+
         for (let i = 0; i < videoContext._sourceNodes.length; i++) {
             let sourceNode = videoContext._sourceNodes[i];
             let duration = sourceNode._stopTime - sourceNode._startTime;
@@ -140,6 +157,8 @@ export function visualiseVideoContextTimeline(videoContext, canvas, currentTime)
             ctx.fillRect(msX,msY,msW,msH);
             ctx.fill();
         }
+
+        
 
         if (currentTime !== undefined){
             ctx.fillStyle = "#000";

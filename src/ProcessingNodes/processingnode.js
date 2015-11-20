@@ -2,14 +2,19 @@ import GraphNode from "../graphnode";
 import { createShaderProgram, createElementTexutre, updateTexture } from "../utils.js";
 import { RenderException } from "../exceptions.js";
 
-
-
 class ProcessingNode extends GraphNode{
     constructor(gl, renderGraph, definition, maxInputs){
         super(gl, renderGraph, maxInputs);
         this._vertexShader = definition.vertexShader;
         this._fragmentShader = definition.fragmentShader;
-        this._properties = definition.properties;
+        this._properties = {};//definition.properties;
+        //copy definition properties
+        for(let propertyName in definition.properties){
+            let propertyValue = definition.properties[propertyName].value;
+            let propertyType = definition.properties[propertyName].type;
+            this._properties[propertyName] = {type:propertyType, value:propertyValue};
+        }
+
         this._inputTextureUnitMapping =[];
         this._maxTextureUnits = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
         this._boundTextureUnits = 0;
@@ -25,7 +30,6 @@ class ProcessingNode extends GraphNode{
         gl.bindFramebuffer(gl.FRAMEBUFFER, this._framebuffer);
         gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this._texture,0);
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-
 
         //create properties on this object for the passed properties
         for (let propertyName in this._properties){

@@ -3,6 +3,7 @@ import { SOURCENODESTATE } from "./SourceNodes/sourcenode.js";
 import CompositingNode from "./ProcessingNodes/compositingnode.js";
 import DestinationNode from "./DestinationNode/destinationnode.js";
 import EffectNode from "./ProcessingNodes/effectnode.js";
+import TransitionNode from "./ProcessingNodes/transitionnode.js";
 import RenderGraph from "./rendergraph.js";
 import { visualiseVideoContextTimeline, visualiseVideoContextGraph } from "./utils.js";
 
@@ -121,6 +122,12 @@ class VideoContext{
         return compositingNode;
     }
 
+    createTransitionNode(definition){
+        let transitionNode = new TransitionNode(this._gl, this._renderGraph, definition);
+        this._processingNodes.push(transitionNode);
+        return transitionNode;
+    }
+
     _isStalled(){
         for (let i = 0; i < this._sourceNodes.length; i++) {
             let sourceNode = this._sourceNodes[i];
@@ -166,7 +173,7 @@ class VideoContext{
             }
 
             for (let node of this._processingNodes) {
-                node._update();
+                node._update(this._currentTime);
                 node._render();
             }
 

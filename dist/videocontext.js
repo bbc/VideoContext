@@ -75,6 +75,10 @@ var VideoContext =
 
 	var _ProcessingNodesEffectnodeJs2 = _interopRequireDefault(_ProcessingNodesEffectnodeJs);
 
+	var _ProcessingNodesTransitionnodeJs = __webpack_require__(11);
+
+	var _ProcessingNodesTransitionnodeJs2 = _interopRequireDefault(_ProcessingNodesTransitionnodeJs);
+
 	var _rendergraphJs = __webpack_require__(9);
 
 	var _rendergraphJs2 = _interopRequireDefault(_rendergraphJs);
@@ -157,6 +161,13 @@ var VideoContext =
 	            return compositingNode;
 	        }
 	    }, {
+	        key: "createTransitionNode",
+	        value: function createTransitionNode(definition) {
+	            var transitionNode = new _ProcessingNodesTransitionnodeJs2["default"](this._gl, this._renderGraph, definition);
+	            this._processingNodes.push(transitionNode);
+	            return transitionNode;
+	        }
+	    }, {
 	        key: "_isStalled",
 	        value: function _isStalled() {
 	            for (var i = 0; i < this._sourceNodes.length; i++) {
@@ -209,7 +220,7 @@ var VideoContext =
 	                    for (var _iterator = this._processingNodes[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
 	                        var node = _step.value;
 
-	                        node._update();
+	                        node._update(this._currentTime);
 	                        node._render();
 	                    }
 	                } catch (err) {
@@ -335,8 +346,10 @@ var VideoContext =
 	        key: "_load",
 	        value: function _load() {
 	            if (this._element !== undefined) {
-	                if (this._element.readyState > 3) {
+	                if (this._element.readyState > 3 && !this._element.seeking) {
 	                    this._ready = true;
+	                } else {
+	                    this._ready = false;
 	                }
 	                return;
 	            }
@@ -940,6 +953,64 @@ var VideoContext =
 
 	    ctx.clearRect(0, 0, w, h);
 	    ctx.fillStyle = "#999";
+
+	    var _iteratorNormalCompletion = true;
+	    var _didIteratorError = false;
+	    var _iteratorError = undefined;
+
+	    try {
+	        for (var _iterator = videoContext._processingNodes[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	            var node = _step.value;
+
+	            if (node.constructor.name !== "TransitionNode") continue;
+	            for (var propertyName in node._transitions) {
+	                var _iteratorNormalCompletion2 = true;
+	                var _didIteratorError2 = false;
+	                var _iteratorError2 = undefined;
+
+	                try {
+	                    for (var _iterator2 = node._transitions[propertyName][Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+	                        var transition = _step2.value;
+
+	                        var tW = (transition.end - transition.start) * pixelsPerSecond;
+	                        var tH = h;
+	                        var tX = transition.start * pixelsPerSecond;
+	                        var tY = 0;
+	                        ctx.fillStyle = "rgba(0,0,0, 0.3)";
+	                        ctx.fillRect(tX, tY, tW, tH);
+	                        ctx.fill();
+	                    }
+	                } catch (err) {
+	                    _didIteratorError2 = true;
+	                    _iteratorError2 = err;
+	                } finally {
+	                    try {
+	                        if (!_iteratorNormalCompletion2 && _iterator2["return"]) {
+	                            _iterator2["return"]();
+	                        }
+	                    } finally {
+	                        if (_didIteratorError2) {
+	                            throw _iteratorError2;
+	                        }
+	                    }
+	                }
+	            }
+	        }
+	    } catch (err) {
+	        _didIteratorError = true;
+	        _iteratorError = err;
+	    } finally {
+	        try {
+	            if (!_iteratorNormalCompletion && _iterator["return"]) {
+	                _iterator["return"]();
+	            }
+	        } finally {
+	            if (_didIteratorError) {
+	                throw _iteratorError;
+	            }
+	        }
+	    }
+
 	    for (var i = 0; i < videoContext._sourceNodes.length; i++) {
 	        var sourceNode = videoContext._sourceNodes[i];
 	        var duration = sourceNode._stopTime - sourceNode._startTime;
@@ -1191,7 +1262,14 @@ var VideoContext =
 	        _get(Object.getPrototypeOf(ProcessingNode.prototype), "constructor", this).call(this, gl, renderGraph, maxInputs);
 	        this._vertexShader = definition.vertexShader;
 	        this._fragmentShader = definition.fragmentShader;
-	        this._properties = definition.properties;
+	        this._properties = {}; //definition.properties;
+	        //copy definition properties
+	        for (var propertyName in definition.properties) {
+	            var propertyValue = definition.properties[propertyName].value;
+	            var propertyType = definition.properties[propertyName].type;
+	            this._properties[propertyName] = { type: propertyType, value: propertyValue };
+	        }
+
 	        this._inputTextureUnitMapping = [];
 	        this._maxTextureUnits = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
 	        this._boundTextureUnits = 0;
@@ -1661,6 +1739,143 @@ var VideoContext =
 	})(_processingnode2["default"]);
 
 	exports["default"] = CompositingNode;
+	module.exports = exports["default"];
+
+/***/ },
+/* 11 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _effectnode = __webpack_require__(8);
+
+	var _effectnode2 = _interopRequireDefault(_effectnode);
+
+	var TransitionNode = (function (_EffectNode) {
+	    _inherits(TransitionNode, _EffectNode);
+
+	    function TransitionNode(gl, renderGraph, definition) {
+	        _classCallCheck(this, TransitionNode);
+
+	        _get(Object.getPrototypeOf(TransitionNode.prototype), "constructor", this).call(this, gl, renderGraph, definition);
+	        this._transitions = {};
+
+	        //save a version of the original property values
+	        this._initialPropertyValues = {};
+	        for (var propertyName in this._properties) {
+	            this._initialPropertyValues[propertyName] = this._properties[propertyName].value;
+	        }
+	    }
+
+	    _createClass(TransitionNode, [{
+	        key: "_doesTransitionFitOnTimeline",
+	        value: function _doesTransitionFitOnTimeline(testTransition) {
+	            if (this._transitions[testTransition.property] === undefined) return true;
+	            var _iteratorNormalCompletion = true;
+	            var _didIteratorError = false;
+	            var _iteratorError = undefined;
+
+	            try {
+	                for (var _iterator = this._transitions[testTransition.property][Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	                    var transition = _step.value;
+
+	                    if (testTransition.start > transition.start && testTransition.start < transition.end) return false;
+	                    if (testTransition.end > transition.start && testTransition.end < transition.end) return false;
+	                    if (transition.start > testTransition.start && transition.start < testTransition.end) return false;
+	                    if (transition.end > testTransition.start && transition.end < testTransition.end) return false;
+	                }
+	            } catch (err) {
+	                _didIteratorError = true;
+	                _iteratorError = err;
+	            } finally {
+	                try {
+	                    if (!_iteratorNormalCompletion && _iterator["return"]) {
+	                        _iterator["return"]();
+	                    }
+	                } finally {
+	                    if (_didIteratorError) {
+	                        throw _iteratorError;
+	                    }
+	                }
+	            }
+
+	            return true;
+	        }
+	    }, {
+	        key: "_insertTransitionInTimeline",
+	        value: function _insertTransitionInTimeline(transition) {
+	            if (this._transitions[transition.property] === undefined) this._transitions[transition.property] = [];
+	            this._transitions[transition.property].push(transition);
+
+	            this._transitions[transition.property].sort(function (a, b) {
+	                return a.start - b.start;
+	            });
+	        }
+	    }, {
+	        key: "transition",
+	        value: function transition(startTime, endTime, targetValue) {
+	            var propertyName = arguments.length <= 3 || arguments[3] === undefined ? "progress" : arguments[3];
+
+	            var transition = { start: startTime + this._currentTime, end: endTime + this._currentTime, target: targetValue, property: propertyName };
+	            if (!this._doesTransitionFitOnTimeline(transition)) return false;
+	            this._insertTransitionInTimeline(transition);
+	        }
+	    }, {
+	        key: "clearTransitions",
+	        value: function clearTransitions(propertyName) {
+	            if (propertyName === undefined) {
+	                this._transitions = {};
+	            } else {
+	                this._transitions[propertyName] = [];
+	            }
+	        }
+	    }, {
+	        key: "_update",
+	        value: function _update(currentTime) {
+	            _get(Object.getPrototypeOf(TransitionNode.prototype), "_update", this).call(this, currentTime);
+	            for (var propertyName in this._transitions) {
+	                var value = this._initialPropertyValues[propertyName];
+	                var transitionActive = false;
+
+	                for (var i = 0; i < this._transitions[propertyName].length; i++) {
+	                    var transition = this._transitions[propertyName][i];
+	                    if (currentTime > transition.end) {
+	                        value = transition.target;
+	                        continue;
+	                    }
+
+	                    if (currentTime > transition.start && currentTime < transition.end) {
+	                        var difference = transition.target - value;
+	                        var progress = (this._currentTime - transition.start) / (transition.end - transition.start);
+	                        transitionActive = true;
+	                        this[propertyName] = value + difference * progress;
+	                        break;
+	                    }
+	                }
+
+	                if (!transitionActive) this[propertyName] = value;
+	            }
+	        }
+	    }]);
+
+	    return TransitionNode;
+	})(_effectnode2["default"]);
+
+	exports["default"] = TransitionNode;
 	module.exports = exports["default"];
 
 /***/ }
