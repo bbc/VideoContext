@@ -883,8 +883,14 @@ var VideoContext =
 	    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 0]));
 	}
 
-	function createControlFormForNode(node) {
+	function createControlFormForNode(node, nodeName) {
 	    var rootDiv = document.createElement("div");
+
+	    if (nodeName !== undefined) {
+	        var title = document.createElement("h2");
+	        title.innerHTML = nodeName;
+	        rootDiv.appendChild(title);
+	    }
 
 	    var _loop = function (propertyName) {
 	        var propertyParagraph = document.createElement("p");

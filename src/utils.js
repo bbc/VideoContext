@@ -52,8 +52,15 @@ export function clearTexture(gl, texture){
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0,0,0,0]));
 }
 
-export function createControlFormForNode(node){
+export function createControlFormForNode(node, nodeName){
     let rootDiv = document.createElement("div");
+    
+    if (nodeName !== undefined){
+        var title = document.createElement("h2");
+        title.innerHTML = nodeName;
+        rootDiv.appendChild(title);
+    }
+
     for(let propertyName in node._properties){
         let propertyParagraph = document.createElement("p");
         let propertyTitleHeader = document.createElement("h3");
