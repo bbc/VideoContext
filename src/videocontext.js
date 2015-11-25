@@ -5,7 +5,7 @@ import DestinationNode from "./DestinationNode/destinationnode.js";
 import EffectNode from "./ProcessingNodes/effectnode.js";
 import TransitionNode from "./ProcessingNodes/transitionnode.js";
 import RenderGraph from "./rendergraph.js";
-import { visualiseVideoContextTimeline, visualiseVideoContextGraph, createControlFormForNode } from "./utils.js";
+import { createSigmaGraphDataFromRenderGraph, visualiseVideoContextTimeline, visualiseVideoContextGraph, createControlFormForNode } from "./utils.js";
 
 let updateables = [];
 let previousTime;
@@ -41,10 +41,26 @@ class VideoContext{
         this._timeline = [];
         this._currentTime = 0;
         this._state = STATE.paused;
+        this._playbackRate = 1.0;
         this._destinationNode = new DestinationNode(this._gl, this._renderGraph);
         registerUpdateable(this);
     }
 
+    /**
+    * Set the progress through the internal timeline.
+    * Setting this can be used as a way to implement a scrubaable timeline.
+    * 
+    * @example
+    * var canvasElement = document.getElemenyById("canvas");
+    * var ctx = new VideoContext(canvasElement);
+    * var videoNode = ctx.createVideoSourceNode("video.mp4");
+    * videoNode.connect(ctx.destination);
+    * videoNode.start(0);
+    * videoNode.stop(20);
+    * ctx.currentTime = 10; // seek 10 seconds in
+    * ctx.play();
+    *
+    */
     set currentTime(currentTime){
         console.debug("VideoContext - seeking to", currentTime);
         if (currentTime < this._duration && this._state === STATE.ended) this._state = STATE.duration;
@@ -65,19 +81,39 @@ class VideoContext{
     * @return {number} The time in seconds through the current playlist.
     * 
     * @example
-    * var ctx = new VideoContext();
     * var canvasElement = document.getElemenyById("canvas");
+    * var ctx = new VideoContext(canvasElement);
     * var videoNode = ctx.createVideoSourceNode("video.mp4");
-    * var outputNode =ctx.createOutputNode(cavnasElement);
-    * videoNode.connect(outputNode);
-    * videoNode.start();
-    * videoCtx.play();
+    * videoNode.connect(ctx.destination);
+    * videoNode.start(0);
+    * videoNode.stop(10);
+    * ctx.play();
+    * setTimeout(funtion(){console.log(ctx.currentTime);},1000); //should print roughly 1.0 
     *
     */
     get currentTime(){
         return this._currentTime;
     }
 
+    /**
+    * Get the time at which the last node in the current internal timeline finishes playing.
+    *
+    * @return {number} The end time in seconds of the last video node to finish playing.
+    *
+    * @example
+    * var canvasElement = document.getElemenyById("canvas");
+    * var ctx = new VideoContext(canvasElement);
+    * console.log(ctx.duration); //prints 0 
+    *
+    * var videoNode = ctx.createVideoSourceNode("video.mp4");
+    * videoNode.connect(ctx.destination);
+    * videoNode.start(0);
+    * videoNode.stop(10);
+    *
+    * console.log(ctx.duration); //prints 10 
+    *
+    * ctx.play();
+    */
     get duration(){
         let maxTime = 0;
         for (let i = 0; i < this._sourceNodes.length; i++) {
@@ -88,40 +124,108 @@ class VideoContext{
         return maxTime;
     }
 
+
+    /**
+    * Get the final node in the render graph which represents the canvas to display content on to.
+    *
+    * This proprety is read-only and there can only ever be one destination node. Other nodes can connect to this but you cannot connect this node to anything.
+    *
+    * @return {DestinationNode} A graph node represnting the canvas to display the content on.
+    * @example
+    * var canvasElement = document.getElemenyById("canvas");
+    * var ctx = new VideoContext(canvasElement);
+    * var videoNode = ctx.createVideoSourceNode("video.mp4");
+    * videoNode.start(0);
+    * videoNode.stop(10);
+    * videoNode.connect(ctx.destination);
+    *
+    */
     get destination(){
         return this._destinationNode;
     }
 
+    /**
+    * Set the playback rate of the VideoContext instance.
+    * This will alter the playback speed of all media elements played through the VideoContext.
+    * @example
+    * var canvasElement = document.getElemenyById("canvas");
+    * var ctx = new VideoContext(canvasElement);
+    * var videoNode = ctx.createVideoSourceNode("video.mp4");
+    * videoNode.start(0);
+    * videoNode.stop(10);
+    * videoNode.connect(ctx.destination);
+    * ctx.playbackRate = 2;
+    * ctx.play(); // Double playback rate means this will finish playing in 5 seconds.    
+    */
+    set playbackRate(rate){
+        for (let node of this._sourceNodes) {
+            if (node.constructor.name === "VideoNode") node._playbackRate = rate;
+        }
+        this._playbackRate = rate;
+    }
+
+
+    /**
+    *  Return the current playbackRate of the video context.
+    * @return {number} A value representing the playbackRate. 1.0 by default.
+    */
+    get playbackRate(){
+        return this._playbackRate;
+    }
+
+
+    /**
+    * Start the VideoContext playing
+    */
     play(){
         console.debug("VideoContext - playing");
         this._state = STATE.playing;
         return true;
     }
 
+    /**
+    * Pause playback of the VideoContext 
+    */
     pause(){
         console.debug("VideoContext - pausing");
         this._state = STATE.paused;
         return true;
     }
 
+    /**
+    * Create a new node representing a video source
+    * @return {VideoNode} A new video node.
+    */
     createVideoSourceNode(src, sourceOffset=0){
-        let videoNode = new VideoNode(src, this._gl,this._renderGraph, sourceOffset);
+        let videoNode = new VideoNode(src, this._gl, this._renderGraph, this._playbackRate, sourceOffset);
         this._sourceNodes.push(videoNode);
         return videoNode;
     }
 
+    /**
+    * Create a new effect node.
+    * @return {EffectNode} A new effect node created from the passed definition
+    */
     createEffectNode(definition){
         let effectNode = new EffectNode(this._gl, this._renderGraph, definition);
         this._processingNodes.push(effectNode);
         return effectNode;
     }
 
+    /**
+    * Create a new compositiing node.
+    * @return {CompositingNode} A new compositing node created from the passed definition.
+    */
     createCompositingNode(definition){
         let compositingNode = new CompositingNode(this._gl, this._renderGraph, definition);
         this._processingNodes.push(compositingNode);
         return compositingNode;
     }
 
+    /**
+    * Create a new transition node.
+    * @return {TransitionNode} A new transition node created from the passed definition.
+    */
     createTransitionNode(definition){
         let transitionNode = new TransitionNode(this._gl, this._renderGraph, definition);
         this._processingNodes.push(transitionNode);
@@ -151,7 +255,7 @@ class VideoContext{
             }
             
             if(this._state === STATE.playing){
-                    this._currentTime += dt;
+                    this._currentTime += dt * this._playbackRate;
                     if(this._currentTime > this.duration)this._state = STATE.ended;
             }
 
@@ -184,5 +288,5 @@ class VideoContext{
 VideoContext.visualiseVideoContextTimeline = visualiseVideoContextTimeline;
 VideoContext.visualiseVideoContextGraph = visualiseVideoContextGraph;
 VideoContext.createControlFormForNode = createControlFormForNode;
-
+VideoContext.createSigmaGraphDataFromRenderGraph = createSigmaGraphDataFromRenderGraph;
 export default VideoContext;

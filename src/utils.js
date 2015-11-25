@@ -166,6 +166,70 @@ export function visualiseVideoContextGraph(videoContext, canvas){
 }
 
 
+
+
+export function createSigmaGraphDataFromRenderGraph(videoContext){
+
+    function idForNode(node){
+        if (videoContext._sourceNodes.indexOf(node) !== -1){
+            let id = node.constructor.name+ " "+videoContext._sourceNodes.indexOf(node);
+            return id;    
+        }
+        let id = node.constructor.name + " "+videoContext._processingNodes.indexOf(node);
+        return id;
+    }
+
+    let graph = {
+        nodes:[
+        {
+            id: idForNode(videoContext.destination),
+            label:"Destination Node",
+            x:2.5,
+            y:0.5,
+            size:2,
+            node: videoContext.destination
+        }],
+        edges:[]
+    };
+
+    for (let i = 0; i < videoContext._sourceNodes.length; i++) {
+        let sourceNode = videoContext._sourceNodes[i];
+        let y = i * (1.0 / videoContext._sourceNodes.length);
+        graph.nodes.push({
+            id: idForNode(sourceNode),
+            label:"Source "+ i.toString(),
+            x:0,
+            y: y,
+            size:2,
+            color:"#572A72",
+            node:sourceNode
+        });
+    }
+    for (let i = 0; i < videoContext._processingNodes.length; i++) {
+        let processingNode = videoContext._processingNodes[i];
+        graph.nodes.push({
+            id: idForNode(processingNode),
+            x: Math.random() *2.5,
+            y: Math.random(),
+            size:2,
+            node: processingNode
+        });
+    }
+
+    for (let i = 0; i < videoContext._renderGraph.connections.length; i++) {
+        let conn = videoContext._renderGraph.connections[i];
+        graph.edges.push({
+            "id":"e"+i.toString(),
+            "source": idForNode(conn.source),
+            "target": idForNode(conn.destination)
+        });
+    }
+
+
+
+    return graph;
+}
+
 export function visualiseVideoContextTimeline(videoContext, canvas, currentTime){
         let ctx = canvas.getContext('2d');
         let w = canvas.width;

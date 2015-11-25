@@ -2,10 +2,11 @@ import SourceNode, { SOURCENODESTATE } from "./sourcenode";
 import { createElementTexutre } from "../utils.js";
 
 class VideoNode extends SourceNode {
-    constructor(src, gl, renderGraph, sourceOffset=0, preloadTime = 4){
+    constructor(src, gl, renderGraph, playbackRate=1.0, sourceOffset=0, preloadTime = 4){
         super(src, gl, renderGraph);
         this._preloadTime = preloadTime;
         this._sourceOffset = sourceOffset;
+        this._playbackRate = 1.0;
     }
 
     _load(){
@@ -39,8 +40,12 @@ class VideoNode extends SourceNode {
         super._seek(time);
         if (this.state === SOURCENODESTATE.playing || this.state === SOURCENODESTATE.paused){
             if (this._element === undefined) this._load();
-            this._element.currentTime = this._currentTime - this._startTime + this._sourceOffset;
+            let relativeTime = this._currentTime - this._startTime + this._sourceOffset;
+            this._element.currentTime = relativeTime;
             this._ready = false;
+        }
+        if((this._state === SOURCENODESTATE.sequenced || this._state === SOURCENODESTATE.ended) && this._element !== undefined){
+            this._destroy();
         }
     }
 
@@ -50,6 +55,7 @@ class VideoNode extends SourceNode {
         if (this._startTime - this._currentTime < this._preloadTime && this._state !== SOURCENODESTATE.waiting && this._state !== SOURCENODESTATE.ended)this._load();
 
         if (this._state === SOURCENODESTATE.playing){
+            this._element.playbackRate = this._playbackRate;
             this._element.play();
             return true;
         } else if (this._state === SOURCENODESTATE.paused){
