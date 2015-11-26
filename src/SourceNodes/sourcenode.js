@@ -25,11 +25,18 @@ class SourceNode extends GraphNode{
         this._stopTime = 0;
         this._ready = false;
         this._texture = createElementTexutre(gl);
-        //gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,512,512, gl.RGBA, gl.UNSIGNED_BYTE, this._element);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0,0,0,0]));
         this._callbacks = [];
     }
 
+    /**
+    * Returns the state of the node.
+    * 0 - Waiting, start() has not been called on it yet.
+    * 1 - Sequenced, start() has been called but it is not playing yet. 
+    * 2 - Playing, the node is playing.
+    * 3 - Paused, the node is paused.
+    * 4 - Ended, playback of the node has finished.
+    */
     get state(){        
         return this._state;
     }
