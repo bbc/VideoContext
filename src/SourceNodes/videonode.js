@@ -21,6 +21,7 @@ class VideoNode extends SourceNode {
         if (this._isResponsibleForElementLifeCycle){
             super._load();
             this._element = document.createElement("video");
+            this._element.setAttribute('crossorigin', 'anonymous');
             this._element.src = this._elementURL;
         }
         this._element.currentTime = this._sourceOffset;
