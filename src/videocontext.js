@@ -34,6 +34,7 @@ let STATE = {"playing":0, "paused":1, "stalled":2, "ended":3, "broken":4};
 
 class VideoContext{
     constructor(canvas){
+        this._canvas = canvas;
         this._gl = canvas.getContext("experimental-webgl", { preserveDrawingBuffer: true, alpha: false });
         this._renderGraph = new RenderGraph();
         this._sourceNodes = [];
@@ -43,7 +44,38 @@ class VideoContext{
         this._state = STATE.paused;
         this._playbackRate = 1.0;
         this._destinationNode = new DestinationNode(this._gl, this._renderGraph);
+
+        this._callbacks = new Map();
+        //this._callbacks.set("play", []);
+        //this._callbacks.set("pause", []);
+        this._callbacks.set("stalled", []);
+        this._callbacks.set("update", []);
+        this._callbacks.set("ended", []);
+
         registerUpdateable(this);
+    }
+
+    registerCallback(type, func){
+        if (!this._callbacks.has(type)) return false;
+        this._callbacks.get(type).push(func);
+    }
+
+    unregisterCallback(func){
+        for(let funcArray of this._callbacks.values()){
+            let index = funcArray.indexOf(func);
+            if (index !== -1){
+                funcArray.splice(index, 1);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    _callCallbacks(type){
+        let funcArray = this._callbacks.get(type);
+        for (let func of funcArray){
+            func(this._currentTime);
+        }
     }
 
     /**
@@ -243,11 +275,12 @@ class VideoContext{
     }
 
     _update(dt){
-
         if (this._state === STATE.playing || this._state === STATE.stalled || this._state === STATE.paused) {
-            
+            this._callCallbacks("update");
+
             if (this._state !== STATE.paused){
                 if (this._isStalled()){
+                    this._callCallbacks("stalled");
                     this._state = STATE.stalled;
                 }else{
                     this._state = STATE.playing;
@@ -256,7 +289,10 @@ class VideoContext{
             
             if(this._state === STATE.playing){
                     this._currentTime += dt * this._playbackRate;
-                    if(this._currentTime > this.duration)this._state = STATE.ended;
+                    if(this._currentTime > this.duration){
+                        this._callCallbacks("ended");
+                        this._state = STATE.ended;
+                    }
             }
 
             for (let i = 0; i < this._sourceNodes.length; i++) {
