@@ -61,25 +61,29 @@ module.exports =
 
 	var _SourceNodesVideonodeJs2 = _interopRequireDefault(_SourceNodesVideonodeJs);
 
+	var _SourceNodesImagenodeJs = __webpack_require__(5);
+
+	var _SourceNodesImagenodeJs2 = _interopRequireDefault(_SourceNodesImagenodeJs);
+
 	var _SourceNodesSourcenodeJs = __webpack_require__(2);
 
-	var _ProcessingNodesCompositingnodeJs = __webpack_require__(5);
+	var _ProcessingNodesCompositingnodeJs = __webpack_require__(6);
 
 	var _ProcessingNodesCompositingnodeJs2 = _interopRequireDefault(_ProcessingNodesCompositingnodeJs);
 
-	var _DestinationNodeDestinationnodeJs = __webpack_require__(8);
+	var _DestinationNodeDestinationnodeJs = __webpack_require__(9);
 
 	var _DestinationNodeDestinationnodeJs2 = _interopRequireDefault(_DestinationNodeDestinationnodeJs);
 
-	var _ProcessingNodesEffectnodeJs = __webpack_require__(9);
+	var _ProcessingNodesEffectnodeJs = __webpack_require__(10);
 
 	var _ProcessingNodesEffectnodeJs2 = _interopRequireDefault(_ProcessingNodesEffectnodeJs);
 
-	var _ProcessingNodesTransitionnodeJs = __webpack_require__(10);
+	var _ProcessingNodesTransitionnodeJs = __webpack_require__(11);
 
 	var _ProcessingNodesTransitionnodeJs2 = _interopRequireDefault(_ProcessingNodesTransitionnodeJs);
 
-	var _rendergraphJs = __webpack_require__(11);
+	var _rendergraphJs = __webpack_require__(12);
 
 	var _rendergraphJs2 = _interopRequireDefault(_rendergraphJs);
 
@@ -112,6 +116,7 @@ module.exports =
 	    function VideoContext(canvas) {
 	        _classCallCheck(this, VideoContext);
 
+	        this._canvas = canvas;
 	        this._gl = canvas.getContext("experimental-webgl", { preserveDrawingBuffer: true, alpha: false });
 	        this._renderGraph = new _rendergraphJs2["default"]();
 	        this._sourceNodes = [];
@@ -121,26 +126,103 @@ module.exports =
 	        this._state = STATE.paused;
 	        this._playbackRate = 1.0;
 	        this._destinationNode = new _DestinationNodeDestinationnodeJs2["default"](this._gl, this._renderGraph);
+
+	        this._callbacks = new Map();
+	        //this._callbacks.set("play", []);
+	        //this._callbacks.set("pause", []);
+	        this._callbacks.set("stalled", []);
+	        this._callbacks.set("update", []);
+	        this._callbacks.set("ended", []);
+
 	        registerUpdateable(this);
 	    }
 
-	    /**
-	    * Set the progress through the internal timeline.
-	    * Setting this can be used as a way to implement a scrubaable timeline.
-	    * 
-	    * @example
-	    * var canvasElement = document.getElemenyById("canvas");
-	    * var ctx = new VideoContext(canvasElement);
-	    * var videoNode = ctx.createVideoSourceNode("video.mp4");
-	    * videoNode.connect(ctx.destination);
-	    * videoNode.start(0);
-	    * videoNode.stop(20);
-	    * ctx.currentTime = 10; // seek 10 seconds in
-	    * ctx.play();
-	    *
-	    */
-
 	    _createClass(VideoContext, [{
+	        key: "registerCallback",
+	        value: function registerCallback(type, func) {
+	            if (!this._callbacks.has(type)) return false;
+	            this._callbacks.get(type).push(func);
+	        }
+	    }, {
+	        key: "unregisterCallback",
+	        value: function unregisterCallback(func) {
+	            var _iteratorNormalCompletion = true;
+	            var _didIteratorError = false;
+	            var _iteratorError = undefined;
+
+	            try {
+	                for (var _iterator = this._callbacks.values()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	                    var funcArray = _step.value;
+
+	                    var index = funcArray.indexOf(func);
+	                    if (index !== -1) {
+	                        funcArray.splice(index, 1);
+	                        return true;
+	                    }
+	                }
+	            } catch (err) {
+	                _didIteratorError = true;
+	                _iteratorError = err;
+	            } finally {
+	                try {
+	                    if (!_iteratorNormalCompletion && _iterator["return"]) {
+	                        _iterator["return"]();
+	                    }
+	                } finally {
+	                    if (_didIteratorError) {
+	                        throw _iteratorError;
+	                    }
+	                }
+	            }
+
+	            return false;
+	        }
+	    }, {
+	        key: "_callCallbacks",
+	        value: function _callCallbacks(type) {
+	            var funcArray = this._callbacks.get(type);
+	            var _iteratorNormalCompletion2 = true;
+	            var _didIteratorError2 = false;
+	            var _iteratorError2 = undefined;
+
+	            try {
+	                for (var _iterator2 = funcArray[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+	                    var func = _step2.value;
+
+	                    func(this._currentTime);
+	                }
+	            } catch (err) {
+	                _didIteratorError2 = true;
+	                _iteratorError2 = err;
+	            } finally {
+	                try {
+	                    if (!_iteratorNormalCompletion2 && _iterator2["return"]) {
+	                        _iterator2["return"]();
+	                    }
+	                } finally {
+	                    if (_didIteratorError2) {
+	                        throw _iteratorError2;
+	                    }
+	                }
+	            }
+	        }
+
+	        /**
+	        * Set the progress through the internal timeline.
+	        * Setting this can be used as a way to implement a scrubaable timeline.
+	        * 
+	        * @example
+	        * var canvasElement = document.getElemenyById("canvas");
+	        * var ctx = new VideoContext(canvasElement);
+	        * var videoNode = ctx.createVideoSourceNode("video.mp4");
+	        * videoNode.connect(ctx.destination);
+	        * videoNode.start(0);
+	        * videoNode.stop(20);
+	        * ctx.currentTime = 10; // seek 10 seconds in
+	        * ctx.play();
+	        *
+	        */
+	    }, {
 	        key: "play",
 
 	        /**
@@ -171,10 +253,26 @@ module.exports =
 	        key: "createVideoSourceNode",
 	        value: function createVideoSourceNode(src) {
 	            var sourceOffset = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+	            var preloadTime = arguments.length <= 2 || arguments[2] === undefined ? 4 : arguments[2];
 
-	            var videoNode = new _SourceNodesVideonodeJs2["default"](src, this._gl, this._renderGraph, this._playbackRate, sourceOffset);
+	            var videoNode = new _SourceNodesVideonodeJs2["default"](src, this._gl, this._renderGraph, this._playbackRate, sourceOffset, preloadTime);
 	            this._sourceNodes.push(videoNode);
 	            return videoNode;
+	        }
+
+	        /**
+	        * Create a new node representing an image source
+	        * @return {ImageNode} A new image node.
+	        */
+	    }, {
+	        key: "createImageSourceNode",
+	        value: function createImageSourceNode(src) {
+	            var sourceOffset = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+	            var preloadTime = arguments.length <= 2 || arguments[2] === undefined ? 4 : arguments[2];
+
+	            var imageNode = new _SourceNodesImagenodeJs2["default"](src, this._gl, this._renderGraph, this._playbackRate, sourceOffset, preloadTime);
+	            this._sourceNodes.push(imageNode);
+	            return imageNode;
 	        }
 
 	        /**
@@ -226,11 +324,12 @@ module.exports =
 	    }, {
 	        key: "_update",
 	        value: function _update(dt) {
-
 	            if (this._state === STATE.playing || this._state === STATE.stalled || this._state === STATE.paused) {
+	                this._callCallbacks("update");
 
 	                if (this._state !== STATE.paused) {
 	                    if (this._isStalled()) {
+	                        this._callCallbacks("stalled");
 	                        this._state = STATE.stalled;
 	                    } else {
 	                        this._state = STATE.playing;
@@ -239,7 +338,10 @@ module.exports =
 
 	                if (this._state === STATE.playing) {
 	                    this._currentTime += dt * this._playbackRate;
-	                    if (this._currentTime > this.duration) this._state = STATE.ended;
+	                    if (this._currentTime > this.duration) {
+	                        this._callCallbacks("ended");
+	                        this._state = STATE.ended;
+	                    }
 	                }
 
 	                for (var i = 0; i < this._sourceNodes.length; i++) {
@@ -257,28 +359,28 @@ module.exports =
 	                    }
 	                }
 
-	                var _iteratorNormalCompletion = true;
-	                var _didIteratorError = false;
-	                var _iteratorError = undefined;
+	                var _iteratorNormalCompletion3 = true;
+	                var _didIteratorError3 = false;
+	                var _iteratorError3 = undefined;
 
 	                try {
-	                    for (var _iterator = this._processingNodes[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	                        var node = _step.value;
+	                    for (var _iterator3 = this._processingNodes[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+	                        var node = _step3.value;
 
 	                        node._update(this._currentTime);
 	                        node._render();
 	                    }
 	                } catch (err) {
-	                    _didIteratorError = true;
-	                    _iteratorError = err;
+	                    _didIteratorError3 = true;
+	                    _iteratorError3 = err;
 	                } finally {
 	                    try {
-	                        if (!_iteratorNormalCompletion && _iterator["return"]) {
-	                            _iterator["return"]();
+	                        if (!_iteratorNormalCompletion3 && _iterator3["return"]) {
+	                            _iterator3["return"]();
 	                        }
 	                    } finally {
-	                        if (_didIteratorError) {
-	                            throw _iteratorError;
+	                        if (_didIteratorError3) {
+	                            throw _iteratorError3;
 	                        }
 	                    }
 	                }
@@ -390,27 +492,27 @@ module.exports =
 	    }, {
 	        key: "playbackRate",
 	        set: function set(rate) {
-	            var _iteratorNormalCompletion2 = true;
-	            var _didIteratorError2 = false;
-	            var _iteratorError2 = undefined;
+	            var _iteratorNormalCompletion4 = true;
+	            var _didIteratorError4 = false;
+	            var _iteratorError4 = undefined;
 
 	            try {
-	                for (var _iterator2 = this._sourceNodes[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-	                    var node = _step2.value;
+	                for (var _iterator4 = this._sourceNodes[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+	                    var node = _step4.value;
 
 	                    if (node.constructor.name === "VideoNode") node._playbackRate = rate;
 	                }
 	            } catch (err) {
-	                _didIteratorError2 = true;
-	                _iteratorError2 = err;
+	                _didIteratorError4 = true;
+	                _iteratorError4 = err;
 	            } finally {
 	                try {
-	                    if (!_iteratorNormalCompletion2 && _iterator2["return"]) {
-	                        _iterator2["return"]();
+	                    if (!_iteratorNormalCompletion4 && _iterator4["return"]) {
+	                        _iterator4["return"]();
 	                    }
 	                } finally {
-	                    if (_didIteratorError2) {
-	                        throw _iteratorError2;
+	                    if (_didIteratorError4) {
+	                        throw _iteratorError4;
 	                    }
 	                }
 	            }
@@ -460,8 +562,6 @@ module.exports =
 	var _sourcenode = __webpack_require__(2);
 
 	var _sourcenode2 = _interopRequireDefault(_sourcenode);
-
-	var _utilsJs = __webpack_require__(3);
 
 	var VideoNode = (function (_SourceNode) {
 	    _inherits(VideoNode, _SourceNode);
@@ -527,7 +627,7 @@ module.exports =
 	        key: "_update",
 	        value: function _update(currentTime) {
 	            //if (!super._update(currentTime)) return false;
-	            var active = _get(Object.getPrototypeOf(VideoNode.prototype), "_update", this).call(this, currentTime);
+	            _get(Object.getPrototypeOf(VideoNode.prototype), "_update", this).call(this, currentTime);
 	            if (this._startTime - this._currentTime < this._preloadTime && this._state !== _sourcenode.SOURCENODESTATE.waiting && this._state !== _sourcenode.SOURCENODESTATE.ended) this._load();
 
 	            if (this._state === _sourcenode.SOURCENODESTATE.playing) {
@@ -1403,6 +1503,112 @@ module.exports =
 /* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	    value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _sourcenode = __webpack_require__(2);
+
+	var _sourcenode2 = _interopRequireDefault(_sourcenode);
+
+	var ImageNode = (function (_SourceNode) {
+	    _inherits(ImageNode, _SourceNode);
+
+	    function ImageNode(src, gl, renderGraph) {
+	        var preloadTime = arguments.length <= 3 || arguments[3] === undefined ? 4 : arguments[3];
+
+	        _classCallCheck(this, ImageNode);
+
+	        _get(Object.getPrototypeOf(ImageNode.prototype), 'constructor', this).call(this, src, gl, renderGraph);
+	        this._preloadTime = preloadTime;
+	    }
+
+	    _createClass(ImageNode, [{
+	        key: '_load',
+	        value: function _load() {
+	            var _this2 = this;
+
+	            if (this._element !== undefined) {
+	                return;
+	            }
+	            if (this._isResponsibleForElementLifeCycle) {
+	                (function () {
+	                    _get(Object.getPrototypeOf(ImageNode.prototype), '_load', _this2).call(_this2);
+	                    _this2._element = new Image();
+	                    _this2._element.setAttribute('crossorigin', 'anonymous');
+	                    _this2._element.src = _this2._elementURL;
+	                    var _this = _this2;
+	                    console.log("IAMGE READY");
+
+	                    _this2._element.onload = function () {
+	                        _this._ready = true;
+	                    };
+	                })();
+	            }
+	        }
+	    }, {
+	        key: '_destroy',
+	        value: function _destroy() {
+	            _get(Object.getPrototypeOf(ImageNode.prototype), '_destroy', this).call(this);
+	            if (this._isResponsibleForElementLifeCycle) {
+	                this._element.src = "";
+	                this._element = undefined;
+	                delete this._element;
+	            }
+	            this._ready = false;
+	        }
+	    }, {
+	        key: '_seek',
+	        value: function _seek(time) {
+	            _get(Object.getPrototypeOf(ImageNode.prototype), '_seek', this).call(this, time);
+	            if (this.state === _sourcenode.SOURCENODESTATE.playing || this.state === _sourcenode.SOURCENODESTATE.paused) {
+	                if (this._element === undefined) this._load();
+	                this._ready = false;
+	            }
+	            if ((this._state === _sourcenode.SOURCENODESTATE.sequenced || this._state === _sourcenode.SOURCENODESTATE.ended) && this._element !== undefined) {
+	                this._destroy();
+	            }
+	        }
+	    }, {
+	        key: '_update',
+	        value: function _update(currentTime) {
+	            //if (!super._update(currentTime)) return false;
+	            _get(Object.getPrototypeOf(ImageNode.prototype), '_update', this).call(this, currentTime);
+	            if (this._startTime - this._currentTime < this._preloadTime && this._state !== _sourcenode.SOURCENODESTATE.waiting && this._state !== _sourcenode.SOURCENODESTATE.ended) this._load();
+
+	            if (this._state === _sourcenode.SOURCENODESTATE.playing) {
+	                return true;
+	            } else if (this._state === _sourcenode.SOURCENODESTATE.paused) {
+	                return true;
+	            } else if (this._state === _sourcenode.SOURCENODESTATE.ended && this._element !== undefined) {
+	                this._destroy();
+	                return false;
+	            }
+	        }
+	    }]);
+
+	    return ImageNode;
+	})(_sourcenode2['default']);
+
+	exports['default'] = ImageNode;
+	module.exports = exports['default'];
+
+/***/ },
+/* 6 */
+/***/ function(module, exports, __webpack_require__) {
+
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
@@ -1419,7 +1625,7 @@ module.exports =
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var _processingnode = __webpack_require__(6);
+	var _processingnode = __webpack_require__(7);
 
 	var _processingnode2 = _interopRequireDefault(_processingnode);
 
@@ -1499,7 +1705,7 @@ module.exports =
 	module.exports = exports["default"];
 
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -1524,7 +1730,7 @@ module.exports =
 
 	var _utilsJs = __webpack_require__(3);
 
-	var _exceptionsJs = __webpack_require__(7);
+	var _exceptionsJs = __webpack_require__(8);
 
 	var ProcessingNode = (function (_GraphNode) {
 	    _inherits(ProcessingNode, _GraphNode);
@@ -1717,7 +1923,7 @@ module.exports =
 	module.exports = exports["default"];
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -1739,7 +1945,7 @@ module.exports =
 	}
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -1762,7 +1968,7 @@ module.exports =
 
 	//import GraphNode from "../graphnode";
 
-	var _ProcessingNodesProcessingnode = __webpack_require__(6);
+	var _ProcessingNodesProcessingnode = __webpack_require__(7);
 
 	var _ProcessingNodesProcessingnode2 = _interopRequireDefault(_ProcessingNodesProcessingnode);
 
@@ -1854,7 +2060,7 @@ module.exports =
 	module.exports = exports["default"];
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -1873,7 +2079,7 @@ module.exports =
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var _processingnode = __webpack_require__(6);
+	var _processingnode = __webpack_require__(7);
 
 	var _processingnode2 = _interopRequireDefault(_processingnode);
 
@@ -1937,7 +2143,7 @@ module.exports =
 	module.exports = exports["default"];
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -1956,7 +2162,7 @@ module.exports =
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var _effectnode = __webpack_require__(9);
+	var _effectnode = __webpack_require__(10);
 
 	var _effectnode2 = _interopRequireDefault(_effectnode);
 
@@ -2074,7 +2280,7 @@ module.exports =
 	module.exports = exports["default"];
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -2087,7 +2293,7 @@ module.exports =
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var _exceptionsJs = __webpack_require__(7);
+	var _exceptionsJs = __webpack_require__(8);
 
 	var RenderGraph = (function () {
 	    function RenderGraph() {
