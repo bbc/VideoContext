@@ -228,8 +228,8 @@ class VideoContext{
     * Create a new node representing a video source
     * @return {VideoNode} A new video node.
     */
-    createVideoSourceNode(src, sourceOffset=0){
-        let videoNode = new VideoNode(src, this._gl, this._renderGraph, this._playbackRate, sourceOffset);
+    createVideoSourceNode(src, sourceOffset=0, preloadTime=4){
+        let videoNode = new VideoNode(src, this._gl, this._renderGraph, this._playbackRate, sourceOffset, preloadTime);
         this._sourceNodes.push(videoNode);
         return videoNode;
     }
