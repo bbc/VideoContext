@@ -1,4 +1,5 @@
 import VideoNode from "./SourceNodes/videonode.js";
+import ImageNode from "./SourceNodes/imagenode.js";
 import { SOURCENODESTATE } from "./SourceNodes/sourcenode.js";
 import CompositingNode from "./ProcessingNodes/compositingnode.js";
 import DestinationNode from "./DestinationNode/destinationnode.js";
@@ -232,6 +233,16 @@ class VideoContext{
         let videoNode = new VideoNode(src, this._gl, this._renderGraph, this._playbackRate, sourceOffset, preloadTime);
         this._sourceNodes.push(videoNode);
         return videoNode;
+    }
+
+    /**
+    * Create a new node representing an image source
+    * @return {ImageNode} A new image node.
+    */
+    createImageSourceNode(src, sourceOffset=0, preloadTime=4){
+        let imageNode = new ImageNode(src, this._gl, this._renderGraph, this._playbackRate, sourceOffset, preloadTime);
+        this._sourceNodes.push(imageNode);
+        return imageNode;
     }
 
     /**
