@@ -23,7 +23,9 @@ class DestinationNode extends ProcessingNode {
                 gl_FragColor = texture2D(u_image, v_texCoord);\
             }";
 
-        super(gl, renderGraph, {fragmentShader:fragmentShader, vertexShader:vertexShader, properties:{}, inputs:["u_image"]});
+        let deffinition = {fragmentShader:fragmentShader, vertexShader:vertexShader, properties:{}, inputs:["u_image"]};
+
+        super(gl, renderGraph, deffinition, deffinition.inputs, false);
     }
 
     _render(){

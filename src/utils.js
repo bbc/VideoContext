@@ -73,6 +73,7 @@ export function createControlFormForNode(node, nodeName){
             range.setAttribute("type", "range");
             range.setAttribute("min", "0");
             range.setAttribute("max", "1");
+            range.setAttribute("step", "0.01");
             range.setAttribute("value", propertyValue,toString());
             let mouseDown = false;
             range.onmousedown =function(){mouseDown=true;};

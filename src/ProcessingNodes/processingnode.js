@@ -3,8 +3,8 @@ import { createShaderProgram, createElementTexutre, updateTexture } from "../uti
 import { RenderException } from "../exceptions.js";
 
 class ProcessingNode extends GraphNode{
-    constructor(gl, renderGraph, definition, maxInputs){
-        super(gl, renderGraph, maxInputs);
+    constructor(gl, renderGraph, definition, inputNames, limitConnections){
+        super(gl, renderGraph, inputNames, limitConnections);
         this._vertexShader = definition.vertexShader;
         this._fragmentShader = definition.fragmentShader;
         this._properties = {};//definition.properties;

@@ -1,13 +1,23 @@
 
 class GraphNode {
-    constructor(gl, renderGraph, maxInputs){
+    constructor(gl, renderGraph, inputNames, limitConnections=false){
         this._renderGraph = renderGraph;
-        this._maxInputs = maxInputs;
+        this._limitConnections = limitConnections;
+        this._inputNames = inputNames;
 
         //Setup WebGL output texture
         this._gl = gl;
         this._renderGraph = renderGraph;
         this._rendered =false;
+    }
+
+    get inputNames(){
+        return this._inputNames.slice();
+    }
+
+    get maximumConnections(){
+        if (this._limitConnections ===false) return Infinity;
+        return this._inputNames.length;
     }
 
     get inputs(){

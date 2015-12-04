@@ -43,7 +43,7 @@ class RenderGraph {
     }
 
     registerConnection(sourceNode, destinationNode, zIndex){
-        if (destinationNode._maxInputs !== undefined && destinationNode.inputs.length >= destinationNode._maxInputs){
+        if (destinationNode.inputs.length >= destinationNode.maximumConnections){
             throw new ConnectException("Node has reached max number of inputs, can't connect");
         }
         this.connections.push({"source":sourceNode, "zIndex":zIndex, "destination":destinationNode});

@@ -3,11 +3,10 @@ import { createElementTexutre } from "../utils.js";
 
 class EffectNode extends ProcessingNode{
     constructor(gl, renderGraph, definition){
-        let maxInputs = definition.inputs.length;
         let placeholderTexture = createElementTexutre(gl);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0,0,0,0]));
 
-        super(gl, renderGraph, definition, maxInputs);
+        super(gl, renderGraph, definition, definition.inputs, true);
         
         this._placeholderTexture = placeholderTexture;
     }

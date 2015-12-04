@@ -6,7 +6,7 @@ let STATE = {"waiting":0, "sequenced":1, "playing":2, "paused":3, "ended":4};
 
 class SourceNode extends GraphNode{
     constructor(src, gl, renderGraph){
-        super(gl,renderGraph, 0);
+        super(gl,renderGraph, [], true);
         this._element = undefined;
         this._elementURL = undefined;
         this._isResponsibleForElementLifeCycle = true;

@@ -16,8 +16,6 @@ class ImageNode extends SourceNode {
             this._element.setAttribute('crossorigin', 'anonymous');
             this._element.src = this._elementURL;
             let _this = this;
-                console.log("IAMGE READY");
-
             this._element.onload= function(){
                 _this._ready = true;
             };
