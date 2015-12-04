@@ -173,10 +173,10 @@ export function createSigmaGraphDataFromRenderGraph(videoContext){
 
     function idForNode(node){
         if (videoContext._sourceNodes.indexOf(node) !== -1){
-            let id = node.constructor.name+ " "+videoContext._sourceNodes.indexOf(node);
+            let id = "source " + node.constructor.name+ " "+videoContext._sourceNodes.indexOf(node);
             return id;    
         }
-        let id = node.constructor.name + " "+videoContext._processingNodes.indexOf(node);
+        let id = "processor " + node.constructor.name + " "+videoContext._processingNodes.indexOf(node);
         return id;
     }
 

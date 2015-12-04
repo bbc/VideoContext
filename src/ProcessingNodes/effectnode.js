@@ -20,18 +20,16 @@ class EffectNode extends ProcessingNode{
 
         super._render();
 
-        let inputs = this.inputs;
+        let inputs = this._renderGraph.getInputsForNode(this);
         let textureOffset = 0;
 
         for (var i = 0; i < this._inputTextureUnitMapping.length; i++) {
             let inputTexture = this._placeholderTexture; 
             let textureUnit = this._inputTextureUnitMapping[i].textureUnit;
             let textureName = this._inputTextureUnitMapping[i].name;
-            if (i < inputs.length){
-                inputTexture = inputs[i]._texture;
-                //console.log(textureName, textureUnit);
+            if (i < inputs.length && inputs[i] !== undefined){
+                inputTexture = inputs[i].source._texture;
             }else{
-                //console.debug("VideoContext:Warning - not all inputs to effect node are connected");
             }
 
             gl.activeTexture(textureUnit);

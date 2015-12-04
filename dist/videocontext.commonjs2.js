@@ -685,7 +685,7 @@ module.exports =
 	    function SourceNode(src, gl, renderGraph) {
 	        _classCallCheck(this, SourceNode);
 
-	        _get(Object.getPrototypeOf(SourceNode.prototype), "constructor", this).call(this, gl, renderGraph, 0);
+	        _get(Object.getPrototypeOf(SourceNode.prototype), "constructor", this).call(this, gl, renderGraph, [], true);
 	        this._element = undefined;
 	        this._elementURL = undefined;
 	        this._isResponsibleForElementLifeCycle = true;
@@ -1156,6 +1156,7 @@ module.exports =
 	                range.setAttribute("type", "range");
 	                range.setAttribute("min", "0");
 	                range.setAttribute("max", "1");
+	                range.setAttribute("step", "0.01");
 	                range.setAttribute("value", propertyValue, toString());
 	                var mouseDown = false;
 	                range.onmousedown = function () {
@@ -1274,10 +1275,10 @@ module.exports =
 
 	    function idForNode(node) {
 	        if (videoContext._sourceNodes.indexOf(node) !== -1) {
-	            var _id = node.constructor.name + " " + videoContext._sourceNodes.indexOf(node);
+	            var _id = "source " + node.constructor.name + " " + videoContext._sourceNodes.indexOf(node);
 	            return _id;
 	        }
-	        var id = node.constructor.name + " " + videoContext._processingNodes.indexOf(node);
+	        var id = "processor " + node.constructor.name + " " + videoContext._processingNodes.indexOf(node);
 	        return id;
 	    }
 
@@ -1437,11 +1438,14 @@ module.exports =
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	var GraphNode = (function () {
-	    function GraphNode(gl, renderGraph, maxInputs) {
+	    function GraphNode(gl, renderGraph, inputNames) {
+	        var limitConnections = arguments.length <= 3 || arguments[3] === undefined ? false : arguments[3];
+
 	        _classCallCheck(this, GraphNode);
 
 	        this._renderGraph = renderGraph;
-	        this._maxInputs = maxInputs;
+	        this._limitConnections = limitConnections;
+	        this._inputNames = inputNames;
 
 	        //Setup WebGL output texture
 	        this._gl = gl;
@@ -1470,6 +1474,17 @@ module.exports =
 	                return false;
 	            }
 	            return this._renderGraph.unregisterConnection(this, targetNode);
+	        }
+	    }, {
+	        key: "inputNames",
+	        get: function get() {
+	            return this._inputNames.slice();
+	        }
+	    }, {
+	        key: "maximumConnections",
+	        get: function get() {
+	            if (this._limitConnections === false) return Infinity;
+	            return this._inputNames.length;
 	        }
 	    }, {
 	        key: "inputs",
@@ -1550,8 +1565,6 @@ module.exports =
 	                    _this2._element.setAttribute('crossorigin', 'anonymous');
 	                    _this2._element.src = _this2._elementURL;
 	                    var _this = _this2;
-	                    console.log("IAMGE READY");
-
 	                    _this2._element.onload = function () {
 	                        _this._ready = true;
 	                    };
@@ -1735,12 +1748,12 @@ module.exports =
 	var ProcessingNode = (function (_GraphNode) {
 	    _inherits(ProcessingNode, _GraphNode);
 
-	    function ProcessingNode(gl, renderGraph, definition, maxInputs) {
+	    function ProcessingNode(gl, renderGraph, definition, inputNames, limitConnections) {
 	        var _this = this;
 
 	        _classCallCheck(this, ProcessingNode);
 
-	        _get(Object.getPrototypeOf(ProcessingNode.prototype), "constructor", this).call(this, gl, renderGraph, maxInputs);
+	        _get(Object.getPrototypeOf(ProcessingNode.prototype), "constructor", this).call(this, gl, renderGraph, inputNames, limitConnections);
 	        this._vertexShader = definition.vertexShader;
 	        this._fragmentShader = definition.fragmentShader;
 	        this._properties = {}; //definition.properties;
@@ -1996,7 +2009,9 @@ module.exports =
 	                gl_FragColor = texture2D(u_image, v_texCoord);\
 	            }";
 
-	        _get(Object.getPrototypeOf(DestinationNode.prototype), "constructor", this).call(this, gl, renderGraph, { fragmentShader: fragmentShader, vertexShader: vertexShader, properties: {}, inputs: ["u_image"] });
+	        var deffinition = { fragmentShader: fragmentShader, vertexShader: vertexShader, properties: {}, inputs: ["u_image"] };
+
+	        _get(Object.getPrototypeOf(DestinationNode.prototype), "constructor", this).call(this, gl, renderGraph, deffinition, deffinition.inputs, false);
 	    }
 
 	    _createClass(DestinationNode, [{
@@ -2091,11 +2106,10 @@ module.exports =
 	    function EffectNode(gl, renderGraph, definition) {
 	        _classCallCheck(this, EffectNode);
 
-	        var maxInputs = definition.inputs.length;
 	        var placeholderTexture = (0, _utilsJs.createElementTexutre)(gl);
 	        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 0]));
 
-	        _get(Object.getPrototypeOf(EffectNode.prototype), "constructor", this).call(this, gl, renderGraph, definition, maxInputs);
+	        _get(Object.getPrototypeOf(EffectNode.prototype), "constructor", this).call(this, gl, renderGraph, definition, definition.inputs, true);
 
 	        this._placeholderTexture = placeholderTexture;
 	    }
@@ -2345,7 +2359,7 @@ module.exports =
 	    }, {
 	        key: "registerConnection",
 	        value: function registerConnection(sourceNode, destinationNode, zIndex) {
-	            if (destinationNode._maxInputs !== undefined && destinationNode.inputs.length >= destinationNode._maxInputs) {
+	            if (destinationNode.inputs.length >= destinationNode.maximumConnections) {
 	                throw new _exceptionsJs.ConnectException("Node has reached max number of inputs, can't connect");
 	            }
 	            this.connections.push({ "source": sourceNode, "zIndex": zIndex, "destination": destinationNode });

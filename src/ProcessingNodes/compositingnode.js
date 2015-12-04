@@ -5,7 +5,7 @@ class CompositingNode extends ProcessingNode{
     constructor(gl, renderGraph, definition){
         let placeholderTexture = createElementTexutre(gl);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0,0,0,0]));
-        super(gl, renderGraph, definition);
+        super(gl, renderGraph, definition, definition.inputs, false);
         this._placeholderTexture = placeholderTexture;
     }
     _render(){
@@ -17,6 +17,7 @@ class CompositingNode extends ProcessingNode{
         gl.clear(gl.COLOR_BUFFER_BIT);
 
         this.inputs.forEach(function(node){
+            if (node === undefined)return;
             super._render();
 
             //map the input textures input the node

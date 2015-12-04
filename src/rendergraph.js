@@ -10,43 +10,95 @@ class RenderGraph {
         let results = [];
         this.connections.forEach(function(connection){
             if (connection.source === node){
-                results.push({"node":connection.destination, "zIndex":connection.zIndex});
+                results.push(connection.destination);
             }
         });
         return results;
     }
     
-    getSortedOutputsForNode(node){
-        let outputs = this.getOutputsForNode(node);
-        outputs.sort(function(a,b){
-            return a.zIndex - b.zIndex;
-        });
-        return outputs;
-    }
-    
-    getInputsForNode(node){
+    getNamedInputsForNode(node){
         let results = [];
         this.connections.forEach(function(connection){
-            if (connection.destination === node){
-                results.push({"node":connection.source, "zIndex":connection.zIndex});
+            if (connection.destination === node && connection.type === "name"){
+                results.push(connection);
             }
         });
         return results;
     }
-    
-    getSortedInputsForNode(node){
-        let inputs = this.getInputsForNode(node);
-        inputs.sort(function(a,b){
+
+
+    getZIndexInputsForNode(node){
+        let results = [];
+        this.connections.forEach(function(connection){
+            if (connection.destination === node && connection.type === "zIndex"){
+                results.push(connection);
+            }
+        });
+        results.sort(function(a,b){
             return a.zIndex - b.zIndex;
         });
-        return inputs;
+        return results;   
     }
 
-    registerConnection(sourceNode, destinationNode, zIndex){
-        if (destinationNode.inputs.length >= destinationNode.maximumConnections){
+
+    getInputsForNode(node){
+        let inputNames = node.inputNames;        
+        let results = [];
+        let namedInputs = this.getNamedInputsForNode(node);
+        let indexedInputs = this.getZIndexInputsForNode(node);
+
+
+        if(node._limitConnections === true){
+            for (let i = 0; i < inputNames.length; i++) {
+                results[i] = undefined;
+            }
+            
+            for(let connection of namedInputs){
+                let index = inputNames.indexof(connection.name);
+                results[index] = connection.source;
+            }
+            let indexedInputsIndex = 0;
+            for (let i = 0; i < results.length; i++) {
+                if (results[i] === undefined){
+                    results[i] = indexedInputs[indexedInputsIndex];
+                    indexedInputsIndex += 1;
+                }
+            }
+        }else{
+            for(let connection of namedInputs){
+                results.push(connection.source);
+            }
+            for(let connection of indexedInputs){
+                results.push(connection.source);
+            }
+        }
+        return results;
+    }
+
+    registerConnection(sourceNode, destinationNode, target){
+        if (destinationNode.inputs.length >= destinationNode.inputNames.length && destinationNode._limitConnections === true){
             throw new ConnectException("Node has reached max number of inputs, can't connect");
         }
-        this.connections.push({"source":sourceNode, "zIndex":zIndex, "destination":destinationNode});
+        if (typeof target === "number"){
+            //target is a specific
+            this.connections.push({"source":sourceNode, "type":"zIndex", "zIndex":target, "destination":destinationNode});
+        } else if (typeof target === "string" && destinationNode._limitConnections){
+            //target is a named port
+            //if(destinationNode._limitConnections === true && connection is already made)
+            this.connections.push({"source":sourceNode, "type":"name", "name":target, "destination":destinationNode});
+        } else{
+            //target is undefined so just make it a high zIndex
+            let indexedConns = this.getZIndexInputsForNode(destinationNode);
+            let index = 0;
+            if (indexedConns.length > 0)index = indexedConns[indexedConns.length-1].zIndex +1
+            this.connections.push({"source":sourceNode, "type":"zIndex", "zIndex":index, "destination":destinationNode});
+            
+
+            /*console.log(destinationNode._limitConnections);
+            console.log(destinationNode);
+            console.log("num_inputs",destinationNode.inputNames.length);
+            console.log(destinationNode.inputs);*/
+        }
         return true;
     }
     

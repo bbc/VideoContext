@@ -21,29 +21,17 @@ class GraphNode {
     }
 
     get inputs(){
-        let inputConnections = this._renderGraph.getSortedInputsForNode(this);
-        let results = [];
-        inputConnections.forEach(function(connection){
-            results.push(connection.node);
-        });
-        return results;
+        let result = this._renderGraph.getInputsForNode(this);
+        result = result.filter(function(n){return n !== undefined;});
+        return result;
     }
 
     get outputs(){
-        let outputConnections = this._renderGraph.getSortedOutputsForNode(this);
-        let results = [];
-        outputConnections.forEach(function(connection){
-            results.push(connection.node);
-        });
-        return results; 
+        return this._renderGraph.getOutputsForNode(this);
     }
 
-    connect(targetNode, zIndex){
-        if (zIndex === undefined){
-            let targetInputs = this._renderGraph.getSortedInputsForNode(targetNode);
-            zIndex = targetInputs[targetInputs.length-1] + 1.0;
-        }
-        return (this._renderGraph.registerConnection(this, targetNode, zIndex));
+    connect(targetNode, targetPort){
+        return (this._renderGraph.registerConnection(this, targetNode, targetPort));
     }
     
     disconnect(targetNode){
