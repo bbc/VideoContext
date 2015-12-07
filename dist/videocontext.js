@@ -2124,7 +2124,7 @@ var VideoContext =
 	                var textureUnit = this._inputTextureUnitMapping[i].textureUnit;
 	                var textureName = this._inputTextureUnitMapping[i].name;
 	                if (i < inputs.length && inputs[i] !== undefined) {
-	                    inputTexture = inputs[i].source._texture;
+	                    inputTexture = inputs[i]._texture;
 	                } else {}
 
 	                gl.activeTexture(textureUnit);
@@ -2361,7 +2361,7 @@ var VideoContext =
 	                    for (var _iterator = namedInputs[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
 	                        var connection = _step.value;
 
-	                        var index = inputNames.indexof(connection.name);
+	                        var index = inputNames.indexOf(connection.name);
 	                        results[index] = connection.source;
 	                    }
 	                } catch (err) {
@@ -2381,8 +2381,8 @@ var VideoContext =
 
 	                var indexedInputsIndex = 0;
 	                for (var i = 0; i < results.length; i++) {
-	                    if (results[i] === undefined) {
-	                        results[i] = indexedInputs[indexedInputsIndex];
+	                    if (results[i] === undefined && indexedInputs[indexedInputsIndex] !== undefined) {
+	                        results[i] = indexedInputs[indexedInputsIndex].source;
 	                        indexedInputsIndex += 1;
 	                    }
 	                }
@@ -2440,6 +2440,41 @@ var VideoContext =
 	            return results;
 	        }
 	    }, {
+	        key: "isInputAvailable",
+	        value: function isInputAvailable(node, inputName) {
+	            if (node._inputNames.indexOf(inputName) === -1) return false;
+	            var _iteratorNormalCompletion4 = true;
+	            var _didIteratorError4 = false;
+	            var _iteratorError4 = undefined;
+
+	            try {
+	                for (var _iterator4 = this.connections[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+	                    var connection = _step4.value;
+
+	                    if (connection.type === "name") {
+	                        if (connection.destination === node && connection.name === inputName) {
+	                            return false;
+	                        }
+	                    }
+	                }
+	            } catch (err) {
+	                _didIteratorError4 = true;
+	                _iteratorError4 = err;
+	            } finally {
+	                try {
+	                    if (!_iteratorNormalCompletion4 && _iterator4["return"]) {
+	                        _iterator4["return"]();
+	                    }
+	                } finally {
+	                    if (_didIteratorError4) {
+	                        throw _iteratorError4;
+	                    }
+	                }
+	            }
+
+	            return true;
+	        }
+	    }, {
 	        key: "registerConnection",
 	        value: function registerConnection(sourceNode, destinationNode, target) {
 	            if (destinationNode.inputs.length >= destinationNode.inputNames.length && destinationNode._limitConnections === true) {
@@ -2450,8 +2485,13 @@ var VideoContext =
 	                this.connections.push({ "source": sourceNode, "type": "zIndex", "zIndex": target, "destination": destinationNode });
 	            } else if (typeof target === "string" && destinationNode._limitConnections) {
 	                //target is a named port
-	                //if(destinationNode._limitConnections === true && connection is already made)
-	                this.connections.push({ "source": sourceNode, "type": "name", "name": target, "destination": destinationNode });
+
+	                //make sure named port is free
+	                if (this.isInputAvailable(destinationNode, target)) {
+	                    this.connections.push({ "source": sourceNode, "type": "name", "name": target, "destination": destinationNode });
+	                } else {
+	                    throw new _exceptionsJs.ConnectException("Port " + target + " is already connected to");
+	                }
 	            } else {
 	                //target is undefined so just make it a high zIndex
 	                var indexedConns = this.getZIndexInputsForNode(destinationNode);

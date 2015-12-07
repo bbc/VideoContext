@@ -1455,12 +1455,8 @@ module.exports =
 
 	    _createClass(GraphNode, [{
 	        key: "connect",
-	        value: function connect(targetNode, zIndex) {
-	            if (zIndex === undefined) {
-	                var targetInputs = this._renderGraph.getSortedInputsForNode(targetNode);
-	                zIndex = targetInputs[targetInputs.length - 1] + 1.0;
-	            }
-	            return this._renderGraph.registerConnection(this, targetNode, zIndex);
+	        value: function connect(targetNode, targetPort) {
+	            return this._renderGraph.registerConnection(this, targetNode, targetPort);
 	        }
 	    }, {
 	        key: "disconnect",
@@ -1489,22 +1485,16 @@ module.exports =
 	    }, {
 	        key: "inputs",
 	        get: function get() {
-	            var inputConnections = this._renderGraph.getSortedInputsForNode(this);
-	            var results = [];
-	            inputConnections.forEach(function (connection) {
-	                results.push(connection.node);
+	            var result = this._renderGraph.getInputsForNode(this);
+	            result = result.filter(function (n) {
+	                return n !== undefined;
 	            });
-	            return results;
+	            return result;
 	        }
 	    }, {
 	        key: "outputs",
 	        get: function get() {
-	            var outputConnections = this._renderGraph.getSortedOutputsForNode(this);
-	            var results = [];
-	            outputConnections.forEach(function (connection) {
-	                results.push(connection.node);
-	            });
-	            return results;
+	            return this._renderGraph.getOutputsForNode(this);
 	        }
 	    }]);
 
@@ -1652,7 +1642,7 @@ module.exports =
 
 	        var placeholderTexture = (0, _utilsJs.createElementTexutre)(gl);
 	        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 0]));
-	        _get(Object.getPrototypeOf(CompositingNode.prototype), "constructor", this).call(this, gl, renderGraph, definition);
+	        _get(Object.getPrototypeOf(CompositingNode.prototype), "constructor", this).call(this, gl, renderGraph, definition, definition.inputs, false);
 	        this._placeholderTexture = placeholderTexture;
 	    }
 
@@ -1669,6 +1659,7 @@ module.exports =
 	            gl.clear(gl.COLOR_BUFFER_BIT);
 
 	            this.inputs.forEach(function (node) {
+	                if (node === undefined) return;
 	                _get(Object.getPrototypeOf(CompositingNode.prototype), "_render", _this2).call(_this2);
 
 	                //map the input textures input the node
@@ -2125,19 +2116,16 @@ module.exports =
 
 	            _get(Object.getPrototypeOf(EffectNode.prototype), "_render", this).call(this);
 
-	            var inputs = this.inputs;
+	            var inputs = this._renderGraph.getInputsForNode(this);
 	            var textureOffset = 0;
 
 	            for (var i = 0; i < this._inputTextureUnitMapping.length; i++) {
 	                var inputTexture = this._placeholderTexture;
 	                var textureUnit = this._inputTextureUnitMapping[i].textureUnit;
 	                var textureName = this._inputTextureUnitMapping[i].name;
-	                if (i < inputs.length) {
+	                if (i < inputs.length && inputs[i] !== undefined) {
 	                    inputTexture = inputs[i]._texture;
-	                    //console.log(textureName, textureUnit);
-	                } else {
-	                        //console.debug("VideoContext:Warning - not all inputs to effect node are connected");
-	                    }
+	                } else {}
 
 	                gl.activeTexture(textureUnit);
 	                var textureLocation = gl.getUniformLocation(this._program, textureName);
@@ -2322,47 +2310,200 @@ module.exports =
 	            var results = [];
 	            this.connections.forEach(function (connection) {
 	                if (connection.source === node) {
-	                    results.push({ "node": connection.destination, "zIndex": connection.zIndex });
+	                    results.push(connection.destination);
 	                }
 	            });
 	            return results;
 	        }
 	    }, {
-	        key: "getSortedOutputsForNode",
-	        value: function getSortedOutputsForNode(node) {
-	            var outputs = this.getOutputsForNode(node);
-	            outputs.sort(function (a, b) {
+	        key: "getNamedInputsForNode",
+	        value: function getNamedInputsForNode(node) {
+	            var results = [];
+	            this.connections.forEach(function (connection) {
+	                if (connection.destination === node && connection.type === "name") {
+	                    results.push(connection);
+	                }
+	            });
+	            return results;
+	        }
+	    }, {
+	        key: "getZIndexInputsForNode",
+	        value: function getZIndexInputsForNode(node) {
+	            var results = [];
+	            this.connections.forEach(function (connection) {
+	                if (connection.destination === node && connection.type === "zIndex") {
+	                    results.push(connection);
+	                }
+	            });
+	            results.sort(function (a, b) {
 	                return a.zIndex - b.zIndex;
 	            });
-	            return outputs;
+	            return results;
 	        }
 	    }, {
 	        key: "getInputsForNode",
 	        value: function getInputsForNode(node) {
+	            var inputNames = node.inputNames;
 	            var results = [];
-	            this.connections.forEach(function (connection) {
-	                if (connection.destination === node) {
-	                    results.push({ "node": connection.source, "zIndex": connection.zIndex });
+	            var namedInputs = this.getNamedInputsForNode(node);
+	            var indexedInputs = this.getZIndexInputsForNode(node);
+
+	            if (node._limitConnections === true) {
+	                for (var i = 0; i < inputNames.length; i++) {
+	                    results[i] = undefined;
 	                }
-	            });
+
+	                var _iteratorNormalCompletion = true;
+	                var _didIteratorError = false;
+	                var _iteratorError = undefined;
+
+	                try {
+	                    for (var _iterator = namedInputs[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	                        var connection = _step.value;
+
+	                        var index = inputNames.indexOf(connection.name);
+	                        results[index] = connection.source;
+	                    }
+	                } catch (err) {
+	                    _didIteratorError = true;
+	                    _iteratorError = err;
+	                } finally {
+	                    try {
+	                        if (!_iteratorNormalCompletion && _iterator["return"]) {
+	                            _iterator["return"]();
+	                        }
+	                    } finally {
+	                        if (_didIteratorError) {
+	                            throw _iteratorError;
+	                        }
+	                    }
+	                }
+
+	                var indexedInputsIndex = 0;
+	                for (var i = 0; i < results.length; i++) {
+	                    if (results[i] === undefined && indexedInputs[indexedInputsIndex] !== undefined) {
+	                        results[i] = indexedInputs[indexedInputsIndex].source;
+	                        indexedInputsIndex += 1;
+	                    }
+	                }
+	            } else {
+	                var _iteratorNormalCompletion2 = true;
+	                var _didIteratorError2 = false;
+	                var _iteratorError2 = undefined;
+
+	                try {
+	                    for (var _iterator2 = namedInputs[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+	                        var connection = _step2.value;
+
+	                        results.push(connection.source);
+	                    }
+	                } catch (err) {
+	                    _didIteratorError2 = true;
+	                    _iteratorError2 = err;
+	                } finally {
+	                    try {
+	                        if (!_iteratorNormalCompletion2 && _iterator2["return"]) {
+	                            _iterator2["return"]();
+	                        }
+	                    } finally {
+	                        if (_didIteratorError2) {
+	                            throw _iteratorError2;
+	                        }
+	                    }
+	                }
+
+	                var _iteratorNormalCompletion3 = true;
+	                var _didIteratorError3 = false;
+	                var _iteratorError3 = undefined;
+
+	                try {
+	                    for (var _iterator3 = indexedInputs[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+	                        var connection = _step3.value;
+
+	                        results.push(connection.source);
+	                    }
+	                } catch (err) {
+	                    _didIteratorError3 = true;
+	                    _iteratorError3 = err;
+	                } finally {
+	                    try {
+	                        if (!_iteratorNormalCompletion3 && _iterator3["return"]) {
+	                            _iterator3["return"]();
+	                        }
+	                    } finally {
+	                        if (_didIteratorError3) {
+	                            throw _iteratorError3;
+	                        }
+	                    }
+	                }
+	            }
 	            return results;
 	        }
 	    }, {
-	        key: "getSortedInputsForNode",
-	        value: function getSortedInputsForNode(node) {
-	            var inputs = this.getInputsForNode(node);
-	            inputs.sort(function (a, b) {
-	                return a.zIndex - b.zIndex;
-	            });
-	            return inputs;
+	        key: "isInputAvailable",
+	        value: function isInputAvailable(node, inputName) {
+	            if (node._inputNames.indexOf(inputName) === -1) return false;
+	            var _iteratorNormalCompletion4 = true;
+	            var _didIteratorError4 = false;
+	            var _iteratorError4 = undefined;
+
+	            try {
+	                for (var _iterator4 = this.connections[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+	                    var connection = _step4.value;
+
+	                    if (connection.type === "name") {
+	                        if (connection.destination === node && connection.name === inputName) {
+	                            return false;
+	                        }
+	                    }
+	                }
+	            } catch (err) {
+	                _didIteratorError4 = true;
+	                _iteratorError4 = err;
+	            } finally {
+	                try {
+	                    if (!_iteratorNormalCompletion4 && _iterator4["return"]) {
+	                        _iterator4["return"]();
+	                    }
+	                } finally {
+	                    if (_didIteratorError4) {
+	                        throw _iteratorError4;
+	                    }
+	                }
+	            }
+
+	            return true;
 	        }
 	    }, {
 	        key: "registerConnection",
-	        value: function registerConnection(sourceNode, destinationNode, zIndex) {
-	            if (destinationNode.inputs.length >= destinationNode.maximumConnections) {
+	        value: function registerConnection(sourceNode, destinationNode, target) {
+	            if (destinationNode.inputs.length >= destinationNode.inputNames.length && destinationNode._limitConnections === true) {
 	                throw new _exceptionsJs.ConnectException("Node has reached max number of inputs, can't connect");
 	            }
-	            this.connections.push({ "source": sourceNode, "zIndex": zIndex, "destination": destinationNode });
+	            if (typeof target === "number") {
+	                //target is a specific
+	                this.connections.push({ "source": sourceNode, "type": "zIndex", "zIndex": target, "destination": destinationNode });
+	            } else if (typeof target === "string" && destinationNode._limitConnections) {
+	                //target is a named port
+
+	                //make sure named port is free
+	                if (this.isInputAvailable(destinationNode, target)) {
+	                    this.connections.push({ "source": sourceNode, "type": "name", "name": target, "destination": destinationNode });
+	                } else {
+	                    throw new _exceptionsJs.ConnectException("Port " + target + " is already connected to");
+	                }
+	            } else {
+	                //target is undefined so just make it a high zIndex
+	                var indexedConns = this.getZIndexInputsForNode(destinationNode);
+	                var index = 0;
+	                if (indexedConns.length > 0) index = indexedConns[indexedConns.length - 1].zIndex + 1;
+	                this.connections.push({ "source": sourceNode, "type": "zIndex", "zIndex": index, "destination": destinationNode });
+
+	                /*console.log(destinationNode._limitConnections);
+	                console.log(destinationNode);
+	                console.log("num_inputs",destinationNode.inputNames.length);
+	                console.log(destinationNode.inputs);*/
+	            }
 	            return true;
 	        }
 	    }, {

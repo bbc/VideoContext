@@ -28,7 +28,7 @@ class EffectNode extends ProcessingNode{
             let textureUnit = this._inputTextureUnitMapping[i].textureUnit;
             let textureName = this._inputTextureUnitMapping[i].name;
             if (i < inputs.length && inputs[i] !== undefined){
-                inputTexture = inputs[i].source._texture;
+                inputTexture = inputs[i]._texture;
             }else{
             }
 
