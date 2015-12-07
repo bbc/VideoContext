@@ -192,7 +192,7 @@ class VideoContext{
     */
     set playbackRate(rate){
         for (let node of this._sourceNodes) {
-            if (node.constructor.name === "VideoNode") node._playbackRate = rate;
+            if (node.constructor.name === "VideoNode") node._globalPlaybackRate = rate;
         }
         this._playbackRate = rate;
     }

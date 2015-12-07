@@ -1,11 +1,20 @@
 import SourceNode, { SOURCENODESTATE } from "./sourcenode";
 
 class VideoNode extends SourceNode {
-    constructor(src, gl, renderGraph, playbackRate=1.0, sourceOffset=0, preloadTime = 4){
+    constructor(src, gl, renderGraph, globalPlaybackRate=1.0, sourceOffset=0, preloadTime = 4){
         super(src, gl, renderGraph);
         this._preloadTime = preloadTime;
         this._sourceOffset = sourceOffset;
+        this._globalPlaybackRate = globalPlaybackRate;
         this._playbackRate = 1.0;
+    }
+
+    set playbackRate(playbackRate){
+        this._playbackRate = playbackRate;
+    }
+
+    get playbackRate(){
+        return this._playbackRate;
     }
 
     _load(){
@@ -55,7 +64,7 @@ class VideoNode extends SourceNode {
         if (this._startTime - this._currentTime < this._preloadTime && this._state !== SOURCENODESTATE.waiting && this._state !== SOURCENODESTATE.ended)this._load();
 
         if (this._state === SOURCENODESTATE.playing){
-            this._element.playbackRate = this._playbackRate;
+            this._element.playbackRate = this._globalPlaybackRate * this._playbackRate;
             this._element.play();
             return true;
         } else if (this._state === SOURCENODESTATE.paused){

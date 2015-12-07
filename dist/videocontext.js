@@ -500,7 +500,7 @@ var VideoContext =
 	                for (var _iterator4 = this._sourceNodes[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
 	                    var node = _step4.value;
 
-	                    if (node.constructor.name === "VideoNode") node._playbackRate = rate;
+	                    if (node.constructor.name === "VideoNode") node._globalPlaybackRate = rate;
 	                }
 	            } catch (err) {
 	                _didIteratorError4 = true;
@@ -567,7 +567,7 @@ var VideoContext =
 	    _inherits(VideoNode, _SourceNode);
 
 	    function VideoNode(src, gl, renderGraph) {
-	        var playbackRate = arguments.length <= 3 || arguments[3] === undefined ? 1.0 : arguments[3];
+	        var globalPlaybackRate = arguments.length <= 3 || arguments[3] === undefined ? 1.0 : arguments[3];
 	        var sourceOffset = arguments.length <= 4 || arguments[4] === undefined ? 0 : arguments[4];
 	        var preloadTime = arguments.length <= 5 || arguments[5] === undefined ? 4 : arguments[5];
 
@@ -576,6 +576,7 @@ var VideoContext =
 	        _get(Object.getPrototypeOf(VideoNode.prototype), "constructor", this).call(this, src, gl, renderGraph);
 	        this._preloadTime = preloadTime;
 	        this._sourceOffset = sourceOffset;
+	        this._globalPlaybackRate = globalPlaybackRate;
 	        this._playbackRate = 1.0;
 	    }
 
@@ -631,7 +632,7 @@ var VideoContext =
 	            if (this._startTime - this._currentTime < this._preloadTime && this._state !== _sourcenode.SOURCENODESTATE.waiting && this._state !== _sourcenode.SOURCENODESTATE.ended) this._load();
 
 	            if (this._state === _sourcenode.SOURCENODESTATE.playing) {
-	                this._element.playbackRate = this._playbackRate;
+	                this._element.playbackRate = this._globalPlaybackRate * this._playbackRate;
 	                this._element.play();
 	                return true;
 	            } else if (this._state === _sourcenode.SOURCENODESTATE.paused) {
@@ -642,6 +643,14 @@ var VideoContext =
 	                this._destroy();
 	                return false;
 	            }
+	        }
+	    }, {
+	        key: "playbackRate",
+	        set: function set(playbackRate) {
+	            this._playbackRate = playbackRate;
+	        },
+	        get: function get() {
+	            return this._playbackRate;
 	        }
 	    }]);
 
