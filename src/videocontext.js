@@ -47,8 +47,6 @@ class VideoContext{
         this._destinationNode = new DestinationNode(this._gl, this._renderGraph);
 
         this._callbacks = new Map();
-        //this._callbacks.set("play", []);
-        //this._callbacks.set("pause", []);
         this._callbacks.set("stalled", []);
         this._callbacks.set("update", []);
         this._callbacks.set("ended", []);

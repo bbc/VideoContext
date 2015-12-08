@@ -21,8 +21,8 @@ class SourceNode extends GraphNode{
 
         this._state = STATE.waiting;
         this._currentTime = 0;
-        this._startTime = 0;
-        this._stopTime = 0;
+        this._startTime = NaN;
+        this._stopTime = Infinity;
         this._ready = false;
         this._texture = createElementTexutre(gl);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0,0,0,0]));
@@ -42,22 +42,18 @@ class SourceNode extends GraphNode{
     }
 
     _load(){
-        for(let callback of this._callbacks){
-            if (callback.type === "load") callback.func(this);
-        }
+        this._triggerCallbacks("load");
     }
 
     _destroy(){
-        for(let callback of this._callbacks){
-            if (callback.type === "destroy") callback.func(this);
-        }
+        this._triggerCallbacks("destroy");
     }
 
-    attachCallback(type, func){
+    registerCallback(type, func){
         this._callbacks.push({type:type, func:func});
     }
 
-    removeCallback(func){
+    unregisterCallback(func){
         let toRemove = [];
         for(let callback of this._callbacks){
             if (callback.func === func)toRemove.push(callback);
@@ -65,6 +61,18 @@ class SourceNode extends GraphNode{
         for(let callback of toRemove){
             let index = this._callbacks.indexOf(callback);
             this._callbacks.splice(index, 1);
+        }
+    }
+
+    _triggerCallbacks(type, data){
+        for(let callback of this._callbacks){
+            if (callback.type === type){
+                if (data!== undefined){
+                    callback.func(this, data);
+                }else{
+                    callback.func(this);
+                }
+            }
         }
     }
 
@@ -96,9 +104,8 @@ class SourceNode extends GraphNode{
     }
 
     _seek(time){
-        for(let callback of this._callbacks){
-            if (callback.type === "seek") callback.func(this, time);
-        }
+        this._triggerCallbacks("seek", time);
+
         if (this._state === STATE.waiting) return;
         if (time < this._startTime){
             clearTexture(this._gl, this._texture);
@@ -109,6 +116,7 @@ class SourceNode extends GraphNode{
         }
         if (time >= this._stopTime){
             clearTexture(this._gl, this._texture);
+            this._triggerCallbacks("ended");
             this._state = STATE.ended;
         }
         //update the current time
@@ -116,17 +124,15 @@ class SourceNode extends GraphNode{
     }
 
     _pause(){
-        for(let callback of this._callbacks){
-            if (callback.type === "pause") callback.func(this);
-        }
+        this._triggerCallbacks("pause");
+
         if(this._state === STATE.playing){
             this._state = STATE.paused;
         }
     }
     _play(){
-        for(let callback of this._callbacks){
-            if (callback.type === "play") callback.func(this);
-        }
+        this._triggerCallbacks("play");
+
         if(this._state === STATE.paused){
             this._state = STATE.playing;
         }
@@ -145,9 +151,9 @@ class SourceNode extends GraphNode{
         //update the state
         if (this._state === STATE.waiting || this._state === STATE.ended) return false;
 
-        for(let callback of this._callbacks){
-            if (callback.type === "render") callback.func(this, currentTime);
-        }
+        this._triggerCallbacks("render", currentTime);
+
+
         
         if (currentTime < this._startTime){
             clearTexture(this._gl, this._texture);
@@ -160,6 +166,7 @@ class SourceNode extends GraphNode{
 
         if (currentTime >= this._stopTime){
             clearTexture(this._gl, this._texture);
+            this._triggerCallbacks("ended");
             this._state = STATE.ended;
         }
 
@@ -178,8 +185,8 @@ class SourceNode extends GraphNode{
     }
 
     clearTimelineState(){
-        this._startTime = 0;
-        this._stopTime = 0;
+        this._startTime = NaN;
+        this._stopTime = Infinity;
         this._state = STATE.waiting;
     }
 }

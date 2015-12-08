@@ -128,8 +128,6 @@ module.exports =
 	        this._destinationNode = new _DestinationNodeDestinationnodeJs2["default"](this._gl, this._renderGraph);
 
 	        this._callbacks = new Map();
-	        //this._callbacks.set("play", []);
-	        //this._callbacks.set("pause", []);
 	        this._callbacks.set("stalled", []);
 	        this._callbacks.set("update", []);
 	        this._callbacks.set("ended", []);
@@ -629,6 +627,15 @@ module.exports =
 	        value: function _update(currentTime) {
 	            //if (!super._update(currentTime)) return false;
 	            _get(Object.getPrototypeOf(VideoNode.prototype), "_update", this).call(this, currentTime);
+
+	            //check if the video has ended
+	            if (this._element !== undefined) {
+	                if (this._element.ended) {
+	                    this._state = _sourcenode.SOURCENODESTATE.ended;
+	                    this._triggerCallbacks("ended");
+	                }
+	            }
+
 	            if (this._startTime - this._currentTime < this._preloadTime && this._state !== _sourcenode.SOURCENODESTATE.waiting && this._state !== _sourcenode.SOURCENODESTATE.ended) this._load();
 
 	            if (this._state === _sourcenode.SOURCENODESTATE.playing) {
@@ -709,8 +716,8 @@ module.exports =
 
 	        this._state = STATE.waiting;
 	        this._currentTime = 0;
-	        this._startTime = 0;
-	        this._stopTime = 0;
+	        this._startTime = NaN;
+	        this._stopTime = Infinity;
 	        this._ready = false;
 	        this._texture = (0, _utilsJs.createElementTexutre)(gl);
 	        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 0]));
@@ -729,6 +736,22 @@ module.exports =
 	    _createClass(SourceNode, [{
 	        key: "_load",
 	        value: function _load() {
+	            this._triggerCallbacks("load");
+	        }
+	    }, {
+	        key: "_destroy",
+	        value: function _destroy() {
+	            this._triggerCallbacks("destroy");
+	        }
+	    }, {
+	        key: "registerCallback",
+	        value: function registerCallback(type, func) {
+	            this._callbacks.push({ type: type, func: func });
+	        }
+	    }, {
+	        key: "unregisterCallback",
+	        value: function unregisterCallback(func) {
+	            var toRemove = [];
 	            var _iteratorNormalCompletion = true;
 	            var _didIteratorError = false;
 	            var _iteratorError = undefined;
@@ -737,7 +760,7 @@ module.exports =
 	                for (var _iterator = this._callbacks[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
 	                    var callback = _step.value;
 
-	                    if (callback.type === "load") callback.func(this);
+	                    if (callback.func === func) toRemove.push(callback);
 	                }
 	            } catch (err) {
 	                _didIteratorError = true;
@@ -753,19 +776,17 @@ module.exports =
 	                    }
 	                }
 	            }
-	        }
-	    }, {
-	        key: "_destroy",
-	        value: function _destroy() {
+
 	            var _iteratorNormalCompletion2 = true;
 	            var _didIteratorError2 = false;
 	            var _iteratorError2 = undefined;
 
 	            try {
-	                for (var _iterator2 = this._callbacks[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+	                for (var _iterator2 = toRemove[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
 	                    var callback = _step2.value;
 
-	                    if (callback.type === "destroy") callback.func(this);
+	                    var index = this._callbacks.indexOf(callback);
+	                    this._callbacks.splice(index, 1);
 	                }
 	            } catch (err) {
 	                _didIteratorError2 = true;
@@ -783,14 +804,8 @@ module.exports =
 	            }
 	        }
 	    }, {
-	        key: "attachCallback",
-	        value: function attachCallback(type, func) {
-	            this._callbacks.push({ type: type, func: func });
-	        }
-	    }, {
-	        key: "removeCallback",
-	        value: function removeCallback(func) {
-	            var toRemove = [];
+	        key: "_triggerCallbacks",
+	        value: function _triggerCallbacks(type, data) {
 	            var _iteratorNormalCompletion3 = true;
 	            var _didIteratorError3 = false;
 	            var _iteratorError3 = undefined;
@@ -799,7 +814,13 @@ module.exports =
 	                for (var _iterator3 = this._callbacks[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
 	                    var callback = _step3.value;
 
-	                    if (callback.func === func) toRemove.push(callback);
+	                    if (callback.type === type) {
+	                        if (data !== undefined) {
+	                            callback.func(this, data);
+	                        } else {
+	                            callback.func(this);
+	                        }
+	                    }
 	                }
 	            } catch (err) {
 	                _didIteratorError3 = true;
@@ -812,32 +833,6 @@ module.exports =
 	                } finally {
 	                    if (_didIteratorError3) {
 	                        throw _iteratorError3;
-	                    }
-	                }
-	            }
-
-	            var _iteratorNormalCompletion4 = true;
-	            var _didIteratorError4 = false;
-	            var _iteratorError4 = undefined;
-
-	            try {
-	                for (var _iterator4 = toRemove[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-	                    var callback = _step4.value;
-
-	                    var index = this._callbacks.indexOf(callback);
-	                    this._callbacks.splice(index, 1);
-	                }
-	            } catch (err) {
-	                _didIteratorError4 = true;
-	                _iteratorError4 = err;
-	            } finally {
-	                try {
-	                    if (!_iteratorNormalCompletion4 && _iterator4["return"]) {
-	                        _iterator4["return"]();
-	                    }
-	                } finally {
-	                    if (_didIteratorError4) {
-	                        throw _iteratorError4;
 	                    }
 	                }
 	            }
@@ -874,30 +869,7 @@ module.exports =
 	    }, {
 	        key: "_seek",
 	        value: function _seek(time) {
-	            var _iteratorNormalCompletion5 = true;
-	            var _didIteratorError5 = false;
-	            var _iteratorError5 = undefined;
-
-	            try {
-	                for (var _iterator5 = this._callbacks[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-	                    var callback = _step5.value;
-
-	                    if (callback.type === "seek") callback.func(this, time);
-	                }
-	            } catch (err) {
-	                _didIteratorError5 = true;
-	                _iteratorError5 = err;
-	            } finally {
-	                try {
-	                    if (!_iteratorNormalCompletion5 && _iterator5["return"]) {
-	                        _iterator5["return"]();
-	                    }
-	                } finally {
-	                    if (_didIteratorError5) {
-	                        throw _iteratorError5;
-	                    }
-	                }
-	            }
+	            this._triggerCallbacks("seek", time);
 
 	            if (this._state === STATE.waiting) return;
 	            if (time < this._startTime) {
@@ -909,6 +881,7 @@ module.exports =
 	            }
 	            if (time >= this._stopTime) {
 	                (0, _utilsJs.clearTexture)(this._gl, this._texture);
+	                this._triggerCallbacks("ended");
 	                this._state = STATE.ended;
 	            }
 	            //update the current time
@@ -917,30 +890,7 @@ module.exports =
 	    }, {
 	        key: "_pause",
 	        value: function _pause() {
-	            var _iteratorNormalCompletion6 = true;
-	            var _didIteratorError6 = false;
-	            var _iteratorError6 = undefined;
-
-	            try {
-	                for (var _iterator6 = this._callbacks[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-	                    var callback = _step6.value;
-
-	                    if (callback.type === "pause") callback.func(this);
-	                }
-	            } catch (err) {
-	                _didIteratorError6 = true;
-	                _iteratorError6 = err;
-	            } finally {
-	                try {
-	                    if (!_iteratorNormalCompletion6 && _iterator6["return"]) {
-	                        _iterator6["return"]();
-	                    }
-	                } finally {
-	                    if (_didIteratorError6) {
-	                        throw _iteratorError6;
-	                    }
-	                }
-	            }
+	            this._triggerCallbacks("pause");
 
 	            if (this._state === STATE.playing) {
 	                this._state = STATE.paused;
@@ -949,30 +899,7 @@ module.exports =
 	    }, {
 	        key: "_play",
 	        value: function _play() {
-	            var _iteratorNormalCompletion7 = true;
-	            var _didIteratorError7 = false;
-	            var _iteratorError7 = undefined;
-
-	            try {
-	                for (var _iterator7 = this._callbacks[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
-	                    var callback = _step7.value;
-
-	                    if (callback.type === "play") callback.func(this);
-	                }
-	            } catch (err) {
-	                _didIteratorError7 = true;
-	                _iteratorError7 = err;
-	            } finally {
-	                try {
-	                    if (!_iteratorNormalCompletion7 && _iterator7["return"]) {
-	                        _iterator7["return"]();
-	                    }
-	                } finally {
-	                    if (_didIteratorError7) {
-	                        throw _iteratorError7;
-	                    }
-	                }
-	            }
+	            this._triggerCallbacks("play");
 
 	            if (this._state === STATE.paused) {
 	                this._state = STATE.playing;
@@ -994,30 +921,7 @@ module.exports =
 	            //update the state
 	            if (this._state === STATE.waiting || this._state === STATE.ended) return false;
 
-	            var _iteratorNormalCompletion8 = true;
-	            var _didIteratorError8 = false;
-	            var _iteratorError8 = undefined;
-
-	            try {
-	                for (var _iterator8 = this._callbacks[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
-	                    var callback = _step8.value;
-
-	                    if (callback.type === "render") callback.func(this, currentTime);
-	                }
-	            } catch (err) {
-	                _didIteratorError8 = true;
-	                _iteratorError8 = err;
-	            } finally {
-	                try {
-	                    if (!_iteratorNormalCompletion8 && _iterator8["return"]) {
-	                        _iterator8["return"]();
-	                    }
-	                } finally {
-	                    if (_didIteratorError8) {
-	                        throw _iteratorError8;
-	                    }
-	                }
-	            }
+	            this._triggerCallbacks("render", currentTime);
 
 	            if (currentTime < this._startTime) {
 	                (0, _utilsJs.clearTexture)(this._gl, this._texture);
@@ -1030,6 +934,7 @@ module.exports =
 
 	            if (currentTime >= this._stopTime) {
 	                (0, _utilsJs.clearTexture)(this._gl, this._texture);
+	                this._triggerCallbacks("ended");
 	                this._state = STATE.ended;
 	            }
 
@@ -1048,8 +953,8 @@ module.exports =
 	    }, {
 	        key: "clearTimelineState",
 	        value: function clearTimelineState() {
-	            this._startTime = 0;
-	            this._stopTime = 0;
+	            this._startTime = NaN;
+	            this._stopTime = Infinity;
 	            this._state = STATE.waiting;
 	        }
 	    }, {

@@ -61,6 +61,15 @@ class VideoNode extends SourceNode {
     _update(currentTime){
         //if (!super._update(currentTime)) return false;
         super._update(currentTime);
+        
+        //check if the video has ended
+        if(this._element !== undefined){
+            if (this._element.ended){
+                this._state = SOURCENODESTATE.ended;
+                this._triggerCallbacks("ended");
+            }
+        }
+
         if (this._startTime - this._currentTime < this._preloadTime && this._state !== SOURCENODESTATE.waiting && this._state !== SOURCENODESTATE.ended)this._load();
 
         if (this._state === SOURCENODESTATE.playing){
@@ -76,7 +85,6 @@ class VideoNode extends SourceNode {
             this._destroy();
             return false;
         }
-
     }
 
 }
