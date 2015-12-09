@@ -41,6 +41,13 @@ class SourceNode extends GraphNode{
         return this._state;
     }
 
+    get duration(){
+        if (this._stopTime === undefined) return undefined;
+        if (this._stopTime === Infinity) return Infinity;
+        if (isNaN(this._startTime)) return undefined;
+        return this._stopTime - this._startTime;
+    }
+
     _load(){
         this._triggerCallbacks("load");
     }

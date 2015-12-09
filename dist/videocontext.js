@@ -576,6 +576,7 @@ var VideoContext =
 	        this._sourceOffset = sourceOffset;
 	        this._globalPlaybackRate = globalPlaybackRate;
 	        this._playbackRate = 1.0;
+	        this._stopTime = undefined;
 	    }
 
 	    _createClass(VideoNode, [{
@@ -583,6 +584,7 @@ var VideoContext =
 	        value: function _load() {
 	            if (this._element !== undefined) {
 	                if (this._element.readyState > 3 && !this._element.seeking) {
+	                    if (this._stopTime === undefined) this._stopTime = this._startTime + this._element.duration;
 	                    this._ready = true;
 	                } else {
 	                    this._ready = false;
@@ -961,6 +963,14 @@ var VideoContext =
 	        key: "state",
 	        get: function get() {
 	            return this._state;
+	        }
+	    }, {
+	        key: "duration",
+	        get: function get() {
+	            if (this._stopTime === undefined) return undefined;
+	            if (this._stopTime === Infinity) return Infinity;
+	            if (isNaN(this._startTime)) return undefined;
+	            return this._stopTime - this._startTime;
 	        }
 	    }]);
 
