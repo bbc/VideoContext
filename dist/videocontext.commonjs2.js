@@ -1181,6 +1181,7 @@ module.exports =
 	        var source = getNodePos(conn.source);
 	        var destination = getNodePos(conn.destination);
 	        if (source !== undefined && destination !== undefined) {
+	            ctx.beginPath();
 	            ctx.moveTo(source.x + nodeWidth / 2, source.y + nodeHeight / 2);
 	            ctx.lineTo(destination.x + nodeWidth / 2, destination.y + nodeHeight / 2);
 	            ctx.stroke();
