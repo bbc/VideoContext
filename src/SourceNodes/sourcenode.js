@@ -120,6 +120,22 @@ class SourceNode extends GraphNode{
         return true;
     }
 
+    stopAt(time){
+        if (this._state === STATE.ended){
+            console.debug("SourceNode has already ended. Cannot call stop.");
+            return false;
+        } else if (this._state === STATE.waiting){
+            console.debug("SourceNode must have start called before stop is called");
+            return false;
+        }
+        if (time <= this._startTime){
+            console.debug("SourceNode must have a stop time after it's start time, not before.");
+            return false;
+        }
+        this._stopTime = time;
+        return true;
+    }
+
     _seek(time){
         this._triggerCallbacks("seek", time);
 
