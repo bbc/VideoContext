@@ -852,6 +852,17 @@ var VideoContext =
 	            return true;
 	        }
 	    }, {
+	        key: "startAt",
+	        value: function startAt(time) {
+	            if (this._state !== STATE.waiting) {
+	                console.debug("SourceNode is has already been sequenced. Can't sequence twice.");
+	                return false;
+	            }
+	            this._startTime = time;
+	            this._state = STATE.sequenced;
+	            return true;
+	        }
+	    }, {
 	        key: "stop",
 	        value: function stop(time) {
 	            if (this._state === STATE.ended) {
@@ -920,6 +931,9 @@ var VideoContext =
 	        value: function _update(currentTime) {
 	            this._rendered = true;
 
+	            //update the current time
+	            this._currentTime = currentTime;
+
 	            //update the state
 	            if (this._state === STATE.waiting || this._state === STATE.ended) return false;
 
@@ -939,9 +953,6 @@ var VideoContext =
 	                this._triggerCallbacks("ended");
 	                this._state = STATE.ended;
 	            }
-
-	            //update the current time
-	            this._currentTime = currentTime;
 
 	            //update this source nodes texture
 	            if (this._element === undefined || this._ready === false) return true;

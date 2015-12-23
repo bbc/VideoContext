@@ -94,6 +94,16 @@ class SourceNode extends GraphNode{
         return true;
     }
 
+    startAt(time){
+        if (this._state !== STATE.waiting){
+            console.debug("SourceNode is has already been sequenced. Can't sequence twice.");
+            return false;
+        }
+        this._startTime = time;
+        this._state = STATE.sequenced;
+        return true;
+    }
+
     stop(time){
         if (this._state === STATE.ended){
             console.debug("SourceNode has already ended. Cannot call stop.");
@@ -155,6 +165,9 @@ class SourceNode extends GraphNode{
     _update(currentTime){
         this._rendered = true;
 
+        //update the current time
+        this._currentTime = currentTime;
+
         //update the state
         if (this._state === STATE.waiting || this._state === STATE.ended) return false;
 
@@ -177,8 +190,7 @@ class SourceNode extends GraphNode{
             this._state = STATE.ended;
         }
 
-        //update the current time
-        this._currentTime = currentTime;
+        
 
 
         //update this source nodes texture
