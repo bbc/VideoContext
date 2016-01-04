@@ -34,6 +34,19 @@ let STATE = {"playing":0, "paused":1, "stalled":2, "ended":3, "broken":4};
 
 
 class VideoContext{
+    /**
+    * Initialise the VideoContext and render to the specific canvas.
+    * 
+    * @example
+    * var canvasElement = document.getElemenyById("canvas");
+    * var ctx = new VideoContext(canvasElement);
+    * var videoNode = ctx.createVideoSourceNode("video.mp4");
+    * videoNode.connect(ctx.destination);
+    * videoNode.start(0);
+    * videoNode.stop(10);
+    * ctx.play();
+    * 
+    */
     constructor(canvas){
         this._canvas = canvas;
         this._gl = canvas.getContext("experimental-webgl", { preserveDrawingBuffer: true, alpha: false });
@@ -54,11 +67,41 @@ class VideoContext{
         registerUpdateable(this);
     }
 
+    /**
+    * Regsiter a callback to listen to one of the following events: "stalled", "update", "ended"
+    *
+    * "stalled" happend anytime playback is stopped due to unavailbale data for playing assets (i.e video still loading)
+    * . "update" is called any time a frame is rendered to the screen. "ended" is called once plackback has finished 
+    * (i.e ctx.currentTime == ctx.duration).
+    *
+    * @example
+    * var canvasElement = document.getElemenyById("canvas");
+    * var ctx = new VideoContext(canvasElement);
+    * ctx.registerCallback("stalled", function(){console.log("Playback stalled");});
+    * ctx.registerCallback("update", function(){console.log("new frame");});
+    * ctx.registerCallback("ended", function(){console.log("Playback ended");});
+    */
     registerCallback(type, func){
         if (!this._callbacks.has(type)) return false;
         this._callbacks.get(type).push(func);
     }
 
+    /**
+    * Remove a previously registed callback
+    *
+    * @example
+    * var canvasElement = document.getElemenyById("canvas");
+    * var ctx = new VideoContext(canvasElement);
+    * 
+    * //the callback
+    * var updateCallback = function(){console.log("new frame")};
+    * 
+    * //register the callback
+    * ctx.registerCallback("update", updateCallback);
+    * //then unregister it
+    * ctx.unregisterCallback(updateCallback);
+    * 
+    */
     unregisterCallback(func){
         for(let funcArray of this._callbacks.values()){
             let index = funcArray.indexOf(func);
@@ -207,6 +250,14 @@ class VideoContext{
 
     /**
     * Start the VideoContext playing
+    * @example
+    * var canvasElement = document.getElemenyById("canvas");
+    * var ctx = new VideoContext(canvasElement);
+    * var videoNode = ctx.createVideoSourceNode("video.mp4");
+    * videoNode.connect(ctx.destination);
+    * videoNode.start(0);
+    * videoNode.stop(10);
+    * ctx.play();
     */
     play(){
         console.debug("VideoContext - playing");
@@ -216,6 +267,16 @@ class VideoContext{
 
     /**
     * Pause playback of the VideoContext 
+    * @example
+    * var canvasElement = document.getElemenyById("canvas");
+    * var ctx = new VideoContext(canvasElement);
+    * var videoNode = ctx.createVideoSourceNode("video.mp4");
+    * videoNode.connect(ctx.destination);
+    * videoNode.start(0);
+    * videoNode.stop(20);
+    * ctx.currentTime = 10; // seek 10 seconds in
+    * ctx.play();
+    * setTimeout(function(){ctx.pause();}, 1000); //pause playback after roughly one second.
     */
     pause(){
         console.debug("VideoContext - pausing");
@@ -225,7 +286,19 @@ class VideoContext{
 
     /**
     * Create a new node representing a video source
+    *
     * @return {VideoNode} A new video node.
+    * 
+    * @example
+    * var canvasElement = document.getElemenyById("canvas");
+    * var ctx = new VideoContext(canvasElement);
+    * var videoNode = ctx.createVideoSourceNode("video.mp4");
+    *
+    * @example
+    * var canvasElement = document.getElemenyById("canvas");
+    * var videoElement = document.getElemenyById("video");
+    * var ctx = new VideoContext(canvasElement);
+    * var videoNode = ctx.createVideoSourceNode(videoElement);
     */
     createVideoSourceNode(src, sourceOffset=0, preloadTime=4){
         let videoNode = new VideoNode(src, this._gl, this._renderGraph, this._playbackRate, sourceOffset, preloadTime);
@@ -235,7 +308,19 @@ class VideoContext{
 
     /**
     * Create a new node representing an image source
+    * 
     * @return {ImageNode} A new image node.
+    * 
+    * @example
+    * var canvasElement = document.getElemenyById("canvas");
+    * var ctx = new VideoContext(canvasElement);
+    * var imageNode = ctx.createVideoSourceNode("image.png");
+    *
+    * @example
+    * var canvasElement = document.getElemenyById("canvas");
+    * var imageElement = document.getElemenyById("image");
+    * var ctx = new VideoContext(canvasElement);
+    * var imageNode = ctx.createVideoSourceNode(imageElement);
     */
     createImageSourceNode(src, sourceOffset=0, preloadTime=4){
         let imageNode = new ImageNode(src, this._gl, this._renderGraph, this._playbackRate, sourceOffset, preloadTime);
@@ -255,7 +340,63 @@ class VideoContext{
 
     /**
     * Create a new compositiing node.
+    *
+    * Compositing nodes are used for operations such as combining multiple video sources into a single track/connection for further processing in the graph.
+    *
+    * A compositing node is slightly different to other processing nodes in that it only has one input in it's definition but can have unlimited connections made to it.
+    * The shader in the definition is run for each input in turn, drawing them to the output buffer. This means there can be no interaction between the spearte inputs to a compositing node, as they are individually processed in seperate shader passes.
+    *
     * @return {CompositingNode} A new compositing node created from the passed definition.
+    *
+    * @example
+    * 
+    * var canvasElement = document.getElemenyById("canvas");
+    * var ctx = new VideoContext(canvasElement);
+    *
+    * //A simple compositing node definition which just renders all the inputs to the output buffer.
+    * var combineDefinition = {
+    *     vertexShader : "\
+    *         attribute vec2 a_position;\
+    *         attribute vec2 a_texCoord;\
+    *         varying vec2 v_texCoord;\
+    *         void main() {\
+    *             gl_Position = vec4(vec2(2.0,2.0)*vec2(1.0, 1.0), 0.0, 1.0);\
+    *             v_texCoord = a_texCoord;\
+    *         }",
+    *     fragmentShader : "\
+    *         precision mediump float;\
+    *         uniform sampler2D u_image;\
+    *         uniform float a;\
+    *         varying vec2 v_texCoord;\
+    *         varying float v_progress;\
+    *         void main(){\
+    *             vec4 color = texture2D(u_image, v_texCoord);\
+    *             gl_FragColor = color;\
+    *         }",
+    *     properties:{
+    *         "a":{type:"uniform", value:0.0},
+    *     },
+    *     inputs:["u_image"]
+    * };
+    * //Create the node, passing in the definition.
+    * var trackNode = videoCtx.createCompositingNode(combineDefinition);
+    *
+    * //create two videos which will play at back to back
+    * var videoNode1 = ctx.createVideoSourceNode("video1.mp4");
+    * videoNode1.play(0);
+    * videoNode1.stop(10);
+    * var videoNode2 = ctx.createVideoSourceNode("video2.mp4");
+    * videoNode2.play(10);
+    * videoNode2.stop(20);
+    *
+    * //Connect the nodes to the combine node. This will give a single connection representing the two videos which can 
+    * //be connected to other effects such as LUTs, chromakeyers, etc.
+    * videoNode1.connect(trackNode);
+    * videoNode2.connect(trackNode);
+    * 
+    * //Don't do anything exciting, just connect it to the output.
+    * trackNode.connect(ctx.destination);
+    * 
     */
     createCompositingNode(definition){
         let compositingNode = new CompositingNode(this._gl, this._renderGraph, definition);
