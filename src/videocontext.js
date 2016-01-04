@@ -74,6 +74,9 @@ class VideoContext{
     * . "update" is called any time a frame is rendered to the screen. "ended" is called once plackback has finished 
     * (i.e ctx.currentTime == ctx.duration).
     *
+    * @param {String} type - the event to register against ("stalled", "update", or "ended").
+    * @param {Function} func - the callback to register.
+    *
     * @example
     * var canvasElement = document.getElemenyById("canvas");
     * var ctx = new VideoContext(canvasElement);
@@ -88,6 +91,8 @@ class VideoContext{
 
     /**
     * Remove a previously registed callback
+    *
+    * @param {Function} func - the callback to remove.
     *
     * @example
     * var canvasElement = document.getElemenyById("canvas");
@@ -123,6 +128,8 @@ class VideoContext{
     /**
     * Set the progress through the internal timeline.
     * Setting this can be used as a way to implement a scrubaable timeline.
+    *
+    * @param {number} currentTime - this is the currentTime to set the context to.
     * 
     * @example
     * var canvasElement = document.getElemenyById("canvas");
@@ -221,6 +228,9 @@ class VideoContext{
     /**
     * Set the playback rate of the VideoContext instance.
     * This will alter the playback speed of all media elements played through the VideoContext.
+    *
+    * @param {number} rate - this is the playback rate.
+    *
     * @example
     * var canvasElement = document.getElemenyById("canvas");
     * var ctx = new VideoContext(canvasElement);
@@ -345,6 +355,8 @@ class VideoContext{
     *
     * A compositing node is slightly different to other processing nodes in that it only has one input in it's definition but can have unlimited connections made to it.
     * The shader in the definition is run for each input in turn, drawing them to the output buffer. This means there can be no interaction between the spearte inputs to a compositing node, as they are individually processed in seperate shader passes.
+    *
+    * @param {Object} definition - this is an object defining the shaders, inputs, and properties of the compositing node to create.
     *
     * @return {CompositingNode} A new compositing node created from the passed definition.
     *
