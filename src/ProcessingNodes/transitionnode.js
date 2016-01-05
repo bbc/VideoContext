@@ -32,7 +32,7 @@ class TransitionNode extends EffectNode{
         });
     }
 
-    transition(startTime, endTime, targetValue, propertyName="progress"){
+    transition(startTime, endTime, targetValue, propertyName="mix"){
         let transition = {start:startTime + this._currentTime, end:endTime + this._currentTime, target:targetValue, property:propertyName};
         if (!this._doesTransitionFitOnTimeline(transition))return false;
         this._insertTransitionInTimeline(transition);
