@@ -418,7 +418,81 @@ class VideoContext{
 
     /**
     * Create a new transition node.
+    *
+    * Transistion nodes are a type of effect node which have parameters which can be changed as events on the timeline.
+    * 
+    * For example a transition node which cross-fades between two videos could have a "mix" property which sets the 
+    * progress through the transistion. Rather than having to write your own code to adjust this property at specfic 
+    * points in time a transition node has a "transition" function which takes a startTime, stopTime, targetValue, and a
+    * propertyName (which will be "mix"). This will linearly interpolate the property from the curernt value to 
+    * tragetValue between the startTime and stopTime.
+    *
+    * @param {Object} definition - this is an object defining the shaders, inputs, and properties of the transition node to create.
     * @return {TransitionNode} A new transition node created from the passed definition.
+    * @example
+    * 
+    * var canvasElement = document.getElemenyById("canvas");
+    * var ctx = new VideoContext(canvasElement);
+    *
+    * //A simple cross-fade node definition which cross-fades between two videos based on the mix property.
+    * var crossfadeDefinition = {
+    *     vertexShader : "\
+    *        attribute vec2 a_position;\
+    *        attribute vec2 a_texCoord;\
+    *        varying vec2 v_texCoord;\
+    *        void main() {\
+    *            gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+    *            v_texCoord = a_texCoord;\
+    *         }",
+    *     fragmentShader : "\
+    *         precision mediump float;\
+    *         uniform sampler2D u_image_a;\
+    *         uniform sampler2D u_image_b;\
+    *         uniform float mix;\
+    *         varying vec2 v_texCoord;\
+    *         varying float v_mix;\
+    *         void main(){\
+    *             vec4 color_a = texture2D(u_image_a, v_texCoord);\
+    *             vec4 color_b = texture2D(u_image_b, v_texCoord);\
+    *             color_a[0] *= mix;\
+    *             color_a[1] *= mix;\
+    *             color_a[2] *= mix;\
+    *             color_a[3] *= mix;\
+    *             color_b[0] *= (1.0 - mix);\
+    *             color_b[1] *= (1.0 - mix);\
+    *             color_b[2] *= (1.0 - mix);\
+    *             color_b[3] *= (1.0 - mix);\
+    *             gl_FragColor = color_a + color_b;\
+    *         }",
+    *     properties:{
+    *         "mix":{type:"uniform", value:0.0},
+    *     },
+    *     inputs:["u_image_a","u_image_b"]
+    * };
+    * 
+    * //Create the node, passing in the definition.
+    * var transitionNode = videoCtx.createTransitionNode(crossfadeDefinition);
+    *
+    * //create two videos which will overlap by two seconds
+    * var videoNode1 = ctx.createVideoSourceNode("video1.mp4");
+    * videoNode1.play(0);
+    * videoNode1.stop(10);
+    * var videoNode2 = ctx.createVideoSourceNode("video2.mp4");
+    * videoNode2.play(8);
+    * videoNode2.stop(18);
+    *
+    * //Connect the nodes to the transistion node.
+    * videoNode1.connect(transitionNode);
+    * videoNode2.connect(transitionNode);
+    * 
+    * //Set-up a transition which happens at the crossover point of the playback of the two videos
+    * transitionNode.transition(8,10,1.0,"mix");
+    *
+    * //Connect the transition node to the output
+    * transitionNode.connect(ctx.destination);
+    *
+    * //start playback
+    * ctx.play();
     */
     createTransitionNode(definition){
         let transitionNode = new TransitionNode(this._gl, this._renderGraph, definition);
