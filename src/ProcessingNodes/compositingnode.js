@@ -8,6 +8,7 @@ class CompositingNode extends ProcessingNode{
         super(gl, renderGraph, definition, definition.inputs, false);
         this._placeholderTexture = placeholderTexture;
     }
+
     _render(){
         let gl = this._gl;        
         let _this = this;

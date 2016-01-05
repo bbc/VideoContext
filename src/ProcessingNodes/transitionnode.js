@@ -32,12 +32,25 @@ class TransitionNode extends EffectNode{
         });
     }
 
+    /**
+    * Create a transition on the timeline.
+    * 
+    * @param {number} startTime - The time at which the transition should start (relative to currentTime of video context).
+    * @param {number} endTime - The time at which the transition should be completed by (relative to currentTime of video context).
+    * @param {number} targetValue - The value to transition to by endTime.
+    * @param {String} propertyName - The name of the property to clear transitions on, if undefined clear all transitions on the node.
+    */
     transition(startTime, endTime, targetValue, propertyName="mix"){
         let transition = {start:startTime + this._currentTime, end:endTime + this._currentTime, target:targetValue, property:propertyName};
         if (!this._doesTransitionFitOnTimeline(transition))return false;
         this._insertTransitionInTimeline(transition);
     }
 
+    /**
+    * Clear all transistions on the passed property. If no property is defined clear all transitions on the node.
+    * 
+    * @param {String} propertyName - The name of the property to clear transitions on, if undefined clear all transitions on the node.
+    */
     clearTransitions(propertyName){
         if (propertyName === undefined){
             this._transitions = {};
