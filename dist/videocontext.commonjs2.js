@@ -45,6 +45,8 @@ module.exports =
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
+	//Matthew Shotton, R&D User Experince,© BBC 2015
+
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
@@ -461,8 +463,72 @@ module.exports =
 	        * propertyName (which will be "mix"). This will linearly interpolate the property from the curernt value to 
 	        * tragetValue between the startTime and stopTime.
 	        *
-	        *
+	        * @param {Object} definition - this is an object defining the shaders, inputs, and properties of the transition node to create.
 	        * @return {TransitionNode} A new transition node created from the passed definition.
+	        * @example
+	        * 
+	        * var canvasElement = document.getElemenyById("canvas");
+	        * var ctx = new VideoContext(canvasElement);
+	        *
+	        * //A simple cross-fade node definition which cross-fades between two videos based on the mix property.
+	        * var crossfadeDefinition = {
+	        *     vertexShader : "\
+	        *        attribute vec2 a_position;\
+	        *        attribute vec2 a_texCoord;\
+	        *        varying vec2 v_texCoord;\
+	        *        void main() {\
+	        *            gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+	        *            v_texCoord = a_texCoord;\
+	        *         }",
+	        *     fragmentShader : "\
+	        *         precision mediump float;\
+	        *         uniform sampler2D u_image_a;\
+	        *         uniform sampler2D u_image_b;\
+	        *         uniform float mix;\
+	        *         varying vec2 v_texCoord;\
+	        *         varying float v_mix;\
+	        *         void main(){\
+	        *             vec4 color_a = texture2D(u_image_a, v_texCoord);\
+	        *             vec4 color_b = texture2D(u_image_b, v_texCoord);\
+	        *             color_a[0] *= mix;\
+	        *             color_a[1] *= mix;\
+	        *             color_a[2] *= mix;\
+	        *             color_a[3] *= mix;\
+	        *             color_b[0] *= (1.0 - mix);\
+	        *             color_b[1] *= (1.0 - mix);\
+	        *             color_b[2] *= (1.0 - mix);\
+	        *             color_b[3] *= (1.0 - mix);\
+	        *             gl_FragColor = color_a + color_b;\
+	        *         }",
+	        *     properties:{
+	        *         "mix":{type:"uniform", value:0.0},
+	        *     },
+	        *     inputs:["u_image_a","u_image_b"]
+	        * };
+	        * 
+	        * //Create the node, passing in the definition.
+	        * var transitionNode = videoCtx.createTransitionNode(crossfadeDefinition);
+	        *
+	        * //create two videos which will overlap by two seconds
+	        * var videoNode1 = ctx.createVideoSourceNode("video1.mp4");
+	        * videoNode1.play(0);
+	        * videoNode1.stop(10);
+	        * var videoNode2 = ctx.createVideoSourceNode("video2.mp4");
+	        * videoNode2.play(8);
+	        * videoNode2.stop(18);
+	        *
+	        * //Connect the nodes to the transistion node.
+	        * videoNode1.connect(transitionNode);
+	        * videoNode2.connect(transitionNode);
+	        * 
+	        * //Set-up a transition which happens at the crossover point of the playback of the two videos
+	        * transitionNode.transition(8,10,1.0,"mix");
+	        *
+	        * //Connect the transition node to the output
+	        * transitionNode.connect(ctx.destination);
+	        *
+	        * //start playback
+	        * ctx.play();
 	        */
 	    }, {
 	        key: "createTransitionNode",
@@ -707,6 +773,7 @@ module.exports =
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
+	//Matthew Shotton, R&D User Experince,© BBC 2015
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
@@ -839,6 +906,7 @@ module.exports =
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
+	//Matthew Shotton, R&D User Experince,© BBC 2015
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
@@ -1178,6 +1246,7 @@ module.exports =
 /* 3 */
 /***/ function(module, exports) {
 
+	//Matthew Shotton, R&D User Experince,© BBC 2015
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
@@ -1546,6 +1615,7 @@ module.exports =
 /* 4 */
 /***/ function(module, exports) {
 
+	//Matthew Shotton, R&D User Experince,© BBC 2015
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
@@ -1572,11 +1642,32 @@ module.exports =
 	        this._rendered = false;
 	    }
 
+	    /**
+	    * Get the names of the inputs to this node.
+	    *
+	    * @return {String[]} An array of the names of the inputs ot the node.
+	    */
+
 	    _createClass(GraphNode, [{
 	        key: "connect",
+
+	        /**
+	        * Connect this node to the targetNode
+	        * 
+	        * @param {GraphNode} targetNode - the node to connect.
+	        * @param {(number| String)} [targetPort] - the port on the targetNode to connect to, this can be an index, a string identifier, or undefined (in which case the next available port will be connected to).
+	        * 
+	        */
 	        value: function connect(targetNode, targetPort) {
 	            return this._renderGraph.registerConnection(this, targetNode, targetPort);
 	        }
+
+	        /**
+	        * Disconnect this node from the targetNode. If targetNode is undefind remove all out-bound connections.
+	        *
+	        * @param {GraphNode} [targetNode] - the node to disconnect from. If undefined, disconnect from all nodes.
+	        *
+	        */
 	    }, {
 	        key: "disconnect",
 	        value: function disconnect(targetNode) {
@@ -1595,12 +1686,24 @@ module.exports =
 	        get: function get() {
 	            return this._inputNames.slice();
 	        }
+
+	        /**
+	        * The maximum number of connections that can be made to this node. If there is not limit this will return Infinity.
+	        *
+	        * @return {number} The number of connections which can be made to this node.
+	        */
 	    }, {
 	        key: "maximumConnections",
 	        get: function get() {
 	            if (this._limitConnections === false) return Infinity;
 	            return this._inputNames.length;
 	        }
+
+	        /**
+	        * Get an array of all the nodes which connect to this node.
+	        *
+	        * @return {GraphNode[]} An array of nodes which connect to this node.
+	        */
 	    }, {
 	        key: "inputs",
 	        get: function get() {
@@ -1610,6 +1713,12 @@ module.exports =
 	            });
 	            return result;
 	        }
+
+	        /**
+	        * Get an array of all the nodes which this node outputs to.
+	        *
+	        * @return {GraphNode[]} An array of nodes which this node connects to.
+	        */
 	    }, {
 	        key: "outputs",
 	        get: function get() {
@@ -1627,6 +1736,7 @@ module.exports =
 /* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
+	//Matthew Shotton, R&D User Experince,© BBC 2015
 	'use strict';
 
 	Object.defineProperty(exports, '__esModule', {
@@ -1731,6 +1841,7 @@ module.exports =
 /* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
+	//Matthew Shotton, R&D User Experince,© BBC 2015
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
@@ -1831,6 +1942,7 @@ module.exports =
 /* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
+	//Matthew Shotton, R&D User Experince,© BBC 2015
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
@@ -2049,6 +2161,7 @@ module.exports =
 /* 8 */
 /***/ function(module, exports) {
 
+	//Matthew Shotton, R&D User Experince,© BBC 2015
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
@@ -2071,6 +2184,7 @@ module.exports =
 /* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
+	//Matthew Shotton, R&D User Experince,© BBC 2015
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
@@ -2188,6 +2302,7 @@ module.exports =
 /* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
+	//Matthew Shotton, R&D User Experince,© BBC 2015
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
@@ -2267,6 +2382,7 @@ module.exports =
 /* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
+	//Matthew Shotton, R&D User Experince,© BBC 2015
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
@@ -2347,6 +2463,15 @@ module.exports =
 	                return a.start - b.start;
 	            });
 	        }
+
+	        /**
+	        * Create a transition on the timeline.
+	        * 
+	        * @param {number} startTime - The time at which the transition should start (relative to currentTime of video context).
+	        * @param {number} endTime - The time at which the transition should be completed by (relative to currentTime of video context).
+	        * @param {number} targetValue - The value to transition to by endTime.
+	        * @param {String} propertyName - The name of the property to clear transitions on, if undefined clear all transitions on the node.
+	        */
 	    }, {
 	        key: "transition",
 	        value: function transition(startTime, endTime, targetValue) {
@@ -2356,6 +2481,12 @@ module.exports =
 	            if (!this._doesTransitionFitOnTimeline(transition)) return false;
 	            this._insertTransitionInTimeline(transition);
 	        }
+
+	        /**
+	        * Clear all transistions on the passed property. If no property is defined clear all transitions on the node.
+	        * 
+	        * @param {String} propertyName - The name of the property to clear transitions on, if undefined clear all transitions on the node.
+	        */
 	    }, {
 	        key: "clearTransitions",
 	        value: function clearTransitions(propertyName) {
@@ -2404,6 +2535,7 @@ module.exports =
 /* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
+	//Matthew Shotton, R&D User Experince,© BBC 2015
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
@@ -2423,6 +2555,13 @@ module.exports =
 	        this.connections = [];
 	    }
 
+	    /**
+	    * Get a list of nodes which are connected to the output of the passed node.
+	    * 
+	    * @param {GraphNode} node - the node to get the outputs for.
+	    * @return {GraphNode[]} An array of the nodes which are connected to the output.
+	    */
+
 	    _createClass(RenderGraph, [{
 	        key: "getOutputsForNode",
 	        value: function getOutputsForNode(node) {
@@ -2434,6 +2573,13 @@ module.exports =
 	            });
 	            return results;
 	        }
+
+	        /**
+	        * Get a list of nodes which are connected, by input name, to the given node. Array contains objects of the form: {"source":sourceNode, "type":"name", "name":inputName, "destination":destinationNode}.
+	        *
+	        * @param {GraphNode} node - the node to get the named inputs for.
+	        * @return {Object[]} An array of objects representing the nodes and connection type, which are connected to the named inputs for the node.
+	        */
 	    }, {
 	        key: "getNamedInputsForNode",
 	        value: function getNamedInputsForNode(node) {
@@ -2445,6 +2591,13 @@ module.exports =
 	            });
 	            return results;
 	        }
+
+	        /**
+	        * Get a list of nodes which are connected, by z-index name, to the given node. Array contains objects of the form: {"source":sourceNode, "type":"zIndex", "zIndex":0, "destination":destinationNode}.
+	        * 
+	        * @param {GraphNode} node - the node to get the z-index refernced inputs for.
+	        * @return {Object[]} An array of objects representing the nodes and connection type, which are connected by z-Index for the node.
+	        */
 	    }, {
 	        key: "getZIndexInputsForNode",
 	        value: function getZIndexInputsForNode(node) {
@@ -2459,6 +2612,13 @@ module.exports =
 	            });
 	            return results;
 	        }
+
+	        /**
+	        * Get a list of nodes which are connected as inputs to the given node. 
+	        * 
+	        * @param {GraphNode} node - the node to get the inputs for.
+	        * @return {GraphNode[]} An array of GraphNodes which are connected to the node.
+	        */
 	    }, {
 	        key: "getInputsForNode",
 	        value: function getInputsForNode(node) {
@@ -2617,11 +2777,6 @@ module.exports =
 	                var index = 0;
 	                if (indexedConns.length > 0) index = indexedConns[indexedConns.length - 1].zIndex + 1;
 	                this.connections.push({ "source": sourceNode, "type": "zIndex", "zIndex": index, "destination": destinationNode });
-
-	                /*console.log(destinationNode._limitConnections);
-	                console.log(destinationNode);
-	                console.log("num_inputs",destinationNode.inputNames.length);
-	                console.log(destinationNode.inputs);*/
 	            }
 	            return true;
 	        }

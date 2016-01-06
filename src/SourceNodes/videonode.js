@@ -1,3 +1,4 @@
+//Matthew Shotton, R&D User Experince,© BBC 2015
 import SourceNode, { SOURCENODESTATE } from "./sourcenode";
 
 class VideoNode extends SourceNode {

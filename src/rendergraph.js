@@ -1,3 +1,4 @@
+//Matthew Shotton, R&D User Experince,© BBC 2015
 import { ConnectException } from "./exceptions.js";
 
 
@@ -6,6 +7,12 @@ class RenderGraph {
         this.connections = [];
     }
 
+    /**
+    * Get a list of nodes which are connected to the output of the passed node.
+    * 
+    * @param {GraphNode} node - the node to get the outputs for.
+    * @return {GraphNode[]} An array of the nodes which are connected to the output.
+    */
     getOutputsForNode(node){
         let results = [];
         this.connections.forEach(function(connection){
@@ -16,6 +23,12 @@ class RenderGraph {
         return results;
     }
     
+    /**
+    * Get a list of nodes which are connected, by input name, to the given node. Array contains objects of the form: {"source":sourceNode, "type":"name", "name":inputName, "destination":destinationNode}.
+    *
+    * @param {GraphNode} node - the node to get the named inputs for.
+    * @return {Object[]} An array of objects representing the nodes and connection type, which are connected to the named inputs for the node.
+    */
     getNamedInputsForNode(node){
         let results = [];
         this.connections.forEach(function(connection){
@@ -26,7 +39,12 @@ class RenderGraph {
         return results;
     }
 
-
+    /**
+    * Get a list of nodes which are connected, by z-index name, to the given node. Array contains objects of the form: {"source":sourceNode, "type":"zIndex", "zIndex":0, "destination":destinationNode}.
+    * 
+    * @param {GraphNode} node - the node to get the z-index refernced inputs for.
+    * @return {Object[]} An array of objects representing the nodes and connection type, which are connected by z-Index for the node.
+    */
     getZIndexInputsForNode(node){
         let results = [];
         this.connections.forEach(function(connection){
@@ -40,7 +58,12 @@ class RenderGraph {
         return results;   
     }
 
-
+    /**
+    * Get a list of nodes which are connected as inputs to the given node. 
+    * 
+    * @param {GraphNode} node - the node to get the inputs for.
+    * @return {GraphNode[]} An array of GraphNodes which are connected to the node.
+    */
     getInputsForNode(node){
         let inputNames = node.inputNames;        
         let results = [];
@@ -109,12 +132,6 @@ class RenderGraph {
             let index = 0;
             if (indexedConns.length > 0)index = indexedConns[indexedConns.length-1].zIndex +1;
             this.connections.push({"source":sourceNode, "type":"zIndex", "zIndex":index, "destination":destinationNode});
-            
-
-            /*console.log(destinationNode._limitConnections);
-            console.log(destinationNode);
-            console.log("num_inputs",destinationNode.inputNames.length);
-            console.log(destinationNode.inputs);*/
         }
         return true;
     }

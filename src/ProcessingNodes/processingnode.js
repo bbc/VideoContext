@@ -1,3 +1,4 @@
+//Matthew Shotton, R&D User Experince,© BBC 2015
 import GraphNode from "../graphnode";
 import { createShaderProgram, createElementTexutre, updateTexture } from "../utils.js";
 import { RenderException } from "../exceptions.js";
