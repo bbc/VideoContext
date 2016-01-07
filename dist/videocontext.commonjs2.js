@@ -757,6 +757,137 @@ module.exports =
 	        get: function get() {
 	            return this._playbackRate;
 	        }
+	    }], [{
+	        key: "DEFINITIONS",
+	        get: function get() {
+	            var crossfade = {
+	                vertexShader: "\
+	                    attribute vec2 a_position;\
+	                    attribute vec2 a_texCoord;\
+	                    varying vec2 v_texCoord;\
+	                    void main() {\
+	                        gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+	                        v_texCoord = a_texCoord;\
+	                    }",
+	                fragmentShader: "\
+	                    precision mediump float;\
+	                    uniform sampler2D u_image_a;\
+	                    uniform sampler2D u_image_b;\
+	                    uniform float mix;\
+	                    varying vec2 v_texCoord;\
+	                    varying float v_mix;\
+	                    void main(){\
+	                        vec4 color_a = texture2D(u_image_a, v_texCoord);\
+	                        vec4 color_b = texture2D(u_image_b, v_texCoord);\
+	                        color_a[0] *= mix;\
+	                        color_a[1] *= mix;\
+	                        color_a[2] *= mix;\
+	                        color_a[3] *= mix;\
+	                        color_b[0] *= (1.0 - mix);\
+	                        color_b[1] *= (1.0 - mix);\
+	                        color_b[2] *= (1.0 - mix);\
+	                        color_b[3] *= (1.0 - mix);\
+	                        gl_FragColor = color_a + color_b;\
+	                    }",
+	                properties: {
+	                    "mix": { type: "uniform", value: 0.0 }
+	                },
+	                inputs: ["u_image_a", "u_image_b"]
+	            };
+
+	            var combine = {
+	                vertexShader: "\
+	                    attribute vec2 a_position;\
+	                    attribute vec2 a_texCoord;\
+	                    varying vec2 v_texCoord;\
+	                    void main() {\
+	                        gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+	                        v_texCoord = a_texCoord;\
+	                    }",
+	                fragmentShader: "\
+	                    precision mediump float;\
+	                    uniform sampler2D u_image;\
+	                    uniform float a;\
+	                    varying vec2 v_texCoord;\
+	                    varying float v_mix;\
+	                    void main(){\
+	                        vec4 color = texture2D(u_image, v_texCoord);\
+	                        gl_FragColor = color;\
+	                    }",
+	                properties: {
+	                    "a": { type: "uniform", value: 0.0 }
+	                },
+	                inputs: ["u_image"]
+	            };
+
+	            var colorThreshold = {
+	                vertexShader: "\
+	                    attribute vec2 a_position;\
+	                    attribute vec2 a_texCoord;\
+	                    varying vec2 v_texCoord;\
+	                    void main() {\
+	                        gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+	                        v_texCoord = a_texCoord;\
+	                    }",
+	                fragmentShader: "\
+	                    precision mediump float;\
+	                    uniform sampler2D u_image;\
+	                    uniform float a;\
+	                    uniform vec3 colorAlphaThreshold;\
+	                    varying vec2 v_texCoord;\
+	                    varying float v_mix;\
+	                    void main(){\
+	                        vec4 color = texture2D(u_image, v_texCoord);\
+	                        if (color[0] > colorAlphaThreshold[0] && color[1]> colorAlphaThreshold[1] && color[2]> colorAlphaThreshold[2]){\
+	                            color = vec4(0.0,0.0,0.0,0.0);\
+	                        }\
+	                        gl_FragColor = color;\
+	                    }",
+	                properties: {
+	                    "a": { type: "uniform", value: 0.0 },
+	                    "colorAlphaThreshold": { type: "uniform", value: [0.0, 0.55, 0.0] }
+	                },
+	                inputs: ["u_image"]
+	            };
+
+	            var monochrome = {
+	                vertexShader: "\
+	                    attribute vec2 a_position;\
+	                    attribute vec2 a_texCoord;\
+	                    varying vec2 v_texCoord;\
+	                    void main() {\
+	                        gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+	                        v_texCoord = a_texCoord;\
+	                    }",
+	                fragmentShader: "\
+	                    precision mediump float;\
+	                    uniform sampler2D u_image;\
+	                    uniform vec3 inputMix;\
+	                    uniform vec3 outputMix;\
+	                    varying vec2 v_texCoord;\
+	                    varying float v_mix;\
+	                    void main(){\
+	                        vec4 color = texture2D(u_image, v_texCoord);\
+	                        float mono = color[0]*inputMix[0] + color[1]*inputMix[1] + color[2]*inputMix[2];\
+	                        color[0] = mono * outputMix[0];\
+	                        color[1] = mono * outputMix[1];\
+	                        color[2] = mono * outputMix[2];\
+	                        gl_FragColor = color;\
+	                    }",
+	                properties: {
+	                    "inputMix": { type: "uniform", value: [0.4, 0.6, 0.2] },
+	                    "outputMix": { type: "uniform", value: [1.0, 1.0, 1.0] }
+	                },
+	                inputs: ["u_image"]
+	            };
+
+	            return {
+	                CROSSFADE: crossfade,
+	                COMBINE: combine,
+	                COLORTHRESHOLD: colorThreshold,
+	                MONOCHROME: monochrome
+	            };
+	        }
 	    }]);
 
 	    return VideoContext;
@@ -967,6 +1098,18 @@ module.exports =
 	    * 2 - Playing, the node is playing.
 	    * 3 - Paused, the node is paused.
 	    * 4 - Ended, playback of the node has finished.
+	    *
+	    * @example
+	    * var ctx = new VideoContext();
+	    * var videoNode = ctx.createVideoSourceNode('video.mp4');
+	    * console.log(videoNode.state); //will output 0 (for waiting)
+	    * videoNode.start(5);
+	    * console.log(videoNode.state); //will output 1 (for sequenced)
+	    * videoNode.stop(10);
+	    * ctx.play();
+	    * console.log(videoNode.state); //will output 2 (for playing)
+	    * ctx.paused();
+	    * console.log(videoNode.state); //will output 3 (for paused)
 	    */
 
 	    _createClass(SourceNode, [{
@@ -979,11 +1122,43 @@ module.exports =
 	        value: function _destroy() {
 	            this._triggerCallbacks("destroy");
 	        }
+
+	        /**
+	        * Register callbacks against one of these events: "load", "destory", "seek", "pause", "play", "ended"
+	        *
+	        * @param {String} type - the type of event to register the callback against.
+	        * @param {function} func - the function to call.
+	        * 
+	        * @example 
+	        * var ctx = new VideoContext();
+	        * var videoNode = ctx.createVideoSourceNode('video.mp4');
+	        *
+	        * videoNode.registerCallback("load", function(){"video is loading"});
+	        * videoNode.registerCallback("play", function(){"video is playing"});
+	        * videoNode.registerCallback("ended", function(){"video has eneded"});
+	        *
+	        */
 	    }, {
 	        key: "registerCallback",
 	        value: function registerCallback(type, func) {
 	            this._callbacks.push({ type: type, func: func });
 	        }
+
+	        /**
+	        * Remove callback.
+	        *
+	        * @param {function} [func] - the callback to remove, if undefined will remove all callbacks for this node.
+	        *
+	        * @example 
+	        * var ctx = new VideoContext();
+	        * var videoNode = ctx.createVideoSourceNode('video.mp4');
+	        *
+	        * videoNode.registerCallback("load", function(){"video is loading"});
+	        * videoNode.registerCallback("play", function(){"video is playing"});
+	        * videoNode.registerCallback("ended", function(){"video has eneded"});
+	        * videoNode.unregisterCallback(); //remove all of the three callbacks.
+	        *
+	        */
 	    }, {
 	        key: "unregisterCallback",
 	        value: function unregisterCallback(func) {
@@ -1073,6 +1248,13 @@ module.exports =
 	                }
 	            }
 	        }
+
+	        /**
+	        * Start playback at VideoContext.currentTime plus passed time. If passed time is negative, will play as soon as possible.
+	        *
+	        * @param {number} time - the time from the currentTime of the VideoContext which to start playing, if negative will play as soon as possible.
+	        * @return {boolean} Will return true is seqeuncing has succeded, or false if it is already sequenced.
+	        */
 	    }, {
 	        key: "start",
 	        value: function start(time) {
@@ -1085,6 +1267,13 @@ module.exports =
 	            this._state = STATE.sequenced;
 	            return true;
 	        }
+
+	        /**
+	        * Start playback at an absolute time ont the VideoContext's timeline.
+	        *
+	        * @param {number} time - the time on the VideoContexts timeline to start playing.
+	        * @return {boolean} Will return true is seqeuncing has succeded, or false if it is already sequenced.
+	        */
 	    }, {
 	        key: "startAt",
 	        value: function startAt(time) {
@@ -1096,6 +1285,13 @@ module.exports =
 	            this._state = STATE.sequenced;
 	            return true;
 	        }
+
+	        /**
+	        * Stop playback at VideoContext.currentTime plus passed time. If passed time is negative, will play as soon as possible.
+	        *
+	        * @param {number} time - the time from the currentTime of the video context which to stop playback.
+	        * @return {boolean} Will return true is seqeuncing has succeded, or false if the playback has already ended or if start hasn't been called yet, or if time is less than the start time.
+	        */
 	    }, {
 	        key: "stop",
 	        value: function stop(time) {
@@ -1113,6 +1309,13 @@ module.exports =
 	            this._stopTime = this._currentTime + time;
 	            return true;
 	        }
+
+	        /**
+	        * Stop playback at an absolute time ont the VideoContext's timeline.
+	        *
+	        * @param {number} time - the time on the VideoContexts timeline to stop playing.
+	        * @return {boolean} Will return true is seqeuncing has succeded, or false if the playback has already ended or if start hasn't been called yet, or if time is less than the start time.
+	        */
 	    }, {
 	        key: "stopAt",
 	        value: function stopAt(time) {
@@ -1214,6 +1417,10 @@ module.exports =
 
 	            return true;
 	        }
+
+	        /**
+	        * Clear any timeline state the node currently has, this puts the node in the "waiting" state, as if neither start nor stop had been called.
+	        */
 	    }, {
 	        key: "clearTimelineState",
 	        value: function clearTimelineState() {
@@ -1226,6 +1433,19 @@ module.exports =
 	        get: function get() {
 	            return this._state;
 	        }
+
+	        /**
+	        * Returns the duration of the node on a timeline. If no start time is set will return undefiend, if no stop time is set will return Infinity.
+	        *
+	        * @return {number} The duration of the node in seconds.
+	        *
+	        * @example 
+	        * var ctx = new VideoContext();
+	        * var videoNode = ctx.createVideoSourceNode('video.mp4');
+	        * videoNode.start(5);
+	        * videoNode.stop(10);
+	        * console.log(videoNode.duration); //will output 10
+	        */
 	    }, {
 	        key: "duration",
 	        get: function get() {
@@ -1247,6 +1467,17 @@ module.exports =
 /***/ function(module, exports) {
 
 	//Matthew Shotton, R&D User Experince,© BBC 2015
+
+	/*
+	* Utility function to compile a WebGL Vertex or Fragment shader.
+	* 
+	* @param {WebGLRenderingContext} gl - the webgl context fo which to build the shader.
+	* @param {String} shaderSource - A string of shader code to compile.
+	* @param {number} shaderType - Shader type, either WebGLRenderingContext.VERTEX_SHADER or WebGLRenderingContext.FRAGMENT_SHADER.
+	*
+	* @return {WebGLShader} A compiled shader.
+	*
+	*/
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
@@ -1272,6 +1503,16 @@ module.exports =
 	    }
 	    return shader;
 	}
+
+	/*
+	* Create a shader program from a passed vertex and fragment shader source string.
+	* 
+	* @param {WebGLRenderingContext} gl - the webgl context fo which to build the shader.
+	* @param {String} vertexShaderSource - A string of vertex shader code to compile.
+	* @param {String} fragmentShaderSource - A string of fragment shader code to compile.
+	*
+	* @return {WebGLProgram} A compiled & linkde shader program.
+	*/
 
 	function createShaderProgram(gl, vertexShaderSource, fragmentShaderSource) {
 	    var vertexShader = compileShader(gl, vertexShaderSource, gl.VERTEX_SHADER);
@@ -1867,6 +2108,10 @@ module.exports =
 	var CompositingNode = (function (_ProcessingNode) {
 	    _inherits(CompositingNode, _ProcessingNode);
 
+	    /**
+	    * Initialise an instance of a Compositing Node. You should not instantiate this directly, but use VideoContest.createCompositingNode().
+	    */
+
 	    function CompositingNode(gl, renderGraph, definition) {
 	        _classCallCheck(this, CompositingNode);
 
@@ -1969,6 +2214,12 @@ module.exports =
 
 	var ProcessingNode = (function (_GraphNode) {
 	    _inherits(ProcessingNode, _GraphNode);
+
+	    /**
+	    * Initialise an instance of a ProcessingNode.
+	    *
+	    * This class is not used directly, but is extended to create CompositingNodes, TransitionNodes, and EffectNodes.
+	    */
 
 	    function ProcessingNode(gl, renderGraph, definition, inputNames, limitConnections) {
 	        var _this = this;
@@ -2212,6 +2463,14 @@ module.exports =
 	var DestinationNode = (function (_ProcessingNode) {
 	    _inherits(DestinationNode, _ProcessingNode);
 
+	    /**
+	    * Initialise an instance of a DestinationNode. 
+	    *
+	    * There should only be a single instance of a DestinationNode per VideoContext instance. An VideoContext's destination can be accessed like so: videoContext.desitnation.
+	    * 
+	    * You should not instantiate this directly.
+	    */
+
 	    function DestinationNode(gl, renderGraph) {
 	        _classCallCheck(this, DestinationNode);
 
@@ -2328,6 +2587,10 @@ module.exports =
 	var EffectNode = (function (_ProcessingNode) {
 	    _inherits(EffectNode, _ProcessingNode);
 
+	    /**
+	    * Initialise an instance of an EffectNode. You should not instantiate this directly, but use VideoContest.createEffectNode().
+	    */
+
 	    function EffectNode(gl, renderGraph, definition) {
 	        _classCallCheck(this, EffectNode);
 
@@ -2405,6 +2668,10 @@ module.exports =
 
 	var TransitionNode = (function (_EffectNode) {
 	    _inherits(TransitionNode, _EffectNode);
+
+	    /**
+	    * Initialise an instance of a TransitionNode. You should not instantiate this directly, but use VideoContest.createTransitonNode().
+	    */
 
 	    function TransitionNode(gl, renderGraph, definition) {
 	        _classCallCheck(this, TransitionNode);
@@ -2718,6 +2985,12 @@ module.exports =
 	            }
 	            return results;
 	        }
+
+	        /**
+	        * Check if a named input on a node is available to connect too.
+	        * @param {GraphNode} node - the node to check.
+	        * @param {String} inputName - the named input to check.
+	        */
 	    }, {
 	        key: "isInputAvailable",
 	        value: function isInputAvailable(node, inputName) {
@@ -2753,6 +3026,15 @@ module.exports =
 
 	            return true;
 	        }
+
+	        /**
+	        * Register a connection between two nodes.
+	        * 
+	        * @param {GraphNode} sourceNode - the node to connect from.
+	        * @param {GraphNode} destinationNode - the node to connect to.
+	        * @param {(String || number)} [target] - the target port of the conenction, this could be a string to specfiy a specific named port, a number to specify a port by index, or undefined, in which case the next available port will be connected to.
+	        * @return {boolean} Will return true if connection succeeds otherwise will throw a ConnectException.
+	        */
 	    }, {
 	        key: "registerConnection",
 	        value: function registerConnection(sourceNode, destinationNode, target) {
@@ -2780,6 +3062,13 @@ module.exports =
 	            }
 	            return true;
 	        }
+
+	        /**
+	        * Remove a connection between two nodes.
+	        * @param {GraphNode} sourceNode - the node to unregsiter connection from.
+	        * @param {GraphNode} destinationNode - the node to register connection to.
+	        * @return {boolean} Will return true if removing connection succeeds, or false if there was no connection to remove.
+	        */
 	    }, {
 	        key: "unregsiterConnection",
 	        value: function unregsiterConnection(sourceNode, destinationNode) {

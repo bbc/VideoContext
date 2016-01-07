@@ -558,11 +558,131 @@ class VideoContext{
 
     static get DEFINITIONS() {
         var crossfade = {
-            
+            vertexShader : "\
+                    attribute vec2 a_position;\
+                    attribute vec2 a_texCoord;\
+                    varying vec2 v_texCoord;\
+                    void main() {\
+                        gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+                        v_texCoord = a_texCoord;\
+                    }",
+                fragmentShader : "\
+                    precision mediump float;\
+                    uniform sampler2D u_image_a;\
+                    uniform sampler2D u_image_b;\
+                    uniform float mix;\
+                    varying vec2 v_texCoord;\
+                    varying float v_mix;\
+                    void main(){\
+                        vec4 color_a = texture2D(u_image_a, v_texCoord);\
+                        vec4 color_b = texture2D(u_image_b, v_texCoord);\
+                        color_a[0] *= mix;\
+                        color_a[1] *= mix;\
+                        color_a[2] *= mix;\
+                        color_a[3] *= mix;\
+                        color_b[0] *= (1.0 - mix);\
+                        color_b[1] *= (1.0 - mix);\
+                        color_b[2] *= (1.0 - mix);\
+                        color_b[3] *= (1.0 - mix);\
+                        gl_FragColor = color_a + color_b;\
+                    }",
+                properties:{
+                    "mix":{type:"uniform", value:0.0}
+                },
+                inputs:["u_image_a","u_image_b"]
         };
 
+        var combine ={
+                vertexShader : "\
+                    attribute vec2 a_position;\
+                    attribute vec2 a_texCoord;\
+                    varying vec2 v_texCoord;\
+                    void main() {\
+                        gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+                        v_texCoord = a_texCoord;\
+                    }",
+                fragmentShader : "\
+                    precision mediump float;\
+                    uniform sampler2D u_image;\
+                    uniform float a;\
+                    varying vec2 v_texCoord;\
+                    varying float v_mix;\
+                    void main(){\
+                        vec4 color = texture2D(u_image, v_texCoord);\
+                        gl_FragColor = color;\
+                    }",
+                properties:{
+                    "a":{type:"uniform", value:0.0},
+                },
+                inputs:["u_image"]
+        };
+
+        var colorThreshold = {
+                vertexShader : "\
+                    attribute vec2 a_position;\
+                    attribute vec2 a_texCoord;\
+                    varying vec2 v_texCoord;\
+                    void main() {\
+                        gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+                        v_texCoord = a_texCoord;\
+                    }",
+                fragmentShader : "\
+                    precision mediump float;\
+                    uniform sampler2D u_image;\
+                    uniform float a;\
+                    uniform vec3 colorAlphaThreshold;\
+                    varying vec2 v_texCoord;\
+                    varying float v_mix;\
+                    void main(){\
+                        vec4 color = texture2D(u_image, v_texCoord);\
+                        if (color[0] > colorAlphaThreshold[0] && color[1]> colorAlphaThreshold[1] && color[2]> colorAlphaThreshold[2]){\
+                            color = vec4(0.0,0.0,0.0,0.0);\
+                        }\
+                        gl_FragColor = color;\
+                    }",
+                properties:{
+                    "a":{type:"uniform", value:0.0},
+                    "colorAlphaThreshold":{type:"uniform", value:[0.0,0.55,0.0]}
+                },
+                inputs:["u_image"]
+            };
+
+        var monochrome = {
+                vertexShader : "\
+                    attribute vec2 a_position;\
+                    attribute vec2 a_texCoord;\
+                    varying vec2 v_texCoord;\
+                    void main() {\
+                        gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+                        v_texCoord = a_texCoord;\
+                    }",
+                fragmentShader : "\
+                    precision mediump float;\
+                    uniform sampler2D u_image;\
+                    uniform vec3 inputMix;\
+                    uniform vec3 outputMix;\
+                    varying vec2 v_texCoord;\
+                    varying float v_mix;\
+                    void main(){\
+                        vec4 color = texture2D(u_image, v_texCoord);\
+                        float mono = color[0]*inputMix[0] + color[1]*inputMix[1] + color[2]*inputMix[2];\
+                        color[0] = mono * outputMix[0];\
+                        color[1] = mono * outputMix[1];\
+                        color[2] = mono * outputMix[2];\
+                        gl_FragColor = color;\
+                    }",
+                properties:{
+                    "inputMix":{type:"uniform", value:[0.4,0.6,0.2]},
+                    "outputMix":{type:"uniform", value:[1.0,1.0,1.0]}
+                },
+                inputs:["u_image"]
+            };
+
         return {
-            CROSSFADE: crossfade
+            CROSSFADE: crossfade,
+            COMBINE: combine,
+            COLORTHRESHOLD: colorThreshold,
+            MONOCHROME: monochrome
         };
     }
 
