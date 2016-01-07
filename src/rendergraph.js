@@ -97,6 +97,11 @@ class RenderGraph {
         return results;
     }
 
+    /**
+    * Check if a named input on a node is available to connect too.
+    * @param {GraphNode} node - the node to check.
+    * @param {String} inputName - the named input to check.
+    */
     isInputAvailable(node, inputName){
         if (node._inputNames.indexOf(inputName) === -1) return false;
         for(let connection of this.connections){
@@ -109,6 +114,14 @@ class RenderGraph {
         return true;
     }
 
+    /**
+    * Register a connection between two nodes.
+    * 
+    * @param {GraphNode} sourceNode - the node to connect from.
+    * @param {GraphNode} destinationNode - the node to connect to.
+    * @param {(String || number)} [target] - the target port of the conenction, this could be a string to specfiy a specific named port, a number to specify a port by index, or undefined, in which case the next available port will be connected to.
+    * @return {boolean} Will return true if connection succeeds otherwise will throw a ConnectException.
+    */
     registerConnection(sourceNode, destinationNode, target){
         if (destinationNode.inputs.length >= destinationNode.inputNames.length && destinationNode._limitConnections === true){
             throw new ConnectException("Node has reached max number of inputs, can't connect");
@@ -136,6 +149,12 @@ class RenderGraph {
         return true;
     }
     
+    /**
+    * Remove a connection between two nodes.
+    * @param {GraphNode} sourceNode - the node to unregsiter connection from.
+    * @param {GraphNode} destinationNode - the node to register connection to.
+    * @return {boolean} Will return true if removing connection succeeds, or false if there was no connection to remove.
+    */
     unregsiterConnection(sourceNode, destinationNode){
         let toRemove = [];
         

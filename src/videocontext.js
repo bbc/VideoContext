@@ -556,6 +556,16 @@ class VideoContext{
         }
     }
 
+    static get DEFINITIONS() {
+        var crossfade = {
+            
+        };
+
+        return {
+            CROSSFADE: crossfade
+        };
+    }
+
 
 }
 

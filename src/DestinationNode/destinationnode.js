@@ -4,6 +4,13 @@ import { SOURCENODESTATE } from "../SourceNodes/sourcenode";
 import ProcessingNode from "../ProcessingNodes/processingnode";
 
 class DestinationNode extends ProcessingNode {
+    /**
+    * Initialise an instance of a DestinationNode. 
+    *
+    * There should only be a single instance of a DestinationNode per VideoContext instance. An VideoContext's destination can be accessed like so: videoContext.desitnation.
+    * 
+    * You should not instantiate this directly.
+    */
     constructor(gl, renderGraph){        
   
         let vertexShader = "\

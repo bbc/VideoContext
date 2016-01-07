@@ -4,6 +4,11 @@ import { createShaderProgram, createElementTexutre, updateTexture } from "../uti
 import { RenderException } from "../exceptions.js";
 
 class ProcessingNode extends GraphNode{
+    /**
+    * Initialise an instance of a ProcessingNode.
+    *
+    * This class is not used directly, but is extended to create CompositingNodes, TransitionNodes, and EffectNodes.
+    */
     constructor(gl, renderGraph, definition, inputNames, limitConnections){
         super(gl, renderGraph, inputNames, limitConnections);
         this._vertexShader = definition.vertexShader;

@@ -3,6 +3,9 @@ import ProcessingNode from "./processingnode";
 import { createElementTexutre } from "../utils.js";
 
 class EffectNode extends ProcessingNode{
+    /**
+    * Initialise an instance of an EffectNode. You should not instantiate this directly, but use VideoContest.createEffectNode().
+    */
     constructor(gl, renderGraph, definition){
         let placeholderTexture = createElementTexutre(gl);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0,0,0,0]));

@@ -37,11 +37,35 @@ class SourceNode extends GraphNode{
     * 2 - Playing, the node is playing.
     * 3 - Paused, the node is paused.
     * 4 - Ended, playback of the node has finished.
+    *
+    * @example
+    * var ctx = new VideoContext();
+    * var videoNode = ctx.createVideoSourceNode('video.mp4');
+    * console.log(videoNode.state); //will output 0 (for waiting)
+    * videoNode.start(5);
+    * console.log(videoNode.state); //will output 1 (for sequenced)
+    * videoNode.stop(10);
+    * ctx.play();
+    * console.log(videoNode.state); //will output 2 (for playing)
+    * ctx.paused();
+    * console.log(videoNode.state); //will output 3 (for paused)
     */
     get state(){        
         return this._state;
     }
 
+    /**
+    * Returns the duration of the node on a timeline. If no start time is set will return undefiend, if no stop time is set will return Infinity.
+    *
+    * @return {number} The duration of the node in seconds.
+    *
+    * @example 
+    * var ctx = new VideoContext();
+    * var videoNode = ctx.createVideoSourceNode('video.mp4');
+    * videoNode.start(5);
+    * videoNode.stop(10);
+    * console.log(videoNode.duration); //will output 10
+    */
     get duration(){
         if (this._stopTime === undefined) return undefined;
         if (this._stopTime === Infinity) return Infinity;
@@ -56,11 +80,41 @@ class SourceNode extends GraphNode{
     _destroy(){
         this._triggerCallbacks("destroy");
     }
-
+    
+    /**
+    * Register callbacks against one of these events: "load", "destory", "seek", "pause", "play", "ended"
+    *
+    * @param {String} type - the type of event to register the callback against.
+    * @param {function} func - the function to call.
+    * 
+    * @example 
+    * var ctx = new VideoContext();
+    * var videoNode = ctx.createVideoSourceNode('video.mp4');
+    *
+    * videoNode.registerCallback("load", function(){"video is loading"});
+    * videoNode.registerCallback("play", function(){"video is playing"});
+    * videoNode.registerCallback("ended", function(){"video has eneded"});
+    *
+    */
     registerCallback(type, func){
         this._callbacks.push({type:type, func:func});
     }
 
+    /**
+    * Remove callback.
+    *
+    * @param {function} [func] - the callback to remove, if undefined will remove all callbacks for this node.
+    *
+    * @example 
+    * var ctx = new VideoContext();
+    * var videoNode = ctx.createVideoSourceNode('video.mp4');
+    *
+    * videoNode.registerCallback("load", function(){"video is loading"});
+    * videoNode.registerCallback("play", function(){"video is playing"});
+    * videoNode.registerCallback("ended", function(){"video has eneded"});
+    * videoNode.unregisterCallback(); //remove all of the three callbacks.
+    *
+    */
     unregisterCallback(func){
         let toRemove = [];
         for(let callback of this._callbacks){
@@ -83,7 +137,13 @@ class SourceNode extends GraphNode{
             }
         }
     }
-
+    
+    /**
+    * Start playback at VideoContext.currentTime plus passed time. If passed time is negative, will play as soon as possible.
+    *
+    * @param {number} time - the time from the currentTime of the VideoContext which to start playing, if negative will play as soon as possible.
+    * @return {boolean} Will return true is seqeuncing has succeded, or false if it is already sequenced.
+    */
     start(time){
         if (this._state !== STATE.waiting){
             console.debug("SourceNode is has already been sequenced. Can't sequence twice.");
@@ -94,7 +154,13 @@ class SourceNode extends GraphNode{
         this._state = STATE.sequenced;
         return true;
     }
-
+    
+    /**
+    * Start playback at an absolute time ont the VideoContext's timeline.
+    *
+    * @param {number} time - the time on the VideoContexts timeline to start playing.
+    * @return {boolean} Will return true is seqeuncing has succeded, or false if it is already sequenced.
+    */
     startAt(time){
         if (this._state !== STATE.waiting){
             console.debug("SourceNode is has already been sequenced. Can't sequence twice.");
@@ -104,7 +170,13 @@ class SourceNode extends GraphNode{
         this._state = STATE.sequenced;
         return true;
     }
-
+    
+    /**
+    * Stop playback at VideoContext.currentTime plus passed time. If passed time is negative, will play as soon as possible.
+    *
+    * @param {number} time - the time from the currentTime of the video context which to stop playback.
+    * @return {boolean} Will return true is seqeuncing has succeded, or false if the playback has already ended or if start hasn't been called yet, or if time is less than the start time.
+    */
     stop(time){
         if (this._state === STATE.ended){
             console.debug("SourceNode has already ended. Cannot call stop.");
@@ -120,7 +192,13 @@ class SourceNode extends GraphNode{
         this._stopTime = this._currentTime + time;
         return true;
     }
-
+    
+    /**
+    * Stop playback at an absolute time ont the VideoContext's timeline.
+    *
+    * @param {number} time - the time on the VideoContexts timeline to stop playing.
+    * @return {boolean} Will return true is seqeuncing has succeded, or false if the playback has already ended or if start hasn't been called yet, or if time is less than the start time.
+    */
     stopAt(time){
         if (this._state === STATE.ended){
             console.debug("SourceNode has already ended. Cannot call stop.");
@@ -207,9 +285,6 @@ class SourceNode extends GraphNode{
             this._state = STATE.ended;
         }
 
-        
-
-
         //update this source nodes texture
         if (this._element === undefined || this._ready === false) return true;      
         
@@ -220,6 +295,9 @@ class SourceNode extends GraphNode{
         return true;
     }
 
+    /**
+    * Clear any timeline state the node currently has, this puts the node in the "waiting" state, as if neither start nor stop had been called.
+    */
     clearTimelineState(){
         this._startTime = NaN;
         this._stopTime = Infinity;

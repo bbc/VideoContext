@@ -1,4 +1,15 @@
 //Matthew Shotton, R&D User Experince,© BBC 2015
+
+/*
+* Utility function to compile a WebGL Vertex or Fragment shader.
+* 
+* @param {WebGLRenderingContext} gl - the webgl context fo which to build the shader.
+* @param {String} shaderSource - A string of shader code to compile.
+* @param {number} shaderType - Shader type, either WebGLRenderingContext.VERTEX_SHADER or WebGLRenderingContext.FRAGMENT_SHADER.
+*
+* @return {WebGLShader} A compiled shader.
+*
+*/
 export function compileShader(gl, shaderSource, shaderType) {
     let shader = gl.createShader(shaderType);
     gl.shaderSource(shader, shaderSource);
@@ -10,7 +21,15 @@ export function compileShader(gl, shaderSource, shaderType) {
     return shader;
 }
 
-
+/*
+* Create a shader program from a passed vertex and fragment shader source string.
+* 
+* @param {WebGLRenderingContext} gl - the webgl context fo which to build the shader.
+* @param {String} vertexShaderSource - A string of vertex shader code to compile.
+* @param {String} fragmentShaderSource - A string of fragment shader code to compile.
+*
+* @return {WebGLProgram} A compiled & linkde shader program.
+*/
 export function createShaderProgram(gl, vertexShaderSource, fragmentShaderSource){
     let vertexShader = compileShader(gl, vertexShaderSource, gl.VERTEX_SHADER);
     let fragmentShader = compileShader(gl, fragmentShaderSource, gl.FRAGMENT_SHADER);

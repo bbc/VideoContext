@@ -3,6 +3,9 @@ import ProcessingNode from "./processingnode";
 import { createElementTexutre } from "../utils.js";
 
 class CompositingNode extends ProcessingNode{
+    /**
+    * Initialise an instance of a Compositing Node. You should not instantiate this directly, but use VideoContest.createCompositingNode().
+    */
     constructor(gl, renderGraph, definition){
         let placeholderTexture = createElementTexutre(gl);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0,0,0,0]));

@@ -2,6 +2,9 @@
 import EffectNode from "./effectnode";
 
 class TransitionNode extends EffectNode{
+    /**
+    * Initialise an instance of a TransitionNode. You should not instantiate this directly, but use VideoContest.createTransitonNode().
+    */
     constructor(gl, renderGraph, definition){
         super(gl, renderGraph, definition);
         this._transitions = {};
