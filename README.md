@@ -50,6 +50,15 @@ The design is heavily inspired by the WebAudioAPI so should feel familiar to use
 
 ## Node Types
 
+* VideoNode - Plays video.
+* ImageNode - Displays images for specified time.
+* CanvasNode - Displays output of canvas for specified time.
+* EffectNode - Applies shader to limited number of inputs.
+* TransisitonNode - Applies shader to limited number of inputs. Modifies properties at specific times.
+* CompositingNode - Applies same shader to unlimited inputs, rendering to same output.
+* DestinationNode - Node representing output canvas. Can only be one.
+
+
 ### VideoNode
 A video source node.
 ``` JavaScript
@@ -217,7 +226,8 @@ videoNode2.stop(18);
 //Create the sepia effect node (from the above Monochrome effect description).
 var crossfadeEffect = ctx.createTransitionNode(crossfadeDescription);
 
-//Setup the transition. This will change the "mix" property of the cross-fade node from whatever it's current value is (0.0) to 1.0 at time=8 over a period of 2 seconds.
+//Setup the transition. This will change the "mix" property of the cross-fade node from whatever it's 
+//current value is (0.0) to 1.0 at time=8 over a period of 2 seconds.
 crossfadeEffect.transition(8.0, 10.0, 1.0, "mix");
 
 
@@ -226,7 +236,8 @@ videoNode1.connect(crossfadeEffect); //this will connect videoNode1 to the "imag
 videoNode2.connect(crossfadeEffect); //this will connect videoNode2 to the "image_b" input of the processing node
 
 
-// NOTE: There's multiple ways to connect a node to specific input of a processing node, the following are all equivalent.
+// NOTE: There's multiple ways to connect a node to specific input of a processing node, the 
+// following are all equivalent.
 //
 // By default behavior:
 // videoNode1.connect(crossfadeEffect);
