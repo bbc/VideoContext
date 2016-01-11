@@ -82,7 +82,51 @@ canvasNode.stop(4);
 
 
 ### EffectNode
+An EffectNode is the simplest form of processing node. It's built from a description object, which is a combination of fragment shader code, vertex shader code, input descriptions, and property descriptions. There are a number of common operations available as node descriptions accessible as static properties on the VideoContext at VideoContext.DESCRIPTIONS.*
 
+The vertex and shader code is GLSL code which gets compiled to produce the shader program. The input description tells the VideoContext how many ports there are to connect to and the name of the image associated with the port within the shader code. Inputs are always render-able textures (i.e images, videos, canvases). The property descriptions tell the VideoContext what controls to attached to the EffectNode and the name, type, and default value of the control within the shader code.
+
+The following is a an example of a simple shader description used to describe a monochrome effect. It has one input (the image to be processed) and two modifiable properties to control the color RGB mix for the processing result.
+
+
+``` JavaScript
+var monochromeDescription{
+    vertexShader : "\
+        attribute vec2 a_position;\
+        attribute vec2 a_texCoord;\
+        varying vec2 v_texCoord;\
+        void main() {\
+            gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+            v_texCoord = a_texCoord;\
+        }",
+    fragmentShader : "\
+        precision mediump float;\
+        uniform sampler2D u_image;\
+        uniform vec3 inputMix;\
+        uniform vec3 outputMix;\
+        varying vec2 v_texCoord;\
+        varying float v_mix;\
+        void main(){\
+            vec4 color = texture2D(u_image, v_texCoord);\
+            float mono = color[0]*inputMix[0] + color[1]*inputMix[1] + color[2]*inputMix[2];\
+            color[0] = mono * outputMix[0];\
+            color[1] = mono * outputMix[1];\
+            color[2] = mono * outputMix[2];\
+            gl_FragColor = color;\
+        }",
+    properties:{
+        "inputMix":{type:"uniform", value:[0.4,0.6,0.2]},
+        "outputMix":{type:"uniform", value:[1.0,1.0,1.0]}
+    },
+    inputs:["u_image"]
+};
+
+```
+
+
+
+
+## Writing Custom Effect Shaders
 
 
 
