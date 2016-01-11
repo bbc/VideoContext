@@ -82,15 +82,15 @@ canvasNode.stop(4);
 
 
 ### EffectNode
-An EffectNode is the simplest form of processing node. It's built from a description object, which is a combination of fragment shader code, vertex shader code, input descriptions, and property descriptions. There are a number of common operations available as node descriptions accessible as static properties on the VideoContext at VideoContext.DESCRIPTIONS.*
+An EffectNode is the simplest form of processing node. It's built from a definition object, which is a combination of fragment shader code, vertex shader code, input descriptions, and property descriptions. There are a number of common operations available as node descriptions accessible as static properties on the VideoContext at VideoContext.DESCRIPTIONS.*
 
-The vertex and shader code is GLSL code which gets compiled to produce the shader program. The input description tells the VideoContext how many ports there are to connect to and the name of the image associated with the port within the shader code. Inputs are always render-able textures (i.e images, videos, canvases). The property descriptions tell the VideoContext what controls to attached to the EffectNode and the name, type, and default value of the control within the shader code.
+The vertex and shader code is GLSL code which gets compiled to produce the shader program. The input descriptio ntells the VideoContext how many ports there are to connect to and the name of the image associated with the port within the shader code. Inputs are always render-able textures (i.e images, videos, canvases). The property descriptions tell the VideoContext what controls to attached to the EffectNode and the name, type, and default value of the control within the shader code.
 
 The following is a an example of a simple shader description used to describe a monochrome effect. It has one input (the image to be processed) and two modifiable properties to control the color RGB mix for the processing result.
 
 
 ``` JavaScript
-var monochromeDescription{
+var monochromeDescription = {
     vertexShader : "\
         attribute vec2 a_position;\
         attribute vec2 a_texCoord;\
@@ -123,8 +123,33 @@ var monochromeDescription{
 
 ```
 
+Here's an example of how the above node description might be used to apply sepia like effect to a video.
+
+``` JavaScript
+//Setup the video context.
+var canvas = document.getElementById("canvas");
+var ctx = new VideoContext(canvas);
+
+//Create a video node and play it for 60 seconds.
+var videoNode = ctx.createVideoSourceNode("./video.mp4");
+videoNode.start(0);
+videoNode.stop(60);
+
+//Create the sepia effect node (from the above Monochrome effect description).
+var sepiaEffect = ctx.createEffectNode(monochromDescription);
+
+//Give a sepia tint to the monochrome output (note how shader description properties are automatically bound to the JavaScript object).
+sepiaEffect.outputMix = [1.25,1.18,0.9]; 
+
+//Set-up the processing chain.
+videoNode.connect(sepiaEffect);
+sepiaEffect.connect(ctx.destination);
 
 
+//start playback.
+ctx.play();
+
+```
 
 ## Writing Custom Effect Shaders
 
