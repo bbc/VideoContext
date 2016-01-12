@@ -2,6 +2,7 @@
 
 import VideoNode from "./SourceNodes/videonode.js";
 import ImageNode from "./SourceNodes/imagenode.js";
+import CanvasNode from "./SourceNodes/canvasnode.js";
 import { SOURCENODESTATE } from "./SourceNodes/sourcenode.js";
 import CompositingNode from "./ProcessingNodes/compositingnode.js";
 import DestinationNode from "./DestinationNode/destinationnode.js";
@@ -339,6 +340,19 @@ class VideoContext{
         this._sourceNodes.push(imageNode);
         return imageNode;
     }
+
+    /**
+    * Create a new node representing a canvas source
+    * 
+    * @return {CanvasNode} A new canvas node.
+    */
+    createCanvasSourceNode(canvas, sourceOffset=0, preloadTime=4){
+        let canvasNode = new CanvasNode(canvas, this._gl, this._renderGraph, this._playbackRate, sourceOffset, preloadTime);
+        this._sourceNodes.push(canvasNode);
+        return canvasNode;
+    }
+
+
 
     /**
     * Create a new effect node.
