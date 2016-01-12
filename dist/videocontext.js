@@ -552,6 +552,131 @@ var VideoContext =
 	        key: "_update",
 	        value: function _update(dt) {
 	            if (this._state === STATE.playing || this._state === STATE.stalled || this._state === STATE.paused) {
+
+	                //utility functions
+
+	                var outputEdgesFor = function outputEdgesFor(node, connections) {
+	                    var results = [];
+	                    var _iteratorNormalCompletion3 = true;
+	                    var _didIteratorError3 = false;
+	                    var _iteratorError3 = undefined;
+
+	                    try {
+	                        for (var _iterator3 = connections[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+	                            var conn = _step3.value;
+
+	                            if (conn.source === node) {
+	                                results.push(conn);
+	                            }
+	                        }
+	                    } catch (err) {
+	                        _didIteratorError3 = true;
+	                        _iteratorError3 = err;
+	                    } finally {
+	                        try {
+	                            if (!_iteratorNormalCompletion3 && _iterator3["return"]) {
+	                                _iterator3["return"]();
+	                            }
+	                        } finally {
+	                            if (_didIteratorError3) {
+	                                throw _iteratorError3;
+	                            }
+	                        }
+	                    }
+
+	                    return results;
+	                };
+
+	                var inputEdgesFor = function inputEdgesFor(node, connections) {
+	                    var results = [];
+	                    var _iteratorNormalCompletion4 = true;
+	                    var _didIteratorError4 = false;
+	                    var _iteratorError4 = undefined;
+
+	                    try {
+	                        for (var _iterator4 = connections[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+	                            var conn = _step4.value;
+
+	                            if (conn.destination === node) {
+	                                results.push(conn);
+	                            }
+	                        }
+	                    } catch (err) {
+	                        _didIteratorError4 = true;
+	                        _iteratorError4 = err;
+	                    } finally {
+	                        try {
+	                            if (!_iteratorNormalCompletion4 && _iterator4["return"]) {
+	                                _iterator4["return"]();
+	                            }
+	                        } finally {
+	                            if (_didIteratorError4) {
+	                                throw _iteratorError4;
+	                            }
+	                        }
+	                    }
+
+	                    return results;
+	                };
+
+	                var getInputlessNodes = function getInputlessNodes(connections) {
+	                    var inputLess = [];
+	                    var _iteratorNormalCompletion5 = true;
+	                    var _didIteratorError5 = false;
+	                    var _iteratorError5 = undefined;
+
+	                    try {
+	                        for (var _iterator5 = connections[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+	                            var conn = _step5.value;
+
+	                            inputLess.push(conn.source);
+	                        }
+	                    } catch (err) {
+	                        _didIteratorError5 = true;
+	                        _iteratorError5 = err;
+	                    } finally {
+	                        try {
+	                            if (!_iteratorNormalCompletion5 && _iterator5["return"]) {
+	                                _iterator5["return"]();
+	                            }
+	                        } finally {
+	                            if (_didIteratorError5) {
+	                                throw _iteratorError5;
+	                            }
+	                        }
+	                    }
+
+	                    var _iteratorNormalCompletion6 = true;
+	                    var _didIteratorError6 = false;
+	                    var _iteratorError6 = undefined;
+
+	                    try {
+	                        for (var _iterator6 = connections[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+	                            var conn = _step6.value;
+
+	                            var index = inputLess.indexOf(conn.destination);
+	                            if (index !== -1) {
+	                                inputLess.splice(index, 1);
+	                            }
+	                        }
+	                    } catch (err) {
+	                        _didIteratorError6 = true;
+	                        _iteratorError6 = err;
+	                    } finally {
+	                        try {
+	                            if (!_iteratorNormalCompletion6 && _iterator6["return"]) {
+	                                _iterator6["return"]();
+	                            }
+	                        } finally {
+	                            if (_didIteratorError6) {
+	                                throw _iteratorError6;
+	                            }
+	                        }
+	                    }
+
+	                    return inputLess;
+	                };
+
 	                this._callCallbacks("update");
 
 	                if (this._state !== STATE.paused) {
@@ -586,33 +711,89 @@ var VideoContext =
 	                    }
 	                }
 
-	                var _iteratorNormalCompletion3 = true;
-	                var _didIteratorError3 = false;
-	                var _iteratorError3 = undefined;
+	                /*
+	                * Itterate the directed acyclic graph using Khan's algorithm (KHAAAAAN!).
+	                *
+	                * This has highlighted a bunch of ineffencies in the rendergraph class about how its stores connections.
+	                * Mainly the fact that to get inputs for a node you have to iterate the full list of connections rather than
+	                * a node owning it's connections.
+	                * The trade off with changing this is making/removing connections becomes more costly performance wise, but 
+	                * this is deffinately worth while because getting the connnections is a much more common operation.
+	                *
+	                * TL;DR Future matt - refactor this.
+	                *
+	                */
+	                var sortedNodes = [];
+	                var connections = this._renderGraph.connections.slice();
 
-	                try {
-	                    for (var _iterator3 = this._processingNodes[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-	                        var node = _step3.value;
+	                var nodes = getInputlessNodes(connections);
 
-	                        node._update(this._currentTime);
-	                        node._render();
-	                    }
-	                } catch (err) {
-	                    _didIteratorError3 = true;
-	                    _iteratorError3 = err;
-	                } finally {
+	                while (nodes.length > 0) {
+	                    var node = nodes.pop();
+	                    sortedNodes.push(node);
+	                    var _iteratorNormalCompletion7 = true;
+	                    var _didIteratorError7 = false;
+	                    var _iteratorError7 = undefined;
+
 	                    try {
-	                        if (!_iteratorNormalCompletion3 && _iterator3["return"]) {
-	                            _iterator3["return"]();
+	                        for (var _iterator7 = outputEdgesFor(node, connections)[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+	                            var edge = _step7.value;
+
+	                            var index = connections.indexOf(edge);
+	                            if (index > -1) connections.splice(index, 1);
+	                            if (inputEdgesFor(edge.destination, connections).length === 0) {
+	                                nodes.push(edge.destination);
+	                            }
 	                        }
+	                    } catch (err) {
+	                        _didIteratorError7 = true;
+	                        _iteratorError7 = err;
 	                    } finally {
-	                        if (_didIteratorError3) {
-	                            throw _iteratorError3;
+	                        try {
+	                            if (!_iteratorNormalCompletion7 && _iterator7["return"]) {
+	                                _iterator7["return"]();
+	                            }
+	                        } finally {
+	                            if (_didIteratorError7) {
+	                                throw _iteratorError7;
+	                            }
 	                        }
 	                    }
 	                }
 
-	                this._destinationNode._render();
+	                var _iteratorNormalCompletion8 = true;
+	                var _didIteratorError8 = false;
+	                var _iteratorError8 = undefined;
+
+	                try {
+	                    for (var _iterator8 = sortedNodes[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+	                        var node = _step8.value;
+
+	                        if (this._sourceNodes.indexOf(node) === -1) {
+	                            node._update(this._currentTime);
+	                            node._render();
+	                        }
+	                    }
+
+	                    /*for (let node of this._processingNodes) {
+	                        node._update(this._currentTime);
+	                        node._render();
+	                    }
+	                    this._destinationNode._render();*/
+	                } catch (err) {
+	                    _didIteratorError8 = true;
+	                    _iteratorError8 = err;
+	                } finally {
+	                    try {
+	                        if (!_iteratorNormalCompletion8 && _iterator8["return"]) {
+	                            _iterator8["return"]();
+	                        }
+	                    } finally {
+	                        if (_didIteratorError8) {
+	                            throw _iteratorError8;
+	                        }
+	                    }
+	                }
 	            }
 	        }
 	    }, {
@@ -722,27 +903,27 @@ var VideoContext =
 	    }, {
 	        key: "playbackRate",
 	        set: function set(rate) {
-	            var _iteratorNormalCompletion4 = true;
-	            var _didIteratorError4 = false;
-	            var _iteratorError4 = undefined;
+	            var _iteratorNormalCompletion9 = true;
+	            var _didIteratorError9 = false;
+	            var _iteratorError9 = undefined;
 
 	            try {
-	                for (var _iterator4 = this._sourceNodes[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-	                    var node = _step4.value;
+	                for (var _iterator9 = this._sourceNodes[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
+	                    var node = _step9.value;
 
 	                    if (node.constructor.name === "VideoNode") node._globalPlaybackRate = rate;
 	                }
 	            } catch (err) {
-	                _didIteratorError4 = true;
-	                _iteratorError4 = err;
+	                _didIteratorError9 = true;
+	                _iteratorError9 = err;
 	            } finally {
 	                try {
-	                    if (!_iteratorNormalCompletion4 && _iterator4["return"]) {
-	                        _iterator4["return"]();
+	                    if (!_iteratorNormalCompletion9 && _iterator9["return"]) {
+	                        _iterator9["return"]();
 	                    }
 	                } finally {
-	                    if (_didIteratorError4) {
-	                        throw _iteratorError4;
+	                    if (_didIteratorError9) {
+	                        throw _iteratorError9;
 	                    }
 	                }
 	            }

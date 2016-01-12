@@ -548,11 +548,86 @@ class VideoContext{
                 }
             }
 
-            for (let node of this._processingNodes) {
+
+
+
+            /*
+            * Itterate the directed acyclic graph using Khan's algorithm (KHAAAAAN!).
+            *
+            * This has highlighted a bunch of ineffencies in the rendergraph class about how its stores connections.
+            * Mainly the fact that to get inputs for a node you have to iterate the full list of connections rather than
+            * a node owning it's connections.
+            * The trade off with changing this is making/removing connections becomes more costly performance wise, but 
+            * this is deffinately worth while because getting the connnections is a much more common operation.
+            *
+            * TL;DR Future matt - refactor this.
+            *
+            */ 
+            let sortedNodes = [];
+            let connections = this._renderGraph.connections.slice();
+
+            //utility functions
+            function outputEdgesFor(node, connections){
+                let results = [];
+                for(let conn of connections){
+                    if (conn.source === node){
+                        results.push(conn);
+                    }
+                }
+                return results;
+            }
+            function inputEdgesFor(node, connections){
+                let results = [];
+                for(let conn of connections){
+                    if (conn.destination === node){
+                        results.push(conn);
+                    }
+                }
+                return results;   
+            }
+            function getInputlessNodes(connections){
+                let inputLess = [];
+                for (let conn of connections){
+                    inputLess.push(conn.source);
+                }
+                for (let conn of connections){
+                    let index = inputLess.indexOf(conn.destination);
+                    if (index !== -1){
+                        inputLess.splice(index, 1);
+                    }
+                }
+                return inputLess;
+            }
+
+
+            let nodes = getInputlessNodes(connections);
+
+
+            while (nodes.length > 0) {
+                let node = nodes.pop();
+                sortedNodes.push(node);
+                for (let edge of outputEdgesFor(node, connections)){
+                    let index = connections.indexOf(edge);
+                    if (index > -1) connections.splice(index, 1);
+                    if (inputEdgesFor(edge.destination, connections).length === 0){
+                        nodes.push(edge.destination);
+                    }
+                }
+            }
+
+            for (let node of sortedNodes){
+                if (this._sourceNodes.indexOf(node) === -1){
+                    node._update(this._currentTime);
+                    node._render();
+                }   
+            }
+
+            /*for (let node of this._processingNodes) {
                 node._update(this._currentTime);
                 node._render();
             }
-            this._destinationNode._render();
+            this._destinationNode._render();*/
+
         }
     }
 
