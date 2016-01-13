@@ -4,8 +4,7 @@ import GraphNode from "../graphnode";
 
 let STATE = {"waiting":0, "sequenced":1, "playing":2, "paused":3, "ended":4};
 
-
-class SourceNode extends GraphNode{
+export default class SourceNode extends GraphNode{
     constructor(src, gl, renderGraph){
         super(gl,renderGraph, [], true);
         this._element = undefined;
@@ -305,5 +304,4 @@ class SourceNode extends GraphNode{
     }
 }
 
-export default SourceNode;
 export {STATE as SOURCENODESTATE};

@@ -1,5 +1,5 @@
 //Matthew Shotton, R&D User Experince,© BBC 2015
-class GraphNode {
+export default class GraphNode {
     constructor(gl, renderGraph, inputNames, limitConnections=false){
         this._renderGraph = renderGraph;
         this._limitConnections = limitConnections;
@@ -80,5 +80,3 @@ class GraphNode {
         return this._renderGraph.unregisterConnection(this, targetNode);
     }
 }
-
-export default GraphNode;

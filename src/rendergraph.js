@@ -2,7 +2,7 @@
 import { ConnectException } from "./exceptions.js";
 
 
-class RenderGraph {
+export default class RenderGraph {
     constructor(){
         this.connections = [];
     }
@@ -174,5 +174,3 @@ class RenderGraph {
         return true;
     }
 }
-
-export default RenderGraph;

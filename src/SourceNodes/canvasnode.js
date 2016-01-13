@@ -1,7 +1,7 @@
 //Matthew Shotton, R&D User Experince,© BBC 2015
 import SourceNode, { SOURCENODESTATE } from "./sourcenode";
 
-class CanvasNode extends SourceNode {
+export default class CanvasNode extends SourceNode {
     constructor(canvas, gl, renderGraph, preloadTime = 4){
         super(canvas, gl, renderGraph);
         this._preloadTime = preloadTime;

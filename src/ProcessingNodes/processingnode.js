@@ -3,7 +3,7 @@ import GraphNode from "../graphnode";
 import { createShaderProgram, createElementTexutre, updateTexture } from "../utils.js";
 import { RenderException } from "../exceptions.js";
 
-class ProcessingNode extends GraphNode{
+export default class ProcessingNode extends GraphNode{
     /**
     * Initialise an instance of a ProcessingNode.
     *
@@ -165,6 +165,3 @@ class ProcessingNode extends GraphNode{
 
     }
 }
-
-
-export default ProcessingNode;

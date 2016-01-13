@@ -36,7 +36,7 @@ let STATE = {"playing":0, "paused":1, "stalled":2, "ended":3, "broken":4};
 //broken - the render graph is in a broken state
 
 
-class VideoContext{
+export default class VideoContext{
     /**
     * Initialise the VideoContext and render to the specific canvas.
     * 
@@ -782,4 +782,3 @@ VideoContext.visualiseVideoContextTimeline = visualiseVideoContextTimeline;
 VideoContext.visualiseVideoContextGraph = visualiseVideoContextGraph;
 VideoContext.createControlFormForNode = createControlFormForNode;
 VideoContext.createSigmaGraphDataFromRenderGraph = createSigmaGraphDataFromRenderGraph;
-export default VideoContext;

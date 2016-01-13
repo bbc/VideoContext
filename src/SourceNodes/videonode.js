@@ -1,7 +1,7 @@
 //Matthew Shotton, R&D User Experince,© BBC 2015
 import SourceNode, { SOURCENODESTATE } from "./sourcenode";
 
-class VideoNode extends SourceNode {
+export default class VideoNode extends SourceNode {
     constructor(src, gl, renderGraph, globalPlaybackRate=1.0, sourceOffset=0, preloadTime = 4){
         super(src, gl, renderGraph);
         this._preloadTime = preloadTime;
@@ -91,5 +91,3 @@ class VideoNode extends SourceNode {
     }
 
 }
-
-export default VideoNode;

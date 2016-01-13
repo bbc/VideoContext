@@ -2,7 +2,7 @@
 import ProcessingNode from "./processingnode";
 import { createElementTexutre } from "../utils.js";
 
-class CompositingNode extends ProcessingNode{
+export default class CompositingNode extends ProcessingNode{
     /**
     * Initialise an instance of a Compositing Node. You should not instantiate this directly, but use VideoContest.createCompositingNode().
     */
@@ -43,6 +43,3 @@ class CompositingNode extends ProcessingNode{
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     }
 }
-
-
-export default CompositingNode;

@@ -1,7 +1,7 @@
 //Matthew Shotton, R&D User Experince,© BBC 2015
 import SourceNode, { SOURCENODESTATE } from "./sourcenode";
 
-class ImageNode extends SourceNode {
+export default class ImageNode extends SourceNode {
     constructor(src, gl, renderGraph, preloadTime = 4){
         super(src, gl, renderGraph);
         this._preloadTime = preloadTime;
@@ -62,5 +62,3 @@ class ImageNode extends SourceNode {
     }
 
 }
-
-export default ImageNode;

@@ -3,7 +3,7 @@ import { SOURCENODESTATE } from "../SourceNodes/sourcenode";
 //import GraphNode from "../graphnode";
 import ProcessingNode from "../ProcessingNodes/processingnode";
 
-class DestinationNode extends ProcessingNode {
+export default class DestinationNode extends ProcessingNode {
     /**
     * Initialise an instance of a DestinationNode. 
     *
@@ -64,5 +64,3 @@ class DestinationNode extends ProcessingNode {
         });
     }
 }
-
-export default DestinationNode;
