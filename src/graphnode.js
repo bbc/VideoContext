@@ -71,8 +71,9 @@ export default class GraphNode {
     disconnect(targetNode){
         if (targetNode === undefined){
             let toRemove = this._renderGraph.getOutputsForNode(this);
+            let _this = this;
             toRemove.forEach(function(target){
-                this._renderGraph.unregisterConnection(this, target);
+                _this._renderGraph.unregisterConnection(_this, target);
             });
             if (toRemove.length > 0) return true;
             return false;
