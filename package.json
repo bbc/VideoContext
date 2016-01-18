@@ -21,6 +21,8 @@
     "node-libs-browser": "^0.5.2",
     "webpack": "^1.9.11",
     "esdoc": "^0.3.1",
-    "http-server":"^0.8.5"
+    "http-server":"^0.8.5",
+    "chai": "3.4.1",
+    "mocha":"2.3.4"
   }
 }

@@ -59,7 +59,7 @@ export default class RenderGraph {
     }
 
     /**
-    * Get a list of nodes which are connected as inputs to the given node. 
+    * Get a list of nodes which are connected as inputs to the given node. The length of the return array is always equal to the number of inputs for the node, with undefined taking the place of any inputs not connected.
     * 
     * @param {GraphNode} node - the node to get the inputs for.
     * @return {GraphNode[]} An array of GraphNodes which are connected to the node.
@@ -153,9 +153,9 @@ export default class RenderGraph {
     * Remove a connection between two nodes.
     * @param {GraphNode} sourceNode - the node to unregsiter connection from.
     * @param {GraphNode} destinationNode - the node to register connection to.
-    * @return {boolean} Will return true if removing connection succeeds, or false if there was no connection to remove.
+    * @return {boolean} Will return true if removing connection succeeds, or false if there was no connectionsction to remove.
     */
-    unregsiterConnection(sourceNode, destinationNode){
+    unregisterConnection(sourceNode, destinationNode){
         let toRemove = [];
         
         this.connections.forEach(function(connection){
@@ -165,10 +165,11 @@ export default class RenderGraph {
         });
 
         if (toRemove.length === 0) return false;
+        let _this = this;
 
-        this.toRemove.forEach(function(removeNode){
-            let index = this.connections.indexOf(removeNode);
-            this.connections.splice(index, 1);
+        toRemove.forEach(function(removeNode){
+            let index = _this.connections.indexOf(removeNode);
+            _this.connections.splice(index, 1);
         });
 
         return true;
