@@ -7,14 +7,12 @@ platform='unknown'
 unamestr=`uname`
 if [[ "$unamestr" == 'Linux' ]]; then
    platform='linux'
-elif [[ "$unamestr" == 'FreeBSD' ]]; then
-   platform='freebsd'
 fi
 
 #Run integration tests
 if [[ $platform == 'linux' ]]; then
     xdg-open http://localhost:8080/test/integrationtests.html
-elif [[ $platform == 'freebsd' ]]; then
+elif [[ $platform == 'unknown' ]]; then
     open http://localhost:8080/test/integrationtests.html
 fi
 
