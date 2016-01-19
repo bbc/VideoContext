@@ -66,9 +66,8 @@ export default class SourceNode extends GraphNode{
     * console.log(videoNode.duration); //will output 10
     */
     get duration(){
-        if (this._stopTime === undefined) return undefined;
-        if (this._stopTime === Infinity) return Infinity;
         if (isNaN(this._startTime)) return undefined;
+        if (this._stopTime === Infinity) return Infinity;
         return this._stopTime - this._startTime;
     }
 

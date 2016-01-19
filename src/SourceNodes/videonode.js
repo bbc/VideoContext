@@ -8,7 +8,6 @@ export default class VideoNode extends SourceNode {
         this._sourceOffset = sourceOffset;
         this._globalPlaybackRate = globalPlaybackRate;
         this._playbackRate = 1.0;
-        this._stopTime = undefined;
     }
 
     set playbackRate(playbackRate){
@@ -22,7 +21,7 @@ export default class VideoNode extends SourceNode {
     _load(){
         if (this._element !== undefined){
             if (this._element.readyState > 3 && !this._element.seeking){
-                if (this._stopTime === undefined) this._stopTime = this._startTime + this._element.duration;
+                if (this._stopTime === Infinity || this._stopTime == undefined) this._stopTime = this._startTime + this._element.duration;
                 this._ready = true;
             } else{
                 this._ready = false;

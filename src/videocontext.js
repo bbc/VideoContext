@@ -201,7 +201,7 @@ export default class VideoContext{
     get duration(){
         let maxTime = 0;
         for (let i = 0; i < this._sourceNodes.length; i++) {
-            if (this._sourceNodes[i]._stopTime > maxTime){
+            if (this._sourceNodes[i].state !== SOURCENODESTATE.waiting &&this._sourceNodes[i]._stopTime > maxTime){
                 maxTime = this._sourceNodes[i]._stopTime;
             }
         }

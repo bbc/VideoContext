@@ -6,13 +6,17 @@
   <link rel="stylesheet" media="all" href="../node_modules/mocha/mocha.css">
 </head>
 <body>
-  <div id="mocha"><p><a href=".">Index</a></p></div>
+  <canvas id="videocontext-canvas" style="display:none;"></canvas>
+  <div id="mocha"><p><a href=".">videocontext.js</a></p></div>
   <div id="messages"></div>
   <div id="fixtures"></div>
   <script src="../node_modules/mocha/mocha.js"></script>
   <script src="../node_modules/chai/chai.js"></script>
   <script src="../dist/videocontext.js"></script>
-  <script src="videocontext-integrationtest.js"></script>
+   <script>mocha.setup('bdd')</script>
+  <script src="./integrationtests/videocontext-integrationtest.js"></script>
+  <script src="./integrationtests/sourcenode-integrationtest.js"></script>
   <script>mocha.run();</script>
+
 </body>
 </html>

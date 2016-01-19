@@ -876,7 +876,7 @@ var VideoContext =
 	        get: function get() {
 	            var maxTime = 0;
 	            for (var i = 0; i < this._sourceNodes.length; i++) {
-	                if (this._sourceNodes[i]._stopTime > maxTime) {
+	                if (this._sourceNodes[i].state !== _SourceNodesSourcenodeJs.SOURCENODESTATE.waiting && this._sourceNodes[i]._stopTime > maxTime) {
 	                    maxTime = this._sourceNodes[i]._stopTime;
 	                }
 	            }
@@ -1142,7 +1142,6 @@ var VideoContext =
 	        this._sourceOffset = sourceOffset;
 	        this._globalPlaybackRate = globalPlaybackRate;
 	        this._playbackRate = 1.0;
-	        this._stopTime = undefined;
 	    }
 
 	    _createClass(VideoNode, [{
@@ -1150,7 +1149,7 @@ var VideoContext =
 	        value: function _load() {
 	            if (this._element !== undefined) {
 	                if (this._element.readyState > 3 && !this._element.seeking) {
-	                    if (this._stopTime === undefined) this._stopTime = this._startTime + this._element.duration;
+	                    if (this._stopTime === Infinity || this._stopTime == undefined) this._stopTime = this._startTime + this._element.duration;
 	                    this._ready = true;
 	                } else {
 	                    this._ready = false;
@@ -1651,9 +1650,8 @@ var VideoContext =
 	    }, {
 	        key: "duration",
 	        get: function get() {
-	            if (this._stopTime === undefined) return undefined;
-	            if (this._stopTime === Infinity) return Infinity;
 	            if (isNaN(this._startTime)) return undefined;
+	            if (this._stopTime === Infinity) return Infinity;
 	            return this._stopTime - this._startTime;
 	        }
 	    }]);
@@ -2114,13 +2112,24 @@ var VideoContext =
 	    }, {
 	        key: "disconnect",
 	        value: function disconnect(targetNode) {
+	            var _this2 = this;
+
 	            if (targetNode === undefined) {
-	                var toRemove = this._renderGraph.getOutputsForNode(this);
-	                toRemove.forEach(function (target) {
-	                    this._renderGraph.unregisterConnection(this, target);
-	                });
-	                if (toRemove.length > 0) return true;
-	                return false;
+	                var _ret = (function () {
+	                    var toRemove = _this2._renderGraph.getOutputsForNode(_this2);
+	                    var _this = _this2;
+	                    toRemove.forEach(function (target) {
+	                        _this._renderGraph.unregisterConnection(_this, target);
+	                    });
+	                    if (toRemove.length > 0) return {
+	                            v: true
+	                        };
+	                    return {
+	                        v: false
+	                    };
+	                })();
+
+	                if (typeof _ret === "object") return _ret.v;
 	            }
 	            return this._renderGraph.unregisterConnection(this, targetNode);
 	        }
@@ -3162,7 +3171,7 @@ var VideoContext =
 	        }
 
 	        /**
-	        * Get a list of nodes which are connected as inputs to the given node. 
+	        * Get a list of nodes which are connected as inputs to the given node. The length of the return array is always equal to the number of inputs for the node, with undefined taking the place of any inputs not connected.
 	        * 
 	        * @param {GraphNode} node - the node to get the inputs for.
 	        * @return {GraphNode[]} An array of GraphNodes which are connected to the node.
@@ -3348,11 +3357,11 @@ var VideoContext =
 	        * Remove a connection between two nodes.
 	        * @param {GraphNode} sourceNode - the node to unregsiter connection from.
 	        * @param {GraphNode} destinationNode - the node to register connection to.
-	        * @return {boolean} Will return true if removing connection succeeds, or false if there was no connection to remove.
+	        * @return {boolean} Will return true if removing connection succeeds, or false if there was no connectionsction to remove.
 	        */
 	    }, {
-	        key: "unregsiterConnection",
-	        value: function unregsiterConnection(sourceNode, destinationNode) {
+	        key: "unregisterConnection",
+	        value: function unregisterConnection(sourceNode, destinationNode) {
 	            var toRemove = [];
 
 	            this.connections.forEach(function (connection) {
@@ -3362,10 +3371,11 @@ var VideoContext =
 	            });
 
 	            if (toRemove.length === 0) return false;
+	            var _this = this;
 
-	            this.toRemove.forEach(function (removeNode) {
-	                var index = this.connections.indexOf(removeNode);
-	                this.connections.splice(index, 1);
+	            toRemove.forEach(function (removeNode) {
+	                var index = _this.connections.indexOf(removeNode);
+	                _this.connections.splice(index, 1);
 	            });
 
 	            return true;
