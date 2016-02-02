@@ -48,7 +48,7 @@ The design is heavily inspired by the WebAudioAPI so should feel familiar to use
 </html>
 ```
 
-![Graph and timeline view](../blob/master/readme-diagram.png?raw=true)
+![Graph and timeline view](../master/readme-diagram.png?raw=true)
 
 
 ## Node Types
