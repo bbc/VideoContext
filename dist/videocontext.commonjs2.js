@@ -1601,6 +1601,7 @@ module.exports =
 
 	            if (currentTime >= this._startTime && this._state !== STATE.paused) {
 	                this._state = STATE.playing;
+	                this._triggerCallbacks("play");
 	            }
 
 	            if (currentTime >= this._stopTime) {
