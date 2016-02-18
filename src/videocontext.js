@@ -67,7 +67,35 @@ export default class VideoContext{
         this._callbacks.set("update", []);
         this._callbacks.set("ended", []);
 
+        this._timelineCallbacks = [];
+
         registerUpdateable(this);
+    }
+
+    /**
+    * Register a callback to happen at a specific point in time.
+    * @param {number} time - the time at which to trigger the callback.
+    * @param {Function} func - the callback to register.
+    */
+    registerTimelineCallback(time, func){
+        this._timelineCallbacks.push({"time":time, "func":func});
+    }
+
+    /**
+    * Unregister a callback which happens at a specific point in time.
+    * @param {Function} func - the callback to unregister.
+    */
+    unregisterTimelineCallback(func){
+        let toRemove = [];
+        for(let callback of this._timelineCallbacks){
+            if (callback.func === func){
+                toRemove.push(callback);
+            }
+        }
+        for (let callback of toRemove){
+            let index = this._timelineCallbacks.indexOf(callback);
+            this._timelineCallbacks.splice(index, 1);
+        }
     }
 
     /**
@@ -540,6 +568,11 @@ export default class VideoContext{
             }
             
             if(this._state === STATE.playing){
+                    for(let callback of this._timelineCallbacks){
+                        if (callback.time >= this.currentTime && callback.time < (this._currentTime + dt * this._playbackRate)){
+                            callback.func();
+                        }
+                    }
                     this._currentTime += dt * this._playbackRate;
                     if(this._currentTime > this.duration){
                         this._callCallbacks("ended");

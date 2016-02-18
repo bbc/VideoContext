@@ -152,28 +152,103 @@ module.exports =
 	        this._callbacks.set("update", []);
 	        this._callbacks.set("ended", []);
 
+	        this._timelineCallbacks = [];
+
 	        registerUpdateable(this);
 	    }
 
 	    /**
-	    * Regsiter a callback to listen to one of the following events: "stalled", "update", "ended"
-	    *
-	    * "stalled" happend anytime playback is stopped due to unavailbale data for playing assets (i.e video still loading)
-	    * . "update" is called any time a frame is rendered to the screen. "ended" is called once plackback has finished 
-	    * (i.e ctx.currentTime == ctx.duration).
-	    *
-	    * @param {String} type - the event to register against ("stalled", "update", or "ended").
+	    * Register a callback to happen at a specific point in time.
+	    * @param {number} time - the time at which to trigger the callback.
 	    * @param {Function} func - the callback to register.
-	    *
-	    * @example
-	    * var canvasElement = document.getElemenyById("canvas");
-	    * var ctx = new VideoContext(canvasElement);
-	    * ctx.registerCallback("stalled", function(){console.log("Playback stalled");});
-	    * ctx.registerCallback("update", function(){console.log("new frame");});
-	    * ctx.registerCallback("ended", function(){console.log("Playback ended");});
 	    */
 
 	    _createClass(VideoContext, [{
+	        key: "registerTimelineCallback",
+	        value: function registerTimelineCallback(time, func) {
+	            this._timelineCallbacks.push({ "time": time, "func": func });
+	        }
+
+	        /**
+	        * Unregister a callback which happens at a specific point in time.
+	        * @param {Function} func - the callback to unregister.
+	        */
+	    }, {
+	        key: "unregisterTimelineCallback",
+	        value: function unregisterTimelineCallback(func) {
+	            var toRemove = [];
+	            var _iteratorNormalCompletion = true;
+	            var _didIteratorError = false;
+	            var _iteratorError = undefined;
+
+	            try {
+	                for (var _iterator = this._timelineCallbacks[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	                    var callback = _step.value;
+
+	                    if (this._timelineCallbacks.func === func) {
+	                        toRemove.push(callback);
+	                    }
+	                }
+	            } catch (err) {
+	                _didIteratorError = true;
+	                _iteratorError = err;
+	            } finally {
+	                try {
+	                    if (!_iteratorNormalCompletion && _iterator["return"]) {
+	                        _iterator["return"]();
+	                    }
+	                } finally {
+	                    if (_didIteratorError) {
+	                        throw _iteratorError;
+	                    }
+	                }
+	            }
+
+	            var _iteratorNormalCompletion2 = true;
+	            var _didIteratorError2 = false;
+	            var _iteratorError2 = undefined;
+
+	            try {
+	                for (var _iterator2 = toRemove[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+	                    var callback = _step2.value;
+
+	                    var index = this._timelineCallbacks.indexOf(callback);
+	                    this._timelineCallbacks.splice(index, 1);
+	                }
+	            } catch (err) {
+	                _didIteratorError2 = true;
+	                _iteratorError2 = err;
+	            } finally {
+	                try {
+	                    if (!_iteratorNormalCompletion2 && _iterator2["return"]) {
+	                        _iterator2["return"]();
+	                    }
+	                } finally {
+	                    if (_didIteratorError2) {
+	                        throw _iteratorError2;
+	                    }
+	                }
+	            }
+	        }
+
+	        /**
+	        * Regsiter a callback to listen to one of the following events: "stalled", "update", "ended"
+	        *
+	        * "stalled" happend anytime playback is stopped due to unavailbale data for playing assets (i.e video still loading)
+	        * . "update" is called any time a frame is rendered to the screen. "ended" is called once plackback has finished 
+	        * (i.e ctx.currentTime == ctx.duration).
+	        *
+	        * @param {String} type - the event to register against ("stalled", "update", or "ended").
+	        * @param {Function} func - the callback to register.
+	        *
+	        * @example
+	        * var canvasElement = document.getElemenyById("canvas");
+	        * var ctx = new VideoContext(canvasElement);
+	        * ctx.registerCallback("stalled", function(){console.log("Playback stalled");});
+	        * ctx.registerCallback("update", function(){console.log("new frame");});
+	        * ctx.registerCallback("ended", function(){console.log("Playback ended");});
+	        */
+	    }, {
 	        key: "registerCallback",
 	        value: function registerCallback(type, func) {
 	            if (!this._callbacks.has(type)) return false;
@@ -201,13 +276,13 @@ module.exports =
 	    }, {
 	        key: "unregisterCallback",
 	        value: function unregisterCallback(func) {
-	            var _iteratorNormalCompletion = true;
-	            var _didIteratorError = false;
-	            var _iteratorError = undefined;
+	            var _iteratorNormalCompletion3 = true;
+	            var _didIteratorError3 = false;
+	            var _iteratorError3 = undefined;
 
 	            try {
-	                for (var _iterator = this._callbacks.values()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	                    var funcArray = _step.value;
+	                for (var _iterator3 = this._callbacks.values()[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+	                    var funcArray = _step3.value;
 
 	                    var index = funcArray.indexOf(func);
 	                    if (index !== -1) {
@@ -216,16 +291,16 @@ module.exports =
 	                    }
 	                }
 	            } catch (err) {
-	                _didIteratorError = true;
-	                _iteratorError = err;
+	                _didIteratorError3 = true;
+	                _iteratorError3 = err;
 	            } finally {
 	                try {
-	                    if (!_iteratorNormalCompletion && _iterator["return"]) {
-	                        _iterator["return"]();
+	                    if (!_iteratorNormalCompletion3 && _iterator3["return"]) {
+	                        _iterator3["return"]();
 	                    }
 	                } finally {
-	                    if (_didIteratorError) {
-	                        throw _iteratorError;
+	                    if (_didIteratorError3) {
+	                        throw _iteratorError3;
 	                    }
 	                }
 	            }
@@ -236,27 +311,27 @@ module.exports =
 	        key: "_callCallbacks",
 	        value: function _callCallbacks(type) {
 	            var funcArray = this._callbacks.get(type);
-	            var _iteratorNormalCompletion2 = true;
-	            var _didIteratorError2 = false;
-	            var _iteratorError2 = undefined;
+	            var _iteratorNormalCompletion4 = true;
+	            var _didIteratorError4 = false;
+	            var _iteratorError4 = undefined;
 
 	            try {
-	                for (var _iterator2 = funcArray[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-	                    var func = _step2.value;
+	                for (var _iterator4 = funcArray[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+	                    var func = _step4.value;
 
 	                    func(this._currentTime);
 	                }
 	            } catch (err) {
-	                _didIteratorError2 = true;
-	                _iteratorError2 = err;
+	                _didIteratorError4 = true;
+	                _iteratorError4 = err;
 	            } finally {
 	                try {
-	                    if (!_iteratorNormalCompletion2 && _iterator2["return"]) {
-	                        _iterator2["return"]();
+	                    if (!_iteratorNormalCompletion4 && _iterator4["return"]) {
+	                        _iterator4["return"]();
 	                    }
 	                } finally {
-	                    if (_didIteratorError2) {
-	                        throw _iteratorError2;
+	                    if (_didIteratorError4) {
+	                        throw _iteratorError4;
 	                    }
 	                }
 	            }
@@ -577,95 +652,6 @@ module.exports =
 
 	                var outputEdgesFor = function outputEdgesFor(node, connections) {
 	                    var results = [];
-	                    var _iteratorNormalCompletion3 = true;
-	                    var _didIteratorError3 = false;
-	                    var _iteratorError3 = undefined;
-
-	                    try {
-	                        for (var _iterator3 = connections[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-	                            var conn = _step3.value;
-
-	                            if (conn.source === node) {
-	                                results.push(conn);
-	                            }
-	                        }
-	                    } catch (err) {
-	                        _didIteratorError3 = true;
-	                        _iteratorError3 = err;
-	                    } finally {
-	                        try {
-	                            if (!_iteratorNormalCompletion3 && _iterator3["return"]) {
-	                                _iterator3["return"]();
-	                            }
-	                        } finally {
-	                            if (_didIteratorError3) {
-	                                throw _iteratorError3;
-	                            }
-	                        }
-	                    }
-
-	                    return results;
-	                };
-
-	                var inputEdgesFor = function inputEdgesFor(node, connections) {
-	                    var results = [];
-	                    var _iteratorNormalCompletion4 = true;
-	                    var _didIteratorError4 = false;
-	                    var _iteratorError4 = undefined;
-
-	                    try {
-	                        for (var _iterator4 = connections[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-	                            var conn = _step4.value;
-
-	                            if (conn.destination === node) {
-	                                results.push(conn);
-	                            }
-	                        }
-	                    } catch (err) {
-	                        _didIteratorError4 = true;
-	                        _iteratorError4 = err;
-	                    } finally {
-	                        try {
-	                            if (!_iteratorNormalCompletion4 && _iterator4["return"]) {
-	                                _iterator4["return"]();
-	                            }
-	                        } finally {
-	                            if (_didIteratorError4) {
-	                                throw _iteratorError4;
-	                            }
-	                        }
-	                    }
-
-	                    return results;
-	                };
-
-	                var getInputlessNodes = function getInputlessNodes(connections) {
-	                    var inputLess = [];
-	                    var _iteratorNormalCompletion5 = true;
-	                    var _didIteratorError5 = false;
-	                    var _iteratorError5 = undefined;
-
-	                    try {
-	                        for (var _iterator5 = connections[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-	                            var conn = _step5.value;
-
-	                            inputLess.push(conn.source);
-	                        }
-	                    } catch (err) {
-	                        _didIteratorError5 = true;
-	                        _iteratorError5 = err;
-	                    } finally {
-	                        try {
-	                            if (!_iteratorNormalCompletion5 && _iterator5["return"]) {
-	                                _iterator5["return"]();
-	                            }
-	                        } finally {
-	                            if (_didIteratorError5) {
-	                                throw _iteratorError5;
-	                            }
-	                        }
-	                    }
-
 	                    var _iteratorNormalCompletion6 = true;
 	                    var _didIteratorError6 = false;
 	                    var _iteratorError6 = undefined;
@@ -674,9 +660,8 @@ module.exports =
 	                        for (var _iterator6 = connections[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
 	                            var conn = _step6.value;
 
-	                            var index = inputLess.indexOf(conn.destination);
-	                            if (index !== -1) {
-	                                inputLess.splice(index, 1);
+	                            if (conn.source === node) {
+	                                results.push(conn);
 	                            }
 	                        }
 	                    } catch (err) {
@@ -690,6 +675,96 @@ module.exports =
 	                        } finally {
 	                            if (_didIteratorError6) {
 	                                throw _iteratorError6;
+	                            }
+	                        }
+	                    }
+
+	                    return results;
+	                };
+
+	                var inputEdgesFor = function inputEdgesFor(node, connections) {
+	                    var results = [];
+	                    var _iteratorNormalCompletion7 = true;
+	                    var _didIteratorError7 = false;
+	                    var _iteratorError7 = undefined;
+
+	                    try {
+	                        for (var _iterator7 = connections[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+	                            var conn = _step7.value;
+
+	                            if (conn.destination === node) {
+	                                results.push(conn);
+	                            }
+	                        }
+	                    } catch (err) {
+	                        _didIteratorError7 = true;
+	                        _iteratorError7 = err;
+	                    } finally {
+	                        try {
+	                            if (!_iteratorNormalCompletion7 && _iterator7["return"]) {
+	                                _iterator7["return"]();
+	                            }
+	                        } finally {
+	                            if (_didIteratorError7) {
+	                                throw _iteratorError7;
+	                            }
+	                        }
+	                    }
+
+	                    return results;
+	                };
+
+	                var getInputlessNodes = function getInputlessNodes(connections) {
+	                    var inputLess = [];
+	                    var _iteratorNormalCompletion8 = true;
+	                    var _didIteratorError8 = false;
+	                    var _iteratorError8 = undefined;
+
+	                    try {
+	                        for (var _iterator8 = connections[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+	                            var conn = _step8.value;
+
+	                            inputLess.push(conn.source);
+	                        }
+	                    } catch (err) {
+	                        _didIteratorError8 = true;
+	                        _iteratorError8 = err;
+	                    } finally {
+	                        try {
+	                            if (!_iteratorNormalCompletion8 && _iterator8["return"]) {
+	                                _iterator8["return"]();
+	                            }
+	                        } finally {
+	                            if (_didIteratorError8) {
+	                                throw _iteratorError8;
+	                            }
+	                        }
+	                    }
+
+	                    var _iteratorNormalCompletion9 = true;
+	                    var _didIteratorError9 = false;
+	                    var _iteratorError9 = undefined;
+
+	                    try {
+	                        for (var _iterator9 = connections[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
+	                            var conn = _step9.value;
+
+	                            var index = inputLess.indexOf(conn.destination);
+	                            if (index !== -1) {
+	                                inputLess.splice(index, 1);
+	                            }
+	                        }
+	                    } catch (err) {
+	                        _didIteratorError9 = true;
+	                        _iteratorError9 = err;
+	                    } finally {
+	                        try {
+	                            if (!_iteratorNormalCompletion9 && _iterator9["return"]) {
+	                                _iterator9["return"]();
+	                            }
+	                        } finally {
+	                            if (_didIteratorError9) {
+	                                throw _iteratorError9;
 	                            }
 	                        }
 	                    }
@@ -709,6 +784,33 @@ module.exports =
 	                }
 
 	                if (this._state === STATE.playing) {
+	                    var _iteratorNormalCompletion5 = true;
+	                    var _didIteratorError5 = false;
+	                    var _iteratorError5 = undefined;
+
+	                    try {
+	                        for (var _iterator5 = this._timelineCallbacks[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+	                            var callback = _step5.value;
+
+	                            if (callback.time >= this.currentTime && callback.time < this._currentTime + dt * this._playbackRate) {
+	                                callback.func();
+	                            }
+	                        }
+	                    } catch (err) {
+	                        _didIteratorError5 = true;
+	                        _iteratorError5 = err;
+	                    } finally {
+	                        try {
+	                            if (!_iteratorNormalCompletion5 && _iterator5["return"]) {
+	                                _iterator5["return"]();
+	                            }
+	                        } finally {
+	                            if (_didIteratorError5) {
+	                                throw _iteratorError5;
+	                            }
+	                        }
+	                    }
+
 	                    this._currentTime += dt * this._playbackRate;
 	                    if (this._currentTime > this.duration) {
 	                        this._callCallbacks("ended");
@@ -751,13 +853,13 @@ module.exports =
 	                while (nodes.length > 0) {
 	                    var node = nodes.pop();
 	                    sortedNodes.push(node);
-	                    var _iteratorNormalCompletion7 = true;
-	                    var _didIteratorError7 = false;
-	                    var _iteratorError7 = undefined;
+	                    var _iteratorNormalCompletion10 = true;
+	                    var _didIteratorError10 = false;
+	                    var _iteratorError10 = undefined;
 
 	                    try {
-	                        for (var _iterator7 = outputEdgesFor(node, connections)[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
-	                            var edge = _step7.value;
+	                        for (var _iterator10 = outputEdgesFor(node, connections)[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
+	                            var edge = _step10.value;
 
 	                            var index = connections.indexOf(edge);
 	                            if (index > -1) connections.splice(index, 1);
@@ -766,28 +868,28 @@ module.exports =
 	                            }
 	                        }
 	                    } catch (err) {
-	                        _didIteratorError7 = true;
-	                        _iteratorError7 = err;
+	                        _didIteratorError10 = true;
+	                        _iteratorError10 = err;
 	                    } finally {
 	                        try {
-	                            if (!_iteratorNormalCompletion7 && _iterator7["return"]) {
-	                                _iterator7["return"]();
+	                            if (!_iteratorNormalCompletion10 && _iterator10["return"]) {
+	                                _iterator10["return"]();
 	                            }
 	                        } finally {
-	                            if (_didIteratorError7) {
-	                                throw _iteratorError7;
+	                            if (_didIteratorError10) {
+	                                throw _iteratorError10;
 	                            }
 	                        }
 	                    }
 	                }
 
-	                var _iteratorNormalCompletion8 = true;
-	                var _didIteratorError8 = false;
-	                var _iteratorError8 = undefined;
+	                var _iteratorNormalCompletion11 = true;
+	                var _didIteratorError11 = false;
+	                var _iteratorError11 = undefined;
 
 	                try {
-	                    for (var _iterator8 = sortedNodes[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
-	                        var node = _step8.value;
+	                    for (var _iterator11 = sortedNodes[Symbol.iterator](), _step11; !(_iteratorNormalCompletion11 = (_step11 = _iterator11.next()).done); _iteratorNormalCompletion11 = true) {
+	                        var node = _step11.value;
 
 	                        if (this._sourceNodes.indexOf(node) === -1) {
 	                            node._update(this._currentTime);
@@ -801,16 +903,16 @@ module.exports =
 	                    }
 	                    this._destinationNode._render();*/
 	                } catch (err) {
-	                    _didIteratorError8 = true;
-	                    _iteratorError8 = err;
+	                    _didIteratorError11 = true;
+	                    _iteratorError11 = err;
 	                } finally {
 	                    try {
-	                        if (!_iteratorNormalCompletion8 && _iterator8["return"]) {
-	                            _iterator8["return"]();
+	                        if (!_iteratorNormalCompletion11 && _iterator11["return"]) {
+	                            _iterator11["return"]();
 	                        }
 	                    } finally {
-	                        if (_didIteratorError8) {
-	                            throw _iteratorError8;
+	                        if (_didIteratorError11) {
+	                            throw _iteratorError11;
 	                        }
 	                    }
 	                }
@@ -923,27 +1025,27 @@ module.exports =
 	    }, {
 	        key: "playbackRate",
 	        set: function set(rate) {
-	            var _iteratorNormalCompletion9 = true;
-	            var _didIteratorError9 = false;
-	            var _iteratorError9 = undefined;
+	            var _iteratorNormalCompletion12 = true;
+	            var _didIteratorError12 = false;
+	            var _iteratorError12 = undefined;
 
 	            try {
-	                for (var _iterator9 = this._sourceNodes[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
-	                    var node = _step9.value;
+	                for (var _iterator12 = this._sourceNodes[Symbol.iterator](), _step12; !(_iteratorNormalCompletion12 = (_step12 = _iterator12.next()).done); _iteratorNormalCompletion12 = true) {
+	                    var node = _step12.value;
 
 	                    if (node.constructor.name === "VideoNode") node._globalPlaybackRate = rate;
 	                }
 	            } catch (err) {
-	                _didIteratorError9 = true;
-	                _iteratorError9 = err;
+	                _didIteratorError12 = true;
+	                _iteratorError12 = err;
 	            } finally {
 	                try {
-	                    if (!_iteratorNormalCompletion9 && _iterator9["return"]) {
-	                        _iterator9["return"]();
+	                    if (!_iteratorNormalCompletion12 && _iterator12["return"]) {
+	                        _iterator12["return"]();
 	                    }
 	                } finally {
-	                    if (_didIteratorError9) {
-	                        throw _iteratorError9;
+	                    if (_didIteratorError12) {
+	                        throw _iteratorError12;
 	                    }
 	                }
 	            }
