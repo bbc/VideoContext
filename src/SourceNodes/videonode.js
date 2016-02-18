@@ -19,6 +19,7 @@ export default class VideoNode extends SourceNode {
     }
 
     _load(){
+        super._load();
         if (this._element !== undefined){
             if (this._element.readyState > 3 && !this._element.seeking){
                 if (this._stopTime === Infinity || this._stopTime == undefined) this._stopTime = this._startTime + this._element.duration;
@@ -29,7 +30,6 @@ export default class VideoNode extends SourceNode {
             return;
         }
         if (this._isResponsibleForElementLifeCycle){
-            super._load();
             this._element = document.createElement("video");
             this._element.setAttribute('crossorigin', 'anonymous');
             this._element.src = this._elementURL;

@@ -1249,6 +1249,7 @@ var VideoContext =
 	    _createClass(VideoNode, [{
 	        key: "_load",
 	        value: function _load() {
+	            _get(Object.getPrototypeOf(VideoNode.prototype), "_load", this).call(this);
 	            if (this._element !== undefined) {
 	                if (this._element.readyState > 3 && !this._element.seeking) {
 	                    if (this._stopTime === Infinity || this._stopTime == undefined) this._stopTime = this._startTime + this._element.duration;
@@ -1259,7 +1260,6 @@ var VideoContext =
 	                return;
 	            }
 	            if (this._isResponsibleForElementLifeCycle) {
-	                _get(Object.getPrototypeOf(VideoNode.prototype), "_load", this).call(this);
 	                this._element = document.createElement("video");
 	                this._element.setAttribute('crossorigin', 'anonymous');
 	                this._element.src = this._elementURL;
