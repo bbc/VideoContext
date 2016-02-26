@@ -1739,6 +1739,16 @@ module.exports =
 	        }
 
 	        /**
+	        * Returns the underlying DOM element which represents this source node.
+	        *
+	        */
+	    }, {
+	        key: "element",
+	        get: function get() {
+	            return this._element;
+	        }
+
+	        /**
 	        * Returns the duration of the node on a timeline. If no start time is set will return undefiend, if no stop time is set will return Infinity.
 	        *
 	        * @return {number} The duration of the node in seconds.

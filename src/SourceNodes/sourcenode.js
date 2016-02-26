@@ -53,6 +53,16 @@ export default class SourceNode extends GraphNode{
         return this._state;
     }
 
+
+    /**
+    * Returns the underlying DOM element which represents this source node.
+    *
+    */
+    get element(){
+        return this._element;
+    }
+
+
     /**
     * Returns the duration of the node on a timeline. If no start time is set will return undefiend, if no stop time is set will return Infinity.
     *
