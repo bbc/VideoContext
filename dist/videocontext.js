@@ -1740,6 +1740,29 @@ var VideoContext =
 
 	        /**
 	        * Returns the underlying DOM element which represents this source node.
+	        * Note: If a source node is created with a url rather than passing in an existing element then this will return undefined until the source node preloads the element.
+	        *
+	        * @return {Element} The underlying DOM element representing the media for the node. If the lifecycle of the video is owned UNSIGNED_BYTE the node itself, this can return undefined if the element hasn't been loaded yet.
+	        *
+	        * @example 
+	        * //Accessing the Element on a VideoNode created via a URL
+	        * var ctx = new VideoContext();
+	        * var videoNode = ctx.createVideoSourceNode('video.mp4');
+	        * videoNode.start(0);
+	        * videoNode.stop(5);
+	        * //When the node starts playing the element should exist so set it's volume to 0
+	        * videoNode.regsiterCallback("play", function(){videoNode.element.volume = 0;});
+	        *
+	        *
+	        * @example 
+	        * //Accessing the Element on a VideoNode created via an already existing element
+	        * var ctx = new VideoContext();
+	        * var videoElement = document.createElement("video");
+	        * var videoNode = ctx.createVideoSourceNode(videoElement);
+	        * videoNode.start(0);
+	        * videoNode.stop(5);
+	        * //The elemnt can be accessed any time because it's lifecycle is managed outside of the VideoContext
+	        * videoNode.element.volume = 0;
 	        *
 	        */
 	    }, {
