@@ -76,10 +76,12 @@ export default class VideoContext{
     * Register a callback to happen at a specific point in time.
     * @param {number} time - the time at which to trigger the callback.
     * @param {Function} func - the callback to register.
+    * @param {number} ordering - the order in which to call the callback if more than one is registered for the same time.
     */
-    registerTimelineCallback(time, func){
-        this._timelineCallbacks.push({"time":time, "func":func});
+    registerTimelineCallback(time, func, ordering= 0){
+        this._timelineCallbacks.push({"time":time, "func":func, "ordering":ordering});
     }
+
 
     /**
     * Unregister a callback which happens at a specific point in time.
@@ -568,11 +570,21 @@ export default class VideoContext{
             }
             
             if(this._state === STATE.playing){
+                    //Handle timeline callbacks.
+                    let activeCallbacks = [];
                     for(let callback of this._timelineCallbacks){
                         if (callback.time >= this.currentTime && callback.time < (this._currentTime + dt * this._playbackRate)){
-                            callback.func();
+                            activeCallbacks.push(callback);
                         }
                     }
+                    activeCallbacks.sort(function(a, b) {
+                        return a.ordering - b.ordering;
+                    });
+                    for(let callback of activeCallbacks){
+                        callback.func();
+                    }
+
+
                     this._currentTime += dt * this._playbackRate;
                     if(this._currentTime > this.duration){
                         this._callCallbacks("ended");

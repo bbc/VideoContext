@@ -161,12 +161,15 @@ module.exports =
 	    * Register a callback to happen at a specific point in time.
 	    * @param {number} time - the time at which to trigger the callback.
 	    * @param {Function} func - the callback to register.
+	    * @param {number} ordering - the order in which to call the callback if more than one is registered for the same time.
 	    */
 
 	    _createClass(VideoContext, [{
 	        key: "registerTimelineCallback",
 	        value: function registerTimelineCallback(time, func) {
-	            this._timelineCallbacks.push({ "time": time, "func": func });
+	            var ordering = arguments.length <= 2 || arguments[2] === undefined ? 0 : arguments[2];
+
+	            this._timelineCallbacks.push({ "time": time, "func": func, "ordering": ordering });
 	        }
 
 	        /**
@@ -652,38 +655,6 @@ module.exports =
 
 	                var outputEdgesFor = function outputEdgesFor(node, connections) {
 	                    var results = [];
-	                    var _iteratorNormalCompletion6 = true;
-	                    var _didIteratorError6 = false;
-	                    var _iteratorError6 = undefined;
-
-	                    try {
-	                        for (var _iterator6 = connections[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-	                            var conn = _step6.value;
-
-	                            if (conn.source === node) {
-	                                results.push(conn);
-	                            }
-	                        }
-	                    } catch (err) {
-	                        _didIteratorError6 = true;
-	                        _iteratorError6 = err;
-	                    } finally {
-	                        try {
-	                            if (!_iteratorNormalCompletion6 && _iterator6["return"]) {
-	                                _iterator6["return"]();
-	                            }
-	                        } finally {
-	                            if (_didIteratorError6) {
-	                                throw _iteratorError6;
-	                            }
-	                        }
-	                    }
-
-	                    return results;
-	                };
-
-	                var inputEdgesFor = function inputEdgesFor(node, connections) {
-	                    var results = [];
 	                    var _iteratorNormalCompletion7 = true;
 	                    var _didIteratorError7 = false;
 	                    var _iteratorError7 = undefined;
@@ -692,7 +663,7 @@ module.exports =
 	                        for (var _iterator7 = connections[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
 	                            var conn = _step7.value;
 
-	                            if (conn.destination === node) {
+	                            if (conn.source === node) {
 	                                results.push(conn);
 	                            }
 	                        }
@@ -714,8 +685,8 @@ module.exports =
 	                    return results;
 	                };
 
-	                var getInputlessNodes = function getInputlessNodes(connections) {
-	                    var inputLess = [];
+	                var inputEdgesFor = function inputEdgesFor(node, connections) {
+	                    var results = [];
 	                    var _iteratorNormalCompletion8 = true;
 	                    var _didIteratorError8 = false;
 	                    var _iteratorError8 = undefined;
@@ -724,7 +695,9 @@ module.exports =
 	                        for (var _iterator8 = connections[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
 	                            var conn = _step8.value;
 
-	                            inputLess.push(conn.source);
+	                            if (conn.destination === node) {
+	                                results.push(conn);
+	                            }
 	                        }
 	                    } catch (err) {
 	                        _didIteratorError8 = true;
@@ -741,6 +714,11 @@ module.exports =
 	                        }
 	                    }
 
+	                    return results;
+	                };
+
+	                var getInputlessNodes = function getInputlessNodes(connections) {
+	                    var inputLess = [];
 	                    var _iteratorNormalCompletion9 = true;
 	                    var _didIteratorError9 = false;
 	                    var _iteratorError9 = undefined;
@@ -749,10 +727,7 @@ module.exports =
 	                        for (var _iterator9 = connections[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
 	                            var conn = _step9.value;
 
-	                            var index = inputLess.indexOf(conn.destination);
-	                            if (index !== -1) {
-	                                inputLess.splice(index, 1);
-	                            }
+	                            inputLess.push(conn.source);
 	                        }
 	                    } catch (err) {
 	                        _didIteratorError9 = true;
@@ -765,6 +740,34 @@ module.exports =
 	                        } finally {
 	                            if (_didIteratorError9) {
 	                                throw _iteratorError9;
+	                            }
+	                        }
+	                    }
+
+	                    var _iteratorNormalCompletion10 = true;
+	                    var _didIteratorError10 = false;
+	                    var _iteratorError10 = undefined;
+
+	                    try {
+	                        for (var _iterator10 = connections[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
+	                            var conn = _step10.value;
+
+	                            var index = inputLess.indexOf(conn.destination);
+	                            if (index !== -1) {
+	                                inputLess.splice(index, 1);
+	                            }
+	                        }
+	                    } catch (err) {
+	                        _didIteratorError10 = true;
+	                        _iteratorError10 = err;
+	                    } finally {
+	                        try {
+	                            if (!_iteratorNormalCompletion10 && _iterator10["return"]) {
+	                                _iterator10["return"]();
+	                            }
+	                        } finally {
+	                            if (_didIteratorError10) {
+	                                throw _iteratorError10;
 	                            }
 	                        }
 	                    }
@@ -784,6 +787,8 @@ module.exports =
 	                }
 
 	                if (this._state === STATE.playing) {
+	                    //Handle timeline callbacks.
+	                    var activeCallbacks = [];
 	                    var _iteratorNormalCompletion5 = true;
 	                    var _didIteratorError5 = false;
 	                    var _iteratorError5 = undefined;
@@ -793,7 +798,7 @@ module.exports =
 	                            var callback = _step5.value;
 
 	                            if (callback.time >= this.currentTime && callback.time < this._currentTime + dt * this._playbackRate) {
-	                                callback.func();
+	                                activeCallbacks.push(callback);
 	                            }
 	                        }
 	                    } catch (err) {
@@ -807,6 +812,34 @@ module.exports =
 	                        } finally {
 	                            if (_didIteratorError5) {
 	                                throw _iteratorError5;
+	                            }
+	                        }
+	                    }
+
+	                    activeCallbacks.sort(function (a, b) {
+	                        return a.ordering - b.ordering;
+	                    });
+	                    var _iteratorNormalCompletion6 = true;
+	                    var _didIteratorError6 = false;
+	                    var _iteratorError6 = undefined;
+
+	                    try {
+	                        for (var _iterator6 = activeCallbacks[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+	                            var callback = _step6.value;
+
+	                            callback.func();
+	                        }
+	                    } catch (err) {
+	                        _didIteratorError6 = true;
+	                        _iteratorError6 = err;
+	                    } finally {
+	                        try {
+	                            if (!_iteratorNormalCompletion6 && _iterator6["return"]) {
+	                                _iterator6["return"]();
+	                            }
+	                        } finally {
+	                            if (_didIteratorError6) {
+	                                throw _iteratorError6;
 	                            }
 	                        }
 	                    }
@@ -853,13 +886,13 @@ module.exports =
 	                while (nodes.length > 0) {
 	                    var node = nodes.pop();
 	                    sortedNodes.push(node);
-	                    var _iteratorNormalCompletion10 = true;
-	                    var _didIteratorError10 = false;
-	                    var _iteratorError10 = undefined;
+	                    var _iteratorNormalCompletion11 = true;
+	                    var _didIteratorError11 = false;
+	                    var _iteratorError11 = undefined;
 
 	                    try {
-	                        for (var _iterator10 = outputEdgesFor(node, connections)[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
-	                            var edge = _step10.value;
+	                        for (var _iterator11 = outputEdgesFor(node, connections)[Symbol.iterator](), _step11; !(_iteratorNormalCompletion11 = (_step11 = _iterator11.next()).done); _iteratorNormalCompletion11 = true) {
+	                            var edge = _step11.value;
 
 	                            var index = connections.indexOf(edge);
 	                            if (index > -1) connections.splice(index, 1);
@@ -868,28 +901,28 @@ module.exports =
 	                            }
 	                        }
 	                    } catch (err) {
-	                        _didIteratorError10 = true;
-	                        _iteratorError10 = err;
+	                        _didIteratorError11 = true;
+	                        _iteratorError11 = err;
 	                    } finally {
 	                        try {
-	                            if (!_iteratorNormalCompletion10 && _iterator10["return"]) {
-	                                _iterator10["return"]();
+	                            if (!_iteratorNormalCompletion11 && _iterator11["return"]) {
+	                                _iterator11["return"]();
 	                            }
 	                        } finally {
-	                            if (_didIteratorError10) {
-	                                throw _iteratorError10;
+	                            if (_didIteratorError11) {
+	                                throw _iteratorError11;
 	                            }
 	                        }
 	                    }
 	                }
 
-	                var _iteratorNormalCompletion11 = true;
-	                var _didIteratorError11 = false;
-	                var _iteratorError11 = undefined;
+	                var _iteratorNormalCompletion12 = true;
+	                var _didIteratorError12 = false;
+	                var _iteratorError12 = undefined;
 
 	                try {
-	                    for (var _iterator11 = sortedNodes[Symbol.iterator](), _step11; !(_iteratorNormalCompletion11 = (_step11 = _iterator11.next()).done); _iteratorNormalCompletion11 = true) {
-	                        var node = _step11.value;
+	                    for (var _iterator12 = sortedNodes[Symbol.iterator](), _step12; !(_iteratorNormalCompletion12 = (_step12 = _iterator12.next()).done); _iteratorNormalCompletion12 = true) {
+	                        var node = _step12.value;
 
 	                        if (this._sourceNodes.indexOf(node) === -1) {
 	                            node._update(this._currentTime);
@@ -903,16 +936,16 @@ module.exports =
 	                    }
 	                    this._destinationNode._render();*/
 	                } catch (err) {
-	                    _didIteratorError11 = true;
-	                    _iteratorError11 = err;
+	                    _didIteratorError12 = true;
+	                    _iteratorError12 = err;
 	                } finally {
 	                    try {
-	                        if (!_iteratorNormalCompletion11 && _iterator11["return"]) {
-	                            _iterator11["return"]();
+	                        if (!_iteratorNormalCompletion12 && _iterator12["return"]) {
+	                            _iterator12["return"]();
 	                        }
 	                    } finally {
-	                        if (_didIteratorError11) {
-	                            throw _iteratorError11;
+	                        if (_didIteratorError12) {
+	                            throw _iteratorError12;
 	                        }
 	                    }
 	                }
@@ -1025,27 +1058,27 @@ module.exports =
 	    }, {
 	        key: "playbackRate",
 	        set: function set(rate) {
-	            var _iteratorNormalCompletion12 = true;
-	            var _didIteratorError12 = false;
-	            var _iteratorError12 = undefined;
+	            var _iteratorNormalCompletion13 = true;
+	            var _didIteratorError13 = false;
+	            var _iteratorError13 = undefined;
 
 	            try {
-	                for (var _iterator12 = this._sourceNodes[Symbol.iterator](), _step12; !(_iteratorNormalCompletion12 = (_step12 = _iterator12.next()).done); _iteratorNormalCompletion12 = true) {
-	                    var node = _step12.value;
+	                for (var _iterator13 = this._sourceNodes[Symbol.iterator](), _step13; !(_iteratorNormalCompletion13 = (_step13 = _iterator13.next()).done); _iteratorNormalCompletion13 = true) {
+	                    var node = _step13.value;
 
 	                    if (node.constructor.name === "VideoNode") node._globalPlaybackRate = rate;
 	                }
 	            } catch (err) {
-	                _didIteratorError12 = true;
-	                _iteratorError12 = err;
+	                _didIteratorError13 = true;
+	                _iteratorError13 = err;
 	            } finally {
 	                try {
-	                    if (!_iteratorNormalCompletion12 && _iterator12["return"]) {
-	                        _iterator12["return"]();
+	                    if (!_iteratorNormalCompletion13 && _iterator13["return"]) {
+	                        _iterator13["return"]();
 	                    }
 	                } finally {
-	                    if (_didIteratorError12) {
-	                        throw _iteratorError12;
+	                    if (_didIteratorError13) {
+	                        throw _iteratorError13;
 	                    }
 	                }
 	            }
