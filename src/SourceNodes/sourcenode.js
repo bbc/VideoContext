@@ -5,7 +5,7 @@ import GraphNode from "../graphnode";
 let STATE = {"waiting":0, "sequenced":1, "playing":2, "paused":3, "ended":4};
 
 export default class SourceNode extends GraphNode{
-    constructor(src, gl, renderGraph){
+    constructor(src, gl, renderGraph, currentTime){
         super(gl,renderGraph, [], true);
         this._element = undefined;
         this._elementURL = undefined;
@@ -20,7 +20,7 @@ export default class SourceNode extends GraphNode{
         }
 
         this._state = STATE.waiting;
-        this._currentTime = 0;
+        this._currentTime = currentTime;
         this._startTime = NaN;
         this._stopTime = Infinity;
         this._ready = false;
@@ -298,7 +298,6 @@ export default class SourceNode extends GraphNode{
         if (this._state === STATE.waiting || this._state === STATE.ended) return false;
 
         this._triggerCallbacks("render", currentTime);
-
 
         
         if (currentTime < this._startTime){

@@ -342,7 +342,7 @@ export default class VideoContext{
     * var videoNode = ctx.createVideoSourceNode(videoElement);
     */
     createVideoSourceNode(src, sourceOffset=0, preloadTime=4){
-        let videoNode = new VideoNode(src, this._gl, this._renderGraph, this._playbackRate, sourceOffset, preloadTime);
+        let videoNode = new VideoNode(src, this._gl, this._renderGraph, this._currentTime, this._playbackRate, sourceOffset, preloadTime);
         this._sourceNodes.push(videoNode);
         return videoNode;
     }
@@ -364,7 +364,7 @@ export default class VideoContext{
     * var imageNode = ctx.createVideoSourceNode(imageElement);
     */
     createImageSourceNode(src, sourceOffset=0, preloadTime=4){
-        let imageNode = new ImageNode(src, this._gl, this._renderGraph, this._playbackRate, sourceOffset, preloadTime);
+        let imageNode = new ImageNode(src, this._gl, this._renderGraph, this._currentTime, this._playbackRate, sourceOffset, preloadTime);
         this._sourceNodes.push(imageNode);
         return imageNode;
     }
@@ -375,7 +375,7 @@ export default class VideoContext{
     * @return {CanvasNode} A new canvas node.
     */
     createCanvasSourceNode(canvas, sourceOffset=0, preloadTime=4){
-        let canvasNode = new CanvasNode(canvas, this._gl, this._renderGraph, this._playbackRate, sourceOffset, preloadTime);
+        let canvasNode = new CanvasNode(canvas, this._gl, this._renderGraph, this._currentTime, this._playbackRate, sourceOffset, preloadTime);
         this._sourceNodes.push(canvasNode);
         return canvasNode;
     }

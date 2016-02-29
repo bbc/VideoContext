@@ -2,8 +2,8 @@
 import SourceNode, { SOURCENODESTATE } from "./sourcenode";
 
 export default class CanvasNode extends SourceNode {
-    constructor(canvas, gl, renderGraph, preloadTime = 4){
-        super(canvas, gl, renderGraph);
+    constructor(canvas, gl, renderGraph, currentTime, preloadTime = 4){
+        super(canvas, gl, renderGraph, currentTime);
         this._preloadTime = preloadTime;
     }
 

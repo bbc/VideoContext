@@ -417,7 +417,7 @@ var VideoContext =
 	            var sourceOffset = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
 	            var preloadTime = arguments.length <= 2 || arguments[2] === undefined ? 4 : arguments[2];
 
-	            var videoNode = new _SourceNodesVideonodeJs2["default"](src, this._gl, this._renderGraph, this._playbackRate, sourceOffset, preloadTime);
+	            var videoNode = new _SourceNodesVideonodeJs2["default"](src, this._gl, this._renderGraph, this._currentTime, this._playbackRate, sourceOffset, preloadTime);
 	            this._sourceNodes.push(videoNode);
 	            return videoNode;
 	        }
@@ -444,7 +444,7 @@ var VideoContext =
 	            var sourceOffset = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
 	            var preloadTime = arguments.length <= 2 || arguments[2] === undefined ? 4 : arguments[2];
 
-	            var imageNode = new _SourceNodesImagenodeJs2["default"](src, this._gl, this._renderGraph, this._playbackRate, sourceOffset, preloadTime);
+	            var imageNode = new _SourceNodesImagenodeJs2["default"](src, this._gl, this._renderGraph, this._currentTime, this._playbackRate, sourceOffset, preloadTime);
 	            this._sourceNodes.push(imageNode);
 	            return imageNode;
 	        }
@@ -460,7 +460,7 @@ var VideoContext =
 	            var sourceOffset = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
 	            var preloadTime = arguments.length <= 2 || arguments[2] === undefined ? 4 : arguments[2];
 
-	            var canvasNode = new _SourceNodesCanvasnodeJs2["default"](canvas, this._gl, this._renderGraph, this._playbackRate, sourceOffset, preloadTime);
+	            var canvasNode = new _SourceNodesCanvasnodeJs2["default"](canvas, this._gl, this._renderGraph, this._currentTime, this._playbackRate, sourceOffset, preloadTime);
 	            this._sourceNodes.push(canvasNode);
 	            return canvasNode;
 	        }
@@ -1232,14 +1232,14 @@ var VideoContext =
 	var VideoNode = (function (_SourceNode) {
 	    _inherits(VideoNode, _SourceNode);
 
-	    function VideoNode(src, gl, renderGraph) {
-	        var globalPlaybackRate = arguments.length <= 3 || arguments[3] === undefined ? 1.0 : arguments[3];
-	        var sourceOffset = arguments.length <= 4 || arguments[4] === undefined ? 0 : arguments[4];
-	        var preloadTime = arguments.length <= 5 || arguments[5] === undefined ? 4 : arguments[5];
+	    function VideoNode(src, gl, renderGraph, currentTime) {
+	        var globalPlaybackRate = arguments.length <= 4 || arguments[4] === undefined ? 1.0 : arguments[4];
+	        var sourceOffset = arguments.length <= 5 || arguments[5] === undefined ? 0 : arguments[5];
+	        var preloadTime = arguments.length <= 6 || arguments[6] === undefined ? 4 : arguments[6];
 
 	        _classCallCheck(this, VideoNode);
 
-	        _get(Object.getPrototypeOf(VideoNode.prototype), "constructor", this).call(this, src, gl, renderGraph);
+	        _get(Object.getPrototypeOf(VideoNode.prototype), "constructor", this).call(this, src, gl, renderGraph, currentTime);
 	        this._preloadTime = preloadTime;
 	        this._sourceOffset = sourceOffset;
 	        this._globalPlaybackRate = globalPlaybackRate;
@@ -1296,7 +1296,6 @@ var VideoContext =
 	        value: function _update(currentTime) {
 	            //if (!super._update(currentTime)) return false;
 	            _get(Object.getPrototypeOf(VideoNode.prototype), "_update", this).call(this, currentTime);
-
 	            //check if the video has ended
 	            if (this._element !== undefined) {
 	                if (this._element.ended) {
@@ -1368,7 +1367,7 @@ var VideoContext =
 	var SourceNode = (function (_GraphNode) {
 	    _inherits(SourceNode, _GraphNode);
 
-	    function SourceNode(src, gl, renderGraph) {
+	    function SourceNode(src, gl, renderGraph, currentTime) {
 	        _classCallCheck(this, SourceNode);
 
 	        _get(Object.getPrototypeOf(SourceNode.prototype), "constructor", this).call(this, gl, renderGraph, [], true);
@@ -1385,7 +1384,7 @@ var VideoContext =
 	        }
 
 	        this._state = STATE.waiting;
-	        this._currentTime = 0;
+	        this._currentTime = currentTime;
 	        this._startTime = NaN;
 	        this._stopTime = Infinity;
 	        this._ready = false;
@@ -2348,12 +2347,12 @@ var VideoContext =
 	var ImageNode = (function (_SourceNode) {
 	    _inherits(ImageNode, _SourceNode);
 
-	    function ImageNode(src, gl, renderGraph) {
-	        var preloadTime = arguments.length <= 3 || arguments[3] === undefined ? 4 : arguments[3];
+	    function ImageNode(src, gl, renderGraph, currentTime) {
+	        var preloadTime = arguments.length <= 4 || arguments[4] === undefined ? 4 : arguments[4];
 
 	        _classCallCheck(this, ImageNode);
 
-	        _get(Object.getPrototypeOf(ImageNode.prototype), 'constructor', this).call(this, src, gl, renderGraph);
+	        _get(Object.getPrototypeOf(ImageNode.prototype), 'constructor', this).call(this, src, gl, renderGraph, currentTime);
 	        this._preloadTime = preloadTime;
 	    }
 
@@ -2453,12 +2452,12 @@ var VideoContext =
 	var CanvasNode = (function (_SourceNode) {
 	    _inherits(CanvasNode, _SourceNode);
 
-	    function CanvasNode(canvas, gl, renderGraph) {
-	        var preloadTime = arguments.length <= 3 || arguments[3] === undefined ? 4 : arguments[3];
+	    function CanvasNode(canvas, gl, renderGraph, currentTime) {
+	        var preloadTime = arguments.length <= 4 || arguments[4] === undefined ? 4 : arguments[4];
 
 	        _classCallCheck(this, CanvasNode);
 
-	        _get(Object.getPrototypeOf(CanvasNode.prototype), "constructor", this).call(this, canvas, gl, renderGraph);
+	        _get(Object.getPrototypeOf(CanvasNode.prototype), "constructor", this).call(this, canvas, gl, renderGraph, currentTime);
 	        this._preloadTime = preloadTime;
 	    }
 

@@ -2,8 +2,8 @@
 import SourceNode, { SOURCENODESTATE } from "./sourcenode";
 
 export default class VideoNode extends SourceNode {
-    constructor(src, gl, renderGraph, globalPlaybackRate=1.0, sourceOffset=0, preloadTime = 4){
-        super(src, gl, renderGraph);
+    constructor(src, gl, renderGraph, currentTime, globalPlaybackRate=1.0, sourceOffset=0, preloadTime = 4){
+        super(src, gl, renderGraph, currentTime);
         this._preloadTime = preloadTime;
         this._sourceOffset = sourceOffset;
         this._globalPlaybackRate = globalPlaybackRate;
@@ -63,7 +63,6 @@ export default class VideoNode extends SourceNode {
     _update(currentTime){
         //if (!super._update(currentTime)) return false;
         super._update(currentTime);
-        
         //check if the video has ended
         if(this._element !== undefined){
             if (this._element.ended){
