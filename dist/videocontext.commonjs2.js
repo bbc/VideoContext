@@ -1256,7 +1256,7 @@ module.exports =
 	                COMBINE: combine,
 	                COLORTHRESHOLD: colorThreshold,
 	                MONOCHROME: monochrome,
-	                AAF_VIDEO_CROP: smpte_video_crop
+	                AAF_VIDEO_CROP: aaf_video_crop
 	            };
 	        }
 	    }]);
