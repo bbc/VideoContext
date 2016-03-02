@@ -691,6 +691,40 @@ export default class VideoContext{
     }
 
     static get DEFINITIONS() {
+        var smpte_video_crop = {
+            vertexShader : "\
+                    attribute vec2 a_position;\
+                    attribute vec2 a_texCoord;\
+                    varying vec2 v_texCoord;\
+                    void main() {\
+                        gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+                        v_texCoord = a_texCoord;\
+                    }",
+                fragmentShader : "\
+                    precision mediump float;\
+                    uniform sampler2D u_image;\
+                    uniform float CropLeft;\
+                    uniform float CropRight;\
+                    uniform float CropTop;\
+                    uniform float CropBottom;\
+                    varying vec2 v_texCoord;\
+                    void main(){\
+                        vec4 color = texture2D(u_image, v_texCoord);\
+                        if (v_texCoord[0] < (CropLeft+1.0)/2.0) color = vec4(0.0,0.0,0.0,0.0);\
+                        if (v_texCoord[0] > (CropRight+1.0)/2.0) color = vec4(0.0,0.0,0.0,0.0);\
+                        if (v_texCoord[1] < (-CropBottom+1.0)/2.0) color = vec4(0.0,0.0,0.0,0.0);\
+                        if (v_texCoord[1] > (-CropTop+1.0)/2.0) color = vec4(0.0,0.0,0.0,0.0);\
+                        gl_FragColor = color;\
+                    }",
+                properties:{
+                    "CropLeft":{type:"uniform", value:-0.4},
+                    "CropRight":{type:"uniform", value:0.4},
+                    "CropTop":{type:"uniform", value: -1.0},
+                    "CropBottom":{type:"uniform", value: 1.0}
+                },
+                inputs:["u_image"]
+        };
+
         var crossfade = {
             vertexShader : "\
                     attribute vec2 a_position;\
@@ -816,7 +850,8 @@ export default class VideoContext{
             CROSSFADE: crossfade,
             COMBINE: combine,
             COLORTHRESHOLD: colorThreshold,
-            MONOCHROME: monochrome
+            MONOCHROME: monochrome,
+            SMPTE_VIDEO_CROP: smpte_video_crop
         };
     }
 
