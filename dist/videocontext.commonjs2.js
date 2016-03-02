@@ -1096,7 +1096,7 @@ module.exports =
 	    }], [{
 	        key: "DEFINITIONS",
 	        get: function get() {
-	            var smpte_video_crop = {
+	            var aaf_video_crop = {
 	                vertexShader: "\
 	                    attribute vec2 a_position;\
 	                    attribute vec2 a_texCoord;\
@@ -1256,7 +1256,7 @@ module.exports =
 	                COMBINE: combine,
 	                COLORTHRESHOLD: colorThreshold,
 	                MONOCHROME: monochrome,
-	                SMPTE_VIDEO_CROP: smpte_video_crop
+	                AAF_VIDEO_CROP: smpte_video_crop
 	            };
 	        }
 	    }]);
