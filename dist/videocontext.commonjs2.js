@@ -1122,8 +1122,8 @@ module.exports =
 	                    gl_FragColor = color;\
 	                }",
 	                properties: {
-	                    "ScaleX": { type: "uniform", value: 1.0 },
-	                    "ScaleY": { type: "uniform", value: 1.0 }
+	                    "scaleX": { type: "uniform", value: 1.0 },
+	                    "scaleY": { type: "uniform", value: 1.0 }
 	                },
 	                inputs: ["u_image"]
 	            };
@@ -1153,8 +1153,8 @@ module.exports =
 	                    gl_FragColor = color;\
 	                }",
 	                properties: {
-	                    "PositionOffsetX": { type: "uniform", value: 0.0 },
-	                    "PositionOffsetY": { type: "uniform", value: 0.0 }
+	                    "positionOffsetX": { type: "uniform", value: 0.0 },
+	                    "positionOffsetY": { type: "uniform", value: 0.0 }
 	                },
 	                inputs: ["u_image"]
 	            };
@@ -1185,10 +1185,10 @@ module.exports =
 	                        gl_FragColor = color;\
 	                    }",
 	                properties: {
-	                    "CropLeft": { type: "uniform", value: -1.0 },
-	                    "CropRight": { type: "uniform", value: 1.0 },
-	                    "CropTop": { type: "uniform", value: -1.0 },
-	                    "CropBottom": { type: "uniform", value: 1.0 }
+	                    "cropLeft": { type: "uniform", value: -1.0 },
+	                    "cropRight": { type: "uniform", value: 1.0 },
+	                    "cropTop": { type: "uniform", value: -1.0 },
+	                    "cropBottom": { type: "uniform", value: 1.0 }
 	                },
 	                inputs: ["u_image"]
 	            };
