@@ -1097,6 +1097,37 @@ module.exports =
 	        key: "DEFINITIONS",
 	        get: function get() {
 
+	            var aaf_video_scale = {
+	                vertexShader: "\
+	                attribute vec2 a_position;\
+	                attribute vec2 a_texCoord;\
+	                varying vec2 v_texCoord;\
+	                void main() {\
+	                    gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+	                    v_texCoord = a_texCoord;\
+	                }",
+	                fragmentShader: "\
+	                precision mediump float;\
+	                uniform sampler2D u_image;\
+	                uniform float ScaleX;\
+	                uniform float ScaleY;\
+	                varying vec2 v_texCoord;\
+	                varying float v_progress;\
+	                void main(){\
+	                    vec2 pos = vec2(v_texCoord[0]*1.0/ScaleX - (1.0/ScaleX/2.0 -0.5), v_texCoord[1]*1.0/ScaleY - (1.0/ScaleY/2.0 -0.5));\
+	                    vec4 color = texture2D(u_image, pos);\
+	                    if (pos[0] < 0.0 || pos[0] > 1.0 || pos[1] < 0.0 || pos[1] > 1.0){\
+	                        color = vec4(0.0,0.0,0.0,0.0);\
+	                    }\
+	                    gl_FragColor = color;\
+	                }",
+	                properties: {
+	                    "ScaleX": { type: "uniform", value: 1.0 },
+	                    "ScaleY": { type: "uniform", value: 1.0 }
+	                },
+	                inputs: ["u_image"]
+	            };
+
 	            var aaf_video_position = {
 	                vertexShader: "\
 	                attribute vec2 a_position;\
@@ -1289,7 +1320,8 @@ module.exports =
 	                COLORTHRESHOLD: colorThreshold,
 	                MONOCHROME: monochrome,
 	                AAF_VIDEO_CROP: aaf_video_crop,
-	                AAF_VIDEO_POSITION: aaf_video_position
+	                AAF_VIDEO_POSITION: aaf_video_position,
+	                AAF_VIDEO_SCALE: aaf_video_scale
 	            };
 	        }
 	    }]);
