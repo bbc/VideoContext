@@ -1193,6 +1193,50 @@ var VideoContext =
 	                inputs: ["u_image"]
 	            };
 
+	            var aaf_video_flip = {
+	                vertexShader: "\
+	                    attribute vec2 a_position;\
+	                    attribute vec2 a_texCoord;\
+	                    varying vec2 v_texCoord;\
+	                    void main() {\
+	                        gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+	                        v_texCoord = a_texCoord;\
+	                    }",
+	                fragmentShader: "\
+	                    precision mediump float;\
+	                    uniform sampler2D u_image;\
+	                    varying vec2 v_texCoord;\
+	                    void main(){\
+	                        vec2 coord = vec2(v_texCoord[0] ,1.0 - v_texCoord[1]);\
+	                        vec4 color = texture2D(u_image, coord);\
+	                        gl_FragColor = color;\
+	                    }",
+	                properties: {},
+	                inputs: ["u_image"]
+	            };
+
+	            var aaf_video_flop = {
+	                vertexShader: "\
+	                    attribute vec2 a_position;\
+	                    attribute vec2 a_texCoord;\
+	                    varying vec2 v_texCoord;\
+	                    void main() {\
+	                        gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+	                        v_texCoord = a_texCoord;\
+	                    }",
+	                fragmentShader: "\
+	                    precision mediump float;\
+	                    uniform sampler2D u_image;\
+	                    varying vec2 v_texCoord;\
+	                    void main(){\
+	                        vec2 coord = vec2(1.0 - v_texCoord[0] ,v_texCoord[1]);\
+	                        vec4 color = texture2D(u_image, coord);\
+	                        gl_FragColor = color;\
+	                    }",
+	                properties: {},
+	                inputs: ["u_image"]
+	            };
+
 	            var crossfade = {
 	                vertexShader: "\
 	                    attribute vec2 a_position;\
@@ -1321,7 +1365,9 @@ var VideoContext =
 	                MONOCHROME: monochrome,
 	                AAF_VIDEO_CROP: aaf_video_crop,
 	                AAF_VIDEO_POSITION: aaf_video_position,
-	                AAF_VIDEO_SCALE: aaf_video_scale
+	                AAF_VIDEO_SCALE: aaf_video_scale,
+	                AAF_VIDEO_FLIP: aaf_video_flip,
+	                AAF_VIDEO_FLOP: aaf_video_flop
 	            };
 	        }
 	    }]);
