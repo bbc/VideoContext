@@ -693,6 +693,8 @@ export default class VideoContext{
     static get DEFINITIONS() {
 
         var aaf_video_scale = {
+            title:"AAF Video Scale Effect",
+            description: "A scale effect based on the AAF spec.",
             vertexShader : "\
                 attribute vec2 a_position;\
                 attribute vec2 a_texCoord;\
@@ -725,6 +727,8 @@ export default class VideoContext{
 
 
         var aaf_video_position = {
+            title:"AAF Video Position Effect",
+            description: "A position effect based on the AAF spec.",
             vertexShader : "\
                 attribute vec2 a_position;\
                 attribute vec2 a_texCoord;\
@@ -757,6 +761,8 @@ export default class VideoContext{
 
 
         var aaf_video_crop = {
+            title:"AAF Video Crop Effect",
+            description: "A crop effect based on the AAF spec.",
             vertexShader : "\
                     attribute vec2 a_position;\
                     attribute vec2 a_texCoord;\
@@ -792,6 +798,8 @@ export default class VideoContext{
 
 
         var aaf_video_flip = {
+            title:"AAF Video Scale Effect",
+            description: "A flip effect based on the AAF spec. Mirrors the image in the x-axis",
             vertexShader : "\
                     attribute vec2 a_position;\
                     attribute vec2 a_texCoord;\
@@ -815,6 +823,8 @@ export default class VideoContext{
         };
 
         var aaf_video_flop = {
+            title:"AAF Video Scale Effect",
+            description: "A flop effect based on the AAF spec. Mirrors the image in the y-axis",
             vertexShader : "\
                     attribute vec2 a_position;\
                     attribute vec2 a_texCoord;\
@@ -840,6 +850,8 @@ export default class VideoContext{
 
 
         var crossfade = {
+            title:"Cross-Fade",
+            description: "A cross-fade effect. Typically used as a transistion.",
             vertexShader : "\
                     attribute vec2 a_position;\
                     attribute vec2 a_texCoord;\
@@ -875,6 +887,8 @@ export default class VideoContext{
         };
 
         var combine ={
+                title:"Combine",
+                description: "A basic effect which renders the input to the output, Typically used as a combine node for layering up media with alpha transparency.",
                 vertexShader : "\
                     attribute vec2 a_position;\
                     attribute vec2 a_texCoord;\
@@ -900,6 +914,8 @@ export default class VideoContext{
         };
 
         var colorThreshold = {
+                title:"Color Threshold",
+                description: "Turns all pixels with a greater value than the specified threshold transparent.",
                 vertexShader : "\
                     attribute vec2 a_position;\
                     attribute vec2 a_texCoord;\
@@ -930,6 +946,8 @@ export default class VideoContext{
             };
 
         var monochrome = {
+                title:"Monochrome",
+                description: "Change images to a single chroma (e.g can be used to make a black & white filter). Input color mix and output color mix can be adjusted.",
                 vertexShader : "\
                     attribute vec2 a_position;\
                     attribute vec2 a_texCoord;\
