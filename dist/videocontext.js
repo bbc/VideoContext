@@ -655,38 +655,6 @@ var VideoContext =
 
 	                var outputEdgesFor = function outputEdgesFor(node, connections) {
 	                    var results = [];
-	                    var _iteratorNormalCompletion7 = true;
-	                    var _didIteratorError7 = false;
-	                    var _iteratorError7 = undefined;
-
-	                    try {
-	                        for (var _iterator7 = connections[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
-	                            var conn = _step7.value;
-
-	                            if (conn.source === node) {
-	                                results.push(conn);
-	                            }
-	                        }
-	                    } catch (err) {
-	                        _didIteratorError7 = true;
-	                        _iteratorError7 = err;
-	                    } finally {
-	                        try {
-	                            if (!_iteratorNormalCompletion7 && _iterator7["return"]) {
-	                                _iterator7["return"]();
-	                            }
-	                        } finally {
-	                            if (_didIteratorError7) {
-	                                throw _iteratorError7;
-	                            }
-	                        }
-	                    }
-
-	                    return results;
-	                };
-
-	                var inputEdgesFor = function inputEdgesFor(node, connections) {
-	                    var results = [];
 	                    var _iteratorNormalCompletion8 = true;
 	                    var _didIteratorError8 = false;
 	                    var _iteratorError8 = undefined;
@@ -695,7 +663,7 @@ var VideoContext =
 	                        for (var _iterator8 = connections[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
 	                            var conn = _step8.value;
 
-	                            if (conn.destination === node) {
+	                            if (conn.source === node) {
 	                                results.push(conn);
 	                            }
 	                        }
@@ -717,8 +685,8 @@ var VideoContext =
 	                    return results;
 	                };
 
-	                var getInputlessNodes = function getInputlessNodes(connections) {
-	                    var inputLess = [];
+	                var inputEdgesFor = function inputEdgesFor(node, connections) {
+	                    var results = [];
 	                    var _iteratorNormalCompletion9 = true;
 	                    var _didIteratorError9 = false;
 	                    var _iteratorError9 = undefined;
@@ -727,7 +695,9 @@ var VideoContext =
 	                        for (var _iterator9 = connections[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
 	                            var conn = _step9.value;
 
-	                            inputLess.push(conn.source);
+	                            if (conn.destination === node) {
+	                                results.push(conn);
+	                            }
 	                        }
 	                    } catch (err) {
 	                        _didIteratorError9 = true;
@@ -744,6 +714,11 @@ var VideoContext =
 	                        }
 	                    }
 
+	                    return results;
+	                };
+
+	                var getInputlessNodes = function getInputlessNodes(connections) {
+	                    var inputLess = [];
 	                    var _iteratorNormalCompletion10 = true;
 	                    var _didIteratorError10 = false;
 	                    var _iteratorError10 = undefined;
@@ -752,10 +727,7 @@ var VideoContext =
 	                        for (var _iterator10 = connections[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
 	                            var conn = _step10.value;
 
-	                            var index = inputLess.indexOf(conn.destination);
-	                            if (index !== -1) {
-	                                inputLess.splice(index, 1);
-	                            }
+	                            inputLess.push(conn.source);
 	                        }
 	                    } catch (err) {
 	                        _didIteratorError10 = true;
@@ -768,6 +740,34 @@ var VideoContext =
 	                        } finally {
 	                            if (_didIteratorError10) {
 	                                throw _iteratorError10;
+	                            }
+	                        }
+	                    }
+
+	                    var _iteratorNormalCompletion11 = true;
+	                    var _didIteratorError11 = false;
+	                    var _iteratorError11 = undefined;
+
+	                    try {
+	                        for (var _iterator11 = connections[Symbol.iterator](), _step11; !(_iteratorNormalCompletion11 = (_step11 = _iterator11.next()).done); _iteratorNormalCompletion11 = true) {
+	                            var conn = _step11.value;
+
+	                            var index = inputLess.indexOf(conn.destination);
+	                            if (index !== -1) {
+	                                inputLess.splice(index, 1);
+	                            }
+	                        }
+	                    } catch (err) {
+	                        _didIteratorError11 = true;
+	                        _iteratorError11 = err;
+	                    } finally {
+	                        try {
+	                            if (!_iteratorNormalCompletion11 && _iterator11["return"]) {
+	                                _iterator11["return"]();
+	                            }
+	                        } finally {
+	                            if (_didIteratorError11) {
+	                                throw _iteratorError11;
 	                            }
 	                        }
 	                    }
@@ -788,7 +788,7 @@ var VideoContext =
 
 	                if (this._state === STATE.playing) {
 	                    //Handle timeline callbacks.
-	                    var activeCallbacks = [];
+	                    var activeCallbacks = new Map();
 	                    var _iteratorNormalCompletion5 = true;
 	                    var _didIteratorError5 = false;
 	                    var _iteratorError5 = undefined;
@@ -798,9 +798,13 @@ var VideoContext =
 	                            var callback = _step5.value;
 
 	                            if (callback.time >= this.currentTime && callback.time < this._currentTime + dt * this._playbackRate) {
-	                                activeCallbacks.push(callback);
+	                                //group the callbacks by time
+	                                if (!activeCallbacks.has(callback.time)) activeCallbacks.set(callback.time, []);
+	                                activeCallbacks.get(callback.time).push(callback);
 	                            }
 	                        }
+
+	                        //Sort the groups of callbacks by the times of the groups
 	                    } catch (err) {
 	                        _didIteratorError5 = true;
 	                        _iteratorError5 = err;
@@ -816,19 +820,55 @@ var VideoContext =
 	                        }
 	                    }
 
-	                    activeCallbacks.sort(function (a, b) {
-	                        return a.ordering - b.ordering;
+	                    var timeIntervals = Array.from(activeCallbacks.keys());
+	                    timeIntervals.sort(function (a, b) {
+	                        return a - b;
 	                    });
+
 	                    var _iteratorNormalCompletion6 = true;
 	                    var _didIteratorError6 = false;
 	                    var _iteratorError6 = undefined;
 
 	                    try {
-	                        for (var _iterator6 = activeCallbacks[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-	                            var callback = _step6.value;
+	                        for (var _iterator6 = timeIntervals[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+	                            var t = _step6.value;
 
-	                            callback.func();
+	                            var callbacks = activeCallbacks.get(t);
+	                            callbacks.sort(function (a, b) {
+	                                return a.ordering - b.ordering;
+	                            });
+	                            var _iteratorNormalCompletion7 = true;
+	                            var _didIteratorError7 = false;
+	                            var _iteratorError7 = undefined;
+
+	                            try {
+	                                for (var _iterator7 = callbacks[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+	                                    var callback = _step7.value;
+
+	                                    callback.func();
+	                                }
+	                            } catch (err) {
+	                                _didIteratorError7 = true;
+	                                _iteratorError7 = err;
+	                            } finally {
+	                                try {
+	                                    if (!_iteratorNormalCompletion7 && _iterator7["return"]) {
+	                                        _iterator7["return"]();
+	                                    }
+	                                } finally {
+	                                    if (_didIteratorError7) {
+	                                        throw _iteratorError7;
+	                                    }
+	                                }
+	                            }
 	                        }
+
+	                        // activeCallbacks.sort(function(a, b) {
+	                        //     return a.ordering - b.ordering;
+	                        // });
+	                        // for(let callback of activeCallbacks){
+	                        //     callback.func();
+	                        // }
 	                    } catch (err) {
 	                        _didIteratorError6 = true;
 	                        _iteratorError6 = err;
@@ -886,13 +926,13 @@ var VideoContext =
 	                while (nodes.length > 0) {
 	                    var node = nodes.pop();
 	                    sortedNodes.push(node);
-	                    var _iteratorNormalCompletion11 = true;
-	                    var _didIteratorError11 = false;
-	                    var _iteratorError11 = undefined;
+	                    var _iteratorNormalCompletion12 = true;
+	                    var _didIteratorError12 = false;
+	                    var _iteratorError12 = undefined;
 
 	                    try {
-	                        for (var _iterator11 = outputEdgesFor(node, connections)[Symbol.iterator](), _step11; !(_iteratorNormalCompletion11 = (_step11 = _iterator11.next()).done); _iteratorNormalCompletion11 = true) {
-	                            var edge = _step11.value;
+	                        for (var _iterator12 = outputEdgesFor(node, connections)[Symbol.iterator](), _step12; !(_iteratorNormalCompletion12 = (_step12 = _iterator12.next()).done); _iteratorNormalCompletion12 = true) {
+	                            var edge = _step12.value;
 
 	                            var index = connections.indexOf(edge);
 	                            if (index > -1) connections.splice(index, 1);
@@ -901,28 +941,28 @@ var VideoContext =
 	                            }
 	                        }
 	                    } catch (err) {
-	                        _didIteratorError11 = true;
-	                        _iteratorError11 = err;
+	                        _didIteratorError12 = true;
+	                        _iteratorError12 = err;
 	                    } finally {
 	                        try {
-	                            if (!_iteratorNormalCompletion11 && _iterator11["return"]) {
-	                                _iterator11["return"]();
+	                            if (!_iteratorNormalCompletion12 && _iterator12["return"]) {
+	                                _iterator12["return"]();
 	                            }
 	                        } finally {
-	                            if (_didIteratorError11) {
-	                                throw _iteratorError11;
+	                            if (_didIteratorError12) {
+	                                throw _iteratorError12;
 	                            }
 	                        }
 	                    }
 	                }
 
-	                var _iteratorNormalCompletion12 = true;
-	                var _didIteratorError12 = false;
-	                var _iteratorError12 = undefined;
+	                var _iteratorNormalCompletion13 = true;
+	                var _didIteratorError13 = false;
+	                var _iteratorError13 = undefined;
 
 	                try {
-	                    for (var _iterator12 = sortedNodes[Symbol.iterator](), _step12; !(_iteratorNormalCompletion12 = (_step12 = _iterator12.next()).done); _iteratorNormalCompletion12 = true) {
-	                        var node = _step12.value;
+	                    for (var _iterator13 = sortedNodes[Symbol.iterator](), _step13; !(_iteratorNormalCompletion13 = (_step13 = _iterator13.next()).done); _iteratorNormalCompletion13 = true) {
+	                        var node = _step13.value;
 
 	                        if (this._sourceNodes.indexOf(node) === -1) {
 	                            node._update(this._currentTime);
@@ -936,16 +976,16 @@ var VideoContext =
 	                    }
 	                    this._destinationNode._render();*/
 	                } catch (err) {
-	                    _didIteratorError12 = true;
-	                    _iteratorError12 = err;
+	                    _didIteratorError13 = true;
+	                    _iteratorError13 = err;
 	                } finally {
 	                    try {
-	                        if (!_iteratorNormalCompletion12 && _iterator12["return"]) {
-	                            _iterator12["return"]();
+	                        if (!_iteratorNormalCompletion13 && _iterator13["return"]) {
+	                            _iterator13["return"]();
 	                        }
 	                    } finally {
-	                        if (_didIteratorError12) {
-	                            throw _iteratorError12;
+	                        if (_didIteratorError13) {
+	                            throw _iteratorError13;
 	                        }
 	                    }
 	                }
@@ -1058,27 +1098,27 @@ var VideoContext =
 	    }, {
 	        key: "playbackRate",
 	        set: function set(rate) {
-	            var _iteratorNormalCompletion13 = true;
-	            var _didIteratorError13 = false;
-	            var _iteratorError13 = undefined;
+	            var _iteratorNormalCompletion14 = true;
+	            var _didIteratorError14 = false;
+	            var _iteratorError14 = undefined;
 
 	            try {
-	                for (var _iterator13 = this._sourceNodes[Symbol.iterator](), _step13; !(_iteratorNormalCompletion13 = (_step13 = _iterator13.next()).done); _iteratorNormalCompletion13 = true) {
-	                    var node = _step13.value;
+	                for (var _iterator14 = this._sourceNodes[Symbol.iterator](), _step14; !(_iteratorNormalCompletion14 = (_step14 = _iterator14.next()).done); _iteratorNormalCompletion14 = true) {
+	                    var node = _step14.value;
 
 	                    if (node.constructor.name === "VideoNode") node._globalPlaybackRate = rate;
 	                }
 	            } catch (err) {
-	                _didIteratorError13 = true;
-	                _iteratorError13 = err;
+	                _didIteratorError14 = true;
+	                _iteratorError14 = err;
 	            } finally {
 	                try {
-	                    if (!_iteratorNormalCompletion13 && _iterator13["return"]) {
-	                        _iterator13["return"]();
+	                    if (!_iteratorNormalCompletion14 && _iterator14["return"]) {
+	                        _iterator14["return"]();
 	                    }
 	                } finally {
-	                    if (_didIteratorError13) {
-	                        throw _iteratorError13;
+	                    if (_didIteratorError14) {
+	                        throw _iteratorError14;
 	                    }
 	                }
 	            }

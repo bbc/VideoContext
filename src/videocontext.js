@@ -569,27 +569,47 @@ export default class VideoContext{
                 }    
             }
             
-            if(this._state === STATE.playing){
-                    //Handle timeline callbacks.
-                    let activeCallbacks = [];
-                    for(let callback of this._timelineCallbacks){
-                        if (callback.time >= this.currentTime && callback.time < (this._currentTime + dt * this._playbackRate)){
-                            activeCallbacks.push(callback);
-                        }
+            if(this._state === STATE.playing){                    
+                //Handle timeline callbacks.
+                let activeCallbacks = new Map();
+                for(let callback of this._timelineCallbacks){
+                    if (callback.time >= this.currentTime && callback.time < (this._currentTime + dt * this._playbackRate)){
+                        //group the callbacks by time
+                        if(!activeCallbacks.has(callback.time)) activeCallbacks.set(callback.time, []);
+                        activeCallbacks.get(callback.time).push(callback);
                     }
-                    activeCallbacks.sort(function(a, b) {
+                }
+
+
+                //Sort the groups of callbacks by the times of the groups
+                let timeIntervals = Array.from(activeCallbacks.keys());
+                timeIntervals.sort(function(a, b){
+                    return a - b;
+                });
+
+                for (let t of timeIntervals){
+                    let callbacks = activeCallbacks.get(t);
+                    callbacks.sort(function(a,b){
                         return a.ordering - b.ordering;
                     });
-                    for(let callback of activeCallbacks){
+                    for(let callback of callbacks){
                         callback.func();
                     }
+                }
+
+                // activeCallbacks.sort(function(a, b) {
+                //     return a.ordering - b.ordering;
+                // });
+                // for(let callback of activeCallbacks){
+                //     callback.func();
+                // }
 
 
-                    this._currentTime += dt * this._playbackRate;
-                    if(this._currentTime > this.duration){
-                        this._callCallbacks("ended");
-                        this._state = STATE.ended;
-                    }
+                this._currentTime += dt * this._playbackRate;
+                if(this._currentTime > this.duration){
+                    this._callCallbacks("ended");
+                    this._state = STATE.ended;
+                }
             }
 
             for (let i = 0; i < this._sourceNodes.length; i++) {
