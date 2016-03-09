@@ -8,10 +8,12 @@ export default class VideoNode extends SourceNode {
         this._sourceOffset = sourceOffset;
         this._globalPlaybackRate = globalPlaybackRate;
         this._playbackRate = 1.0;
+        this._playbackRateUpdated = true;
     }
 
     set playbackRate(playbackRate){
         this._playbackRate = playbackRate;
+        this._playbackRateUpdated = true;
     }
 
     get playbackRate(){
@@ -24,6 +26,8 @@ export default class VideoNode extends SourceNode {
             if (this._element.readyState > 3 && !this._element.seeking){
                 if (this._stopTime === Infinity || this._stopTime == undefined) this._stopTime = this._startTime + this._element.duration;
                 this._ready = true;
+                this._playbackRateUpdated = true;
+
             } else{
                 this._ready = false;
             }
@@ -33,6 +37,8 @@ export default class VideoNode extends SourceNode {
             this._element = document.createElement("video");
             this._element.setAttribute('crossorigin', 'anonymous');
             this._element.src = this._elementURL;
+            this._playbackRateUpdated = true;
+
         }
         this._element.currentTime = this._sourceOffset;
     }
@@ -74,7 +80,11 @@ export default class VideoNode extends SourceNode {
         if (this._startTime - this._currentTime < this._preloadTime && this._state !== SOURCENODESTATE.waiting && this._state !== SOURCENODESTATE.ended)this._load();
 
         if (this._state === SOURCENODESTATE.playing){
-            this._element.playbackRate = this._globalPlaybackRate * this._playbackRate;
+            if (this._playbackRateUpdated)
+            {
+                this._element.playbackRate = this._globalPlaybackRate * this._playbackRate;
+                this._playbackRateUpdated = false;
+            }
             this._element.play();
             return true;
         } else if (this._state === SOURCENODESTATE.paused){
