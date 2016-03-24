@@ -7,6 +7,11 @@ export default class CanvasNode extends SourceNode {
         this._preloadTime = preloadTime;
     }
 
+    _load(){
+        super._load();
+        this._ready = true;
+    }
+
     _destroy(){
         super._destroy();
         this._ready = false;

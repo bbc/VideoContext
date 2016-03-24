@@ -165,11 +165,10 @@ export default class RenderGraph {
         });
 
         if (toRemove.length === 0) return false;
-        let _this = this;
 
-        toRemove.forEach(function(removeNode){
-            let index = _this.connections.indexOf(removeNode);
-            _this.connections.splice(index, 1);
+        toRemove.forEach((removeNode) => {
+            let index = this.connections.indexOf(removeNode);
+            this.connections.splice(index, 1);
         });
 
         return true;

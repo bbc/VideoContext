@@ -128,6 +128,33 @@ export function createControlFormForNode(node, nodeName){
     return rootDiv;
 }
 
+
+function calculateNodeDepthFromDestination(videoContext){
+    let destination = videoContext.destination;
+    let depthMap= new Map();
+    depthMap.set(destination, 0);
+
+    function itterateBackwards(node, depth=0){
+        for (let n of node.inputs){
+            let d = depth + 1;
+            if (depthMap.has(n)){
+                if (d > depthMap.get(n)){
+                    depthMap.set(n, d);
+                }
+            } else{
+                depthMap.set(n,d);
+            }
+            itterateBackwards(n, depthMap.get(n));
+        }
+    }
+
+    itterateBackwards(destination);
+    return depthMap;
+}
+
+
+
+
 export function visualiseVideoContextGraph(videoContext, canvas){
     let ctx = canvas.getContext('2d');
     let w = canvas.width;
@@ -135,56 +162,85 @@ export function visualiseVideoContextGraph(videoContext, canvas){
     let renderNodes = [];
     ctx.clearRect(0,0,w,h);
 
-    function getNodePos(node){
-        for (var i = 0; i < renderNodes.length; i++) {
-            if (renderNodes[i].node === node) return renderNodes[i];
-        }
-        return undefined;
-    }
+    let nodeDepths = calculateNodeDepthFromDestination(videoContext);
+    let depths = nodeDepths.values();
+    depths = Array.from(depths).sort(function(a, b){return b-a;});
+    let maxDepth = depths[0];
 
-    let nodeHeight = (h / videoContext._sourceNodes.length)/2;
+    let xStep = w / (maxDepth+1);
+
+    let nodeHeight = (h / videoContext._sourceNodes.length)/3;
     let nodeWidth = nodeHeight * 1.618;
 
-    let destinationNode = {w:nodeWidth, h:nodeHeight, y:h/2 - nodeHeight/2, x:w-nodeWidth, node:videoContext.destination, color:"#7D9F35"};
-    renderNodes.push(destinationNode);
 
-    for (let i = 0; i < videoContext._sourceNodes.length; i++) {
-        let sourceNode = videoContext._sourceNodes[i];
-        let nodeX = 0;
-        let nodeY = i * (h / videoContext._sourceNodes.length);
-        let renderNode = {w:nodeWidth, h: nodeHeight, x:nodeX, y:nodeY, node:sourceNode, color:"#572A72"};
-        renderNodes.push(renderNode); 
+    function calculateNodePos(node, nodeDepths, xStep, nodeHeight){
+        let depth = nodeDepths.get(node);
+        nodeDepths.values();
+  
+        let count = 0;
+        for(let nodeDepth of nodeDepths){
+            if (nodeDepth[0] === node) break;
+            if (nodeDepth[1] === depth) count += 1;
+        }
+        return {x:(xStep*nodeDepths.get(node)), y:nodeHeight*1.5*count + 50};
     }
 
-    for (let i = 0; i < videoContext._processingNodes.length; i++) {
-        let sourceNode = videoContext._processingNodes[i];
-        let color = "#AA9639";
-        if (sourceNode.constructor.name === "CompositingNode")color = "#000000";
-        let nodeX = (Math.random()*(w - nodeWidth*4)) + nodeWidth*2;
-        let nodeY = Math.random()*(h-nodeHeight*2) + nodeHeight;
-        let renderNode = {w:nodeWidth, h: nodeHeight, x:nodeX, y:nodeY, node:sourceNode, color:color};
-        renderNodes.push(renderNode); 
-    }
 
+    // "video":["#572A72", "#3C1255"],
+    // "image":["#7D9F35", "#577714"],
+    // "canvas":["#AA9639", "#806D15"]
 
     for (let i = 0; i < videoContext._renderGraph.connections.length; i++) {
         let conn = videoContext._renderGraph.connections[i];
-        let source = getNodePos(conn.source);
-        let destination = getNodePos(conn.destination);
+        let source = calculateNodePos(conn.source, nodeDepths, xStep, nodeHeight);
+        let destination = calculateNodePos(conn.destination, nodeDepths, xStep, nodeHeight);
         if (source !== undefined && destination !== undefined){
             ctx.beginPath();
-            ctx.moveTo(source.x + nodeWidth/2, source.y + nodeHeight/2);
-            ctx.lineTo(destination.x + nodeWidth/2, destination.y + nodeHeight/2);
+            //ctx.moveTo(source.x + nodeWidth/2, source.y + nodeHeight/2);
+            let x1 = source.x + nodeWidth/2;
+            let y1 = source.y + nodeHeight/2;
+            let x2 = destination.x + nodeWidth/2;
+            let y2 = destination.y + nodeHeight/2;
+            let dx = x2 - x1;
+            let dy = y2 - y1;
+
+            let angle = Math.PI/2 - Math.atan2(dx,dy); 
+
+            let distance = Math.sqrt(Math.pow(x1-x2,2) + Math.pow(y1-y2,2))
+
+            let midX = Math.min(x1, x2) + (Math.max(x1,x2) - Math.min(x1, x2))/2;
+            let midY = Math.min(y1, y2) + (Math.max(y1,y2) - Math.min(y1, y2))/2;
+
+            let testX = (Math.cos(angle + Math.PI/2))*distance/1.5 + midX;
+            let testY = (Math.sin(angle + Math.PI/2))*distance/1.5 + midY;
+            // console.log(testX, testY);
+
+            ctx.arc(testX, testY, distance/1.2, angle-Math.PI+1.0, angle-1.0);
+
+            //ctx.arcTo(source.x + nodeWidth/2 ,source.y + nodeHeight/2,destination.x + nodeWidth/2,destination.y + nodeHeight/2,100);
+            //ctx.lineTo(midX, midY);
             ctx.stroke();
+            //ctx.endPath();
         }
     }
 
-    for (let i = 0; i < renderNodes.length; i++) {
-        let n = renderNodes[i];
-        ctx.fillStyle = n.color;
-        ctx.fillRect(n.x,n.y,n.w,n.h);
+
+    for(let node of nodeDepths.keys()){
+        let depth = nodeDepths.get(node);
+        let pos = calculateNodePos(node, nodeDepths, xStep, nodeHeight);
+        let color = "#AA9639";
+        if (node.constructor.name === "CompositingNode")color = "#000000";
+        if (node.constructor.name === "DestinationNode")color = "#7D9F35";
+        if (node.constructor.name === "VideoNode")color = "#572A72";
+        if (node.constructor.name === "CanvasNode")color = "#572A72";
+        if (node.constructor.name === "ImageNode")color = "#572A72";
+        ctx.beginPath();
+        ctx.fillStyle = color;
+        ctx.fillRect(pos.x, pos.y, nodeWidth, nodeHeight);
         ctx.fill();
     }
+
+    return;
 }
 
 

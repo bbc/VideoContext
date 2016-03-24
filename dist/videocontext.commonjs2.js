@@ -2491,24 +2491,15 @@ module.exports =
 	    }, {
 	        key: "disconnect",
 	        value: function disconnect(targetNode) {
-	            var _this2 = this;
+	            var _this = this;
 
 	            if (targetNode === undefined) {
-	                var _ret = (function () {
-	                    var toRemove = _this2._renderGraph.getOutputsForNode(_this2);
-	                    var _this = _this2;
-	                    toRemove.forEach(function (target) {
-	                        _this._renderGraph.unregisterConnection(_this, target);
-	                    });
-	                    if (toRemove.length > 0) return {
-	                            v: true
-	                        };
-	                    return {
-	                        v: false
-	                    };
-	                })();
-
-	                if (typeof _ret === "object") return _ret.v;
+	                var toRemove = this._renderGraph.getOutputsForNode(this);
+	                toRemove.forEach(function (target) {
+	                    return _this._renderGraph.unregisterConnection(_this, target);
+	                });
+	                if (toRemove.length > 0) return true;
+	                return false;
 	            }
 	            return this._renderGraph.unregisterConnection(this, targetNode);
 	        }
@@ -2793,10 +2784,9 @@ module.exports =
 	    _createClass(CompositingNode, [{
 	        key: "_render",
 	        value: function _render() {
-	            var _this2 = this;
+	            var _this = this;
 
 	            var gl = this._gl;
-	            var _this = this;
 	            gl.bindFramebuffer(gl.FRAMEBUFFER, this._framebuffer);
 	            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this._texture, 0);
 	            gl.clearColor(0, 0, 0, 0); // green;
@@ -2804,7 +2794,7 @@ module.exports =
 
 	            this.inputs.forEach(function (node) {
 	                if (node === undefined) return;
-	                _get(Object.getPrototypeOf(CompositingNode.prototype), "_render", _this2).call(_this2);
+	                _get(Object.getPrototypeOf(CompositingNode.prototype), "_render", _this).call(_this);
 
 	                //map the input textures input the node
 	                var texture = node._texture;
@@ -3169,10 +3159,9 @@ module.exports =
 	    _createClass(DestinationNode, [{
 	        key: "_render",
 	        value: function _render() {
-	            var _this2 = this;
+	            var _this = this;
 
 	            var gl = this._gl;
-	            var _this = this;
 
 	            gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 	            gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
@@ -3181,7 +3170,7 @@ module.exports =
 	            gl.clear(gl.COLOR_BUFFER_BIT);
 
 	            this.inputs.forEach(function (node) {
-	                _get(Object.getPrototypeOf(DestinationNode.prototype), "_render", _this2).call(_this2);
+	                _get(Object.getPrototypeOf(DestinationNode.prototype), "_render", _this).call(_this);
 	                //map the input textures input the node
 	                var texture = node._texture;
 	                var textureOffset = 0;
@@ -3741,6 +3730,8 @@ module.exports =
 	    }, {
 	        key: "unregisterConnection",
 	        value: function unregisterConnection(sourceNode, destinationNode) {
+	            var _this = this;
+
 	            var toRemove = [];
 
 	            this.connections.forEach(function (connection) {
@@ -3750,7 +3741,6 @@ module.exports =
 	            });
 
 	            if (toRemove.length === 0) return false;
-	            var _this = this;
 
 	            toRemove.forEach(function (removeNode) {
 	                var index = _this.connections.indexOf(removeNode);
