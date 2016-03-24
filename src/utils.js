@@ -229,14 +229,36 @@ export function visualiseVideoContextGraph(videoContext, canvas){
         let depth = nodeDepths.get(node);
         let pos = calculateNodePos(node, nodeDepths, xStep, nodeHeight);
         let color = "#AA9639";
-        if (node.constructor.name === "CompositingNode")color = "#000000";
-        if (node.constructor.name === "DestinationNode")color = "#7D9F35";
-        if (node.constructor.name === "VideoNode")color = "#572A72";
-        if (node.constructor.name === "CanvasNode")color = "#572A72";
-        if (node.constructor.name === "ImageNode")color = "#572A72";
+        let text = "";
+        if (node.constructor.name === "CompositingNode"){
+            color = "#000000";
+        }
+        if (node.constructor.name === "DestinationNode"){
+            color = "#7D9F35";
+            text="Output";
+        }
+        if (node.constructor.name === "VideoNode"){
+            color = "#572A72";
+            text = "Video"
+        }
+        if (node.constructor.name === "CanvasNode"){
+            color = "#572A72";
+            text = "Canvas"; 
+        }
+        if (node.constructor.name === "ImageNode"){
+            color = "#572A72";
+            text = "Image";
+        }
         ctx.beginPath();
         ctx.fillStyle = color;
         ctx.fillRect(pos.x, pos.y, nodeWidth, nodeHeight);
+        ctx.fill();
+
+
+        ctx.fillStyle = "#000";
+        ctx.textAlign = "center";
+        ctx.font = "10px Arial";
+        ctx.fillText(text,pos.x+nodeWidth/2, pos.y+nodeHeight/2+2.5);
         ctx.fill();
     }
 
