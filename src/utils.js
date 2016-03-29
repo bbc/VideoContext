@@ -215,7 +215,7 @@ export function visualiseVideoContextGraph(videoContext, canvas){
             let testY = (Math.sin(angle + Math.PI/2))*distance/1.5 + midY;
             // console.log(testX, testY);
 
-            ctx.arc(testX, testY, distance/1.2, angle-Math.PI+1.0, angle-1.0);
+            ctx.arc(testX, testY, distance/1.2, angle-Math.PI+0.95, angle-0.95);
 
             //ctx.arcTo(source.x + nodeWidth/2 ,source.y + nodeHeight/2,destination.x + nodeWidth/2,destination.y + nodeHeight/2,100);
             //ctx.lineTo(midX, midY);

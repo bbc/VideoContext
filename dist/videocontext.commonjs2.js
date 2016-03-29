@@ -2221,6 +2221,51 @@ module.exports =
 	    return rootDiv;
 	}
 
+	function calculateNodeDepthFromDestination(videoContext) {
+	    var destination = videoContext.destination;
+	    var depthMap = new Map();
+	    depthMap.set(destination, 0);
+
+	    function itterateBackwards(node) {
+	        var depth = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+	        var _iteratorNormalCompletion = true;
+	        var _didIteratorError = false;
+	        var _iteratorError = undefined;
+
+	        try {
+	            for (var _iterator = node.inputs[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	                var n = _step.value;
+
+	                var d = depth + 1;
+	                if (depthMap.has(n)) {
+	                    if (d > depthMap.get(n)) {
+	                        depthMap.set(n, d);
+	                    }
+	                } else {
+	                    depthMap.set(n, d);
+	                }
+	                itterateBackwards(n, depthMap.get(n));
+	            }
+	        } catch (err) {
+	            _didIteratorError = true;
+	            _iteratorError = err;
+	        } finally {
+	            try {
+	                if (!_iteratorNormalCompletion && _iterator["return"]) {
+	                    _iterator["return"]();
+	                }
+	            } finally {
+	                if (_didIteratorError) {
+	                    throw _iteratorError;
+	                }
+	            }
+	        }
+	    }
+
+	    itterateBackwards(destination);
+	    return depthMap;
+	}
+
 	function visualiseVideoContextGraph(videoContext, canvas) {
 	    var ctx = canvas.getContext('2d');
 	    var w = canvas.width;
@@ -2228,55 +2273,148 @@ module.exports =
 	    var renderNodes = [];
 	    ctx.clearRect(0, 0, w, h);
 
-	    function getNodePos(node) {
-	        for (var i = 0; i < renderNodes.length; i++) {
-	            if (renderNodes[i].node === node) return renderNodes[i];
-	        }
-	        return undefined;
-	    }
+	    var nodeDepths = calculateNodeDepthFromDestination(videoContext);
+	    var depths = nodeDepths.values();
+	    depths = Array.from(depths).sort(function (a, b) {
+	        return b - a;
+	    });
+	    var maxDepth = depths[0];
 
-	    var nodeHeight = h / videoContext._sourceNodes.length / 2;
+	    var xStep = w / (maxDepth + 1);
+
+	    var nodeHeight = h / videoContext._sourceNodes.length / 3;
 	    var nodeWidth = nodeHeight * 1.618;
 
-	    var destinationNode = { w: nodeWidth, h: nodeHeight, y: h / 2 - nodeHeight / 2, x: w - nodeWidth, node: videoContext.destination, color: "#7D9F35" };
-	    renderNodes.push(destinationNode);
+	    function calculateNodePos(node, nodeDepths, xStep, nodeHeight) {
+	        var depth = nodeDepths.get(node);
+	        nodeDepths.values();
 
-	    for (var i = 0; i < videoContext._sourceNodes.length; i++) {
-	        var sourceNode = videoContext._sourceNodes[i];
-	        var nodeX = 0;
-	        var nodeY = i * (h / videoContext._sourceNodes.length);
-	        var renderNode = { w: nodeWidth, h: nodeHeight, x: nodeX, y: nodeY, node: sourceNode, color: "#572A72" };
-	        renderNodes.push(renderNode);
+	        var count = 0;
+	        var _iteratorNormalCompletion2 = true;
+	        var _didIteratorError2 = false;
+	        var _iteratorError2 = undefined;
+
+	        try {
+	            for (var _iterator2 = nodeDepths[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+	                var nodeDepth = _step2.value;
+
+	                if (nodeDepth[0] === node) break;
+	                if (nodeDepth[1] === depth) count += 1;
+	            }
+	        } catch (err) {
+	            _didIteratorError2 = true;
+	            _iteratorError2 = err;
+	        } finally {
+	            try {
+	                if (!_iteratorNormalCompletion2 && _iterator2["return"]) {
+	                    _iterator2["return"]();
+	                }
+	            } finally {
+	                if (_didIteratorError2) {
+	                    throw _iteratorError2;
+	                }
+	            }
+	        }
+
+	        return { x: xStep * nodeDepths.get(node), y: nodeHeight * 1.5 * count + 50 };
 	    }
 
-	    for (var i = 0; i < videoContext._processingNodes.length; i++) {
-	        var sourceNode = videoContext._processingNodes[i];
-	        var color = "#AA9639";
-	        if (sourceNode.constructor.name === "CompositingNode") color = "#000000";
-	        var nodeX = Math.random() * (w - nodeWidth * 4) + nodeWidth * 2;
-	        var nodeY = Math.random() * (h - nodeHeight * 2) + nodeHeight;
-	        var renderNode = { w: nodeWidth, h: nodeHeight, x: nodeX, y: nodeY, node: sourceNode, color: color };
-	        renderNodes.push(renderNode);
-	    }
+	    // "video":["#572A72", "#3C1255"],
+	    // "image":["#7D9F35", "#577714"],
+	    // "canvas":["#AA9639", "#806D15"]
 
 	    for (var i = 0; i < videoContext._renderGraph.connections.length; i++) {
 	        var conn = videoContext._renderGraph.connections[i];
-	        var source = getNodePos(conn.source);
-	        var destination = getNodePos(conn.destination);
+	        var source = calculateNodePos(conn.source, nodeDepths, xStep, nodeHeight);
+	        var destination = calculateNodePos(conn.destination, nodeDepths, xStep, nodeHeight);
 	        if (source !== undefined && destination !== undefined) {
 	            ctx.beginPath();
-	            ctx.moveTo(source.x + nodeWidth / 2, source.y + nodeHeight / 2);
-	            ctx.lineTo(destination.x + nodeWidth / 2, destination.y + nodeHeight / 2);
+	            //ctx.moveTo(source.x + nodeWidth/2, source.y + nodeHeight/2);
+	            var x1 = source.x + nodeWidth / 2;
+	            var y1 = source.y + nodeHeight / 2;
+	            var x2 = destination.x + nodeWidth / 2;
+	            var y2 = destination.y + nodeHeight / 2;
+	            var dx = x2 - x1;
+	            var dy = y2 - y1;
+
+	            var angle = Math.PI / 2 - Math.atan2(dx, dy);
+
+	            var distance = Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
+
+	            var midX = Math.min(x1, x2) + (Math.max(x1, x2) - Math.min(x1, x2)) / 2;
+	            var midY = Math.min(y1, y2) + (Math.max(y1, y2) - Math.min(y1, y2)) / 2;
+
+	            var testX = Math.cos(angle + Math.PI / 2) * distance / 1.5 + midX;
+	            var testY = Math.sin(angle + Math.PI / 2) * distance / 1.5 + midY;
+	            // console.log(testX, testY);
+
+	            ctx.arc(testX, testY, distance / 1.2, angle - Math.PI + 0.95, angle - 0.95);
+
+	            //ctx.arcTo(source.x + nodeWidth/2 ,source.y + nodeHeight/2,destination.x + nodeWidth/2,destination.y + nodeHeight/2,100);
+	            //ctx.lineTo(midX, midY);
 	            ctx.stroke();
+	            //ctx.endPath();
 	        }
 	    }
 
-	    for (var i = 0; i < renderNodes.length; i++) {
-	        var n = renderNodes[i];
-	        ctx.fillStyle = n.color;
-	        ctx.fillRect(n.x, n.y, n.w, n.h);
-	        ctx.fill();
+	    var _iteratorNormalCompletion3 = true;
+	    var _didIteratorError3 = false;
+	    var _iteratorError3 = undefined;
+
+	    try {
+	        for (var _iterator3 = nodeDepths.keys()[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+	            var node = _step3.value;
+
+	            var depth = nodeDepths.get(node);
+	            var pos = calculateNodePos(node, nodeDepths, xStep, nodeHeight);
+	            var color = "#AA9639";
+	            var text = "";
+	            if (node.constructor.name === "CompositingNode") {
+	                color = "#000000";
+	            }
+	            if (node.constructor.name === "DestinationNode") {
+	                color = "#7D9F35";
+	                text = "Output";
+	            }
+	            if (node.constructor.name === "VideoNode") {
+	                color = "#572A72";
+	                text = "Video";
+	            }
+	            if (node.constructor.name === "CanvasNode") {
+	                color = "#572A72";
+	                text = "Canvas";
+	            }
+	            if (node.constructor.name === "ImageNode") {
+	                color = "#572A72";
+	                text = "Image";
+	            }
+	            ctx.beginPath();
+	            ctx.fillStyle = color;
+	            ctx.fillRect(pos.x, pos.y, nodeWidth, nodeHeight);
+	            ctx.fill();
+
+	            ctx.fillStyle = "#000";
+	            ctx.textAlign = "center";
+	            ctx.font = "10px Arial";
+	            ctx.fillText(text, pos.x + nodeWidth / 2, pos.y + nodeHeight / 2 + 2.5);
+	            ctx.fill();
+	        }
+	    } catch (err) {
+	        _didIteratorError3 = true;
+	        _iteratorError3 = err;
+	    } finally {
+	        try {
+	            if (!_iteratorNormalCompletion3 && _iterator3["return"]) {
+	                _iterator3["return"]();
+	            }
+	        } finally {
+	            if (_didIteratorError3) {
+	                throw _iteratorError3;
+	            }
+	        }
 	    }
+
+	    return;
 	}
 
 	function createSigmaGraphDataFromRenderGraph(videoContext) {
@@ -2354,23 +2492,23 @@ module.exports =
 	    ctx.clearRect(0, 0, w, h);
 	    ctx.fillStyle = "#999";
 
-	    var _iteratorNormalCompletion = true;
-	    var _didIteratorError = false;
-	    var _iteratorError = undefined;
+	    var _iteratorNormalCompletion4 = true;
+	    var _didIteratorError4 = false;
+	    var _iteratorError4 = undefined;
 
 	    try {
-	        for (var _iterator = videoContext._processingNodes[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	            var node = _step.value;
+	        for (var _iterator4 = videoContext._processingNodes[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+	            var node = _step4.value;
 
 	            if (node.constructor.name !== "TransitionNode") continue;
 	            for (var propertyName in node._transitions) {
-	                var _iteratorNormalCompletion2 = true;
-	                var _didIteratorError2 = false;
-	                var _iteratorError2 = undefined;
+	                var _iteratorNormalCompletion5 = true;
+	                var _didIteratorError5 = false;
+	                var _iteratorError5 = undefined;
 
 	                try {
-	                    for (var _iterator2 = node._transitions[propertyName][Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-	                        var transition = _step2.value;
+	                    for (var _iterator5 = node._transitions[propertyName][Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+	                        var transition = _step5.value;
 
 	                        var tW = (transition.end - transition.start) * pixelsPerSecond;
 	                        var tH = h;
@@ -2381,32 +2519,32 @@ module.exports =
 	                        ctx.fill();
 	                    }
 	                } catch (err) {
-	                    _didIteratorError2 = true;
-	                    _iteratorError2 = err;
+	                    _didIteratorError5 = true;
+	                    _iteratorError5 = err;
 	                } finally {
 	                    try {
-	                        if (!_iteratorNormalCompletion2 && _iterator2["return"]) {
-	                            _iterator2["return"]();
+	                        if (!_iteratorNormalCompletion5 && _iterator5["return"]) {
+	                            _iterator5["return"]();
 	                        }
 	                    } finally {
-	                        if (_didIteratorError2) {
-	                            throw _iteratorError2;
+	                        if (_didIteratorError5) {
+	                            throw _iteratorError5;
 	                        }
 	                    }
 	                }
 	            }
 	        }
 	    } catch (err) {
-	        _didIteratorError = true;
-	        _iteratorError = err;
+	        _didIteratorError4 = true;
+	        _iteratorError4 = err;
 	    } finally {
 	        try {
-	            if (!_iteratorNormalCompletion && _iterator["return"]) {
-	                _iterator["return"]();
+	            if (!_iteratorNormalCompletion4 && _iterator4["return"]) {
+	                _iterator4["return"]();
 	            }
 	        } finally {
-	            if (_didIteratorError) {
-	                throw _iteratorError;
+	            if (_didIteratorError4) {
+	                throw _iteratorError4;
 	            }
 	        }
 	    }
@@ -2697,6 +2835,12 @@ module.exports =
 	    }
 
 	    _createClass(CanvasNode, [{
+	        key: "_load",
+	        value: function _load() {
+	            _get(Object.getPrototypeOf(CanvasNode.prototype), "_load", this).call(this);
+	            this._ready = true;
+	        }
+	    }, {
 	        key: "_destroy",
 	        value: function _destroy() {
 	            _get(Object.getPrototypeOf(CanvasNode.prototype), "_destroy", this).call(this);
