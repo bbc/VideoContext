@@ -299,7 +299,6 @@ var combineDecription ={
     fragmentShader : "\
         precision mediump float;\
         uniform sampler2D u_image;\
-        uniform float a;\
         varying vec2 v_texCoord;\
         varying float v_mix;\
         void main(){\
@@ -307,7 +306,6 @@ var combineDecription ={
             gl_FragColor = color;\
         }",
     properties:{
-        "a":{type:"uniform", value:0.0},
     },
     inputs:["u_image"]
 }; 
@@ -334,7 +332,6 @@ videoNode2.stop(15);
 var videoNode3 = ctx.createVideoSourceNode("./video3.mp4");
 videoNode3.start(15);
 videoNode3.stop(27);
-
 
 //Create the combine compositing node (from the above Combine effect description).
 var combineEffect = ctx.createCompositingNode(combineDecription);
