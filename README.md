@@ -368,3 +368,4 @@ npm run doc       # create documentation
 npm run build_all # do all of the above
 ```
 
+The library is written in es6 and cross-compiled using babel. 
