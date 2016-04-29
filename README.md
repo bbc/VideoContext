@@ -349,8 +349,21 @@ ctx.play();
 ```
 
 
-## Writing Custom Effect Shaders
+## Writing Custom Effect Definitions
 
+Making custom effect shaders for the VideoContext is fairly simple. The best starting point is to take one of the built in effects and modify it. It's very useful to have an understanding of how shaders work and some experience writing shaders in GLSL.
+
+``` JavaScript
+var effectDefinition ={
+    title:"",               //A title for the effect.
+    description: "",        //A textual description of what the effect does.
+    vertexShader : "",      //The vertex shader
+    fragmentShader : "",    //The fragment shader
+    properties:{            //An object containing uniforms from the fragment shader for mapping onto the effect node.
+    },
+    inputs:["u_image"]      //the names of the uniform sampler2D's in the fragment shader which represent the texture inputs to the effect. 
+}; 
+```
 
 
 ## Build
