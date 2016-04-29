@@ -110,6 +110,8 @@ The following is a an example of a simple shader description used to describe a 
 
 ``` JavaScript
 var monochromeDescription = {
+    title:"Monochrome",
+    description: "Change images to a single chroma (e.g can be used to make a black & white filter). Input color mix and output color mix can be adjusted.",
     vertexShader : "\
         attribute vec2 a_position;\
         attribute vec2 a_texCoord;\
@@ -180,6 +182,8 @@ The following is an example of a simple cross-fade shader.
 
 ```JavaScript
 var crossfadeDescription = {
+    title:"Cross-Fade",
+    description: "A cross-fade effect. Typically used as a transistion.",
     vertexShader : "\
             attribute vec2 a_position;\
             attribute vec2 a_texCoord;\
@@ -271,16 +275,84 @@ ctx.play();
 
 
 
-
-
 ### CompositingNode
 
+Compositing nodes are different from regular effect nodes in that they can have an infinite number of nodes connected to them. They operate by running their effect shader on each connected input in turn and rendering the output to the same texture. This makes them particularly suitable for layering inputs which have alpha channels.  
+
+When compositing nodes are run they map each input in turn to the first input in the definition, this means compositing node definitions typically only have a single input defined. It's also worth noting that an effect node definition with a single input can also be used as a compositing shader with no additional modifications.
+
+A common use for compositing nodes is to collect a series of source nodes which exist at distinct points on a time-line into a single connection for passing onto further processing. This effectively makes the sources into a single video track.
+
+Here's a really simple shader which renders all the inputs to the same output.
+``` JavaScript
+var combineDecription ={
+    title:"Combine",
+    description: "A basic effect which renders the input to the output, Typically used as a combine node for layering up media with alpha transparency.",
+    vertexShader : "\
+        attribute vec2 a_position;\
+        attribute vec2 a_texCoord;\
+        varying vec2 v_texCoord;\
+        void main() {\
+            gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+            v_texCoord = a_texCoord;\
+        }",
+    fragmentShader : "\
+        precision mediump float;\
+        uniform sampler2D u_image;\
+        uniform float a;\
+        varying vec2 v_texCoord;\
+        varying float v_mix;\
+        void main(){\
+            vec4 color = texture2D(u_image, v_texCoord);\
+            gl_FragColor = color;\
+        }",
+    properties:{
+        "a":{type:"uniform", value:0.0},
+    },
+    inputs:["u_image"]
+}; 
+```
+
+And here's an example of how it can be used.
+
+``` JavaScript
+//Setup the video context.
+var canvas = document.getElementById("canvas");
+var ctx = new VideoContext(canvas);
+
+//Create a video node that plays for 10 seconds from time=0.
+var videoNode1 = ctx.createVideoSourceNode("./video1.mp4");
+videoNode1.start(0);
+videoNode1.stop(10);
+
+//Create a video node that plays for 5 seconds from time=10.
+var videoNode2 = ctx.createVideoSourceNode("./video2.mp4");
+videoNode2.start(10);
+videoNode2.stop(15);
+
+//Create a video node that plays for 12 seconds from time=15.
+var videoNode3 = ctx.createVideoSourceNode("./video3.mp4");
+videoNode3.start(15);
+videoNode3.stop(27);
 
 
+//Create the combine compositing node (from the above Combine effect description).
+var combineEffect = ctx.createCompositingNode(combineDecription);
+
+//Connect all the videos to the combine effect. Collecting them together into a single point which can be connected to further points in the graph. (Making something logically equivalent to a track.)
+videoNode1.connect(combineEffect);
+videoNode2.connect(combineEffect);
+videoNode3.connect(combineEffect);
+
+//Connect all the input sources to the destination.
+combineEffect.connect(ctx.destination);
+
+//start playback.
+ctx.play();
+```
 
 
 ## Writing Custom Effect Shaders
-
 
 
 
