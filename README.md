@@ -51,6 +51,14 @@ The design is heavily inspired by the WebAudioAPI so should feel familiar to use
 ![Graph and timeline view](../master/readme-diagram.png?raw=true)
 
 
+## Documentation
+API Documentation can be built using [ESDoc](https://esdoc.org/) by running the following commands:
+```
+npm install
+npm run doc
+```
+The documentation will be generated in the "./doc" folder of the repository.
+
 ## Node Types
 There are a number of different types of nodes which can be used in the VideoContexts processing graph. Here's a quick list of each one, following that is a more in-depth discussion of each type.
 
