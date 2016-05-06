@@ -105,6 +105,7 @@ playButton.onclick = function(){ videoCtx.play(); };
 pauseButton.onclick = function(){ videoCtx.pause(); };
 ```
 
+![Debugging view](../master/readme-debugging.png?raw=true)
 
 ## Documentation
 API Documentation can be built using [ESDoc](https://esdoc.org/) by running the following commands:
