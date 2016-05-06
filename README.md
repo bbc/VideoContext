@@ -105,6 +105,8 @@ playButton.onclick = function(){ videoCtx.play(); };
 pauseButton.onclick = function(){ videoCtx.pause(); };
 ```
 
+The above snippets, when rendered, will produce something similar to the following visualization (depending on your render graph).
+
 ![Debugging view](../master/readme-debugging.png?raw=true)
 
 ## Documentation
