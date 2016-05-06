@@ -36,8 +36,8 @@ The design is heavily inspired by the WebAudioAPI so should feel familiar to use
             var crossFade = videoCtx.createTransitionNode(VideoContext.DEFINITIONS.CROSSFADE);
             crossFade.transition(2,4,1.0, "mix");
 
-            videoNode1.connect(crossFade);
             videoNode2.connect(crossFade);
+            videoNode1.connect(crossFade);
             crossFade.connect(videoCtx.destination);
 
 
