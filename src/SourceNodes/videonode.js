@@ -109,4 +109,10 @@ export default class VideoNode extends SourceNode {
         }
     }
 
+    clearTimelineState(){
+        super.clearTimelineState();
+        if (this._element !== undefined) this._element.pause();
+        this._destroy();
+    }
+
 }

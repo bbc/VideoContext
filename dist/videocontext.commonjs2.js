@@ -45,7 +45,7 @@ module.exports =
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	//Matthew Shotton, R&D User Experince,© BBC 2015
+	//Matthew Shotton, R&D User Experience,© BBC 2015
 
 	"use strict";
 
@@ -1445,7 +1445,7 @@ module.exports =
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	//Matthew Shotton, R&D User Experince,© BBC 2015
+	//Matthew Shotton, R&D User Experience,© BBC 2015
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
@@ -1566,6 +1566,13 @@ module.exports =
 	            }
 	        }
 	    }, {
+	        key: "clearTimelineState",
+	        value: function clearTimelineState() {
+	            _get(Object.getPrototypeOf(VideoNode.prototype), "clearTimelineState", this).call(this);
+	            if (this._element !== undefined) this._element.pause();
+	            this._destroy();
+	        }
+	    }, {
 	        key: "playbackRate",
 	        set: function set(playbackRate) {
 	            this._playbackRate = playbackRate;
@@ -1595,7 +1602,7 @@ module.exports =
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
-	//Matthew Shotton, R&D User Experince,© BBC 2015
+	//Matthew Shotton, R&D User Experience,© BBC 2015
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
@@ -2057,7 +2064,7 @@ module.exports =
 /* 3 */
 /***/ function(module, exports) {
 
-	//Matthew Shotton, R&D User Experince,© BBC 2015
+	//Matthew Shotton, R&D User Experience,© BBC 2015
 
 	/*
 	* Utility function to compile a WebGL Vertex or Fragment shader.
@@ -2585,7 +2592,7 @@ module.exports =
 /* 4 */
 /***/ function(module, exports) {
 
-	//Matthew Shotton, R&D User Experince,© BBC 2015
+	//Matthew Shotton, R&D User Experience,© BBC 2015
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
@@ -2708,7 +2715,7 @@ module.exports =
 /* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
-	//Matthew Shotton, R&D User Experince,© BBC 2015
+	//Matthew Shotton, R&D User Experience,© BBC 2015
 	'use strict';
 
 	Object.defineProperty(exports, '__esModule', {
@@ -2813,7 +2820,7 @@ module.exports =
 /* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
-	//Matthew Shotton, R&D User Experince,© BBC 2015
+	//Matthew Shotton, R&D User Experience,© BBC 2015
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
@@ -2898,7 +2905,7 @@ module.exports =
 /* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
-	//Matthew Shotton, R&D User Experince,© BBC 2015
+	//Matthew Shotton, R&D User Experience,© BBC 2015
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
@@ -3002,7 +3009,7 @@ module.exports =
 /* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
-	//Matthew Shotton, R&D User Experince,© BBC 2015
+	//Matthew Shotton, R&D User Experience,© BBC 2015
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
@@ -3227,7 +3234,7 @@ module.exports =
 /* 9 */
 /***/ function(module, exports) {
 
-	//Matthew Shotton, R&D User Experince,© BBC 2015
+	//Matthew Shotton, R&D User Experience,© BBC 2015
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
@@ -3250,7 +3257,7 @@ module.exports =
 /* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
-	//Matthew Shotton, R&D User Experince,© BBC 2015
+	//Matthew Shotton, R&D User Experience,© BBC 2015
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
@@ -3375,7 +3382,7 @@ module.exports =
 /* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
-	//Matthew Shotton, R&D User Experince,© BBC 2015
+	//Matthew Shotton, R&D User Experience,© BBC 2015
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
@@ -3459,7 +3466,7 @@ module.exports =
 /* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
-	//Matthew Shotton, R&D User Experince,© BBC 2015
+	//Matthew Shotton, R&D User Experience,© BBC 2015
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
@@ -3616,7 +3623,7 @@ module.exports =
 /* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
-	//Matthew Shotton, R&D User Experince,© BBC 2015
+	//Matthew Shotton, R&D User Experience,© BBC 2015
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
