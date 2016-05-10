@@ -1,4 +1,4 @@
-//Matthew Shotton, R&D User Experince,© BBC 2015
+//Matthew Shotton, R&D User Experience,© BBC 2015
 import SourceNode, { SOURCENODESTATE } from "./sourcenode";
 
 export default class VideoNode extends SourceNode {

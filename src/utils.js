@@ -1,4 +1,4 @@
-//Matthew Shotton, R&D User Experince,© BBC 2015
+//Matthew Shotton, R&D User Experience,© BBC 2015
 
 /*
 * Utility function to compile a WebGL Vertex or Fragment shader.

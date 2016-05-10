@@ -1,4 +1,4 @@
-//Matthew Shotton, R&D User Experince,© BBC 2015
+//Matthew Shotton, R&D User Experience,© BBC 2015
 import { SOURCENODESTATE } from "../SourceNodes/sourcenode";
 //import GraphNode from "../graphnode";
 import ProcessingNode from "../ProcessingNodes/processingnode";

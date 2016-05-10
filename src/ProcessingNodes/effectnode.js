@@ -1,4 +1,4 @@
-//Matthew Shotton, R&D User Experince,© BBC 2015
+//Matthew Shotton, R&D User Experience,© BBC 2015
 import ProcessingNode from "./processingnode";
 import { createElementTexutre } from "../utils.js";
 
