@@ -1482,6 +1482,7 @@ module.exports =
 	        this._globalPlaybackRate = globalPlaybackRate;
 	        this._playbackRate = 1.0;
 	        this._playbackRateUpdated = true;
+	        this._loopElement = false;
 	    }
 
 	    _createClass(VideoNode, [{
@@ -1489,8 +1490,9 @@ module.exports =
 	        value: function _load() {
 	            _get(Object.getPrototypeOf(VideoNode.prototype), "_load", this).call(this);
 	            if (this._element !== undefined) {
+	                this._loopElement = this._element.loop;
 	                if (this._element.readyState > 3 && !this._element.seeking) {
-	                    if (this._stopTime === Infinity || this._stopTime == undefined) this._stopTime = this._startTime + this._element.duration;
+	                    //if (this._stopTime === Infinity || this._stopTime == undefined) this._stopTime = this._startTime + this._element.duration;
 	                    this._ready = true;
 	                    this._playbackRateUpdated = true;
 	                } else {
@@ -1502,6 +1504,7 @@ module.exports =
 	                this._element = document.createElement("video");
 	                this._element.setAttribute('crossorigin', 'anonymous');
 	                this._element.src = this._elementURL;
+	                this._element.loop = this._loopElement;
 	                this._playbackRateUpdated = true;
 	            }
 	            this._element.currentTime = this._sourceOffset;
@@ -1570,6 +1573,15 @@ module.exports =
 	        },
 	        get: function get() {
 	            return this._playbackRate;
+	        }
+	    }, {
+	        key: "loopElement",
+	        set: function set(loopElement) {
+	            this._loopElement = loopElement;
+	            if (this._element) this._element.loop = loopElement;
+	        },
+	        get: function get() {
+	            return this._loopElement;
 	        }
 	    }]);
 

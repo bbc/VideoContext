@@ -9,6 +9,7 @@ export default class VideoNode extends SourceNode {
         this._globalPlaybackRate = globalPlaybackRate;
         this._playbackRate = 1.0;
         this._playbackRateUpdated = true;
+        this._loopElement = false;
     }
 
     set playbackRate(playbackRate){
@@ -20,14 +21,23 @@ export default class VideoNode extends SourceNode {
         return this._playbackRate;
     }
 
+    set loopElement(loopElement){
+        this._loopElement = loopElement;
+        if (this._element) this._element.loop = loopElement;
+    }
+
+    get loopElement(){
+        return this._loopElement;
+    }
+
     _load(){
         super._load();
         if (this._element !== undefined){
+            this._loopElement = this._element.loop; 
             if (this._element.readyState > 3 && !this._element.seeking){
-                if (this._stopTime === Infinity || this._stopTime == undefined) this._stopTime = this._startTime + this._element.duration;
+                //if (this._stopTime === Infinity || this._stopTime == undefined) this._stopTime = this._startTime + this._element.duration;
                 this._ready = true;
                 this._playbackRateUpdated = true;
-
             } else{
                 this._ready = false;
             }
@@ -37,6 +47,7 @@ export default class VideoNode extends SourceNode {
             this._element = document.createElement("video");
             this._element.setAttribute('crossorigin', 'anonymous');
             this._element.src = this._elementURL;
+            this._element.loop = this._loopElement;
             this._playbackRateUpdated = true;
 
         }
