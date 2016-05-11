@@ -419,8 +419,9 @@ module.exports =
 	        value: function createVideoSourceNode(src) {
 	            var sourceOffset = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
 	            var preloadTime = arguments.length <= 2 || arguments[2] === undefined ? 4 : arguments[2];
+	            var loop = arguments.length <= 3 || arguments[3] === undefined ? false : arguments[3];
 
-	            var videoNode = new _SourceNodesVideonodeJs2["default"](src, this._gl, this._renderGraph, this._currentTime, this._playbackRate, sourceOffset, preloadTime);
+	            var videoNode = new _SourceNodesVideonodeJs2["default"](src, this._gl, this._renderGraph, this._currentTime, this._playbackRate, sourceOffset, preloadTime, loop);
 	            this._sourceNodes.push(videoNode);
 	            return videoNode;
 	        }
