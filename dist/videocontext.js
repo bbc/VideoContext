@@ -1454,7 +1454,7 @@ var VideoContext =
 
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-	var _get = function get(_x4, _x5, _x6) { var _again = true; _function: while (_again) { var object = _x4, property = _x5, receiver = _x6; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x4 = parent; _x5 = property; _x6 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+	var _get = function get(_x5, _x6, _x7) { var _again = true; _function: while (_again) { var object = _x5, property = _x6, receiver = _x7; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x5 = parent; _x6 = property; _x7 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
@@ -1473,6 +1473,7 @@ var VideoContext =
 	        var globalPlaybackRate = arguments.length <= 4 || arguments[4] === undefined ? 1.0 : arguments[4];
 	        var sourceOffset = arguments.length <= 5 || arguments[5] === undefined ? 0 : arguments[5];
 	        var preloadTime = arguments.length <= 6 || arguments[6] === undefined ? 4 : arguments[6];
+	        var loop = arguments.length <= 7 || arguments[7] === undefined ? false : arguments[7];
 
 	        _classCallCheck(this, VideoNode);
 
@@ -1482,7 +1483,7 @@ var VideoContext =
 	        this._globalPlaybackRate = globalPlaybackRate;
 	        this._playbackRate = 1.0;
 	        this._playbackRateUpdated = true;
-	        this._loopElement = false;
+	        this._loopElement = loop;
 	    }
 
 	    _createClass(VideoNode, [{
@@ -1490,9 +1491,14 @@ var VideoContext =
 	        value: function _load() {
 	            _get(Object.getPrototypeOf(VideoNode.prototype), "_load", this).call(this);
 	            if (this._element !== undefined) {
-	                this._loopElement = this._element.loop;
+	                this._element.loop = this._loopElement;
 	                if (this._element.readyState > 3 && !this._element.seeking) {
-	                    //if (this._stopTime === Infinity || this._stopTime == undefined) this._stopTime = this._startTime + this._element.duration;
+	                    if (this._loopElement === false) {
+	                        if (this._stopTime === Infinity || this._stopTime == undefined) {
+	                            this._stopTime = this._startTime + this._element.duration;
+	                            this._triggerCallbacks("durationchange", this.duration);
+	                        }
+	                    }
 	                    this._ready = true;
 	                    this._playbackRateUpdated = true;
 	                } else {
@@ -1580,15 +1586,6 @@ var VideoContext =
 	        },
 	        get: function get() {
 	            return this._playbackRate;
-	        }
-	    }, {
-	        key: "loopElement",
-	        set: function set(loopElement) {
-	            this._loopElement = loopElement;
-	            if (this._element) this._element.loop = loopElement;
-	        },
-	        get: function get() {
-	            return this._loopElement;
 	        }
 	    }]);
 
@@ -1689,7 +1686,7 @@ var VideoContext =
 	        }
 
 	        /**
-	        * Register callbacks against one of these events: "load", "destory", "seek", "pause", "play", "ended"
+	        * Register callbacks against one of these events: "load", "destory", "seek", "pause", "play", "ended", "durationchange"
 	        *
 	        * @param {String} type - the type of event to register the callback against.
 	        * @param {function} func - the function to call.
@@ -1872,6 +1869,7 @@ var VideoContext =
 	                return false;
 	            }
 	            this._stopTime = this._currentTime + time;
+	            this._triggerCallbacks("durationchange", this.duration);
 	            return true;
 	        }
 
@@ -1896,6 +1894,7 @@ var VideoContext =
 	                return false;
 	            }
 	            this._stopTime = time;
+	            this._triggerCallbacks("durationchange", this.duration);
 	            return true;
 	        }
 	    }, {

@@ -113,7 +113,7 @@ export default class SourceNode extends GraphNode{
     }
     
     /**
-    * Register callbacks against one of these events: "load", "destory", "seek", "pause", "play", "ended"
+    * Register callbacks against one of these events: "load", "destory", "seek", "pause", "play", "ended", "durationchange"
     *
     * @param {String} type - the type of event to register the callback against.
     * @param {function} func - the function to call.
@@ -221,6 +221,7 @@ export default class SourceNode extends GraphNode{
             return false;
         }
         this._stopTime = this._currentTime + time;
+        this._triggerCallbacks("durationchange", this.duration);
         return true;
     }
     
@@ -243,6 +244,7 @@ export default class SourceNode extends GraphNode{
             return false;
         }
         this._stopTime = time;
+        this._triggerCallbacks("durationchange", this.duration);
         return true;
     }
 

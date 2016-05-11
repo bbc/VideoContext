@@ -2,14 +2,14 @@
 import SourceNode, { SOURCENODESTATE } from "./sourcenode";
 
 export default class VideoNode extends SourceNode {
-    constructor(src, gl, renderGraph, currentTime, globalPlaybackRate=1.0, sourceOffset=0, preloadTime = 4){
+    constructor(src, gl, renderGraph, currentTime, globalPlaybackRate=1.0, sourceOffset=0, preloadTime = 4, loop=false){
         super(src, gl, renderGraph, currentTime);
         this._preloadTime = preloadTime;
         this._sourceOffset = sourceOffset;
         this._globalPlaybackRate = globalPlaybackRate;
         this._playbackRate = 1.0;
         this._playbackRateUpdated = true;
-        this._loopElement = false;
+        this._loopElement = loop;
     }
 
     set playbackRate(playbackRate){
@@ -21,21 +21,17 @@ export default class VideoNode extends SourceNode {
         return this._playbackRate;
     }
 
-    set loopElement(loopElement){
-        this._loopElement = loopElement;
-        if (this._element) this._element.loop = loopElement;
-    }
-
-    get loopElement(){
-        return this._loopElement;
-    }
-
     _load(){
         super._load();
         if (this._element !== undefined){
-            this._loopElement = this._element.loop; 
+            this._element.loop = this._loopElement; 
             if (this._element.readyState > 3 && !this._element.seeking){
-                //if (this._stopTime === Infinity || this._stopTime == undefined) this._stopTime = this._startTime + this._element.duration;
+                if(this._loopElement === false){
+                    if (this._stopTime === Infinity || this._stopTime == undefined){
+                        this._stopTime = this._startTime + this._element.duration;
+                        this._triggerCallbacks("durationchange", this.duration);
+                    }                
+                }
                 this._ready = true;
                 this._playbackRateUpdated = true;
             } else{
