@@ -52,9 +52,9 @@ export default class VideoNode extends SourceNode {
 
     _destroy(){
         super._destroy();
-        if (this._isResponsibleForElementLifeCycle){
+        if (this._isResponsibleForElementLifeCycle && this._element !== undefined){
             this._element.src = "";
-            this._element = undefined;    
+            this._element = undefined;
             delete this._element;
         }
         this._ready = false;

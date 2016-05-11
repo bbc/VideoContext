@@ -1520,7 +1520,7 @@ var VideoContext =
 	        key: "_destroy",
 	        value: function _destroy() {
 	            _get(Object.getPrototypeOf(VideoNode.prototype), "_destroy", this).call(this);
-	            if (this._isResponsibleForElementLifeCycle) {
+	            if (this._isResponsibleForElementLifeCycle && this._element !== undefined) {
 	                this._element.src = "";
 	                this._element = undefined;
 	                delete this._element;
