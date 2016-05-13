@@ -1152,12 +1152,12 @@ var VideoContext =
 	                fragmentShader: "\
 	                precision mediump float;\
 	                uniform sampler2D u_image;\
-	                uniform float ScaleX;\
-	                uniform float ScaleY;\
+	                uniform float scaleX;\
+	                uniform float scaleY;\
 	                varying vec2 v_texCoord;\
 	                varying float v_progress;\
 	                void main(){\
-	                    vec2 pos = vec2(v_texCoord[0]*1.0/ScaleX - (1.0/ScaleX/2.0 -0.5), v_texCoord[1]*1.0/ScaleY - (1.0/ScaleY/2.0 -0.5));\
+	                    vec2 pos = vec2(v_texCoord[0]*1.0/scaleX - (1.0/scaleX/2.0 -0.5), v_texCoord[1]*1.0/scaleY - (1.0/scaleY/2.0 -0.5));\
 	                    vec4 color = texture2D(u_image, pos);\
 	                    if (pos[0] < 0.0 || pos[0] > 1.0 || pos[1] < 0.0 || pos[1] > 1.0){\
 	                        color = vec4(0.0,0.0,0.0,0.0);\
@@ -1185,12 +1185,12 @@ var VideoContext =
 	                fragmentShader: "\
 	                precision mediump float;\
 	                uniform sampler2D u_image;\
-	                uniform float PositionOffsetX;\
-	                uniform float PositionOffsetY;\
+	                uniform float positionOffsetX;\
+	                uniform float positionOffsetY;\
 	                varying vec2 v_texCoord;\
 	                varying float v_progress;\
 	                void main(){\
-	                    vec2 pos = vec2(v_texCoord[0] - PositionOffsetX/2.0, v_texCoord[1] -  PositionOffsetY/2.0);\
+	                    vec2 pos = vec2(v_texCoord[0] - positionOffsetX/2.0, v_texCoord[1] -  positionOffsetY/2.0);\
 	                    vec4 color = texture2D(u_image, pos);\
 	                    if (pos[0] < 0.0 || pos[0] > 1.0 || pos[1] < 0.0 || pos[1] > 1.0){\
 	                        color = vec4(0.0,0.0,0.0,0.0);\
@@ -1218,17 +1218,17 @@ var VideoContext =
 	                fragmentShader: "\
 	                    precision mediump float;\
 	                    uniform sampler2D u_image;\
-	                    uniform float CropLeft;\
-	                    uniform float CropRight;\
-	                    uniform float CropTop;\
-	                    uniform float CropBottom;\
+	                    uniform float cropLeft;\
+	                    uniform float cropRight;\
+	                    uniform float cropTop;\
+	                    uniform float cropBottom;\
 	                    varying vec2 v_texCoord;\
 	                    void main(){\
 	                        vec4 color = texture2D(u_image, v_texCoord);\
-	                        if (v_texCoord[0] < (CropLeft+1.0)/2.0) color = vec4(0.0,0.0,0.0,0.0);\
-	                        if (v_texCoord[0] > (CropRight+1.0)/2.0) color = vec4(0.0,0.0,0.0,0.0);\
-	                        if (v_texCoord[1] < (-CropBottom+1.0)/2.0) color = vec4(0.0,0.0,0.0,0.0);\
-	                        if (v_texCoord[1] > (-CropTop+1.0)/2.0) color = vec4(0.0,0.0,0.0,0.0);\
+	                        if (v_texCoord[0] < (cropLeft+1.0)/2.0) color = vec4(0.0,0.0,0.0,0.0);\
+	                        if (v_texCoord[0] > (cropRight+1.0)/2.0) color = vec4(0.0,0.0,0.0,0.0);\
+	                        if (v_texCoord[1] < (-cropBottom+1.0)/2.0) color = vec4(0.0,0.0,0.0,0.0);\
+	                        if (v_texCoord[1] > (-cropTop+1.0)/2.0) color = vec4(0.0,0.0,0.0,0.0);\
 	                        gl_FragColor = color;\
 	                    }",
 	                properties: {
