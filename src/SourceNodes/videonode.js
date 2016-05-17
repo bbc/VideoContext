@@ -34,6 +34,8 @@ export default class VideoNode extends SourceNode {
                 }
                 this._ready = true;
                 this._playbackRateUpdated = true;
+                this._triggerCallbacks("loaded");
+
             } else{
                 this._ready = false;
             }

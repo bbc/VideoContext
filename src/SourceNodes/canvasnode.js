@@ -10,6 +10,7 @@ export default class CanvasNode extends SourceNode {
     _load(){
         super._load();
         this._ready = true;
+        this._triggerCallbacks("loaded");        
     }
 
     _destroy(){

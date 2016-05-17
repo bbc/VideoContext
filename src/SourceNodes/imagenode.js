@@ -8,7 +8,9 @@ export default class ImageNode extends SourceNode {
     }
 
     _load(){
+
         if (this._element !== undefined){
+            this._triggerCallbacks("loaded");
             return;
         }
         if (this._isResponsibleForElementLifeCycle){
@@ -19,6 +21,7 @@ export default class ImageNode extends SourceNode {
             let _this = this;
             this._element.onload= function(){
                 _this._ready = true;
+                this._triggerCallbacks("loaded");
             };
         }
     }

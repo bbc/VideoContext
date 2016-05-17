@@ -1502,6 +1502,7 @@ module.exports =
 	                    }
 	                    this._ready = true;
 	                    this._playbackRateUpdated = true;
+	                    this._triggerCallbacks("loaded");
 	                } else {
 	                    this._ready = false;
 	                }
@@ -1687,7 +1688,7 @@ module.exports =
 	        }
 
 	        /**
-	        * Register callbacks against one of these events: "load", "destory", "seek", "pause", "play", "ended", "durationchange"
+	        * Register callbacks against one of these events: "load", "destory", "seek", "pause", "play", "ended", "durationchange", "loaded"
 	        *
 	        * @param {String} type - the type of event to register the callback against.
 	        * @param {function} func - the function to call.
@@ -2716,21 +2717,21 @@ module.exports =
 /***/ function(module, exports, __webpack_require__) {
 
 	//Matthew Shotton, R&D User Experience,© BBC 2015
-	'use strict';
+	"use strict";
 
-	Object.defineProperty(exports, '__esModule', {
+	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
 
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-	var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+	var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	var _sourcenode = __webpack_require__(2);
 
@@ -2744,35 +2745,37 @@ module.exports =
 
 	        _classCallCheck(this, ImageNode);
 
-	        _get(Object.getPrototypeOf(ImageNode.prototype), 'constructor', this).call(this, src, gl, renderGraph, currentTime);
+	        _get(Object.getPrototypeOf(ImageNode.prototype), "constructor", this).call(this, src, gl, renderGraph, currentTime);
 	        this._preloadTime = preloadTime;
 	    }
 
 	    _createClass(ImageNode, [{
-	        key: '_load',
+	        key: "_load",
 	        value: function _load() {
 	            var _this2 = this;
 
 	            if (this._element !== undefined) {
+	                this._triggerCallbacks("loaded");
 	                return;
 	            }
 	            if (this._isResponsibleForElementLifeCycle) {
 	                (function () {
-	                    _get(Object.getPrototypeOf(ImageNode.prototype), '_load', _this2).call(_this2);
+	                    _get(Object.getPrototypeOf(ImageNode.prototype), "_load", _this2).call(_this2);
 	                    _this2._element = new Image();
 	                    _this2._element.setAttribute('crossorigin', 'anonymous');
 	                    _this2._element.src = _this2._elementURL;
 	                    var _this = _this2;
 	                    _this2._element.onload = function () {
 	                        _this._ready = true;
+	                        this._triggerCallbacks("loaded");
 	                    };
 	                })();
 	            }
 	        }
 	    }, {
-	        key: '_destroy',
+	        key: "_destroy",
 	        value: function _destroy() {
-	            _get(Object.getPrototypeOf(ImageNode.prototype), '_destroy', this).call(this);
+	            _get(Object.getPrototypeOf(ImageNode.prototype), "_destroy", this).call(this);
 	            if (this._isResponsibleForElementLifeCycle) {
 	                this._element.src = "";
 	                this._element = undefined;
@@ -2781,9 +2784,9 @@ module.exports =
 	            this._ready = false;
 	        }
 	    }, {
-	        key: '_seek',
+	        key: "_seek",
 	        value: function _seek(time) {
-	            _get(Object.getPrototypeOf(ImageNode.prototype), '_seek', this).call(this, time);
+	            _get(Object.getPrototypeOf(ImageNode.prototype), "_seek", this).call(this, time);
 	            if (this.state === _sourcenode.SOURCENODESTATE.playing || this.state === _sourcenode.SOURCENODESTATE.paused) {
 	                if (this._element === undefined) this._load();
 	                this._ready = false;
@@ -2793,10 +2796,10 @@ module.exports =
 	            }
 	        }
 	    }, {
-	        key: '_update',
+	        key: "_update",
 	        value: function _update(currentTime) {
 	            //if (!super._update(currentTime)) return false;
-	            _get(Object.getPrototypeOf(ImageNode.prototype), '_update', this).call(this, currentTime);
+	            _get(Object.getPrototypeOf(ImageNode.prototype), "_update", this).call(this, currentTime);
 	            if (this._startTime - this._currentTime < this._preloadTime && this._state !== _sourcenode.SOURCENODESTATE.waiting && this._state !== _sourcenode.SOURCENODESTATE.ended) this._load();
 
 	            if (this._state === _sourcenode.SOURCENODESTATE.playing) {
@@ -2811,10 +2814,10 @@ module.exports =
 	    }]);
 
 	    return ImageNode;
-	})(_sourcenode2['default']);
+	})(_sourcenode2["default"]);
 
-	exports['default'] = ImageNode;
-	module.exports = exports['default'];
+	exports["default"] = ImageNode;
+	module.exports = exports["default"];
 
 /***/ },
 /* 6 */
@@ -2858,6 +2861,7 @@ module.exports =
 	        value: function _load() {
 	            _get(Object.getPrototypeOf(CanvasNode.prototype), "_load", this).call(this);
 	            this._ready = true;
+	            this._triggerCallbacks("loaded");
 	        }
 	    }, {
 	        key: "_destroy",

@@ -113,7 +113,7 @@ export default class SourceNode extends GraphNode{
     }
     
     /**
-    * Register callbacks against one of these events: "load", "destory", "seek", "pause", "play", "ended", "durationchange"
+    * Register callbacks against one of these events: "load", "destory", "seek", "pause", "play", "ended", "durationchange", "loaded"
     *
     * @param {String} type - the type of event to register the callback against.
     * @param {function} func - the function to call.
