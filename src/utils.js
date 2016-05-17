@@ -95,12 +95,33 @@ export function createControlFormForNode(node, nodeName){
             range.setAttribute("max", "1");
             range.setAttribute("step", "0.01");
             range.setAttribute("value", propertyValue,toString());
+            
+            let number = document.createElement("input");
+            number.setAttribute("type", "number");
+            number.setAttribute("min", "0");
+            number.setAttribute("max", "1");
+            number.setAttribute("step", "0.01");
+            number.setAttribute("value", propertyValue,toString());
+
             let mouseDown = false;
             range.onmousedown =function(){mouseDown=true;};
             range.onmouseup =function(){mouseDown=false;};
-            range.onmousemove = function(){if(mouseDown)node[propertyName] = parseFloat(range.value);};
-            range.onchange = function(){node[propertyName] = parseFloat(range.value);};
+            range.onmousemove = function(){
+                if(mouseDown){
+                    node[propertyName] = parseFloat(range.value);
+                    number.value = range.value;
+                }
+            };
+            range.onchange = function(){
+                node[propertyName] = parseFloat(range.value); 
+                number.value = range.value;     
+            };
+            number.onchange =function(){
+                node[propertyName] = parseFloat(number.value); 
+                range.value = number.value;
+            }
             propertyParagraph.appendChild(range);
+            propertyParagraph.appendChild(number);
         }
         else if(Object.prototype.toString.call(propertyValue) === '[object Array]'){
             for (var i = 0; i < propertyValue.length; i++) {
@@ -110,13 +131,35 @@ export function createControlFormForNode(node, nodeName){
                 range.setAttribute("max", "1");
                 range.setAttribute("step", "0.01");
                 range.setAttribute("value", propertyValue[i],toString());
+
+                let number = document.createElement("input");
+                number.setAttribute("type", "number");
+                number.setAttribute("min", "0");
+                number.setAttribute("max", "1");
+                number.setAttribute("step", "0.01");
+                number.setAttribute("value", propertyValue,toString());
+
                 let index = i;
                 let mouseDown = false;
                 range.onmousedown =function(){mouseDown=true;};
                 range.onmouseup =function(){mouseDown=false;};
-                range.onmousemove = function(){if(mouseDown)node[propertyName][index] = parseFloat(range.value);};
-                range.onchange = function(){node[propertyName][index] = parseFloat(range.value);};
+                range.onmousemove = function(){
+                    if(mouseDown){
+                        node[propertyName][index] = parseFloat(range.value);
+                        number.value = range.value;
+                    }
+                };
+                range.onchange = function(){
+                    node[propertyName][index] = parseFloat(range.value);
+                    number.value = range.value;
+                };
+
+                number.onchange = function(){
+                    node[propertyName][index] = parseFloat(number.value); 
+                    range.value = number.value;
+                }
                 propertyParagraph.appendChild(range);
+                propertyParagraph.appendChild(number);
             }
         }else{
 
