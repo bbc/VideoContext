@@ -1735,7 +1735,11 @@ module.exports =
 	                for (var _iterator = this._callbacks[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
 	                    var callback = _step.value;
 
-	                    if (callback.func === func) toRemove.push(callback);
+	                    if (func === undefined) {
+	                        toRemove.push(callback);
+	                    } else if (callback.func === func) {
+	                        toRemove.push(callback);
+	                    }
 	                }
 	            } catch (err) {
 	                _didIteratorError = true;
@@ -2802,7 +2806,7 @@ module.exports =
 	                    var _this = _this2;
 	                    _this2._element.onload = function () {
 	                        _this._ready = true;
-	                        this._triggerCallbacks("loaded");
+	                        _this._triggerCallbacks("loaded");
 	                    };
 	                })();
 	            }

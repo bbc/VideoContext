@@ -149,7 +149,11 @@ export default class SourceNode extends GraphNode{
     unregisterCallback(func){
         let toRemove = [];
         for(let callback of this._callbacks){
-            if (callback.func === func)toRemove.push(callback);
+            if (func === undefined){
+                toRemove.push(callback);
+            } else if (callback.func === func){
+                toRemove.push(callback);
+            }
         }
         for(let callback of toRemove){
             let index = this._callbacks.indexOf(callback);

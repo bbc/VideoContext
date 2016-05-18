@@ -21,7 +21,7 @@ export default class ImageNode extends SourceNode {
             let _this = this;
             this._element.onload= function(){
                 _this._ready = true;
-                this._triggerCallbacks("loaded");
+                _this._triggerCallbacks("loaded");
             };
         }
     }
