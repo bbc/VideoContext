@@ -2997,6 +2997,7 @@ var VideoContext =
 	            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this._texture, 0);
 	            gl.clearColor(0, 0, 0, 0); // green;
 	            gl.clear(gl.COLOR_BUFFER_BIT);
+	            gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
 	            this.inputs.forEach(function (node) {
 	                if (node === undefined) return;
