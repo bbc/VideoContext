@@ -155,6 +155,16 @@ export default class VideoContext{
             func(this._currentTime);
         }
     }
+    
+    /**
+    * Get the canvas that the VideoContext is using.
+    *
+    * @return {HTMLElement} The canvas that the VideoContext is using.
+    *
+    */
+    get canvas(){
+        return this._canvas;
+    }
 
     /**
     * Get the current state.
