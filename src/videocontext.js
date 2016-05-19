@@ -636,7 +636,7 @@ export default class VideoContext{
                 if(this._state === VideoContext.STATE.PAUSED){
                     if (sourceNode._state === SOURCENODESTATE.playing)sourceNode._pause();
                 }
-                if(this._state === VideoContext.STATE.playing){
+                if(this._state === VideoContext.STATE.PLAYING){
                     if (sourceNode._state === SOURCENODESTATE.paused)sourceNode._play();
                 }
             }
