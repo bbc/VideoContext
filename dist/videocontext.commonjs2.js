@@ -2905,24 +2905,24 @@ module.exports =
 	    _createClass(ImageNode, [{
 	        key: "_load",
 	        value: function _load() {
-	            var _this2 = this;
+	            var _this = this;
 
 	            if (this._element !== undefined) {
 	                this._triggerCallbacks("loaded");
 	                return;
 	            }
 	            if (this._isResponsibleForElementLifeCycle) {
-	                (function () {
-	                    _get(Object.getPrototypeOf(ImageNode.prototype), "_load", _this2).call(_this2);
-	                    _this2._element = new Image();
-	                    _this2._element.setAttribute('crossorigin', 'anonymous');
-	                    _this2._element.src = _this2._elementURL;
-	                    var _this = _this2;
-	                    _this2._element.onload = function () {
-	                        _this._ready = true;
-	                        _this._triggerCallbacks("loaded");
-	                    };
-	                })();
+	                _get(Object.getPrototypeOf(ImageNode.prototype), "_load", this).call(this);
+	                this._element = new Image();
+	                this._element.setAttribute('crossorigin', 'anonymous');
+	                this._element.src = this._elementURL;
+	                this._element.onload = function () {
+	                    _this._ready = true;
+	                    _this._triggerCallbacks("loaded");
+	                };
+	                this._element.onerror = function () {
+	                    console.error("ImageNode failed to load url:", _this._elementURL);
+	                };
 	            }
 	        }
 	    }, {

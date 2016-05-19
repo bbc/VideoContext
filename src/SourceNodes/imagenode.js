@@ -18,11 +18,13 @@ export default class ImageNode extends SourceNode {
             this._element = new Image();
             this._element.setAttribute('crossorigin', 'anonymous');
             this._element.src = this._elementURL;
-            let _this = this;
-            this._element.onload= function(){
-                _this._ready = true;
-                _this._triggerCallbacks("loaded");
+            this._element.onload = () => {
+                this._ready = true;
+                this._triggerCallbacks("loaded");
             };
+            this._element.onerror = () => {
+                console.error("ImageNode failed to load url:", this._elementURL);
+            }
         }
     }
 
