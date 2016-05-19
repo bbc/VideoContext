@@ -120,11 +120,11 @@ module.exports =
 
 	var VideoContext = (function () {
 	    /**
-	    * Initialise the VideoContext and render to the specific canvas.
+	    * Initialise the VideoContext and render to the specific canvas. A 2nd parameter can be passed to the constructor which is a function that get's called if the VideoContext fails to initialise.
 	    * 
 	    * @example
 	    * var canvasElement = document.getElemenyById("canvas");
-	    * var ctx = new VideoContext(canvasElement);
+	    * var ctx = new VideoContext(canvasElement, function(){console.error("Sorry, your browser dosen\'t support WebGL");});
 	    * var videoNode = ctx.createVideoSourceNode("video.mp4");
 	    * videoNode.connect(ctx.destination);
 	    * videoNode.start(0);
@@ -133,11 +133,17 @@ module.exports =
 	    * 
 	    */
 
-	    function VideoContext(canvas) {
+	    function VideoContext(canvas, initErrorCallback) {
 	        _classCallCheck(this, VideoContext);
 
 	        this._canvas = canvas;
 	        this._gl = canvas.getContext("experimental-webgl", { preserveDrawingBuffer: true, alpha: false });
+	        if (this._gl === null) {
+	            console.error("Failed to intialise WebGL.");
+	            if (initErrorCallback) initErrorCallback();
+	            return;
+	        }
+
 	        this._renderGraph = new _rendergraphJs2["default"]();
 	        this._sourceNodes = [];
 	        this._processingNodes = [];
