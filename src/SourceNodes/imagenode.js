@@ -10,7 +10,6 @@ export default class ImageNode extends SourceNode {
     _load(){
 
         if (this._element !== undefined){
-            this._triggerCallbacks("loaded");
             return;
         }
         if (this._isResponsibleForElementLifeCycle){

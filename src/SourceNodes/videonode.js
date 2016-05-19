@@ -22,7 +22,7 @@ export default class VideoNode extends SourceNode {
     }
 
     _load(){
-        super._load();
+        //super._load();
         if (this._element !== undefined){
             this._element.loop = this._loopElement; 
             if (this._element.readyState > 3 && !this._element.seeking){
@@ -32,9 +32,9 @@ export default class VideoNode extends SourceNode {
                         this._triggerCallbacks("durationchange", this.duration);
                     }                
                 }
+                if(this._ready !== true) this._triggerCallbacks("loaded");
                 this._ready = true;
                 this._playbackRateUpdated = true;
-                this._triggerCallbacks("loaded");
 
             } else{
                 this._ready = false;
@@ -47,7 +47,7 @@ export default class VideoNode extends SourceNode {
             this._element.src = this._elementURL;
             this._element.loop = this._loopElement;
             this._playbackRateUpdated = true;
-
+            this._triggerCallbacks("load");
         }
         this._element.currentTime = this._sourceOffset;
     }
