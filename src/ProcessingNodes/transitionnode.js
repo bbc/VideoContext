@@ -41,11 +41,12 @@ export default class TransitionNode extends EffectNode{
     * 
     * @param {number} startTime - The time at which the transition should start (relative to currentTime of video context).
     * @param {number} endTime - The time at which the transition should be completed by (relative to currentTime of video context).
+    * @param {number} currentValue - The value to start the transition at.
     * @param {number} targetValue - The value to transition to by endTime.
-    * @param {String} propertyName - The name of the property to clear transitions on, if undefined clear all transitions on the node.
+    * @param {String} propertyName - The name of the property to clear transitions on, if undefined default to "mix".
     */
-    transition(startTime, endTime, targetValue, propertyName="mix"){
-        let transition = {start:startTime + this._currentTime, end:endTime + this._currentTime, target:targetValue, property:propertyName};
+    transition(startTime, endTime, currentValue, targetValue, propertyName="mix"){
+        let transition = {start:startTime + this._currentTime, end:endTime + this._currentTime, current:currentValue, target:targetValue, property:propertyName};
         if (!this._doesTransitionFitOnTimeline(transition))return false;
         this._insertTransitionInTimeline(transition);
     }
@@ -66,7 +67,7 @@ export default class TransitionNode extends EffectNode{
     _update(currentTime){
         super._update(currentTime);
         for (let propertyName in this._transitions){
-            let value = this._initialPropertyValues[propertyName];
+            let value = this[propertyName]; //this._initialPropertyValues[propertyName];
             let transitionActive = false;
 
             for (var i = 0; i < this._transitions[propertyName].length; i++) {
@@ -77,10 +78,10 @@ export default class TransitionNode extends EffectNode{
                 }
 
                 if (currentTime > transition.start && currentTime < transition.end){
-                    let difference = transition.target - value;
+                    let difference = transition.target - transition.current;
                     let progress = (this._currentTime - transition.start)/(transition.end - transition.start);
                     transitionActive = true;
-                    this[propertyName] = value + (difference * progress);
+                    this[propertyName] = transition.current + (difference * progress);
                     break;
                 }
             }

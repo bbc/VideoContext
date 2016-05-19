@@ -3715,15 +3715,16 @@ var VideoContext =
 	        * 
 	        * @param {number} startTime - The time at which the transition should start (relative to currentTime of video context).
 	        * @param {number} endTime - The time at which the transition should be completed by (relative to currentTime of video context).
+	        * @param {number} currentValue - The value to start the transition at.
 	        * @param {number} targetValue - The value to transition to by endTime.
-	        * @param {String} propertyName - The name of the property to clear transitions on, if undefined clear all transitions on the node.
+	        * @param {String} propertyName - The name of the property to clear transitions on, if undefined default to "mix".
 	        */
 	    }, {
 	        key: "transition",
-	        value: function transition(startTime, endTime, targetValue) {
-	            var propertyName = arguments.length <= 3 || arguments[3] === undefined ? "mix" : arguments[3];
+	        value: function transition(startTime, endTime, currentValue, targetValue) {
+	            var propertyName = arguments.length <= 4 || arguments[4] === undefined ? "mix" : arguments[4];
 
-	            var transition = { start: startTime + this._currentTime, end: endTime + this._currentTime, target: targetValue, property: propertyName };
+	            var transition = { start: startTime + this._currentTime, end: endTime + this._currentTime, current: currentValue, target: targetValue, property: propertyName };
 	            if (!this._doesTransitionFitOnTimeline(transition)) return false;
 	            this._insertTransitionInTimeline(transition);
 	        }
@@ -3747,7 +3748,7 @@ var VideoContext =
 	        value: function _update(currentTime) {
 	            _get(Object.getPrototypeOf(TransitionNode.prototype), "_update", this).call(this, currentTime);
 	            for (var propertyName in this._transitions) {
-	                var value = this._initialPropertyValues[propertyName];
+	                var value = this[propertyName]; //this._initialPropertyValues[propertyName];
 	                var transitionActive = false;
 
 	                for (var i = 0; i < this._transitions[propertyName].length; i++) {
@@ -3758,10 +3759,10 @@ var VideoContext =
 	                    }
 
 	                    if (currentTime > transition.start && currentTime < transition.end) {
-	                        var difference = transition.target - value;
+	                        var difference = transition.target - transition.current;
 	                        var progress = (this._currentTime - transition.start) / (transition.end - transition.start);
 	                        transitionActive = true;
-	                        this[propertyName] = value + difference * progress;
+	                        this[propertyName] = transition.current + difference * progress;
 	                        break;
 	                    }
 	                }

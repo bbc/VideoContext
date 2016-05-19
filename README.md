@@ -34,7 +34,7 @@ The design is heavily inspired by the WebAudioAPI so should feel familiar to use
             videoNode2.stop(6);
 
             var crossFade = videoCtx.createTransitionNode(VideoContext.DEFINITIONS.CROSSFADE);
-            crossFade.transition(2,4,1.0, "mix");
+            crossFade.transition(2,4,0.0,1.0, "mix");
 
             videoNode2.connect(crossFade);
             videoNode1.connect(crossFade);
@@ -306,9 +306,9 @@ videoNode2.stop(18);
 //Create the sepia effect node (from the above Monochrome effect description).
 var crossfadeEffect = ctx.createTransitionNode(crossfadeDescription);
 
-//Setup the transition. This will change the "mix" property of the cross-fade node from whatever it's 
-//current value is (0.0) to 1.0 at time=8 over a period of 2 seconds.
-crossfadeEffect.transition(8.0, 10.0, 1.0, "mix");
+//Setup the transition. This will change the "mix" property of the cross-fade node from 0.0 to 1.0. 
+//Transision mix value from 0.0 to 1.0 at time=8 over a period of 2 seconds to time=10.
+crossfadeEffect.transition(8.0, 10.0, 0.0, 1.0, "mix");
 
 
 //Set-up the processing chain.
