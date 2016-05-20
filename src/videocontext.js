@@ -1157,6 +1157,7 @@ export default class VideoContext{
 //stalled - one or more sources is unable to play
 //ended - all sources have finished playing
 //broken - the render graph is in a broken state
+VideoContext.STATE = {};
 VideoContext.STATE.PLAYING = 0;
 VideoContext.STATE.PAUSED = 1;
 VideoContext.STATE.STALLED = 2;

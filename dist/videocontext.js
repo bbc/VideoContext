@@ -111,20 +111,13 @@ var VideoContext =
 	}
 	update();
 
-	var STATE = { "playing": 0, "paused": 1, "stalled": 2, "ended": 3, "broken": 4 };
-	//playing - all sources are active
-	//paused - all sources are paused
-	//stalled - one or more sources is unable to play
-	//ended - all sources have finished playing
-	//broken - the render graph is in a broken state
-
 	var VideoContext = (function () {
 	    /**
 	    * Initialise the VideoContext and render to the specific canvas. A 2nd parameter can be passed to the constructor which is a function that get's called if the VideoContext fails to initialise.
 	    * 
 	    * @example
 	    * var canvasElement = document.getElemenyById("canvas");
-	    * var ctx = new VideoContext(canvasElement, function(){console.error("Sorry, your browser dosen\'t support WebGL");});
+	    * var ctx = new VideoContext(cgit pull https://github.com/tjenkinson/VideoContext.git patch-2anvasElement, function(){console.error("Sorry, your browser dosen\'t support WebGL");});
 	    * var videoNode = ctx.createVideoSourceNode("video.mp4");
 	    * videoNode.connect(ctx.destination);
 	    * videoNode.start(0);
@@ -149,7 +142,7 @@ var VideoContext =
 	        this._processingNodes = [];
 	        this._timeline = [];
 	        this._currentTime = 0;
-	        this._state = STATE.paused;
+	        this._state = VideoContext.STATE.PAUSED;
 	        this._playbackRate = 1.0;
 	        this._destinationNode = new _DestinationNodeDestinationnodeJs2["default"](this._gl, this._renderGraph);
 
@@ -162,6 +155,12 @@ var VideoContext =
 
 	        registerUpdateable(this);
 	    }
+
+	    //playing - all sources are active
+	    //paused - all sources are paused
+	    //stalled - one or more sources is unable to play
+	    //ended - all sources have finished playing
+	    //broken - the render graph is in a broken state
 
 	    /**
 	    * Register a callback to happen at a specific point in time.
@@ -347,20 +346,9 @@ var VideoContext =
 	        }
 
 	        /**
-	        * Set the progress through the internal timeline.
-	        * Setting this can be used as a way to implement a scrubaable timeline.
+	        * Get the canvas that the VideoContext is using.
 	        *
-	        * @param {number} currentTime - this is the currentTime to set the context to.
-	        * 
-	        * @example
-	        * var canvasElement = document.getElemenyById("canvas");
-	        * var ctx = new VideoContext(canvasElement);
-	        * var videoNode = ctx.createVideoSourceNode("video.mp4");
-	        * videoNode.connect(ctx.destination);
-	        * videoNode.start(0);
-	        * videoNode.stop(20);
-	        * ctx.currentTime = 10; // seek 10 seconds in
-	        * ctx.play();
+	        * @return {HTMLElement} The canvas that the VideoContext is using.
 	        *
 	        */
 	    }, {
@@ -379,7 +367,7 @@ var VideoContext =
 	        */
 	        value: function play() {
 	            console.debug("VideoContext - playing");
-	            this._state = STATE.playing;
+	            this._state = VideoContext.STATE.PLAYING;
 	            return true;
 	        }
 
@@ -400,7 +388,7 @@ var VideoContext =
 	        key: "pause",
 	        value: function pause() {
 	            console.debug("VideoContext - pausing");
-	            this._state = STATE.paused;
+	            this._state = VideoContext.STATE.PAUSED;
 	            return true;
 	        }
 
@@ -656,7 +644,7 @@ var VideoContext =
 	    }, {
 	        key: "_update",
 	        value: function _update(dt) {
-	            if (this._state === STATE.playing || this._state === STATE.stalled || this._state === STATE.paused) {
+	            if (this._state === VideoContext.STATE.PLAYING || this._state === VideoContext.STATE.STALLED || this._state === VideoContext.STATE.PAUSED) {
 
 	                //utility functions
 
@@ -784,16 +772,16 @@ var VideoContext =
 
 	                this._callCallbacks("update");
 
-	                if (this._state !== STATE.paused) {
+	                if (this._state !== VideoContext.STATE.PAUSED) {
 	                    if (this._isStalled()) {
 	                        this._callCallbacks("stalled");
-	                        this._state = STATE.stalled;
+	                        this._state = VideoContext.STATE.STALLED;
 	                    } else {
-	                        this._state = STATE.playing;
+	                        this._state = VideoContext.STATE.PLAYING;
 	                    }
 	                }
 
-	                if (this._state === STATE.playing) {
+	                if (this._state === VideoContext.STATE.PLAYING) {
 	                    //Handle timeline callbacks.
 	                    var activeCallbacks = new Map();
 	                    var _iteratorNormalCompletion5 = true;
@@ -894,7 +882,7 @@ var VideoContext =
 	                    this._currentTime += dt * this._playbackRate;
 	                    if (this._currentTime > this.duration) {
 	                        this._callCallbacks("ended");
-	                        this._state = STATE.ended;
+	                        this._state = VideoContext.STATE.ENDED;
 	                    }
 	                }
 
@@ -902,13 +890,13 @@ var VideoContext =
 	                    var sourceNode = this._sourceNodes[i];
 	                    sourceNode._update(this._currentTime);
 
-	                    if (this._state === STATE.stalled) {
+	                    if (this._state === VideoContext.STATE.STALLED) {
 	                        if (sourceNode._isReady() && sourceNode._state === _SourceNodesSourcenodeJs.SOURCENODESTATE.playing) sourceNode._pause();
 	                    }
-	                    if (this._state === STATE.paused) {
+	                    if (this._state === VideoContext.STATE.PAUSED) {
 	                        if (sourceNode._state === _SourceNodesSourcenodeJs.SOURCENODESTATE.playing) sourceNode._pause();
 	                    }
-	                    if (this._state === STATE.playing) {
+	                    if (this._state === VideoContext.STATE.PLAYING) {
 	                        if (sourceNode._state === _SourceNodesSourcenodeJs.SOURCENODESTATE.paused) sourceNode._play();
 	                    }
 	                }
@@ -999,10 +987,51 @@ var VideoContext =
 	            }
 	        }
 	    }, {
+	        key: "canvas",
+	        get: function get() {
+	            return this._canvas;
+	        }
+
+	        /**
+	        * Get the current state.
+	        *
+	        * This will be either
+	        *  - VideoContext.STATE.PLAYING: all sources are active
+	        *  - VideoContext.STATE.PAUSED: all sources are paused
+	        *  - VideoContext.STATE.STALLED: one or more sources is unable to play
+	        *  - VideoContext.STATE.ENDED: all sources have finished playing
+	        *  - VideoContext.STATE.BROKEN: the render graph is in a broken state
+	        * @return {number} The number representing the state.
+	        *
+	        */
+	    }, {
+	        key: "state",
+	        get: function get() {
+	            return this._state;
+	        }
+
+	        /**
+	        * Set the progress through the internal timeline.
+	        * Setting this can be used as a way to implement a scrubaable timeline.
+	        *
+	        * @param {number} currentTime - this is the currentTime to set the context to.
+	        * 
+	        * @example
+	        * var canvasElement = document.getElemenyById("canvas");
+	        * var ctx = new VideoContext(canvasElement);
+	        * var videoNode = ctx.createVideoSourceNode("video.mp4");
+	        * videoNode.connect(ctx.destination);
+	        * videoNode.start(0);
+	        * videoNode.stop(20);
+	        * ctx.currentTime = 10; // seek 10 seconds in
+	        * ctx.play();
+	        *
+	        */
+	    }, {
 	        key: "currentTime",
 	        set: function set(currentTime) {
 	            console.debug("VideoContext - seeking to", currentTime);
-	            if (currentTime < this._duration && this._state === STATE.ended) this._state = STATE.duration;
+	            if (currentTime < this._duration && this._state === VideoContext.STATE.ENDED) this._state = VideoContext.STATE.PAUSED;
 	            if (typeof currentTime === 'string' || currentTime instanceof String) {
 	                currentTime = parseFloat(currentTime);
 	            }
@@ -1555,6 +1584,12 @@ var VideoContext =
 	})();
 
 	exports["default"] = VideoContext;
+	VideoContext.STATE = {};
+	VideoContext.STATE.PLAYING = 0;
+	VideoContext.STATE.PAUSED = 1;
+	VideoContext.STATE.STALLED = 2;
+	VideoContext.STATE.ENDED = 3;
+	VideoContext.STATE.BROKEN = 4;
 
 	VideoContext.visualiseVideoContextTimeline = _utilsJs.visualiseVideoContextTimeline;
 	VideoContext.visualiseVideoContextGraph = _utilsJs.visualiseVideoContextGraph;
