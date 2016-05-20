@@ -67,7 +67,10 @@ export default class TransitionNode extends EffectNode{
     _update(currentTime){
         super._update(currentTime);
         for (let propertyName in this._transitions){
-            let value = this[propertyName]; //this._initialPropertyValues[propertyName];
+            let value = this[propertyName];
+            if (this._transitions[propertyName].length > 0){
+                value = this._transitions[propertyName][0].current;
+            }
             let transitionActive = false;
 
             for (var i = 0; i < this._transitions[propertyName].length; i++) {

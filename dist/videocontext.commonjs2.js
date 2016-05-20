@@ -3789,7 +3789,10 @@ module.exports =
 	        value: function _update(currentTime) {
 	            _get(Object.getPrototypeOf(TransitionNode.prototype), "_update", this).call(this, currentTime);
 	            for (var propertyName in this._transitions) {
-	                var value = this[propertyName]; //this._initialPropertyValues[propertyName];
+	                var value = this[propertyName];
+	                if (this._transitions[propertyName].length > 0) {
+	                    value = this._transitions[propertyName][0].current;
+	                }
 	                var transitionActive = false;
 
 	                for (var i = 0; i < this._transitions[propertyName].length; i++) {
