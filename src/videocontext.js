@@ -34,7 +34,7 @@ export default class VideoContext{
     * 
     * @example
     * var canvasElement = document.getElemenyById("canvas");
-    * var ctx = new VideoContext(cgit pull https://github.com/tjenkinson/VideoContext.git patch-2anvasElement, function(){console.error("Sorry, your browser dosen\'t support WebGL");});
+    * var ctx = new VideoContext(canvasElement, function(){console.error("Sorry, your browser dosen\'t support WebGL");});
     * var videoNode = ctx.createVideoSourceNode("video.mp4");
     * videoNode.connect(ctx.destination);
     * videoNode.start(0);
