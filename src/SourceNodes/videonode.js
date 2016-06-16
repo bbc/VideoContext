@@ -2,15 +2,14 @@
 import SourceNode, { SOURCENODESTATE } from "./sourcenode";
 
 export default class VideoNode extends SourceNode {
-    constructor(src, gl, renderGraph, currentTime, globalPlaybackRate=1.0, sourceOffset=0, preloadTime = 4, loop=false, muted=false){
+    constructor(src, gl, renderGraph, currentTime, globalPlaybackRate=1.0, sourceOffset=0, preloadTime = 4, attributes = {}){
         super(src, gl, renderGraph, currentTime);
         this._preloadTime = preloadTime;
         this._sourceOffset = sourceOffset;
         this._globalPlaybackRate = globalPlaybackRate;
         this._playbackRate = 1.0;
         this._playbackRateUpdated = true;
-        this._loopElement = loop;
-        this._mutedElemnt = muted;
+        this._attributes = attributes;
     }
 
     set playbackRate(playbackRate){
@@ -25,8 +24,11 @@ export default class VideoNode extends SourceNode {
     _load(){
         //super._load();
         if (this._element !== undefined){
-            this._element.loop = this._loopElement;
-            this._element.muted = this._mutedElemnt;
+
+            for (var key in this._attributes) {
+                this._element[key] = this._attributes[key];
+            }
+
             if (this._element.readyState > 3 && !this._element.seeking){
                 if(this._loopElement === false){
                     if (this._stopTime === Infinity || this._stopTime == undefined){
@@ -47,10 +49,12 @@ export default class VideoNode extends SourceNode {
             this._element = document.createElement("video");
             this._element.setAttribute('crossorigin', 'anonymous');
             this._element.src = this._elementURL;
-            this._element.loop = this._loopElement;
-            this._element.muted = this._mutedElemnt;
             this._playbackRateUpdated = true;
             this._triggerCallbacks("load");
+
+            for (var key in this._attributes) {
+                this._element[key] = this._attributes[key];
+            }
         }
         this._element.currentTime = this._sourceOffset;
     }
