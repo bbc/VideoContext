@@ -2,10 +2,10 @@
 The VideoContext is an experimental HTML5/WebGL media processing and sequencing library for creating interactive and responsive videos on the web.
 
 
-It consist of two main components. A graph based, shader accelerated processing pipeline, and a media playback sequencing time-line. 
+It consist of two main components. A graph based, shader accelerated processing pipeline, and a media playback sequencing time-line.
 
 
-The design is heavily inspired by the WebAudioAPI so should feel familiar to use for people who've had previous experience in the WebAudio world. 
+The design is heavily inspired by the WebAudioAPI so should feel familiar to use for people who've had previous experience in the WebAudio world.
 
 
 ## Demo
@@ -81,7 +81,7 @@ var visualisationCanvas = document.getElementById("visualisation-canvas");
 
 //Setup up a render function so we can update the playhead position.
 function render () {
-    //VideoCompositor.renderPlaylist(playlist, visualisationCanvas, videoCompositor.currentTime); 
+    //VideoCompositor.renderPlaylist(playlist, visualisationCanvas, videoCompositor.currentTime);
     VideoContext.visualiseVideoContextTimeline(videoCtx, visualisationCanvas, videoCtx.currentTime);
     requestAnimationFrame(render);
 }
@@ -169,7 +169,7 @@ canvasNode.stop(4);
 ### EffectNode
 An EffectNode is the simplest form of processing node. It's built from a definition object, which is a combination of fragment shader code, vertex shader code, input descriptions, and property descriptions. There are a number of common operations available as node descriptions accessible as static properties on the VideoContext at VideoContext.DESCRIPTIONS.*
 
-The vertex and shader code is GLSL code which gets compiled to produce the shader program. The input descriptio ntells the VideoContext how many ports there are to connect to and the name of the image associated with the port within the shader code. Inputs are always render-able textures (i.e images, videos, canvases). The property descriptions tell the VideoContext what controls to attached to the EffectNode and the name, type, and default value of the control within the shader code.
+The vertex and shader code is GLSL code which gets compiled to produce the shader program. The input description tells the VideoContext how many ports there are to connect to and the name of the image associated with the port within the shader code. Inputs are always render-able textures (i.e images, videos, canvases). The property descriptions tell the VideoContext what controls to attached to the EffectNode and the name, type, and default value of the control within the shader code.
 
 The following is a an example of a simple shader description used to describe a monochrome effect. It has one input (the image to be processed) and two modifiable properties to control the color RGB mix for the processing result.
 
@@ -223,10 +223,10 @@ videoNode.start(0);
 videoNode.stop(60);
 
 //Create the sepia effect node (from the above Monochrome effect description).
-var sepiaEffect = ctx.createEffectNode(monochromDescription);
+var sepiaEffect = ctx.createEffectNode(monochromeDescription);
 
 //Give a sepia tint to the monochrome output (note how shader description properties are automatically bound to the JavaScript object).
-sepiaEffect.outputMix = [1.25,1.18,0.9]; 
+sepiaEffect.outputMix = [1.25,1.18,0.9];
 
 //Set-up the processing chain.
 videoNode.connect(sepiaEffect);
@@ -306,7 +306,7 @@ videoNode2.stop(18);
 //Create the sepia effect node (from the above Monochrome effect description).
 var crossfadeEffect = ctx.createTransitionNode(crossfadeDescription);
 
-//Setup the transition. This will change the "mix" property of the cross-fade node from 0.0 to 1.0. 
+//Setup the transition. This will change the "mix" property of the cross-fade node from 0.0 to 1.0.
 //Transision mix value from 0.0 to 1.0 at time=8 over a period of 2 seconds to time=10.
 crossfadeEffect.transition(8.0, 10.0, 0.0, 1.0, "mix");
 
@@ -316,7 +316,7 @@ videoNode1.connect(crossfadeEffect); //this will connect videoNode1 to the "imag
 videoNode2.connect(crossfadeEffect); //this will connect videoNode2 to the "image_b" input of the processing node
 
 
-// NOTE: There's multiple ways to connect a node to specific input of a processing node, the 
+// NOTE: There's multiple ways to connect a node to specific input of a processing node, the
 // following are all equivalent.
 //
 // By default behavior:
@@ -374,7 +374,7 @@ var combineDecription ={
     properties:{
     },
     inputs:["u_image"]
-}; 
+};
 ```
 
 And here's an example of how it can be used.
@@ -427,8 +427,8 @@ var effectDefinition ={
     fragmentShader : "",    //The fragment shader
     properties:{            //An object containing uniforms from the fragment shader for mapping onto the effect node.
     },
-    inputs:["u_image"]      //the names of the uniform sampler2D's in the fragment shader which represent the texture inputs to the effect. 
-}; 
+    inputs:["u_image"]      //the names of the uniform sampler2D's in the fragment shader which represent the texture inputs to the effect.
+};
 ```
 
 
@@ -447,4 +447,4 @@ npm run doc       # create documentation
 npm run build_all # do all of the above
 ```
 
-The library is written in es6 and cross-compiled using babel. 
+The library is written in es6 and cross-compiled using babel.

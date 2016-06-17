@@ -114,7 +114,7 @@ var VideoContext =
 	var VideoContext = (function () {
 	    /**
 	    * Initialise the VideoContext and render to the specific canvas. A 2nd parameter can be passed to the constructor which is a function that get's called if the VideoContext fails to initialise.
-	    * 
+	    *
 	    * @example
 	    * var canvasElement = document.getElemenyById("canvas");
 	    * var ctx = new VideoContext(canvasElement, function(){console.error("Sorry, your browser dosen\'t support WebGL");});
@@ -123,7 +123,7 @@ var VideoContext =
 	    * videoNode.start(0);
 	    * videoNode.stop(10);
 	    * ctx.play();
-	    * 
+	    *
 	    */
 
 	    function VideoContext(canvas, initErrorCallback) {
@@ -243,7 +243,7 @@ var VideoContext =
 	        * Regsiter a callback to listen to one of the following events: "stalled", "update", "ended"
 	        *
 	        * "stalled" happend anytime playback is stopped due to unavailbale data for playing assets (i.e video still loading)
-	        * . "update" is called any time a frame is rendered to the screen. "ended" is called once plackback has finished 
+	        * . "update" is called any time a frame is rendered to the screen. "ended" is called once plackback has finished
 	        * (i.e ctx.currentTime == ctx.duration).
 	        *
 	        * @param {String} type - the event to register against ("stalled", "update", or "ended").
@@ -271,15 +271,15 @@ var VideoContext =
 	        * @example
 	        * var canvasElement = document.getElemenyById("canvas");
 	        * var ctx = new VideoContext(canvasElement);
-	        * 
+	        *
 	        * //the callback
 	        * var updateCallback = function(){console.log("new frame")};
-	        * 
+	        *
 	        * //register the callback
 	        * ctx.registerCallback("update", updateCallback);
 	        * //then unregister it
 	        * ctx.unregisterCallback(updateCallback);
-	        * 
+	        *
 	        */
 	    }, {
 	        key: "unregisterCallback",
@@ -372,7 +372,7 @@ var VideoContext =
 	        }
 
 	        /**
-	        * Pause playback of the VideoContext 
+	        * Pause playback of the VideoContext
 	        * @example
 	        * var canvasElement = document.getElemenyById("canvas");
 	        * var ctx = new VideoContext(canvasElement);
@@ -396,7 +396,7 @@ var VideoContext =
 	        * Create a new node representing a video source
 	        *
 	        * @return {VideoNode} A new video node.
-	        * 
+	        *
 	        * @example
 	        * var canvasElement = document.getElemenyById("canvas");
 	        * var ctx = new VideoContext(canvasElement);
@@ -422,9 +422,9 @@ var VideoContext =
 
 	        /**
 	        * Create a new node representing an image source
-	        * 
+	        *
 	        * @return {ImageNode} A new image node.
-	        * 
+	        *
 	        * @example
 	        * var canvasElement = document.getElemenyById("canvas");
 	        * var ctx = new VideoContext(canvasElement);
@@ -449,7 +449,7 @@ var VideoContext =
 
 	        /**
 	        * Create a new node representing a canvas source
-	        * 
+	        *
 	        * @return {CanvasNode} A new canvas node.
 	        */
 	    }, {
@@ -488,7 +488,7 @@ var VideoContext =
 	        * @return {CompositingNode} A new compositing node created from the passed definition.
 	        *
 	        * @example
-	        * 
+	        *
 	        * var canvasElement = document.getElemenyById("canvas");
 	        * var ctx = new VideoContext(canvasElement);
 	        *
@@ -528,14 +528,14 @@ var VideoContext =
 	        * videoNode2.play(10);
 	        * videoNode2.stop(20);
 	        *
-	        * //Connect the nodes to the combine node. This will give a single connection representing the two videos which can 
+	        * //Connect the nodes to the combine node. This will give a single connection representing the two videos which can
 	        * //be connected to other effects such as LUTs, chromakeyers, etc.
 	        * videoNode1.connect(trackNode);
 	        * videoNode2.connect(trackNode);
-	        * 
+	        *
 	        * //Don't do anything exciting, just connect it to the output.
 	        * trackNode.connect(ctx.destination);
-	        * 
+	        *
 	        */
 	    }, {
 	        key: "createCompositingNode",
@@ -549,17 +549,17 @@ var VideoContext =
 	        * Create a new transition node.
 	        *
 	        * Transistion nodes are a type of effect node which have parameters which can be changed as events on the timeline.
-	        * 
-	        * For example a transition node which cross-fades between two videos could have a "mix" property which sets the 
-	        * progress through the transistion. Rather than having to write your own code to adjust this property at specfic 
+	        *
+	        * For example a transition node which cross-fades between two videos could have a "mix" property which sets the
+	        * progress through the transistion. Rather than having to write your own code to adjust this property at specfic
 	        * points in time a transition node has a "transition" function which takes a startTime, stopTime, targetValue, and a
-	        * propertyName (which will be "mix"). This will linearly interpolate the property from the curernt value to 
+	        * propertyName (which will be "mix"). This will linearly interpolate the property from the curernt value to
 	        * tragetValue between the startTime and stopTime.
 	        *
 	        * @param {Object} definition - this is an object defining the shaders, inputs, and properties of the transition node to create.
 	        * @return {TransitionNode} A new transition node created from the passed definition.
 	        * @example
-	        * 
+	        *
 	        * var canvasElement = document.getElemenyById("canvas");
 	        * var ctx = new VideoContext(canvasElement);
 	        *
@@ -598,7 +598,7 @@ var VideoContext =
 	        *     },
 	        *     inputs:["u_image_a","u_image_b"]
 	        * };
-	        * 
+	        *
 	        * //Create the node, passing in the definition.
 	        * var transitionNode = videoCtx.createTransitionNode(crossfadeDefinition);
 	        *
@@ -613,7 +613,7 @@ var VideoContext =
 	        * //Connect the nodes to the transistion node.
 	        * videoNode1.connect(transitionNode);
 	        * videoNode2.connect(transitionNode);
-	        * 
+	        *
 	        * //Set-up a transition which happens at the crossover point of the playback of the two videos
 	        * transitionNode.transition(8,10,1.0,"mix");
 	        *
@@ -907,7 +907,7 @@ var VideoContext =
 	                * This has highlighted a bunch of ineffencies in the rendergraph class about how its stores connections.
 	                * Mainly the fact that to get inputs for a node you have to iterate the full list of connections rather than
 	                * a node owning it's connections.
-	                * The trade off with changing this is making/removing connections becomes more costly performance wise, but 
+	                * The trade off with changing this is making/removing connections becomes more costly performance wise, but
 	                * this is deffinately worth while because getting the connnections is a much more common operation.
 	                *
 	                * TL;DR Future matt - refactor this.
@@ -1015,7 +1015,7 @@ var VideoContext =
 	        * Setting this can be used as a way to implement a scrubaable timeline.
 	        *
 	        * @param {number} currentTime - this is the currentTime to set the context to.
-	        * 
+	        *
 	        * @example
 	        * var canvasElement = document.getElemenyById("canvas");
 	        * var ctx = new VideoContext(canvasElement);
@@ -1047,7 +1047,7 @@ var VideoContext =
 	        *
 	        * Getting this value will give the current playhead position. Can be used for updating timelines.
 	        * @return {number} The time in seconds through the current playlist.
-	        * 
+	        *
 	        * @example
 	        * var canvasElement = document.getElemenyById("canvas");
 	        * var ctx = new VideoContext(canvasElement);
@@ -1056,7 +1056,7 @@ var VideoContext =
 	        * videoNode.start(0);
 	        * videoNode.stop(10);
 	        * ctx.play();
-	        * setTimeout(funtion(){console.log(ctx.currentTime);},1000); //should print roughly 1.0 
+	        * setTimeout(funtion(){console.log(ctx.currentTime);},1000); //should print roughly 1.0
 	        *
 	        */
 	        get: function get() {
@@ -1071,14 +1071,14 @@ var VideoContext =
 	        * @example
 	        * var canvasElement = document.getElemenyById("canvas");
 	        * var ctx = new VideoContext(canvasElement);
-	        * console.log(ctx.duration); //prints 0 
+	        * console.log(ctx.duration); //prints 0
 	        *
 	        * var videoNode = ctx.createVideoSourceNode("video.mp4");
 	        * videoNode.connect(ctx.destination);
 	        * videoNode.start(0);
 	        * videoNode.stop(10);
 	        *
-	        * console.log(ctx.duration); //prints 10 
+	        * console.log(ctx.duration); //prints 10
 	        *
 	        * ctx.play();
 	        */
@@ -1129,7 +1129,7 @@ var VideoContext =
 	        * videoNode.stop(10);
 	        * videoNode.connect(ctx.destination);
 	        * ctx.playbackRate = 2;
-	        * ctx.play(); // Double playback rate means this will finish playing in 5 seconds.    
+	        * ctx.play(); // Double playback rate means this will finish playing in 5 seconds.
 	        */
 	    }, {
 	        key: "playbackRate",
@@ -1564,6 +1564,39 @@ var VideoContext =
 	                inputs: ["u_image"]
 	            };
 
+							var colorTransfer = {
+									title: "Color Transfer",
+									description: "Transfers color palette of an image to a video",
+									vertexShader: "\
+											attribute vec2 a_position;\
+											attribute vec2 a_texCoord;\
+											varying vec2 v_texCoord;\
+											void main() {\
+													gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+													v_texCoord = a_texCoord;\
+											}",
+									fragmentShader: "\
+	                    precision mediump float;\
+	                    uniform sampler2D u_image_a;\
+	                    uniform sampler2D u_image_b;\
+	                    uniform float mix;\
+	                    varying vec2 v_texCoord;\
+	                    varying float v_mix;\
+	                    void main(){\
+	                        vec4 color_a = texture2D(u_image_a, v_texCoord);\
+	                        vec4 color_b = texture2D(u_image_b, v_texCoord);\
+													color_a[0] += color_b[0];\
+	                        color_a[1] += color_b[1];\
+	                        color_a[2] += color_b[2];\
+	                        color_a[3] += color_b[3];\
+	                        gl_FragColor = color_a + color_b;\
+	                    }",
+	                properties: {
+	                    "mix": { type: "uniform", value: 0.0 }
+	                },
+	                inputs: ["u_image_a", "u_image_b"]
+							};
+
 	            return {
 	                CROSSFADE: crossfade,
 	                COMBINE: combine,
@@ -1575,7 +1608,8 @@ var VideoContext =
 	                AAF_VIDEO_POSITION: aaf_video_position,
 	                AAF_VIDEO_SCALE: aaf_video_scale,
 	                AAF_VIDEO_FLIP: aaf_video_flip,
-	                AAF_VIDEO_FLOP: aaf_video_flop
+	                AAF_VIDEO_FLOP: aaf_video_flop,
+									COLORTRANSFER: colorTransfer
 	            };
 	        }
 	    }]);
@@ -1814,7 +1848,7 @@ var VideoContext =
 	    /**
 	    * Returns the state of the node.
 	    * 0 - Waiting, start() has not been called on it yet.
-	    * 1 - Sequenced, start() has been called but it is not playing yet. 
+	    * 1 - Sequenced, start() has been called but it is not playing yet.
 	    * 2 - Playing, the node is playing.
 	    * 3 - Paused, the node is paused.
 	    * 4 - Ended, playback of the node has finished.
@@ -1848,8 +1882,8 @@ var VideoContext =
 	        *
 	        * @param {String} type - the type of event to register the callback against.
 	        * @param {function} func - the function to call.
-	        * 
-	        * @example 
+	        *
+	        * @example
 	        * var ctx = new VideoContext();
 	        * var videoNode = ctx.createVideoSourceNode('video.mp4');
 	        *
@@ -1869,7 +1903,7 @@ var VideoContext =
 	        *
 	        * @param {function} [func] - the callback to remove, if undefined will remove all callbacks for this node.
 	        *
-	        * @example 
+	        * @example
 	        * var ctx = new VideoContext();
 	        * var videoNode = ctx.createVideoSourceNode('video.mp4');
 	        *
@@ -2167,7 +2201,7 @@ var VideoContext =
 	        *
 	        * @return {Element} The underlying DOM element representing the media for the node. If the lifecycle of the video is owned UNSIGNED_BYTE the node itself, this can return undefined if the element hasn't been loaded yet.
 	        *
-	        * @example 
+	        * @example
 	        * //Accessing the Element on a VideoNode created via a URL
 	        * var ctx = new VideoContext();
 	        * var videoNode = ctx.createVideoSourceNode('video.mp4');
@@ -2177,7 +2211,7 @@ var VideoContext =
 	        * videoNode.regsiterCallback("play", function(){videoNode.element.volume = 0;});
 	        *
 	        *
-	        * @example 
+	        * @example
 	        * //Accessing the Element on a VideoNode created via an already existing element
 	        * var ctx = new VideoContext();
 	        * var videoElement = document.createElement("video");
@@ -2199,7 +2233,7 @@ var VideoContext =
 	        *
 	        * @return {number} The duration of the node in seconds.
 	        *
-	        * @example 
+	        * @example
 	        * var ctx = new VideoContext();
 	        * var videoNode = ctx.createVideoSourceNode('video.mp4');
 	        * videoNode.start(5);
@@ -2229,7 +2263,7 @@ var VideoContext =
 
 	/*
 	* Utility function to compile a WebGL Vertex or Fragment shader.
-	* 
+	*
 	* @param {WebGLRenderingContext} gl - the webgl context fo which to build the shader.
 	* @param {String} shaderSource - A string of shader code to compile.
 	* @param {number} shaderType - Shader type, either WebGLRenderingContext.VERTEX_SHADER or WebGLRenderingContext.FRAGMENT_SHADER.
@@ -2265,7 +2299,7 @@ var VideoContext =
 
 	/*
 	* Create a shader program from a passed vertex and fragment shader source string.
-	* 
+	*
 	* @param {WebGLRenderingContext} gl - the webgl context fo which to build the shader.
 	* @param {String} vertexShaderSource - A string of vertex shader code to compile.
 	* @param {String} fragmentShaderSource - A string of fragment shader code to compile.
@@ -2826,10 +2860,10 @@ var VideoContext =
 
 	        /**
 	        * Connect this node to the targetNode
-	        * 
+	        *
 	        * @param {GraphNode} targetNode - the node to connect.
 	        * @param {(number| String)} [targetPort] - the port on the targetNode to connect to, this can be an index, a string identifier, or undefined (in which case the next available port will be connected to).
-	        * 
+	        *
 	        */
 	        value: function connect(targetNode, targetPort) {
 	            return this._renderGraph.registerConnection(this, targetNode, targetPort);
@@ -3485,10 +3519,10 @@ var VideoContext =
 	    _inherits(DestinationNode, _ProcessingNode);
 
 	    /**
-	    * Initialise an instance of a DestinationNode. 
+	    * Initialise an instance of a DestinationNode.
 	    *
 	    * There should only be a single instance of a DestinationNode per VideoContext instance. An VideoContext's destination can be accessed like so: videoContext.desitnation.
-	    * 
+	    *
 	    * You should not instantiate this directly.
 	    */
 
@@ -3753,7 +3787,7 @@ var VideoContext =
 
 	        /**
 	        * Create a transition on the timeline.
-	        * 
+	        *
 	        * @param {number} startTime - The time at which the transition should start (relative to currentTime of video context).
 	        * @param {number} endTime - The time at which the transition should be completed by (relative to currentTime of video context).
 	        * @param {number} currentValue - The value to start the transition at.
@@ -3772,7 +3806,7 @@ var VideoContext =
 
 	        /**
 	        * Clear all transistions on the passed property. If no property is defined clear all transitions on the node.
-	        * 
+	        *
 	        * @param {String} propertyName - The name of the property to clear transitions on, if undefined clear all transitions on the node.
 	        */
 	    }, {
@@ -3848,7 +3882,7 @@ var VideoContext =
 
 	    /**
 	    * Get a list of nodes which are connected to the output of the passed node.
-	    * 
+	    *
 	    * @param {GraphNode} node - the node to get the outputs for.
 	    * @return {GraphNode[]} An array of the nodes which are connected to the output.
 	    */
@@ -3885,7 +3919,7 @@ var VideoContext =
 
 	        /**
 	        * Get a list of nodes which are connected, by z-index name, to the given node. Array contains objects of the form: {"source":sourceNode, "type":"zIndex", "zIndex":0, "destination":destinationNode}.
-	        * 
+	        *
 	        * @param {GraphNode} node - the node to get the z-index refernced inputs for.
 	        * @return {Object[]} An array of objects representing the nodes and connection type, which are connected by z-Index for the node.
 	        */
@@ -3906,7 +3940,7 @@ var VideoContext =
 
 	        /**
 	        * Get a list of nodes which are connected as inputs to the given node. The length of the return array is always equal to the number of inputs for the node, with undefined taking the place of any inputs not connected.
-	        * 
+	        *
 	        * @param {GraphNode} node - the node to get the inputs for.
 	        * @return {GraphNode[]} An array of GraphNodes which are connected to the node.
 	        */
@@ -4053,7 +4087,7 @@ var VideoContext =
 
 	        /**
 	        * Register a connection between two nodes.
-	        * 
+	        *
 	        * @param {GraphNode} sourceNode - the node to connect from.
 	        * @param {GraphNode} destinationNode - the node to connect to.
 	        * @param {(String || number)} [target] - the target port of the conenction, this could be a string to specfiy a specific named port, a number to specify a port by index, or undefined, in which case the next available port will be connected to.
