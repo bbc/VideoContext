@@ -367,8 +367,8 @@ export default class VideoContext{
     * var ctx = new VideoContext(canvasElement);
     * var videoNode = ctx.createVideoSourceNode(videoElement);
     */
-    createVideoSourceNode(src, sourceOffset=0, preloadTime=4, loop=false){
-        let videoNode = new VideoNode(src, this._gl, this._renderGraph, this._currentTime, this._playbackRate, sourceOffset, preloadTime, loop);
+    createVideoSourceNode(src, sourceOffset=0, preloadTime=4, videoElementAttributes={}){
+        let videoNode = new VideoNode(src, this._gl, this._renderGraph, this._currentTime, this._playbackRate, sourceOffset, preloadTime, videoElementAttributes);
         this._sourceNodes.push(videoNode);
         return videoNode;
     }

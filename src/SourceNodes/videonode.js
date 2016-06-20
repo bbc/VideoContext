@@ -10,6 +10,10 @@ export default class VideoNode extends SourceNode {
         this._playbackRate = 1.0;
         this._playbackRateUpdated = true;
         this._attributes = attributes;
+        this._loopElement = false;
+        if (this._attributes.loop){
+            this._loopElement = this._attributes.loop;
+        }
     }
 
     set playbackRate(playbackRate){
