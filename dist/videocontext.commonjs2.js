@@ -114,7 +114,7 @@ module.exports =
 	var VideoContext = (function () {
 	    /**
 	    * Initialise the VideoContext and render to the specific canvas. A 2nd parameter can be passed to the constructor which is a function that get's called if the VideoContext fails to initialise.
-	    * 
+	    *
 	    * @example
 	    * var canvasElement = document.getElemenyById("canvas");
 	    * var ctx = new VideoContext(canvasElement, function(){console.error("Sorry, your browser dosen\'t support WebGL");});
@@ -123,7 +123,7 @@ module.exports =
 	    * videoNode.start(0);
 	    * videoNode.stop(10);
 	    * ctx.play();
-	    * 
+	    *
 	    */
 
 	    function VideoContext(canvas, initErrorCallback) {
@@ -243,7 +243,7 @@ module.exports =
 	        * Regsiter a callback to listen to one of the following events: "stalled", "update", "ended"
 	        *
 	        * "stalled" happend anytime playback is stopped due to unavailbale data for playing assets (i.e video still loading)
-	        * . "update" is called any time a frame is rendered to the screen. "ended" is called once plackback has finished 
+	        * . "update" is called any time a frame is rendered to the screen. "ended" is called once plackback has finished
 	        * (i.e ctx.currentTime == ctx.duration).
 	        *
 	        * @param {String} type - the event to register against ("stalled", "update", or "ended").
@@ -271,15 +271,15 @@ module.exports =
 	        * @example
 	        * var canvasElement = document.getElemenyById("canvas");
 	        * var ctx = new VideoContext(canvasElement);
-	        * 
+	        *
 	        * //the callback
 	        * var updateCallback = function(){console.log("new frame")};
-	        * 
+	        *
 	        * //register the callback
 	        * ctx.registerCallback("update", updateCallback);
 	        * //then unregister it
 	        * ctx.unregisterCallback(updateCallback);
-	        * 
+	        *
 	        */
 	    }, {
 	        key: "unregisterCallback",
@@ -372,7 +372,7 @@ module.exports =
 	        }
 
 	        /**
-	        * Pause playback of the VideoContext 
+	        * Pause playback of the VideoContext
 	        * @example
 	        * var canvasElement = document.getElemenyById("canvas");
 	        * var ctx = new VideoContext(canvasElement);
@@ -396,7 +396,7 @@ module.exports =
 	        * Create a new node representing a video source
 	        *
 	        * @return {VideoNode} A new video node.
-	        * 
+	        *
 	        * @example
 	        * var canvasElement = document.getElemenyById("canvas");
 	        * var ctx = new VideoContext(canvasElement);
@@ -422,9 +422,9 @@ module.exports =
 
 	        /**
 	        * Create a new node representing an image source
-	        * 
+	        *
 	        * @return {ImageNode} A new image node.
-	        * 
+	        *
 	        * @example
 	        * var canvasElement = document.getElemenyById("canvas");
 	        * var ctx = new VideoContext(canvasElement);
@@ -449,7 +449,7 @@ module.exports =
 
 	        /**
 	        * Create a new node representing a canvas source
-	        * 
+	        *
 	        * @return {CanvasNode} A new canvas node.
 	        */
 	    }, {
@@ -488,7 +488,7 @@ module.exports =
 	        * @return {CompositingNode} A new compositing node created from the passed definition.
 	        *
 	        * @example
-	        * 
+	        *
 	        * var canvasElement = document.getElemenyById("canvas");
 	        * var ctx = new VideoContext(canvasElement);
 	        *
@@ -528,14 +528,14 @@ module.exports =
 	        * videoNode2.play(10);
 	        * videoNode2.stop(20);
 	        *
-	        * //Connect the nodes to the combine node. This will give a single connection representing the two videos which can 
+	        * //Connect the nodes to the combine node. This will give a single connection representing the two videos which can
 	        * //be connected to other effects such as LUTs, chromakeyers, etc.
 	        * videoNode1.connect(trackNode);
 	        * videoNode2.connect(trackNode);
-	        * 
+	        *
 	        * //Don't do anything exciting, just connect it to the output.
 	        * trackNode.connect(ctx.destination);
-	        * 
+	        *
 	        */
 	    }, {
 	        key: "createCompositingNode",
@@ -549,17 +549,17 @@ module.exports =
 	        * Create a new transition node.
 	        *
 	        * Transistion nodes are a type of effect node which have parameters which can be changed as events on the timeline.
-	        * 
-	        * For example a transition node which cross-fades between two videos could have a "mix" property which sets the 
-	        * progress through the transistion. Rather than having to write your own code to adjust this property at specfic 
+	        *
+	        * For example a transition node which cross-fades between two videos could have a "mix" property which sets the
+	        * progress through the transistion. Rather than having to write your own code to adjust this property at specfic
 	        * points in time a transition node has a "transition" function which takes a startTime, stopTime, targetValue, and a
-	        * propertyName (which will be "mix"). This will linearly interpolate the property from the curernt value to 
+	        * propertyName (which will be "mix"). This will linearly interpolate the property from the curernt value to
 	        * tragetValue between the startTime and stopTime.
 	        *
 	        * @param {Object} definition - this is an object defining the shaders, inputs, and properties of the transition node to create.
 	        * @return {TransitionNode} A new transition node created from the passed definition.
 	        * @example
-	        * 
+	        *
 	        * var canvasElement = document.getElemenyById("canvas");
 	        * var ctx = new VideoContext(canvasElement);
 	        *
@@ -598,7 +598,7 @@ module.exports =
 	        *     },
 	        *     inputs:["u_image_a","u_image_b"]
 	        * };
-	        * 
+	        *
 	        * //Create the node, passing in the definition.
 	        * var transitionNode = videoCtx.createTransitionNode(crossfadeDefinition);
 	        *
@@ -613,7 +613,7 @@ module.exports =
 	        * //Connect the nodes to the transistion node.
 	        * videoNode1.connect(transitionNode);
 	        * videoNode2.connect(transitionNode);
-	        * 
+	        *
 	        * //Set-up a transition which happens at the crossover point of the playback of the two videos
 	        * transitionNode.transition(8,10,1.0,"mix");
 	        *
@@ -907,7 +907,7 @@ module.exports =
 	                * This has highlighted a bunch of ineffencies in the rendergraph class about how its stores connections.
 	                * Mainly the fact that to get inputs for a node you have to iterate the full list of connections rather than
 	                * a node owning it's connections.
-	                * The trade off with changing this is making/removing connections becomes more costly performance wise, but 
+	                * The trade off with changing this is making/removing connections becomes more costly performance wise, but
 	                * this is deffinately worth while because getting the connnections is a much more common operation.
 	                *
 	                * TL;DR Future matt - refactor this.
@@ -1015,7 +1015,7 @@ module.exports =
 	        * Setting this can be used as a way to implement a scrubaable timeline.
 	        *
 	        * @param {number} currentTime - this is the currentTime to set the context to.
-	        * 
+	        *
 	        * @example
 	        * var canvasElement = document.getElemenyById("canvas");
 	        * var ctx = new VideoContext(canvasElement);
@@ -1039,6 +1039,9 @@ module.exports =
 	            for (var i = 0; i < this._sourceNodes.length; i++) {
 	                this._sourceNodes[i]._seek(currentTime);
 	            }
+	            for (var i = 0; i < this._processingNodes.length; i++) {
+	                this._processingNodes[i]._seek(currentTime);
+	            }
 	            this._currentTime = currentTime;
 	        },
 
@@ -1047,7 +1050,7 @@ module.exports =
 	        *
 	        * Getting this value will give the current playhead position. Can be used for updating timelines.
 	        * @return {number} The time in seconds through the current playlist.
-	        * 
+	        *
 	        * @example
 	        * var canvasElement = document.getElemenyById("canvas");
 	        * var ctx = new VideoContext(canvasElement);
@@ -1056,7 +1059,7 @@ module.exports =
 	        * videoNode.start(0);
 	        * videoNode.stop(10);
 	        * ctx.play();
-	        * setTimeout(funtion(){console.log(ctx.currentTime);},1000); //should print roughly 1.0 
+	        * setTimeout(funtion(){console.log(ctx.currentTime);},1000); //should print roughly 1.0
 	        *
 	        */
 	        get: function get() {
@@ -1071,14 +1074,14 @@ module.exports =
 	        * @example
 	        * var canvasElement = document.getElemenyById("canvas");
 	        * var ctx = new VideoContext(canvasElement);
-	        * console.log(ctx.duration); //prints 0 
+	        * console.log(ctx.duration); //prints 0
 	        *
 	        * var videoNode = ctx.createVideoSourceNode("video.mp4");
 	        * videoNode.connect(ctx.destination);
 	        * videoNode.start(0);
 	        * videoNode.stop(10);
 	        *
-	        * console.log(ctx.duration); //prints 10 
+	        * console.log(ctx.duration); //prints 10
 	        *
 	        * ctx.play();
 	        */
@@ -1129,7 +1132,7 @@ module.exports =
 	        * videoNode.stop(10);
 	        * videoNode.connect(ctx.destination);
 	        * ctx.playbackRate = 2;
-	        * ctx.play(); // Double playback rate means this will finish playing in 5 seconds.    
+	        * ctx.play(); // Double playback rate means this will finish playing in 5 seconds.
 	        */
 	    }, {
 	        key: "playbackRate",
@@ -3379,6 +3382,11 @@ module.exports =
 	    _createClass(ProcessingNode, [{
 	        key: "_update",
 	        value: function _update(currentTime) {
+	            this._currentTime = currentTime;
+	        }
+	    }, {
+	        key: "_seek",
+	        value: function _seek(currentTime) {
 	            this._currentTime = currentTime;
 	        }
 	    }, {

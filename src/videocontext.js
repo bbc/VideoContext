@@ -31,7 +31,7 @@ update();
 export default class VideoContext{
     /**
     * Initialise the VideoContext and render to the specific canvas. A 2nd parameter can be passed to the constructor which is a function that get's called if the VideoContext fails to initialise.
-    * 
+    *
     * @example
     * var canvasElement = document.getElemenyById("canvas");
     * var ctx = new VideoContext(canvasElement, function(){console.error("Sorry, your browser dosen\'t support WebGL");});
@@ -40,7 +40,7 @@ export default class VideoContext{
     * videoNode.start(0);
     * videoNode.stop(10);
     * ctx.play();
-    * 
+    *
     */
     constructor(canvas, initErrorCallback){
         this._canvas = canvas;
@@ -102,7 +102,7 @@ export default class VideoContext{
     * Regsiter a callback to listen to one of the following events: "stalled", "update", "ended"
     *
     * "stalled" happend anytime playback is stopped due to unavailbale data for playing assets (i.e video still loading)
-    * . "update" is called any time a frame is rendered to the screen. "ended" is called once plackback has finished 
+    * . "update" is called any time a frame is rendered to the screen. "ended" is called once plackback has finished
     * (i.e ctx.currentTime == ctx.duration).
     *
     * @param {String} type - the event to register against ("stalled", "update", or "ended").
@@ -128,15 +128,15 @@ export default class VideoContext{
     * @example
     * var canvasElement = document.getElemenyById("canvas");
     * var ctx = new VideoContext(canvasElement);
-    * 
+    *
     * //the callback
     * var updateCallback = function(){console.log("new frame")};
-    * 
+    *
     * //register the callback
     * ctx.registerCallback("update", updateCallback);
     * //then unregister it
     * ctx.unregisterCallback(updateCallback);
-    * 
+    *
     */
     unregisterCallback(func){
         for(let funcArray of this._callbacks.values()){
@@ -155,7 +155,7 @@ export default class VideoContext{
             func(this._currentTime);
         }
     }
-    
+
     /**
     * Get the canvas that the VideoContext is using.
     *
@@ -187,7 +187,7 @@ export default class VideoContext{
     * Setting this can be used as a way to implement a scrubaable timeline.
     *
     * @param {number} currentTime - this is the currentTime to set the context to.
-    * 
+    *
     * @example
     * var canvasElement = document.getElemenyById("canvas");
     * var ctx = new VideoContext(canvasElement);
@@ -209,6 +209,9 @@ export default class VideoContext{
         for (let i = 0; i < this._sourceNodes.length; i++) {
             this._sourceNodes[i]._seek(currentTime);
         }
+        for (let i = 0; i < this._processingNodes.length; i++) {
+            this._processingNodes[i]._seek(currentTime);
+        }
         this._currentTime = currentTime;
     }
 
@@ -217,7 +220,7 @@ export default class VideoContext{
     *
     * Getting this value will give the current playhead position. Can be used for updating timelines.
     * @return {number} The time in seconds through the current playlist.
-    * 
+    *
     * @example
     * var canvasElement = document.getElemenyById("canvas");
     * var ctx = new VideoContext(canvasElement);
@@ -226,7 +229,7 @@ export default class VideoContext{
     * videoNode.start(0);
     * videoNode.stop(10);
     * ctx.play();
-    * setTimeout(funtion(){console.log(ctx.currentTime);},1000); //should print roughly 1.0 
+    * setTimeout(funtion(){console.log(ctx.currentTime);},1000); //should print roughly 1.0
     *
     */
     get currentTime(){
@@ -241,14 +244,14 @@ export default class VideoContext{
     * @example
     * var canvasElement = document.getElemenyById("canvas");
     * var ctx = new VideoContext(canvasElement);
-    * console.log(ctx.duration); //prints 0 
+    * console.log(ctx.duration); //prints 0
     *
     * var videoNode = ctx.createVideoSourceNode("video.mp4");
     * videoNode.connect(ctx.destination);
     * videoNode.start(0);
     * videoNode.stop(10);
     *
-    * console.log(ctx.duration); //prints 10 
+    * console.log(ctx.duration); //prints 10
     *
     * ctx.play();
     */
@@ -296,7 +299,7 @@ export default class VideoContext{
     * videoNode.stop(10);
     * videoNode.connect(ctx.destination);
     * ctx.playbackRate = 2;
-    * ctx.play(); // Double playback rate means this will finish playing in 5 seconds.    
+    * ctx.play(); // Double playback rate means this will finish playing in 5 seconds.
     */
     set playbackRate(rate){
         for (let node of this._sourceNodes) {
@@ -333,7 +336,7 @@ export default class VideoContext{
     }
 
     /**
-    * Pause playback of the VideoContext 
+    * Pause playback of the VideoContext
     * @example
     * var canvasElement = document.getElemenyById("canvas");
     * var ctx = new VideoContext(canvasElement);
@@ -355,7 +358,7 @@ export default class VideoContext{
     * Create a new node representing a video source
     *
     * @return {VideoNode} A new video node.
-    * 
+    *
     * @example
     * var canvasElement = document.getElemenyById("canvas");
     * var ctx = new VideoContext(canvasElement);
@@ -375,9 +378,9 @@ export default class VideoContext{
 
     /**
     * Create a new node representing an image source
-    * 
+    *
     * @return {ImageNode} A new image node.
-    * 
+    *
     * @example
     * var canvasElement = document.getElemenyById("canvas");
     * var ctx = new VideoContext(canvasElement);
@@ -397,7 +400,7 @@ export default class VideoContext{
 
     /**
     * Create a new node representing a canvas source
-    * 
+    *
     * @return {CanvasNode} A new canvas node.
     */
     createCanvasSourceNode(canvas, sourceOffset=0, preloadTime=4){
@@ -431,7 +434,7 @@ export default class VideoContext{
     * @return {CompositingNode} A new compositing node created from the passed definition.
     *
     * @example
-    * 
+    *
     * var canvasElement = document.getElemenyById("canvas");
     * var ctx = new VideoContext(canvasElement);
     *
@@ -471,14 +474,14 @@ export default class VideoContext{
     * videoNode2.play(10);
     * videoNode2.stop(20);
     *
-    * //Connect the nodes to the combine node. This will give a single connection representing the two videos which can 
+    * //Connect the nodes to the combine node. This will give a single connection representing the two videos which can
     * //be connected to other effects such as LUTs, chromakeyers, etc.
     * videoNode1.connect(trackNode);
     * videoNode2.connect(trackNode);
-    * 
+    *
     * //Don't do anything exciting, just connect it to the output.
     * trackNode.connect(ctx.destination);
-    * 
+    *
     */
     createCompositingNode(definition){
         let compositingNode = new CompositingNode(this._gl, this._renderGraph, definition);
@@ -490,17 +493,17 @@ export default class VideoContext{
     * Create a new transition node.
     *
     * Transistion nodes are a type of effect node which have parameters which can be changed as events on the timeline.
-    * 
-    * For example a transition node which cross-fades between two videos could have a "mix" property which sets the 
-    * progress through the transistion. Rather than having to write your own code to adjust this property at specfic 
+    *
+    * For example a transition node which cross-fades between two videos could have a "mix" property which sets the
+    * progress through the transistion. Rather than having to write your own code to adjust this property at specfic
     * points in time a transition node has a "transition" function which takes a startTime, stopTime, targetValue, and a
-    * propertyName (which will be "mix"). This will linearly interpolate the property from the curernt value to 
+    * propertyName (which will be "mix"). This will linearly interpolate the property from the curernt value to
     * tragetValue between the startTime and stopTime.
     *
     * @param {Object} definition - this is an object defining the shaders, inputs, and properties of the transition node to create.
     * @return {TransitionNode} A new transition node created from the passed definition.
     * @example
-    * 
+    *
     * var canvasElement = document.getElemenyById("canvas");
     * var ctx = new VideoContext(canvasElement);
     *
@@ -539,7 +542,7 @@ export default class VideoContext{
     *     },
     *     inputs:["u_image_a","u_image_b"]
     * };
-    * 
+    *
     * //Create the node, passing in the definition.
     * var transitionNode = videoCtx.createTransitionNode(crossfadeDefinition);
     *
@@ -554,7 +557,7 @@ export default class VideoContext{
     * //Connect the nodes to the transistion node.
     * videoNode1.connect(transitionNode);
     * videoNode2.connect(transitionNode);
-    * 
+    *
     * //Set-up a transition which happens at the crossover point of the playback of the two videos
     * transitionNode.transition(8,10,1.0,"mix");
     *
@@ -590,10 +593,10 @@ export default class VideoContext{
                     this._state = VideoContext.STATE.STALLED;
                 }else{
                     this._state = VideoContext.STATE.PLAYING;
-                }    
+                }
             }
-            
-            if(this._state === VideoContext.STATE.PLAYING){                    
+
+            if(this._state === VideoContext.STATE.PLAYING){
                 //Handle timeline callbacks.
                 let activeCallbacks = new Map();
                 for(let callback of this._timelineCallbacks){
@@ -660,12 +663,12 @@ export default class VideoContext{
             * This has highlighted a bunch of ineffencies in the rendergraph class about how its stores connections.
             * Mainly the fact that to get inputs for a node you have to iterate the full list of connections rather than
             * a node owning it's connections.
-            * The trade off with changing this is making/removing connections becomes more costly performance wise, but 
+            * The trade off with changing this is making/removing connections becomes more costly performance wise, but
             * this is deffinately worth while because getting the connnections is a much more common operation.
             *
             * TL;DR Future matt - refactor this.
             *
-            */ 
+            */
             let sortedNodes = [];
             let connections = this._renderGraph.connections.slice();
 
@@ -686,7 +689,7 @@ export default class VideoContext{
                         results.push(conn);
                     }
                 }
-                return results;   
+                return results;
             }
             function getInputlessNodes(connections){
                 let inputLess = [];
@@ -722,7 +725,7 @@ export default class VideoContext{
                 if (this._sourceNodes.indexOf(node) === -1){
                     node._update(this._currentTime);
                     node._render();
-                }   
+                }
             }
 
             /*for (let node of this._processingNodes) {

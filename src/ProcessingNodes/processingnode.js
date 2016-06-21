@@ -34,7 +34,7 @@ export default class ProcessingNode extends GraphNode{
         gl.texImage2D( gl.TEXTURE_2D, 0, gl.RGBA, gl.canvas.width, gl.canvas.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
         //compile the shader
         this._program = createShaderProgram(gl, this._vertexShader, this._fragmentShader);
-        
+
         //create and setup the framebuffer
         this._framebuffer = gl.createFramebuffer();
         gl.bindFramebuffer(gl.FRAMEBUFFER, this._framebuffer);
@@ -83,7 +83,7 @@ export default class ProcessingNode extends GraphNode{
         this._currentTimeLocation = this._gl.getUniformLocation(this._program, "currentTime");
         this._currentTime = 0;
 
-        
+
         //Other setup
         let positionLocation = gl.getAttribLocation(this._program, "a_position");
         let buffer = gl.createBuffer();
@@ -111,6 +111,10 @@ export default class ProcessingNode extends GraphNode{
         this._currentTime = currentTime;
     }
 
+    _seek(currentTime){
+        this._currentTime = currentTime;
+    }
+
     _render(){
         this._rendered = true;
         let gl = this._gl;
@@ -129,7 +133,7 @@ export default class ProcessingNode extends GraphNode{
             let propertyType = this._properties[propertyName].type;
             let propertyLocation = this._properties[propertyName].location;
             if (propertyType !== 'uniform') continue;
-            
+
             if (typeof propertyValue === "number"){
                 gl.uniform1f(propertyLocation, propertyValue);
             }
@@ -149,7 +153,7 @@ export default class ProcessingNode extends GraphNode{
                 let texture =  this._properties[propertyName].texture;
                 let textureUnit = this._properties[propertyName].texutreUnit;
                 updateTexture(gl, texture, propertyValue);
-                
+
                 gl.activeTexture(textureUnit);
                 gl.uniform1i(propertyLocation, textureOffset);
                 textureOffset += 1;
