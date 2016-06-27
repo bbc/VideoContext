@@ -411,7 +411,6 @@ export function visualiseVideoContextTimeline(videoContext, canvas, currentTime)
             let sourceNode = videoContext._sourceNodes[i];
             let duration = sourceNode._stopTime - sourceNode._startTime;
             if(duration=== Infinity) duration = videoContext.currentTime;
-            console.log(duration);
             let start = sourceNode._startTime;
 
             let msW = duration * pixelsPerSecond;

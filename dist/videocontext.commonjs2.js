@@ -2786,7 +2786,6 @@ module.exports =
 	        var sourceNode = videoContext._sourceNodes[i];
 	        var duration = sourceNode._stopTime - sourceNode._startTime;
 	        if (duration === Infinity) duration = videoContext.currentTime;
-	        console.log(duration);
 	        var start = sourceNode._startTime;
 
 	        var msW = duration * pixelsPerSecond;
