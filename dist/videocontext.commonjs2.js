@@ -2712,6 +2712,9 @@ module.exports =
 	    var h = canvas.height;
 	    var trackHeight = h / videoContext._sourceNodes.length;
 	    var playlistDuration = videoContext.duration;
+	    if (videoContext.duration === Infinity) {
+	        playlistDuration = 1 + videoContext.currentTime;
+	    }
 	    var pixelsPerSecond = w / playlistDuration;
 	    var mediaSourceStyle = {
 	        "video": ["#572A72", "#3C1255"],
@@ -2782,6 +2785,8 @@ module.exports =
 	    for (var i = 0; i < videoContext._sourceNodes.length; i++) {
 	        var sourceNode = videoContext._sourceNodes[i];
 	        var duration = sourceNode._stopTime - sourceNode._startTime;
+	        if (duration === Infinity) duration = videoContext.currentTime;
+	        console.log(duration);
 	        var start = sourceNode._startTime;
 
 	        var msW = duration * pixelsPerSecond;
@@ -2789,6 +2794,7 @@ module.exports =
 	        var msX = start * pixelsPerSecond;
 	        var msY = trackHeight * i;
 	        ctx.fillStyle = mediaSourceStyle.video[i % mediaSourceStyle.video.length];
+
 	        ctx.fillRect(msX, msY, msW, msH);
 	        ctx.fill();
 	    }

@@ -379,6 +379,7 @@ export function visualiseVideoContextTimeline(videoContext, canvas, currentTime)
         let h = canvas.height;
         let trackHeight = h / videoContext._sourceNodes.length;
         let playlistDuration = videoContext.duration;
+        if (videoContext.duration === Infinity){playlistDuration = 1+videoContext.currentTime;}
         let pixelsPerSecond = w / playlistDuration;
         let mediaSourceStyle = {
             "video":["#572A72", "#3C1255"],
@@ -409,6 +410,8 @@ export function visualiseVideoContextTimeline(videoContext, canvas, currentTime)
         for (let i = 0; i < videoContext._sourceNodes.length; i++) {
             let sourceNode = videoContext._sourceNodes[i];
             let duration = sourceNode._stopTime - sourceNode._startTime;
+            if(duration=== Infinity) duration = videoContext.currentTime;
+            console.log(duration);
             let start = sourceNode._startTime;
 
             let msW = duration * pixelsPerSecond;
@@ -416,6 +419,8 @@ export function visualiseVideoContextTimeline(videoContext, canvas, currentTime)
             let msX = start * pixelsPerSecond;
             let msY = trackHeight * i;
             ctx.fillStyle = mediaSourceStyle.video[i%mediaSourceStyle.video.length];
+
+
             ctx.fillRect(msX,msY,msW,msH);
             ctx.fill();
         }
