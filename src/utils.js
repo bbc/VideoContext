@@ -379,7 +379,20 @@ export function visualiseVideoContextTimeline(videoContext, canvas, currentTime)
         let h = canvas.height;
         let trackHeight = h / videoContext._sourceNodes.length;
         let playlistDuration = videoContext.duration;
-        if (videoContext.duration === Infinity){playlistDuration = 1+videoContext.currentTime;}
+
+        if (videoContext.duration === Infinity){
+            let total = 0;
+            for (let i = 0; i < videoContext._sourceNodes.length; i++) {
+                let sourceNode = videoContext._sourceNodes[i];
+                if(sourceNode._stopTime !== Infinity) total += sourceNode._stopTime;
+            }
+            
+            if (total > videoContext.currentTime){
+                playlistDuration = total+5;
+            }else{
+                playlistDuration = videoContext.currentTime+5;
+            }
+        }
         let pixelsPerSecond = w / playlistDuration;
         let mediaSourceStyle = {
             "video":["#572A72", "#3C1255"],

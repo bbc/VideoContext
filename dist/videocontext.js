@@ -2712,8 +2712,19 @@ var VideoContext =
 	    var h = canvas.height;
 	    var trackHeight = h / videoContext._sourceNodes.length;
 	    var playlistDuration = videoContext.duration;
+
 	    if (videoContext.duration === Infinity) {
-	        playlistDuration = 1 + videoContext.currentTime;
+	        var total = 0;
+	        for (var i = 0; i < videoContext._sourceNodes.length; i++) {
+	            var sourceNode = videoContext._sourceNodes[i];
+	            if (sourceNode._stopTime !== Infinity) total += sourceNode._stopTime;
+	        }
+
+	        if (total > videoContext.currentTime) {
+	            playlistDuration = total + 5;
+	        } else {
+	            playlistDuration = videoContext.currentTime + 5;
+	        }
 	    }
 	    var pixelsPerSecond = w / playlistDuration;
 	    var mediaSourceStyle = {
