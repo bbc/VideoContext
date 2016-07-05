@@ -173,4 +173,38 @@ export default class RenderGraph {
 
         return true;
     }
+
+    static outputEdgesFor(node, connections){
+        let results = [];
+        for(let conn of connections){
+            if (conn.source === node){
+                results.push(conn);
+            }
+        }
+        return results;
+    }
+
+    static inputEdgesFor(node, connections){
+        let results = [];
+        for(let conn of connections){
+            if (conn.destination === node){
+                results.push(conn);
+            }
+        }
+        return results;
+    }
+
+    static getInputlessNodes(connections){
+        let inputLess = [];
+        for (let conn of connections){
+            inputLess.push(conn.source);
+        }
+        for (let conn of connections){
+            let index = inputLess.indexOf(conn.destination);
+            if (index !== -1){
+                inputLess.splice(index, 1);
+            }
+        }
+        return inputLess;
+    }
 }

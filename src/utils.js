@@ -45,7 +45,7 @@ export function createShaderProgram(gl, vertexShaderSource, fragmentShaderSource
     return program;
 }
 
-export function createElementTexutre(gl, type=new Uint8Array([0,0,0,0]), width=1, height=1){
+export function createElementTexutre(gl){
     let texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
@@ -119,11 +119,11 @@ export function createControlFormForNode(node, nodeName){
             number.onchange =function(){
                 node[propertyName] = parseFloat(number.value); 
                 range.value = number.value;
-            }
+            };
             propertyParagraph.appendChild(range);
             propertyParagraph.appendChild(number);
         }
-        else if(Object.prototype.toString.call(propertyValue) === '[object Array]'){
+        else if(Object.prototype.toString.call(propertyValue) === "[object Array]"){
             for (var i = 0; i < propertyValue.length; i++) {
                 let range = document.createElement("input");
                 range.setAttribute("type", "range");
@@ -157,14 +157,11 @@ export function createControlFormForNode(node, nodeName){
                 number.onchange = function(){
                     node[propertyName][index] = parseFloat(number.value); 
                     range.value = number.value;
-                }
+                };
                 propertyParagraph.appendChild(range);
                 propertyParagraph.appendChild(number);
             }
-        }else{
-
         }
-
 
         rootDiv.appendChild(propertyParagraph);
     }
@@ -199,10 +196,9 @@ function calculateNodeDepthFromDestination(videoContext){
 
 
 export function visualiseVideoContextGraph(videoContext, canvas){
-    let ctx = canvas.getContext('2d');
+    let ctx = canvas.getContext("2d");
     let w = canvas.width;
     let h = canvas.height;
-    let renderNodes = [];
     ctx.clearRect(0,0,w,h);
 
     let nodeDepths = calculateNodeDepthFromDestination(videoContext);
@@ -249,7 +245,7 @@ export function visualiseVideoContextGraph(videoContext, canvas){
 
             let angle = Math.PI/2 - Math.atan2(dx,dy); 
 
-            let distance = Math.sqrt(Math.pow(x1-x2,2) + Math.pow(y1-y2,2))
+            let distance = Math.sqrt(Math.pow(x1-x2,2) + Math.pow(y1-y2,2));
 
             let midX = Math.min(x1, x2) + (Math.max(x1,x2) - Math.min(x1, x2))/2;
             let midY = Math.min(y1, y2) + (Math.max(y1,y2) - Math.min(y1, y2))/2;
@@ -269,7 +265,6 @@ export function visualiseVideoContextGraph(videoContext, canvas){
 
 
     for(let node of nodeDepths.keys()){
-        let depth = nodeDepths.get(node);
         let pos = calculateNodePos(node, nodeDepths, xStep, nodeHeight);
         let color = "#AA9639";
         let text = "";
@@ -282,7 +277,7 @@ export function visualiseVideoContextGraph(videoContext, canvas){
         }
         if (node.constructor.name === "VideoNode"){
             color = "#572A72";
-            text = "Video"
+            text = "Video";
         }
         if (node.constructor.name === "CanvasNode"){
             color = "#572A72";
@@ -324,14 +319,14 @@ export function createSigmaGraphDataFromRenderGraph(videoContext){
 
     let graph = {
         nodes:[
-        {
-            id: idForNode(videoContext.destination),
-            label:"Destination Node",
-            x:2.5,
-            y:0.5,
-            size:2,
-            node: videoContext.destination
-        }],
+            {
+                id: idForNode(videoContext.destination),
+                label:"Destination Node",
+                x:2.5,
+                y:0.5,
+                size:2,
+                node: videoContext.destination
+            }],
         edges:[]
     };
 
@@ -374,73 +369,73 @@ export function createSigmaGraphDataFromRenderGraph(videoContext){
 }
 
 export function visualiseVideoContextTimeline(videoContext, canvas, currentTime){
-        let ctx = canvas.getContext('2d');
-        let w = canvas.width;
-        let h = canvas.height;
-        let trackHeight = h / videoContext._sourceNodes.length;
-        let playlistDuration = videoContext.duration;
+    let ctx = canvas.getContext("2d");
+    let w = canvas.width;
+    let h = canvas.height;
+    let trackHeight = h / videoContext._sourceNodes.length;
+    let playlistDuration = videoContext.duration;
 
-        if (videoContext.duration === Infinity){
-            let total = 0;
-            for (let i = 0; i < videoContext._sourceNodes.length; i++) {
-                let sourceNode = videoContext._sourceNodes[i];
-                if(sourceNode._stopTime !== Infinity) total += sourceNode._stopTime;
-            }
-            
-            if (total > videoContext.currentTime){
-                playlistDuration = total+5;
-            }else{
-                playlistDuration = videoContext.currentTime+5;
-            }
-        }
-        let pixelsPerSecond = w / playlistDuration;
-        let mediaSourceStyle = {
-            "video":["#572A72", "#3C1255"],
-            "image":["#7D9F35", "#577714"],
-            "canvas":["#AA9639", "#806D15"]
-        };
-
-
-        ctx.clearRect(0,0,w,h);
-        ctx.fillStyle = "#999";
-        
-        for(let node of videoContext._processingNodes){
-            if (node.constructor.name !== "TransitionNode") continue;
-            for(let propertyName in node._transitions){
-                for(let transition of node._transitions[propertyName]){
-                    let tW = (transition.end - transition.start) * pixelsPerSecond;
-                    let tH = h;
-                    let tX = transition.start * pixelsPerSecond;
-                    let tY = 0;
-                    ctx.fillStyle = "rgba(0,0,0, 0.3)";
-                    ctx.fillRect(tX, tY, tW, tH);
-                    ctx.fill();
-                }
-            }
-        }
-
-
+    if (videoContext.duration === Infinity){
+        let total = 0;
         for (let i = 0; i < videoContext._sourceNodes.length; i++) {
             let sourceNode = videoContext._sourceNodes[i];
-            let duration = sourceNode._stopTime - sourceNode._startTime;
-            if(duration=== Infinity) duration = videoContext.currentTime;
-            let start = sourceNode._startTime;
-
-            let msW = duration * pixelsPerSecond;
-            let msH = trackHeight;
-            let msX = start * pixelsPerSecond;
-            let msY = trackHeight * i;
-            ctx.fillStyle = mediaSourceStyle.video[i%mediaSourceStyle.video.length];
-
-
-            ctx.fillRect(msX,msY,msW,msH);
-            ctx.fill();
+            if(sourceNode._stopTime !== Infinity) total += sourceNode._stopTime;
         }
-
         
-
-        if (currentTime !== undefined){
-            ctx.fillStyle = "#000";
-            ctx.fillRect(currentTime*pixelsPerSecond, 0, 1, h);
+        if (total > videoContext.currentTime){
+            playlistDuration = total+5;
+        }else{
+            playlistDuration = videoContext.currentTime+5;
         }
     }
+    let pixelsPerSecond = w / playlistDuration;
+    let mediaSourceStyle = {
+        "video":["#572A72", "#3C1255"],
+        "image":["#7D9F35", "#577714"],
+        "canvas":["#AA9639", "#806D15"]
+    };
+
+
+    ctx.clearRect(0,0,w,h);
+    ctx.fillStyle = "#999";
+    
+    for(let node of videoContext._processingNodes){
+        if (node.constructor.name !== "TransitionNode") continue;
+        for(let propertyName in node._transitions){
+            for(let transition of node._transitions[propertyName]){
+                let tW = (transition.end - transition.start) * pixelsPerSecond;
+                let tH = h;
+                let tX = transition.start * pixelsPerSecond;
+                let tY = 0;
+                ctx.fillStyle = "rgba(0,0,0, 0.3)";
+                ctx.fillRect(tX, tY, tW, tH);
+                ctx.fill();
+            }
+        }
+    }
+
+
+    for (let i = 0; i < videoContext._sourceNodes.length; i++) {
+        let sourceNode = videoContext._sourceNodes[i];
+        let duration = sourceNode._stopTime - sourceNode._startTime;
+        if(duration=== Infinity) duration = videoContext.currentTime;
+        let start = sourceNode._startTime;
+
+        let msW = duration * pixelsPerSecond;
+        let msH = trackHeight;
+        let msX = start * pixelsPerSecond;
+        let msY = trackHeight * i;
+        ctx.fillStyle = mediaSourceStyle.video[i%mediaSourceStyle.video.length];
+
+
+        ctx.fillRect(msX,msY,msW,msH);
+        ctx.fill();
+    }
+
+    
+
+    if (currentTime !== undefined){
+        ctx.fillStyle = "#000";
+        ctx.fillRect(currentTime*pixelsPerSecond, 0, 1, h);
+    }
+}

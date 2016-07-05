@@ -18,7 +18,7 @@ export default class ProcessingNode extends GraphNode{
         for(let propertyName in definition.properties){
             let propertyValue = definition.properties[propertyName].value;
             //if an array then shallow copy it
-            if(Object.prototype.toString.call(propertyValue) === '[object Array]'){
+            if(Object.prototype.toString.call(propertyValue) === "[object Array]"){
                 propertyValue = definition.properties[propertyName].value.slice();
             }
             let propertyType = definition.properties[propertyName].type;
@@ -30,7 +30,7 @@ export default class ProcessingNode extends GraphNode{
         this._boundTextureUnits = 0;
         this._parameterTextureCount = 0;
         this._inputTextureCount = 0;
-        this._texture = createElementTexutre(gl, null, gl.canvas.width, gl.canvas.height);
+        this._texture = createElementTexutre(gl);
         gl.texImage2D( gl.TEXTURE_2D, 0, gl.RGBA, gl.canvas.width, gl.canvas.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
         //compile the shader
         this._program = createShaderProgram(gl, this._vertexShader, this._fragmentShader);
@@ -132,12 +132,12 @@ export default class ProcessingNode extends GraphNode{
             let propertyValue = this._properties[propertyName].value;
             let propertyType = this._properties[propertyName].type;
             let propertyLocation = this._properties[propertyName].location;
-            if (propertyType !== 'uniform') continue;
+            if (propertyType !== "uniform") continue;
 
             if (typeof propertyValue === "number"){
                 gl.uniform1f(propertyLocation, propertyValue);
             }
-            else if( Object.prototype.toString.call(propertyValue) === '[object Array]'){
+            else if( Object.prototype.toString.call(propertyValue) === "[object Array]"){
                 if(propertyValue.length === 1){
                     gl.uniform1fv(propertyLocation, propertyValue);
                 } else if(propertyValue.length === 2){

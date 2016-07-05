@@ -51,12 +51,12 @@ export default class VideoNode extends SourceNode {
         }
         if (this._isResponsibleForElementLifeCycle){
             this._element = document.createElement("video");
-            this._element.setAttribute('crossorigin', 'anonymous');
-            this._element.setAttribute('webkit-playsinline', '');
+            this._element.setAttribute("crossorigin", "anonymous");
+            this._element.setAttribute("webkit-playsinline", "");
             this._element.src = this._elementURL;
             this._playbackRateUpdated = true;
 
-            for (var key in this._attributes) {
+            for (let key in this._attributes) {
                 this._element[key] = this._attributes[key];
             }
         }

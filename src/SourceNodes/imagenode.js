@@ -15,7 +15,7 @@ export default class ImageNode extends SourceNode {
         if (this._isResponsibleForElementLifeCycle){
             super._load();
             this._element = new Image();
-            this._element.setAttribute('crossorigin', 'anonymous');
+            this._element.setAttribute("crossorigin", "anonymous");
             this._element.src = this._elementURL;
             this._element.onload = () => {
                 this._ready = true;
@@ -23,7 +23,7 @@ export default class ImageNode extends SourceNode {
             };
             this._element.onerror = () => {
                 console.error("ImageNode failed to load url:", this._elementURL);
-            }
+            };
         }
     }
 

@@ -33,7 +33,6 @@ export default class EffectNode extends ProcessingNode{
             let textureName = this._inputTextureUnitMapping[i].name;
             if (i < inputs.length && inputs[i] !== undefined){
                 inputTexture = inputs[i]._texture;
-            }else{
             }
 
             gl.activeTexture(textureUnit);

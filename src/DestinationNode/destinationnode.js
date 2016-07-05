@@ -1,6 +1,4 @@
 //Matthew Shotton, R&D User Experience,© BBC 2015
-import { SOURCENODESTATE } from "../SourceNodes/sourcenode";
-//import GraphNode from "../graphnode";
 import ProcessingNode from "../ProcessingNodes/processingnode";
 
 export default class DestinationNode extends ProcessingNode {

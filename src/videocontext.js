@@ -202,7 +202,7 @@ export default class VideoContext{
     set currentTime(currentTime){
         console.debug("VideoContext - seeking to", currentTime);
         if (currentTime < this._duration && this._state === VideoContext.STATE.ENDED) this._state = VideoContext.STATE.PAUSED;
-        if (typeof currentTime === 'string' || currentTime instanceof String){
+        if (typeof currentTime === "string" || currentTime instanceof String){
             currentTime = parseFloat(currentTime);
         }
 
@@ -671,51 +671,16 @@ export default class VideoContext{
             */
             let sortedNodes = [];
             let connections = this._renderGraph.connections.slice();
-
-            //utility functions
-            function outputEdgesFor(node, connections){
-                let results = [];
-                for(let conn of connections){
-                    if (conn.source === node){
-                        results.push(conn);
-                    }
-                }
-                return results;
-            }
-            function inputEdgesFor(node, connections){
-                let results = [];
-                for(let conn of connections){
-                    if (conn.destination === node){
-                        results.push(conn);
-                    }
-                }
-                return results;
-            }
-            function getInputlessNodes(connections){
-                let inputLess = [];
-                for (let conn of connections){
-                    inputLess.push(conn.source);
-                }
-                for (let conn of connections){
-                    let index = inputLess.indexOf(conn.destination);
-                    if (index !== -1){
-                        inputLess.splice(index, 1);
-                    }
-                }
-                return inputLess;
-            }
-
-
-            let nodes = getInputlessNodes(connections);
+            let nodes = RenderGraph.getInputlessNodes(connections);
 
 
             while (nodes.length > 0) {
                 let node = nodes.pop();
                 sortedNodes.push(node);
-                for (let edge of outputEdgesFor(node, connections)){
+                for (let edge of RenderGraph.outputEdgesFor(node, connections)){
                     let index = connections.indexOf(edge);
                     if (index > -1) connections.splice(index, 1);
-                    if (inputEdgesFor(edge.destination, connections).length === 0){
+                    if (RenderGraph.inputEdgesFor(edge.destination, connections).length === 0){
                         nodes.push(edge.destination);
                     }
                 }
@@ -767,7 +732,7 @@ export default class VideoContext{
                 }",
             properties:{
                 "scaleX":{type:"uniform", value:1.0},
-                "scaleY":{type:"uniform", value:1.0},
+                "scaleY":{type:"uniform", value:1.0}
             },
             inputs:["u_image"]
         };
@@ -801,7 +766,7 @@ export default class VideoContext{
                 }",
             properties:{
                 "positionOffsetX":{type:"uniform", value:0.0},
-                "positionOffsetY":{type:"uniform", value:0.0},
+                "positionOffsetY":{type:"uniform", value:0.0}
             },
             inputs:["u_image"]
         };
@@ -818,7 +783,7 @@ export default class VideoContext{
                         gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
                         v_texCoord = a_texCoord;\
                     }",
-                fragmentShader : "\
+            fragmentShader : "\
                     precision mediump float;\
                     uniform sampler2D u_image;\
                     uniform float cropLeft;\
@@ -834,13 +799,13 @@ export default class VideoContext{
                         if (v_texCoord[1] > (-cropTop+1.0)/2.0) color = vec4(0.0,0.0,0.0,0.0);\
                         gl_FragColor = color;\
                     }",
-                properties:{
-                    "cropLeft":{type:"uniform", value:-1.0},
-                    "cropRight":{type:"uniform", value:1.0},
-                    "cropTop":{type:"uniform", value: -1.0},
-                    "cropBottom":{type:"uniform", value: 1.0}
-                },
-                inputs:["u_image"]
+            properties:{
+                "cropLeft":{type:"uniform", value:-1.0},
+                "cropRight":{type:"uniform", value:1.0},
+                "cropTop":{type:"uniform", value: -1.0},
+                "cropBottom":{type:"uniform", value: 1.0}
+            },
+            inputs:["u_image"]
         };
 
 
@@ -855,7 +820,7 @@ export default class VideoContext{
                         gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
                         v_texCoord = a_texCoord;\
                     }",
-                fragmentShader : "\
+            fragmentShader : "\
                     precision mediump float;\
                     uniform sampler2D u_image;\
                     varying vec2 v_texCoord;\
@@ -864,9 +829,9 @@ export default class VideoContext{
                         vec4 color = texture2D(u_image, coord);\
                         gl_FragColor = color;\
                     }",
-                properties:{
-                },
-                inputs:["u_image"]
+            properties:{
+            },
+            inputs:["u_image"]
         };
 
         var aaf_video_flop = {
@@ -880,7 +845,7 @@ export default class VideoContext{
                         gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
                         v_texCoord = a_texCoord;\
                     }",
-                fragmentShader : "\
+            fragmentShader : "\
                     precision mediump float;\
                     uniform sampler2D u_image;\
                     varying vec2 v_texCoord;\
@@ -889,9 +854,9 @@ export default class VideoContext{
                         vec4 color = texture2D(u_image, coord);\
                         gl_FragColor = color;\
                     }",
-                properties:{
-                },
-                inputs:["u_image"]
+            properties:{
+            },
+            inputs:["u_image"]
         };
 
 
@@ -907,7 +872,7 @@ export default class VideoContext{
                         gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
                         v_texCoord = a_texCoord;\
                     }",
-                fragmentShader : "\
+            fragmentShader : "\
                     precision mediump float;\
                     uniform sampler2D u_image_a;\
                     uniform sampler2D u_image_b;\
@@ -927,16 +892,16 @@ export default class VideoContext{
                         color_b[3] *= (1.0 - mix);\
                         gl_FragColor = color_a + color_b;\
                     }",
-                properties:{
-                    "mix":{type:"uniform", value:0.0}
-                },
-                inputs:["u_image_a","u_image_b"]
+            properties:{
+                "mix":{type:"uniform", value:0.0}
+            },
+            inputs:["u_image_a","u_image_b"]
         };
 
         var combine ={
-                title:"Combine",
-                description: "A basic effect which renders the input to the output, Typically used as a combine node for layering up media with alpha transparency.",
-                vertexShader : "\
+            title:"Combine",
+            description: "A basic effect which renders the input to the output, Typically used as a combine node for layering up media with alpha transparency.",
+            vertexShader : "\
                     attribute vec2 a_position;\
                     attribute vec2 a_texCoord;\
                     varying vec2 v_texCoord;\
@@ -944,7 +909,7 @@ export default class VideoContext{
                         gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
                         v_texCoord = a_texCoord;\
                     }",
-                fragmentShader : "\
+            fragmentShader : "\
                     precision mediump float;\
                     uniform sampler2D u_image;\
                     uniform float a;\
@@ -954,16 +919,16 @@ export default class VideoContext{
                         vec4 color = texture2D(u_image, v_texCoord);\
                         gl_FragColor = color;\
                     }",
-                properties:{
-                    "a":{type:"uniform", value:0.0},
-                },
-                inputs:["u_image"]
+            properties:{
+                "a":{type:"uniform", value:0.0}
+            },
+            inputs:["u_image"]
         };
 
         var colorThreshold = {
-                title:"Color Threshold",
-                description: "Turns all pixels with a greater value than the specified threshold transparent.",
-                vertexShader : "\
+            title:"Color Threshold",
+            description: "Turns all pixels with a greater value than the specified threshold transparent.",
+            vertexShader : "\
                     attribute vec2 a_position;\
                     attribute vec2 a_texCoord;\
                     varying vec2 v_texCoord;\
@@ -971,7 +936,7 @@ export default class VideoContext{
                         gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
                         v_texCoord = a_texCoord;\
                     }",
-                fragmentShader : "\
+            fragmentShader : "\
                     precision mediump float;\
                     uniform sampler2D u_image;\
                     uniform float a;\
@@ -985,17 +950,17 @@ export default class VideoContext{
                         }\
                         gl_FragColor = color;\
                     }",
-                properties:{
-                    "a":{type:"uniform", value:0.0},
-                    "colorAlphaThreshold":{type:"uniform", value:[0.0,0.55,0.0]}
-                },
-                inputs:["u_image"]
-            };
+            properties:{
+                "a":{type:"uniform", value:0.0},
+                "colorAlphaThreshold":{type:"uniform", value:[0.0,0.55,0.0]}
+            },
+            inputs:["u_image"]
+        };
 
         var monochrome = {
-                title:"Monochrome",
-                description: "Change images to a single chroma (e.g can be used to make a black & white filter). Input color mix and output color mix can be adjusted.",
-                vertexShader : "\
+            title:"Monochrome",
+            description: "Change images to a single chroma (e.g can be used to make a black & white filter). Input color mix and output color mix can be adjusted.",
+            vertexShader : "\
                     attribute vec2 a_position;\
                     attribute vec2 a_texCoord;\
                     varying vec2 v_texCoord;\
@@ -1003,7 +968,7 @@ export default class VideoContext{
                         gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
                         v_texCoord = a_texCoord;\
                     }",
-                fragmentShader : "\
+            fragmentShader : "\
                     precision mediump float;\
                     uniform sampler2D u_image;\
                     uniform vec3 inputMix;\
@@ -1018,12 +983,12 @@ export default class VideoContext{
                         color[2] = mono * outputMix[2];\
                         gl_FragColor = color;\
                     }",
-                properties:{
-                    "inputMix":{type:"uniform", value:[0.4,0.6,0.2]},
-                    "outputMix":{type:"uniform", value:[1.0,1.0,1.0]}
-                },
-                inputs:["u_image"]
-            };
+            properties:{
+                "inputMix":{type:"uniform", value:[0.4,0.6,0.2]},
+                "outputMix":{type:"uniform", value:[1.0,1.0,1.0]}
+            },
+            inputs:["u_image"]
+        };
 
         var hoizontalBlur = {
             title:"Horizontal Blur",
@@ -1076,7 +1041,7 @@ export default class VideoContext{
                     gl_FragColor += texture2D(u_image, v_blurTexCoords[13])*0.0044299121055113265;\
                 }",
             properties:{
-                "blurAmount":{type:"uniform", value:1.0},
+                "blurAmount":{type:"uniform", value:1.0}
             },
             inputs:["u_image"]
         };
@@ -1132,7 +1097,7 @@ export default class VideoContext{
                     gl_FragColor += texture2D(u_image, v_blurTexCoords[13])*0.0044299121055113265;\
                 }",
             properties:{
-                "blurAmount":{type:"uniform", value:1.0},
+                "blurAmount":{type:"uniform", value:1.0}
             },
             inputs:["u_image"]
         };
