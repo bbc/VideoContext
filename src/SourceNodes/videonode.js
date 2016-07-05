@@ -26,7 +26,7 @@ export default class VideoNode extends SourceNode {
     }
 
     _load(){
-        //super._load();
+        super._load();
         if (this._element !== undefined){
 
             for (var key in this._attributes) {
@@ -55,7 +55,6 @@ export default class VideoNode extends SourceNode {
             this._element.setAttribute('webkit-playsinline', '');
             this._element.src = this._elementURL;
             this._playbackRateUpdated = true;
-            this._triggerCallbacks("load");
 
             for (var key in this._attributes) {
                 this._element[key] = this._attributes[key];

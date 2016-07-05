@@ -1652,7 +1652,7 @@ module.exports =
 	    _createClass(VideoNode, [{
 	        key: "_load",
 	        value: function _load() {
-	            //super._load();
+	            _get(Object.getPrototypeOf(VideoNode.prototype), "_load", this).call(this);
 	            if (this._element !== undefined) {
 
 	                for (var key in this._attributes) {
@@ -1680,7 +1680,7 @@ module.exports =
 	                this._element.setAttribute('webkit-playsinline', '');
 	                this._element.src = this._elementURL;
 	                this._playbackRateUpdated = true;
-	                this._triggerCallbacks("load");
+	                //this._triggerCallbacks("load");
 
 	                for (var key in this._attributes) {
 	                    this._element[key] = this._attributes[key];
@@ -1821,6 +1821,7 @@ module.exports =
 	        this._startTime = NaN;
 	        this._stopTime = Infinity;
 	        this._ready = false;
+	        this._loadCalled = false;
 	        this._texture = (0, _utilsJs.createElementTexutre)(gl);
 	        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 0]));
 	        this._callbacks = [];
@@ -1850,12 +1851,16 @@ module.exports =
 	    _createClass(SourceNode, [{
 	        key: "_load",
 	        value: function _load() {
-	            this._triggerCallbacks("load");
+	            if (!this._loadCalled) {
+	                this._triggerCallbacks("load");
+	                this._loadCalled = true;
+	            }
 	        }
 	    }, {
 	        key: "_destroy",
 	        value: function _destroy() {
 	            this._triggerCallbacks("destroy");
+	            this._loadCalled = false;
 	        }
 
 	        /**
