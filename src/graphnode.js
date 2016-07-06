@@ -1,5 +1,8 @@
 //Matthew Shotton, R&D User Experience,© BBC 2015
 export default class GraphNode {
+    /**
+    * Base class from which all processing and source nodes are derrived.
+    */
     constructor(gl, renderGraph, inputNames, limitConnections=false){
         this._renderGraph = renderGraph;
         this._limitConnections = limitConnections;

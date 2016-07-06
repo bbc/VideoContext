@@ -5,6 +5,10 @@ import GraphNode from "../graphnode";
 let STATE = {"waiting":0, "sequenced":1, "playing":2, "paused":3, "ended":4};
 
 export default class SourceNode extends GraphNode{
+    /**
+    * Initialise an instance of a SourceNode.
+    * This is the base class for other Nodes which generate media to be passed into the processing pipeline.
+    */
     constructor(src, gl, renderGraph, currentTime){
         super(gl,renderGraph, [], true);
         this._element = undefined;

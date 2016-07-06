@@ -2,6 +2,10 @@
 import SourceNode, { SOURCENODESTATE } from "./sourcenode";
 
 export default class ImageNode extends SourceNode {
+    /**
+    * Initialise an instance of an ImageNode.
+    * This should not be called directly, but created through a call to videoContext.createImageNode();
+    */
     constructor(src, gl, renderGraph, currentTime, preloadTime = 4){
         super(src, gl, renderGraph, currentTime);
         this._preloadTime = preloadTime;

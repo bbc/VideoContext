@@ -2,6 +2,10 @@
 import SourceNode, { SOURCENODESTATE } from "./sourcenode";
 
 export default class CanvasNode extends SourceNode {
+    /**
+    * Initialise an instance of a CanvasNode.
+    * This should not be called directly, but created through a call to videoContext.createCanvasNode();
+    */
     constructor(canvas, gl, renderGraph, currentTime, preloadTime = 4){
         super(canvas, gl, renderGraph, currentTime);
         this._preloadTime = preloadTime;
