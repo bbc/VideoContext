@@ -2877,7 +2877,9 @@ var VideoContext =
 	    _inherits(ImageNode, _SourceNode);
 
 	    function ImageNode(src, gl, renderGraph, currentTime) {
-	        var preloadTime = arguments.length <= 4 || arguments[4] === undefined ? 4 : arguments[4];
+			var playbackRate = arguments.length <= 4 || arguments[4] === undefined ? 1 : arguments[4];
+			var sourceOffset = arguments.length <= 5 || arguments[5] === undefined ? 0 : arguments[5];
+	        var preloadTime = arguments.length <= 6 || arguments[6] === undefined ? 4 : arguments[6];
 
 	        _classCallCheck(this, ImageNode);
 
