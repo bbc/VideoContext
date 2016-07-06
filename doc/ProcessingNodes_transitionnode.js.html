@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: ProcessingNodes/transitionnode.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: ProcessingNodes/transitionnode.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>//Matthew Shotton, R&amp;D User Experience,© BBC 2015
+import EffectNode from "./effectnode";
+
+export default class TransitionNode extends EffectNode{
+    /**
+    * Initialise an instance of a TransitionNode. You should not instantiate this directly, but use VideoContest.createTransitonNode().
+    */
+    constructor(gl, renderGraph, definition){
+        super(gl, renderGraph, definition);
+        this._transitions = {};
+        
+        //save a version of the original property values
+        this._initialPropertyValues = {};
+        for (let propertyName in this._properties){
+            this._initialPropertyValues[propertyName] = this._properties[propertyName].value;
+        }
+    }
+
+    _doesTransitionFitOnTimeline(testTransition){
+        if (this._transitions[testTransition.property] === undefined) return true;
+        for (let transition of this._transitions[testTransition.property]) {
+            if (testTransition.start > transition.start &amp;&amp; testTransition.start &lt; transition.end)return false;
+            if (testTransition.end > transition.start &amp;&amp; testTransition.end &lt; transition.end)return false;
+            if(transition.start > testTransition.start &amp;&amp; transition.start &lt;  testTransition.end) return false;
+            if(transition.end > testTransition.start &amp;&amp; transition.end &lt;  testTransition.end) return false;
+        }
+        return true;
+    }
+
+    _insertTransitionInTimeline(transition){
+        if (this._transitions[transition.property] === undefined) this._transitions[transition.property] = [];
+        this._transitions[transition.property].push(transition);
+
+        this._transitions[transition.property].sort(function(a,b){
+            return a.start - b.start;
+        });
+    }
+
+    /**
+    * Create a transition on the timeline.
+    * 
+    * @param {number} startTime - The time at which the transition should start (relative to currentTime of video context).
+    * @param {number} endTime - The time at which the transition should be completed by (relative to currentTime of video context).
+    * @param {number} currentValue - The value to start the transition at.
+    * @param {number} targetValue - The value to transition to by endTime.
+    * @param {String} propertyName - The name of the property to clear transitions on, if undefined default to "mix".
+    */
+    transition(startTime, endTime, currentValue, targetValue, propertyName="mix"){
+        let transition = {start:startTime + this._currentTime, end:endTime + this._currentTime, current:currentValue, target:targetValue, property:propertyName};
+        if (!this._doesTransitionFitOnTimeline(transition))return false;
+        this._insertTransitionInTimeline(transition);
+    }
+
+    /**
+    * Clear all transistions on the passed property. If no property is defined clear all transitions on the node.
+    * 
+    * @param {String} propertyName - The name of the property to clear transitions on, if undefined clear all transitions on the node.
+    */
+    clearTransitions(propertyName){
+        if (propertyName === undefined){
+            this._transitions = {};
+        }else{
+            this._transitions[propertyName] = [];
+        }
+    }
+    
+    _update(currentTime){
+        super._update(currentTime);
+        for (let propertyName in this._transitions){
+            let value = this[propertyName];
+            if (this._transitions[propertyName].length > 0){
+                value = this._transitions[propertyName][0].current;
+            }
+            let transitionActive = false;
+
+            for (var i = 0; i &lt; this._transitions[propertyName].length; i++) {
+                let transition = this._transitions[propertyName][i];
+                if (currentTime > transition.end){
+                    value = transition.target;
+                    continue;
+                }
+
+                if (currentTime > transition.start &amp;&amp; currentTime &lt; transition.end){
+                    let difference = transition.target - transition.current;
+                    let progress = (this._currentTime - transition.start)/(transition.end - transition.start);
+                    transitionActive = true;
+                    this[propertyName] = transition.current + (difference * progress);
+                    break;
+                }
+            }
+
+            if(!transitionActive)this[propertyName] = value;
+        }
+    }
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="CanvasNode.html">CanvasNode</a></li><li><a href="CompositingNode.html">CompositingNode</a></li><li><a href="DestinationNode.html">DestinationNode</a></li><li><a href="EffectNode.html">EffectNode</a></li><li><a href="GraphNode.html">GraphNode</a></li><li><a href="ImageNode.html">ImageNode</a></li><li><a href="ProcessingNode.html">ProcessingNode</a></li><li><a href="RenderGraph.html">RenderGraph</a></li><li><a href="SourceNode.html">SourceNode</a></li><li><a href="TransitionNode.html">TransitionNode</a></li><li><a href="VideoContext.html">VideoContext</a></li><li><a href="VideoNode.html">VideoNode</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Wed Jul 06 2016 12:10:08 GMT+0100 (BST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
