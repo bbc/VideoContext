@@ -11,6 +11,7 @@ export default class VideoNode extends SourceNode {
         this._playbackRateUpdated = true;
         this._attributes = attributes;
         this._loopElement = false;
+        this._isElementPlaying = false;
         if (this._attributes.loop){
             this._loopElement = this._attributes.loop;
         }
@@ -19,6 +20,17 @@ export default class VideoNode extends SourceNode {
     set playbackRate(playbackRate){
         this._playbackRate = playbackRate;
         this._playbackRateUpdated = true;
+    }
+
+    set stretchPaused(stretchPaused){
+        super.stretchPaused = stretchPaused;
+        if (this._stretchPaused){
+            this._element.pause();
+        } else{
+            if(this._state === SOURCENODESTATE.playing){
+                this._element.play();
+            }
+        }
     }
 
     get playbackRate(){
@@ -105,14 +117,19 @@ export default class VideoNode extends SourceNode {
                 this._element.playbackRate = this._globalPlaybackRate * this._playbackRate;
                 this._playbackRateUpdated = false;
             }
-            this._element.play();
+            if (!this._isElementPlaying){
+                this._element.play();
+                this._isElementPlaying = true;
+            }
             return true;
         } else if (this._state === SOURCENODESTATE.paused){
             this._element.pause();
+            this._isElementPlaying = false;
             return true;
         }
         else if (this._state === SOURCENODESTATE.ended && this._element !== undefined){
             this._element.pause();
+            this._isElementPlaying = false;
             this._destroy();
             return false;
         }
@@ -120,7 +137,10 @@ export default class VideoNode extends SourceNode {
 
     clearTimelineState(){
         super.clearTimelineState();
-        if (this._element !== undefined) this._element.pause();
+        if (this._element !== undefined) {
+            this._element.pause();
+            this._isElementPlaying = false;
+        }
         this._destroy();
     }
 

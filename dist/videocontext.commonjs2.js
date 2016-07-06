@@ -1487,6 +1487,8 @@ module.exports =
 
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
+	var _set = function set(object, property, value, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent !== null) { set(parent, property, value, receiver); } } else if ("value" in desc && desc.writable) { desc.value = value; } else { var setter = desc.set; if (setter !== undefined) { setter.call(receiver, value); } } return value; };
+
 	var _get = function get(_x5, _x6, _x7) { var _again = true; _function: while (_again) { var object = _x5, property = _x6, receiver = _x7; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x5 = parent; _x6 = property; _x7 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
@@ -1518,6 +1520,7 @@ module.exports =
 	        this._playbackRateUpdated = true;
 	        this._attributes = attributes;
 	        this._loopElement = false;
+	        this._isElementPlaying = false;
 	        if (this._attributes.loop) {
 	            this._loopElement = this._attributes.loop;
 	        }
@@ -1606,13 +1609,18 @@ module.exports =
 	                    this._element.playbackRate = this._globalPlaybackRate * this._playbackRate;
 	                    this._playbackRateUpdated = false;
 	                }
-	                this._element.play();
+	                if (!this._isElementPlaying) {
+	                    this._element.play();
+	                    this._isElementPlaying = true;
+	                }
 	                return true;
 	            } else if (this._state === _sourcenode.SOURCENODESTATE.paused) {
 	                this._element.pause();
+	                this._isElementPlaying = false;
 	                return true;
 	            } else if (this._state === _sourcenode.SOURCENODESTATE.ended && this._element !== undefined) {
 	                this._element.pause();
+	                this._isElementPlaying = false;
 	                this._destroy();
 	                return false;
 	            }
@@ -1621,7 +1629,10 @@ module.exports =
 	        key: "clearTimelineState",
 	        value: function clearTimelineState() {
 	            _get(Object.getPrototypeOf(VideoNode.prototype), "clearTimelineState", this).call(this);
-	            if (this._element !== undefined) this._element.pause();
+	            if (this._element !== undefined) {
+	                this._element.pause();
+	                this._isElementPlaying = false;
+	            }
 	            this._destroy();
 	        }
 	    }, {
@@ -1632,6 +1643,18 @@ module.exports =
 	        },
 	        get: function get() {
 	            return this._playbackRate;
+	        }
+	    }, {
+	        key: "stretchPaused",
+	        set: function set(stretchPaused) {
+	            _set(Object.getPrototypeOf(VideoNode.prototype), "stretchPaused", stretchPaused, this);
+	            if (this._stretchPaused) {
+	                this._element.pause();
+	            } else {
+	                if (this._state === _sourcenode.SOURCENODESTATE.playing) {
+	                    this._element.play();
+	                }
+	            }
 	        }
 	    }]);
 
@@ -1695,6 +1718,7 @@ module.exports =
 	        this._stopTime = Infinity;
 	        this._ready = false;
 	        this._loadCalled = false;
+	        this._stretchPaused = false;
 	        this._texture = (0, _utilsJs.createElementTexutre)(gl);
 	        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 0]));
 	        this._callbacks = [];
@@ -1924,6 +1948,7 @@ module.exports =
 	                return false;
 	            }
 	            this._stopTime = this._currentTime + time;
+	            this._stretchPaused = false;
 	            this._triggerCallbacks("durationchange", this.duration);
 	            return true;
 	        }
@@ -1949,6 +1974,7 @@ module.exports =
 	                return false;
 	            }
 	            this._stopTime = time;
+	            this._stretchPaused = false;
 	            this._triggerCallbacks("durationchange", this.duration);
 	            return true;
 	        }
@@ -2003,6 +2029,7 @@ module.exports =
 	        key: "_update",
 	        value: function _update(currentTime) {
 	            this._rendered = true;
+	            var timeDelta = currentTime - this._currentTime;
 
 	            //update the current time
 	            this._currentTime = currentTime;
@@ -2033,6 +2060,9 @@ module.exports =
 
 	            if (this._state === STATE.playing) {
 	                (0, _utilsJs.updateTexture)(this._gl, this._texture, this._element);
+	                if (this._stretchPaused) {
+	                    this._stopTime += timeDelta;
+	                }
 	            }
 
 	            return true;
@@ -2105,6 +2135,14 @@ module.exports =
 	            if (isNaN(this._startTime)) return undefined;
 	            if (this._stopTime === Infinity) return Infinity;
 	            return this._stopTime - this._startTime;
+	        }
+	    }, {
+	        key: "stretchPaused",
+	        set: function set(stretchPaused) {
+	            this._stretchPaused = stretchPaused;
+	        },
+	        get: function get() {
+	            return this._stretchPaused;
 	        }
 	    }]);
 

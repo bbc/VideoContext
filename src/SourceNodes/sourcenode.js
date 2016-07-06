@@ -25,6 +25,7 @@ export default class SourceNode extends GraphNode{
         this._stopTime = Infinity;
         this._ready = false;
         this._loadCalled = false;
+        this._stretchPaused = false;
         this._texture = createElementTexutre(gl);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0,0,0,0]));
         this._callbacks = [];
@@ -103,6 +104,14 @@ export default class SourceNode extends GraphNode{
         if (isNaN(this._startTime)) return undefined;
         if (this._stopTime === Infinity) return Infinity;
         return this._stopTime - this._startTime;
+    }
+
+    set stretchPaused(stretchPaused){
+        this._stretchPaused = stretchPaused;
+    }
+
+    get stretchPaused(){
+        return this._stretchPaused;
     }
 
     _load(){
@@ -230,6 +239,7 @@ export default class SourceNode extends GraphNode{
             return false;
         }
         this._stopTime = this._currentTime + time;
+        this._stretchPaused = false;
         this._triggerCallbacks("durationchange", this.duration);
         return true;
     }
@@ -253,6 +263,7 @@ export default class SourceNode extends GraphNode{
             return false;
         }
         this._stopTime = time;
+        this._stretchPaused = false;
         this._triggerCallbacks("durationchange", this.duration);
         return true;
     }
@@ -301,6 +312,7 @@ export default class SourceNode extends GraphNode{
 
     _update(currentTime){
         this._rendered = true;
+        let timeDelta = currentTime - this._currentTime; 
 
         //update the current time
         this._currentTime = currentTime;
@@ -332,6 +344,9 @@ export default class SourceNode extends GraphNode{
         
         if(this._state === STATE.playing){
             updateTexture(this._gl, this._texture, this._element);
+            if(this._stretchPaused){
+                this._stopTime += timeDelta;
+            }
         }
 
         return true;
