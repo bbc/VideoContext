@@ -442,7 +442,7 @@ var VideoContext =
 	            var sourceOffset = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
 	            var preloadTime = arguments.length <= 2 || arguments[2] === undefined ? 4 : arguments[2];
 
-	            var imageNode = new _SourceNodesImagenodeJs2["default"](src, this._gl, this._renderGraph, this._currentTime, this._playbackRate, sourceOffset, preloadTime);
+	            var imageNode = new _SourceNodesImagenodeJs2["default"](src, this._gl, this._renderGraph, this._currentTime, preloadTime);
 	            this._sourceNodes.push(imageNode);
 	            return imageNode;
 	        }
@@ -458,7 +458,7 @@ var VideoContext =
 	            var sourceOffset = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
 	            var preloadTime = arguments.length <= 2 || arguments[2] === undefined ? 4 : arguments[2];
 
-	            var canvasNode = new _SourceNodesCanvasnodeJs2["default"](canvas, this._gl, this._renderGraph, this._currentTime, this._playbackRate, sourceOffset, preloadTime);
+	            var canvasNode = new _SourceNodesCanvasnodeJs2["default"](canvas, this._gl, this._renderGraph, this._currentTime, preloadTime);
 	            this._sourceNodes.push(canvasNode);
 	            return canvasNode;
 	        }
