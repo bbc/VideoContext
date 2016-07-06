@@ -5,7 +5,7 @@
 		<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<script type="text/javascript" src="https://cdn.rawgit.com/bbc/VideoContext/master/dist/videocontext.js"></script>
-	<script type="text/javascript" src="../../js/utils.js"></script>
+	<script type="text/javascript" src="../js/utils.js"></script>
 	<style type="text/css">
 	.credits,a {
 		color: #bbb;
@@ -20,7 +20,7 @@
 			var canvas = document.getElementById("canvas");
 			var videoContext = new VideoContext(canvas);
 
-			var videoNode = videoContext.createVideoSourceNode("../../assets/introductions-rant.mp4", 0, 4, {volume:0.2, loop:true})
+			var videoNode = videoContext.createVideoSourceNode("../assets/introductions-rant.mp4", 0, 4, {volume:0.2, loop:true})
 			videoNode.startAt(0);
 			
 
@@ -67,7 +67,7 @@
 				videoNode.connect(videoContext.destination);
 			};
 
-			//Set-up the visualisation using the convienience function in ../../js/utils.js
+			//Set-up the visualisation using the convienience function in ../js/utils.js
 			InitVisualisations(videoContext, "graph-canvas", "visualisation-canvas");
 		}
 	</script>
