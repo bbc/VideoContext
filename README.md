@@ -8,6 +8,9 @@ It consist of two main components. A graph based, shader accelerated processing 
 The design is heavily inspired by the WebAudioAPI so should feel familiar to use for people who've had previous experience in the WebAudio world. 
 
 
+[Live examples can be found here](http://bbc.github.io/VideoContext/)
+
+
 ## Demo
 
 ``` JavaScript
