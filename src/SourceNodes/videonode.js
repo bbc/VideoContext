@@ -56,9 +56,12 @@ export default class VideoNode extends SourceNode {
                         this._triggerCallbacks("durationchange", this.duration);
                     }                
                 }
-                if(this._ready !== true) this._triggerCallbacks("loaded");
+                if(this._ready !== true){
+                    this._triggerCallbacks("loaded");
+                    this._playbackRateUpdated = true;
+                }
+
                 this._ready = true;
-                this._playbackRateUpdated = true;
 
             } else{
                 this._ready = false;

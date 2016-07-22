@@ -1504,6 +1504,11 @@ var VideoContext =
 	var VideoNode = (function (_SourceNode) {
 	    _inherits(VideoNode, _SourceNode);
 
+	    /**
+	    * Initialise an instance of a VideoNode.
+	    * This should not be called directly, but created through a call to videoContext.createVideoNode();
+	    */
+
 	    function VideoNode(src, gl, renderGraph, currentTime) {
 	        var globalPlaybackRate = arguments.length <= 4 || arguments[4] === undefined ? 1.0 : arguments[4];
 	        var sourceOffset = arguments.length <= 5 || arguments[5] === undefined ? 0 : arguments[5];
@@ -1543,9 +1548,12 @@ var VideoContext =
 	                            this._triggerCallbacks("durationchange", this.duration);
 	                        }
 	                    }
-	                    if (this._ready !== true) this._triggerCallbacks("loaded");
+	                    if (this._ready !== true) {
+	                        this._triggerCallbacks("loaded");
+	                        this._playbackRateUpdated = true;
+	                    }
+
 	                    this._ready = true;
-	                    this._playbackRateUpdated = true;
 	                } else {
 	                    this._ready = false;
 	                }
@@ -1695,6 +1703,11 @@ var VideoContext =
 
 	var SourceNode = (function (_GraphNode) {
 	    _inherits(SourceNode, _GraphNode);
+
+	    /**
+	    * Initialise an instance of a SourceNode.
+	    * This is the base class for other Nodes which generate media to be passed into the processing pipeline.
+	    */
 
 	    function SourceNode(src, gl, renderGraph, currentTime) {
 	        _classCallCheck(this, SourceNode);
@@ -2741,6 +2754,10 @@ var VideoContext =
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	var GraphNode = (function () {
+	    /**
+	    * Base class from which all processing and source nodes are derrived.
+	    */
+
 	    function GraphNode(gl, renderGraph, inputNames) {
 	        var limitConnections = arguments.length <= 3 || arguments[3] === undefined ? false : arguments[3];
 
@@ -2876,6 +2893,11 @@ var VideoContext =
 	var ImageNode = (function (_SourceNode) {
 	    _inherits(ImageNode, _SourceNode);
 
+	    /**
+	    * Initialise an instance of an ImageNode.
+	    * This should not be called directly, but created through a call to videoContext.createImageNode();
+	    */
+
 	    function ImageNode(src, gl, renderGraph, currentTime) {
 	        var preloadTime = arguments.length <= 4 || arguments[4] === undefined ? 4 : arguments[4];
 
@@ -2981,6 +3003,11 @@ var VideoContext =
 
 	var CanvasNode = (function (_SourceNode) {
 	    _inherits(CanvasNode, _SourceNode);
+
+	    /**
+	    * Initialise an instance of a CanvasNode.
+	    * This should not be called directly, but created through a call to videoContext.createCanvasNode();
+	    */
 
 	    function CanvasNode(canvas, gl, renderGraph, currentTime) {
 	        var preloadTime = arguments.length <= 4 || arguments[4] === undefined ? 4 : arguments[4];
@@ -3782,6 +3809,10 @@ var VideoContext =
 	var _exceptionsJs = __webpack_require__(9);
 
 	var RenderGraph = (function () {
+	    /**
+	    * Manages the rendering graph.
+	    */
+
 	    function RenderGraph() {
 	        _classCallCheck(this, RenderGraph);
 
@@ -3998,7 +4029,7 @@ var VideoContext =
 	        * 
 	        * @param {GraphNode} sourceNode - the node to connect from.
 	        * @param {GraphNode} destinationNode - the node to connect to.
-	        * @param {(String || number)} [target] - the target port of the conenction, this could be a string to specfiy a specific named port, a number to specify a port by index, or undefined, in which case the next available port will be connected to.
+	        * @param {(String | number)} [target] - the target port of the conenction, this could be a string to specfiy a specific named port, a number to specify a port by index, or undefined, in which case the next available port will be connected to.
 	        * @return {boolean} Will return true if connection succeeds otherwise will throw a ConnectException.
 	        */
 	    }, {
