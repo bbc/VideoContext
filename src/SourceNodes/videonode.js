@@ -37,6 +37,10 @@ export default class VideoNode extends SourceNode {
         }
     }
 
+    get stretchPaused(){
+        return this._stretchPaused;
+    }
+
     get playbackRate(){
         return this._playbackRate;
     }

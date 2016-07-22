@@ -1663,6 +1663,9 @@ var VideoContext =
 	                    this._element.play();
 	                }
 	            }
+	        },
+	        get: function get() {
+	            return this._stretchPaused;
 	        }
 	    }]);
 
