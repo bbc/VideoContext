@@ -49,6 +49,7 @@ export default class TransitionNode extends EffectNode{
         let transition = {start:startTime + this._currentTime, end:endTime + this._currentTime, current:currentValue, target:targetValue, property:propertyName};
         if (!this._doesTransitionFitOnTimeline(transition))return false;
         this._insertTransitionInTimeline(transition);
+        return true;
     }
 
     /**
@@ -64,6 +65,27 @@ export default class TransitionNode extends EffectNode{
         }
     }
     
+    /**
+    * Clear a transistion on the passed property that the specified time lies within.
+    * 
+    * @param {String} propertyName - The name of the property to clear a transition on.
+    * @param {number} time - A time which lies within the property you're trying to clear.
+    */
+    clearTransition(propertyName, time){
+        let transitionIndex = undefined;
+        for (var i = 0; i < this._transitions[propertyName].length; i++) {
+            let transition = this._transitions[propertyName][i];
+            if (time > transition.start && time < transition.end){
+                transitionIndex = i;
+            }
+        }
+        if(transitionIndex !== undefined){
+            this._transitions[propertyName].splice(transitionIndex, 1);
+            return true;
+        }
+        return false;
+    }
+
     _update(currentTime){
         super._update(currentTime);
         for (let propertyName in this._transitions){

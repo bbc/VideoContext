@@ -134,7 +134,6 @@ export default class VideoNode extends SourceNode {
             if (!this._isElementPlaying){ 
                 this._element.play();
                 if (this._stretchPaused){
-                    console.log("STRTCH PAUSING!!!");
                     this._element.pause();
                 }
                 this._isElementPlaying = true;

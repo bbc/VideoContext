@@ -1620,7 +1620,6 @@ module.exports =
 	                if (!this._isElementPlaying) {
 	                    this._element.play();
 	                    if (this._stretchPaused) {
-	                        console.log("STRTCH PAUSING!!!");
 	                        this._element.pause();
 	                    }
 	                    this._isElementPlaying = true;
@@ -3746,6 +3745,7 @@ module.exports =
 	            var transition = { start: startTime + this._currentTime, end: endTime + this._currentTime, current: currentValue, target: targetValue, property: propertyName };
 	            if (!this._doesTransitionFitOnTimeline(transition)) return false;
 	            this._insertTransitionInTimeline(transition);
+	            return true;
 	        }
 
 	        /**
@@ -3761,6 +3761,29 @@ module.exports =
 	            } else {
 	                this._transitions[propertyName] = [];
 	            }
+	        }
+
+	        /**
+	        * Clear a transistion on the passed property that the specified time lies within.
+	        * 
+	        * @param {String} propertyName - The name of the property to clear a transition on.
+	        * @param {number} time - A time which lies within the property you're trying to clear.
+	        */
+	    }, {
+	        key: "clearTransition",
+	        value: function clearTransition(propertyName, time) {
+	            var transitionIndex = undefined;
+	            for (var i = 0; i < this._transitions[propertyName].length; i++) {
+	                var transition = this._transitions[propertyName][i];
+	                if (time > transition.start && time < transition.end) {
+	                    transitionIndex = i;
+	                }
+	            }
+	            if (transitionIndex !== undefined) {
+	                this._transitions[propertyName].splice(transitionIndex, 1);
+	                return true;
+	            }
+	            return false;
 	        }
 	    }, {
 	        key: "_update",
