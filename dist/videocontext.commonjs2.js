@@ -1619,6 +1619,10 @@ module.exports =
 	                }
 	                if (!this._isElementPlaying) {
 	                    this._element.play();
+	                    if (this._stretchPaused) {
+	                        console.log("STRTCH PAUSING!!!");
+	                        this._element.pause();
+	                    }
 	                    this._isElementPlaying = true;
 	                }
 	                return true;
@@ -1656,11 +1660,13 @@ module.exports =
 	        key: "stretchPaused",
 	        set: function set(stretchPaused) {
 	            _set(Object.getPrototypeOf(VideoNode.prototype), "stretchPaused", stretchPaused, this);
-	            if (this._stretchPaused) {
-	                this._element.pause();
-	            } else {
-	                if (this._state === _sourcenode.SOURCENODESTATE.playing) {
-	                    this._element.play();
+	            if (this._element) {
+	                if (this._stretchPaused) {
+	                    this._element.pause();
+	                } else {
+	                    if (this._state === _sourcenode.SOURCENODESTATE.playing) {
+	                        this._element.play();
+	                    }
 	                }
 	            }
 	        },

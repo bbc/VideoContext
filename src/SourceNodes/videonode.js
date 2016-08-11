@@ -28,12 +28,14 @@ export default class VideoNode extends SourceNode {
 
     set stretchPaused(stretchPaused){
         super.stretchPaused = stretchPaused;
-        if (this._stretchPaused){
-            this._element.pause();
-        } else{
-            if(this._state === SOURCENODESTATE.playing){
-                this._element.play();
-            }
+        if(this._element){
+            if (this._stretchPaused){
+                this._element.pause();
+            } else{
+                if(this._state === SOURCENODESTATE.playing){
+                    this._element.play();
+                }
+            }    
         }
     }
 
@@ -63,6 +65,7 @@ export default class VideoNode extends SourceNode {
                 if(this._ready !== true){
                     this._triggerCallbacks("loaded");
                     this._playbackRateUpdated = true;
+
                 }
 
                 this._ready = true;
@@ -128,8 +131,12 @@ export default class VideoNode extends SourceNode {
                 this._element.playbackRate = this._globalPlaybackRate * this._playbackRate;
                 this._playbackRateUpdated = false;
             }
-            if (!this._isElementPlaying){
+            if (!this._isElementPlaying){ 
                 this._element.play();
+                if (this._stretchPaused){
+                    console.log("STRTCH PAUSING!!!");
+                    this._element.pause();
+                }
                 this._isElementPlaying = true;
             }
             return true;
