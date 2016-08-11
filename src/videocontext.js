@@ -51,6 +51,8 @@ export default class VideoContext{
             return;
         }
 
+        this.endOnLastSourceEnd = true;
+
         this._renderGraph = new RenderGraph();
         this._sourceNodes = [];
         this._processingNodes = [];
@@ -633,7 +635,7 @@ export default class VideoContext{
 
 
                 this._currentTime += dt * this._playbackRate;
-                if(this._currentTime > this.duration){
+                if(this._currentTime > this.duration && this._endOnLastSourceEnd){
                     this._callCallbacks("ended");
                     this._state = VideoContext.STATE.ENDED;
                 }
