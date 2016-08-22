@@ -441,3 +441,110 @@ export function visualiseVideoContextTimeline(videoContext, canvas, currentTime)
         ctx.fillRect(currentTime*pixelsPerSecond, 0, 1, h);
     }
 }
+
+
+
+
+export class UpdateablesManager{
+    constructor(){
+        this._updateables = [];
+        this._useWebworker = false;
+        this._active = false;
+        this._previousRAFTime = undefined;
+        this._previousWorkerTime = undefined;
+
+        this._webWorkerString = "\
+            var running = false;\
+            function tick(){\
+                postMessage(Date.now());\
+                if (running){\
+                    setTimeout(tick, 1000/20);\
+                }\
+            }\
+            self.addEventListener('message',function(msg){\
+                var data = msg.data;\
+                if (data === 'start'){\
+                    running = true;\
+                    tick();\
+                }\
+                if (data === 'stop') running = false;\
+            });";
+        this._webWorker = undefined;
+    }
+
+    _initWebWorker(){
+        window.URL = window.URL || window.webkitURL;
+        let blob = new Blob([this._webWorkerString], {type: "application/javascript"});
+        this._webWorker = new Worker(URL.createObjectURL(blob));
+        this._webWorker.onmessage = (msg)=>{
+            let time = msg.data;
+            this._updateWorkerTime(time);
+        };
+    }
+
+    _lostVisibility(){
+        this._previousWorkerTime = Date.now();
+        this._useWebworker = true;
+        if (!this._webWorker){
+            this._initWebWorker();
+        }
+        this._webWorker.postMessage("start");
+    }
+
+    _gainedVisibility(){
+        this._useWebworker = false;
+        this._previousRAFTime = undefined;
+        if(this._webWorker) this._webWorker.postMessage("stop");
+        requestAnimationFrame(this._updateRAFTime.bind(this));
+    }
+
+    _init(){
+        if(!window.Worker)return;
+
+        //If page visibility API not present fallback to using "focus" and "blur" event listeners.
+        if (typeof document.hidden === "undefined") {
+            window.addEventListener("focus", this._gainedVisibility.bind(this));
+            window.addEventListener("blur", this._lostVisibility.bind(this));
+            return;
+        }
+        //Otherwise we can use the visibility API to do the loose/gain focus properly
+        document.addEventListener("visibilitychange", ()=>{
+            if (document.hidden === true) {
+                this._lostVisibility();
+            } else {
+                this._gainedVisibility();
+            }
+        }, false);
+
+        requestAnimationFrame(this._updateRAFTime.bind(this));
+    }
+
+    _updateWorkerTime(time){
+        let dt = (time - this._previousWorkerTime) / 1000;
+        if (dt !== 0) this._update(dt);
+        this._previousWorkerTime = time;
+    }
+
+    _updateRAFTime(time){
+        if (this._previousRAFTime === undefined)this._previousRAFTime = time;
+        let dt = (time - this._previousRAFTime) / 1000;
+        if (dt !== 0) this._update(dt);
+        this._previousRAFTime = time;
+        if(!this._useWebworker)requestAnimationFrame(this._updateRAFTime.bind(this));
+    }
+
+    _update(dt){
+        for(let i = 0; i < this._updateables.length; i++){
+            this._updateables[i]._update(parseFloat(dt));
+
+        }
+    }
+
+    register(updateable){
+        this._updateables.push(updateable);
+        if (this._active === false){
+            this._active = true;
+            this._init();
+        }
+    }
+}

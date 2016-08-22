@@ -9,24 +9,10 @@ import DestinationNode from "./DestinationNode/destinationnode.js";
 import EffectNode from "./ProcessingNodes/effectnode.js";
 import TransitionNode from "./ProcessingNodes/transitionnode.js";
 import RenderGraph from "./rendergraph.js";
-import { createSigmaGraphDataFromRenderGraph, visualiseVideoContextTimeline, visualiseVideoContextGraph, createControlFormForNode } from "./utils.js";
+import { createSigmaGraphDataFromRenderGraph, visualiseVideoContextTimeline, visualiseVideoContextGraph, createControlFormForNode, UpdateablesManager } from "./utils.js";
 
-let updateables = [];
-let previousTime;
-function registerUpdateable(updateable){
-    updateables.push(updateable);
-}
-function update(time){
-    if (previousTime === undefined) previousTime = time;
-    let dt = (time - previousTime)/1000;
-    for(let i = 0; i < updateables.length; i++){
-        updateables[i]._update(dt);
-    }
-    previousTime = time;
-    requestAnimationFrame(update);
-}
-update();
 
+let updateablesManager = new UpdateablesManager();
 
 export default class VideoContext{
     /**
@@ -83,7 +69,7 @@ export default class VideoContext{
         this._timelineCallbacks = [];
 
         if(!manualUpdate){
-            registerUpdateable(this);
+            updateablesManager.register(this);
         }
     }
 

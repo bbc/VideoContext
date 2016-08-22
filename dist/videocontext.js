@@ -95,21 +95,7 @@ var VideoContext =
 	
 	var _utilsJs = __webpack_require__(3);
 	
-	var updateables = [];
-	var previousTime = undefined;
-	function registerUpdateable(updateable) {
-	    updateables.push(updateable);
-	}
-	function update(time) {
-	    if (previousTime === undefined) previousTime = time;
-	    var dt = (time - previousTime) / 1000;
-	    for (var i = 0; i < updateables.length; i++) {
-	        updateables[i]._update(dt);
-	    }
-	    previousTime = time;
-	    requestAnimationFrame(update);
-	}
-	update();
+	var updateablesManager = new _utilsJs.UpdateablesManager();
 	
 	var VideoContext = (function () {
 	    /**
@@ -169,7 +155,7 @@ var VideoContext =
 	        this._timelineCallbacks = [];
 	
 	        if (!manualUpdate) {
-	            registerUpdateable(this);
+	            updateablesManager.register(this);
 	        }
 	    }
 	
@@ -2237,6 +2223,9 @@ var VideoContext =
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
+	
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	
 	exports.compileShader = compileShader;
 	exports.createShaderProgram = createShaderProgram;
 	exports.createElementTexutre = createElementTexutre;
@@ -2246,6 +2235,8 @@ var VideoContext =
 	exports.visualiseVideoContextGraph = visualiseVideoContextGraph;
 	exports.createSigmaGraphDataFromRenderGraph = createSigmaGraphDataFromRenderGraph;
 	exports.visualiseVideoContextTimeline = visualiseVideoContextTimeline;
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	function compileShader(gl, shaderSource, shaderType) {
 	    var shader = gl.createShader(shaderType);
@@ -2790,6 +2781,129 @@ var VideoContext =
 	        ctx.fillRect(currentTime * pixelsPerSecond, 0, 1, h);
 	    }
 	}
+	
+	var UpdateablesManager = (function () {
+	    function UpdateablesManager() {
+	        _classCallCheck(this, UpdateablesManager);
+	
+	        this._updateables = [];
+	        this._useWebworker = false;
+	        this._active = false;
+	        this._previousRAFTime = undefined;
+	        this._previousWorkerTime = undefined;
+	
+	        this._webWorkerString = "\
+	            var running = false;\
+	            function tick(){\
+	                postMessage(Date.now());\
+	                if (running){\
+	                    setTimeout(tick, 1000/20);\
+	                }\
+	            }\
+	            self.addEventListener('message',function(msg){\
+	                var data = msg.data;\
+	                if (data === 'start'){\
+	                    running = true;\
+	                    tick();\
+	                }\
+	                if (data === 'stop') running = false;\
+	            });";
+	        this._webWorker = undefined;
+	    }
+	
+	    _createClass(UpdateablesManager, [{
+	        key: "_initWebWorker",
+	        value: function _initWebWorker() {
+	            var _this = this;
+	
+	            window.URL = window.URL || window.webkitURL;
+	            var blob = new Blob([this._webWorkerString], { type: "application/javascript" });
+	            this._webWorker = new Worker(URL.createObjectURL(blob));
+	            this._webWorker.onmessage = function (msg) {
+	                var time = msg.data;
+	                _this._updateWorkerTime(time);
+	            };
+	        }
+	    }, {
+	        key: "_lostVisibility",
+	        value: function _lostVisibility() {
+	            this._previousWorkerTime = Date.now();
+	            this._useWebworker = true;
+	            if (!this._webWorker) {
+	                this._initWebWorker();
+	            }
+	            this._webWorker.postMessage("start");
+	        }
+	    }, {
+	        key: "_gainedVisibility",
+	        value: function _gainedVisibility() {
+	            this._useWebworker = false;
+	            this._previousRAFTime = undefined;
+	            if (this._webWorker) this._webWorker.postMessage("stop");
+	            requestAnimationFrame(this._updateRAFTime.bind(this));
+	        }
+	    }, {
+	        key: "_init",
+	        value: function _init() {
+	            var _this2 = this;
+	
+	            if (!window.Worker) return;
+	
+	            //If page visibility API not present fallback to using "focus" and "blur" event listeners.
+	            if (typeof document.hidden === "undefined") {
+	                window.addEventListener("focus", this._gainedVisibility.bind(this));
+	                window.addEventListener("blur", this._lostVisibility.bind(this));
+	                return;
+	            }
+	            //Otherwise we can use the visibility API to do the loose/gain focus properly
+	            document.addEventListener("visibilitychange", function () {
+	                if (document.hidden === true) {
+	                    _this2._lostVisibility();
+	                } else {
+	                    _this2._gainedVisibility();
+	                }
+	            }, false);
+	
+	            requestAnimationFrame(this._updateRAFTime.bind(this));
+	        }
+	    }, {
+	        key: "_updateWorkerTime",
+	        value: function _updateWorkerTime(time) {
+	            var dt = (time - this._previousWorkerTime) / 1000;
+	            if (dt !== 0) this._update(dt);
+	            this._previousWorkerTime = time;
+	        }
+	    }, {
+	        key: "_updateRAFTime",
+	        value: function _updateRAFTime(time) {
+	            if (this._previousRAFTime === undefined) this._previousRAFTime = time;
+	            var dt = (time - this._previousRAFTime) / 1000;
+	            if (dt !== 0) this._update(dt);
+	            this._previousRAFTime = time;
+	            if (!this._useWebworker) requestAnimationFrame(this._updateRAFTime.bind(this));
+	        }
+	    }, {
+	        key: "_update",
+	        value: function _update(dt) {
+	            for (var i = 0; i < this._updateables.length; i++) {
+	                this._updateables[i]._update(parseFloat(dt));
+	            }
+	        }
+	    }, {
+	        key: "register",
+	        value: function register(updateable) {
+	            this._updateables.push(updateable);
+	            if (this._active === false) {
+	                this._active = true;
+	                this._init();
+	            }
+	        }
+	    }]);
+	
+	    return UpdateablesManager;
+	})();
+
+	exports.UpdateablesManager = UpdateablesManager;
 
 /***/ },
 /* 4 */
