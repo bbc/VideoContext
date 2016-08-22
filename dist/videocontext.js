@@ -127,20 +127,25 @@ var VideoContext =
 	    */
 
 	    function VideoContext(canvas, initErrorCallback) {
-	        var options = arguments.length <= 2 || arguments[2] === undefined ? { "preserveDrawingBuffer": true, "manualUpdate": false, "endOnLastSourceEnd": true } : arguments[2];
+	        var options = arguments.length <= 2 || arguments[2] === undefined ? { "preserveDrawingBuffer": true, "manualUpdate": false, "endOnLastSourceEnd": true, webglContextAttributes: { preserveDrawingBuffer: true, alpha: false } } : arguments[2];
 
 	        _classCallCheck(this, VideoContext);
 
 	        this._canvas = canvas;
 	        var manualUpdate = false;
-	        var preserveDrawingBuffer = true;
 	        this.endOnLastSourceEnd = true;
+	        var webglContextAttributes = { preserveDrawingBuffer: true, alpha: false };
 
 	        if ("manualUpdate" in options) manualUpdate = options.manualUpdate;
-	        if ("preserveDrawingBuffer" in options) preserveDrawingBuffer = options.preserveDrawingBuffer;
 	        if ("endOnLastSourceEnd" in options) this.endOnLastSourceEnd = options.endOnLastSourceEnd;
+	        if ("webglContextAttributes" in options) webglContextAttributes = options.webglContextAttributes;
 
-	        this._gl = canvas.getContext("experimental-webgl", { preserveDrawingBuffer: preserveDrawingBuffer, alpha: false });
+	        if (webglContextAttributes.alpha === undefined) webglContextAttributes.alpha = false;
+	        if (webglContextAttributes.alpha === true) {
+	            console.error("webglContextAttributes.alpha must be false for correct opeation");
+	        }
+
+	        this._gl = canvas.getContext("experimental-webgl", webglContextAttributes);
 	        if (this._gl === null) {
 	            console.error("Failed to intialise WebGL.");
 	            if (initErrorCallback) initErrorCallback();
