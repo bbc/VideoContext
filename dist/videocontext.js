@@ -127,17 +127,25 @@ var VideoContext =
 	    */
 
 	    function VideoContext(canvas, initErrorCallback) {
+	        var options = arguments.length <= 2 || arguments[2] === undefined ? { "preserveDrawingBuffer": true, "manualUpdate": false, "endOnLastSourceEnd": true } : arguments[2];
+
 	        _classCallCheck(this, VideoContext);
 
 	        this._canvas = canvas;
-	        this._gl = canvas.getContext("experimental-webgl", { preserveDrawingBuffer: true, alpha: false });
+	        var manualUpdate = false;
+	        var preserveDrawingBuffer = true;
+	        this.endOnLastSourceEnd = true;
+
+	        if ("manualUpdate" in options) manualUpdate = options.manualUpdate;
+	        if ("preserveDrawingBuffer" in options) preserveDrawingBuffer = options.preserveDrawingBuffer;
+	        if ("endOnLastSourceEnd" in options) this.endOnLastSourceEnd = options.endOnLastSourceEnd;
+
+	        this._gl = canvas.getContext("experimental-webgl", { preserveDrawingBuffer: preserveDrawingBuffer, alpha: false });
 	        if (this._gl === null) {
 	            console.error("Failed to intialise WebGL.");
 	            if (initErrorCallback) initErrorCallback();
 	            return;
 	        }
-
-	        this.endOnLastSourceEnd = true;
 
 	        this._renderGraph = new _rendergraphJs2["default"]();
 	        this._sourceNodes = [];
@@ -155,7 +163,9 @@ var VideoContext =
 
 	        this._timelineCallbacks = [];
 
-	        registerUpdateable(this);
+	        if (!manualUpdate) {
+	            registerUpdateable(this);
+	        }
 	    }
 
 	    //playing - all sources are active
@@ -642,6 +652,32 @@ var VideoContext =
 	                }
 	            }
 	            return false;
+	        }
+
+	        /**
+	        * This allows manual calling of the update loop of the videoContext. 
+	        *
+	        * @param {Number} dt - The difference in seconds between this and the previous calling of update.
+	        * @example
+	        *
+	        * var canvasElement = document.getElemenyById("canvas");
+	        * var ctx = new VideoContext(canvasElement, undefined, {"manualUpdate" : true});
+	        * 
+	        * var previousTime;
+	        * function update(time){
+	        *     if (previousTime === undefined) previousTime = time;
+	        *     var dt = (time - previousTime)/1000;
+	        *     ctx.update(dt);
+	        *     previousTime = time;
+	        *     requestAnimationFrame(update);
+	        * }
+	        * update();
+	        *
+	        */
+	    }, {
+	        key: "update",
+	        value: function update(dt) {
+	            this._update(dt);
 	        }
 	    }, {
 	        key: "_update",
@@ -2645,6 +2681,8 @@ var VideoContext =
 	    var h = canvas.height;
 	    var trackHeight = h / videoContext._sourceNodes.length;
 	    var playlistDuration = videoContext.duration;
+
+	    if (currentTime > playlistDuration && !videoContext.endOnLastSourceEnd) playlistDuration = currentTime;
 
 	    if (videoContext.duration === Infinity) {
 	        var total = 0;

@@ -42,16 +42,23 @@ export default class VideoContext{
     * ctx.play();
     *
     */
-    constructor(canvas, initErrorCallback){
+    constructor(canvas, initErrorCallback, options={"preserveDrawingBuffer":true, "manualUpdate":false, "endOnLastSourceEnd":true}){
         this._canvas = canvas;
-        this._gl = canvas.getContext("experimental-webgl", { preserveDrawingBuffer: true, alpha: false });
+        let manualUpdate = false;
+        let preserveDrawingBuffer = true;
+        this.endOnLastSourceEnd = true;
+
+        if ("manualUpdate" in options) manualUpdate = options.manualUpdate;
+        if ("preserveDrawingBuffer" in options) preserveDrawingBuffer = options.preserveDrawingBuffer;
+        if ("endOnLastSourceEnd" in options) this.endOnLastSourceEnd = options.endOnLastSourceEnd;
+
+        this._gl = canvas.getContext("experimental-webgl", { preserveDrawingBuffer: preserveDrawingBuffer, alpha: false });
         if(this._gl === null){
             console.error("Failed to intialise WebGL.");
             if(initErrorCallback)initErrorCallback();
             return;
         }
 
-        this.endOnLastSourceEnd = true;
 
         this._renderGraph = new RenderGraph();
         this._sourceNodes = [];
@@ -69,7 +76,9 @@ export default class VideoContext{
 
         this._timelineCallbacks = [];
 
-        registerUpdateable(this);
+        if(!manualUpdate){
+            registerUpdateable(this);
+        }
     }
 
     /**
@@ -584,6 +593,32 @@ export default class VideoContext{
         }
         return false;
     }
+
+
+    /**
+    * This allows manual calling of the update loop of the videoContext. 
+    *
+    * @param {Number} dt - The difference in seconds between this and the previous calling of update.
+    * @example
+    *
+    * var canvasElement = document.getElemenyById("canvas");
+    * var ctx = new VideoContext(canvasElement, undefined, {"manualUpdate" : true});
+    * 
+    * var previousTime;
+    * function update(time){
+    *     if (previousTime === undefined) previousTime = time;
+    *     var dt = (time - previousTime)/1000;
+    *     ctx.update(dt);
+    *     previousTime = time;
+    *     requestAnimationFrame(update);
+    * }
+    * update();
+    *
+    */
+    update(dt){
+        this._update(dt);
+    }
+
 
     _update(dt){
         if (this._state === VideoContext.STATE.PLAYING || this._state === VideoContext.STATE.STALLED || this._state === VideoContext.STATE.PAUSED) {

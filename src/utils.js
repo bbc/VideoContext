@@ -375,6 +375,8 @@ export function visualiseVideoContextTimeline(videoContext, canvas, currentTime)
     let trackHeight = h / videoContext._sourceNodes.length;
     let playlistDuration = videoContext.duration;
 
+    if (currentTime > playlistDuration && !videoContext.endOnLastSourceEnd) playlistDuration = currentTime;
+
     if (videoContext.duration === Infinity){
         let total = 0;
         for (let i = 0; i < videoContext._sourceNodes.length; i++) {
