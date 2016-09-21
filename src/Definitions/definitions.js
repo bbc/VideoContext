@@ -14,6 +14,8 @@ import aaf_video_flop from "./aaf_video_flop.js";
 import aaf_video_flip from "./aaf_video_flip.js";
 import aaf_video_position from "./aaf_video_position.js";
 import aaf_video_crop from "./aaf_video_crop.js";
+import staticDissolve from "./staticDissolve.js";
+import staticEffect from "./staticEffect.js";
 
 let DEFINITIONS = {
     AAF_VIDEO_SCALE: aaf_video_scale,
@@ -21,6 +23,8 @@ let DEFINITIONS = {
     HORIZONTAL_WIPE:horizontalWipe,
     VERTICAL_WIPE:verticalWipe,
     RANDOM_DISSOLVE:randomDissolve,
+    STATIC_DISSOLVE:staticDissolve,
+    STATIC_EFFECT:staticEffect,
     TO_COLOR_AND_BACK: toColorAndBackFade,
     STAR_WIPE:starWipe,
     COMBINE: combine,

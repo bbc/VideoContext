@@ -123,7 +123,7 @@ export default class ProcessingNode extends GraphNode{
         gl.useProgram(this._program);
 
         //upload the default uniforms
-        //gl.uniform1fv(this._currentTimeLocation, this._currentTime);
+        gl.uniform1f(this._currentTimeLocation, parseFloat(this._currentTime));
 
         //upload/update the custom uniforms
         let textureOffset = 0;

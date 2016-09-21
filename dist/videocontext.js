@@ -3120,7 +3120,7 @@ var VideoContext =
 	            gl.useProgram(this._program);
 	
 	            //upload the default uniforms
-	            //gl.uniform1fv(this._currentTimeLocation, this._currentTime);
+	            gl.uniform1f(this._currentTimeLocation, parseFloat(this._currentTime));
 	
 	            //upload/update the custom uniforms
 	            var textureOffset = 0;
@@ -4089,12 +4089,22 @@ var VideoContext =
 	
 	var _aaf_video_cropJs2 = _interopRequireDefault(_aaf_video_cropJs);
 	
+	var _staticDissolveJs = __webpack_require__(31);
+	
+	var _staticDissolveJs2 = _interopRequireDefault(_staticDissolveJs);
+	
+	var _staticEffectJs = __webpack_require__(32);
+	
+	var _staticEffectJs2 = _interopRequireDefault(_staticEffectJs);
+	
 	var DEFINITIONS = {
 	    AAF_VIDEO_SCALE: _aaf_video_scaleJs2["default"],
 	    CROSSFADE: _crossfadeJs2["default"],
 	    HORIZONTAL_WIPE: _horizontalWipeJs2["default"],
 	    VERTICAL_WIPE: _verticalWipeJs2["default"],
 	    RANDOM_DISSOLVE: _randomDissolveJs2["default"],
+	    STATIC_DISSOLVE: _staticDissolveJs2["default"],
+	    STATIC_EFFECT: _staticEffectJs2["default"],
 	    TO_COLOR_AND_BACK: _toColorAndBackFadeJs2["default"],
 	    STAR_WIPE: _starWipeJs2["default"],
 	    COMBINE: _combineJs2["default"],
@@ -4926,6 +4936,100 @@ var VideoContext =
 	};
 	
 	exports["default"] = aaf_video_crop;
+	module.exports = exports["default"];
+
+/***/ },
+/* 31 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var staticDissolve = {
+	    "title": "Static Dissolve",
+	    "description": "A static dissolve effect. Typically used as a transistion.",
+	    "vertexShader": "\
+	            attribute vec2 a_position;\
+	            attribute vec2 a_texCoord;\
+	            varying vec2 v_texCoord;\
+	            void main() {\
+	                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+	                v_texCoord = a_texCoord;\
+	            }",
+	    "fragmentShader": "\
+	            precision mediump float;\
+	            uniform sampler2D u_image_a;\
+	            uniform sampler2D u_image_b;\
+	            uniform float mix;\
+	            uniform float currentTime;\
+	            varying vec2 v_texCoord;\
+	            varying float v_mix;\
+	            float rand(vec2 co, float currentTime){\
+	               return fract(sin(dot(co.xy,vec2(12.9898,78.233))+currentTime) * 43758.5453);\
+	            }\
+	            void main(){\
+	                vec4 color_a = texture2D(u_image_a, v_texCoord);\
+	                vec4 color_b = texture2D(u_image_b, v_texCoord);\
+	                if (clamp(rand(v_texCoord, currentTime),  0.01, 1.001) > mix){\
+	                    gl_FragColor = color_a;\
+	                } else {\
+	                    gl_FragColor = color_b;\
+	                }\
+	            }",
+	    "properties": {
+	        "mix": { "type": "uniform", "value": 0.0 }
+	    },
+	    "inputs": ["u_image_a", "u_image_b"]
+	};
+	
+	exports["default"] = staticDissolve;
+	module.exports = exports["default"];
+
+/***/ },
+/* 32 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var staticEffect = {
+	    "title": "Static",
+	    "description": "A static effect to add pseudo random noise to a video",
+	    "vertexShader": "\
+	            attribute vec2 a_position;\
+	            attribute vec2 a_texCoord;\
+	            varying vec2 v_texCoord;\
+	            void main() {\
+	                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+	                v_texCoord = a_texCoord;\
+	            }",
+	    "fragmentShader": "\
+	            precision mediump float;\
+	            uniform sampler2D u_image;\
+	            uniform float currentTime;\
+	            varying vec2 v_texCoord;\
+	            uniform vec3 weight;\
+	            float rand(vec2 co, float currentTime){\
+	               return fract(sin(dot(co.xy,vec2(12.9898,78.233))+currentTime) * 43758.5453);\
+	            }\
+	            void main(){\
+	                vec4 color = texture2D(u_image, v_texCoord);\
+	                color[0] = color[0] + (2.0*(clamp(rand(v_texCoord, currentTime),  0.01, 1.001)-0.5)) * weight[0];\
+	                color[1] = color[1] + (2.0*(clamp(rand(v_texCoord, currentTime),  0.01, 1.001)-0.5)) * weight[1];\
+	                color[2] = color[2] + (2.0*(clamp(rand(v_texCoord, currentTime),  0.01, 1.001)-0.5)) * weight[2];\
+	                gl_FragColor = color;\
+	            }",
+	    "properties": {
+	        "weight": { "type": "uniform", "value": [1.0, 1.0, 1.0] }
+	    },
+	    "inputs": ["u_image"]
+	};
+	
+	exports["default"] = staticEffect;
 	module.exports = exports["default"];
 
 /***/ }
