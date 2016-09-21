@@ -1082,7 +1082,6 @@ var VideoContext =
 	    }], [{
 	        key: "DEFINITIONS",
 	        get: function get() {
-	            console.log(_DefinitionsDefinitionsJs2["default"]);
 	            return _DefinitionsDefinitionsJs2["default"];
 	        }
 	    }]);

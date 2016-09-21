@@ -732,7 +732,6 @@ export default class VideoContext{
     }
 
     static get DEFINITIONS() {
-        console.log(DEFINITIONS);
         return DEFINITIONS;
     }
 }
