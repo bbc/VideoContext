@@ -13,6 +13,7 @@ let staticEffect = {
             precision mediump float;\
             uniform sampler2D u_image;\
             uniform float currentTime;\
+            uniform float amount;\
             varying vec2 v_texCoord;\
             uniform vec3 weight;\
             float rand(vec2 co, float currentTime){\
@@ -20,13 +21,14 @@ let staticEffect = {
             }\
             void main(){\
                 vec4 color = texture2D(u_image, v_texCoord);\
-                color[0] = color[0] + (2.0*(clamp(rand(v_texCoord, currentTime),  0.01, 1.001)-0.5)) * weight[0];\
-                color[1] = color[1] + (2.0*(clamp(rand(v_texCoord, currentTime),  0.01, 1.001)-0.5)) * weight[1];\
-                color[2] = color[2] + (2.0*(clamp(rand(v_texCoord, currentTime),  0.01, 1.001)-0.5)) * weight[2];\
+                color[0] = color[0] + (2.0*(clamp(rand(v_texCoord, currentTime),  0.01, 1.001)-0.5)) * weight[0] * amount;\
+                color[1] = color[1] + (2.0*(clamp(rand(v_texCoord, currentTime),  0.01, 1.001)-0.5)) * weight[1] * amount;\
+                color[2] = color[2] + (2.0*(clamp(rand(v_texCoord, currentTime),  0.01, 1.001)-0.5)) * weight[2] *amount;\
                 gl_FragColor = color;\
             }",
     "properties":{
-        "weight":{"type":"uniform", "value":[1.0,1.0,1.0]}
+        "weight":{"type":"uniform", "value":[1.0,1.0,1.0]},
+        "amount":{"type":"uniform", "amount":1.0}
     },
     "inputs":["u_image"]
 };

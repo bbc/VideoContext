@@ -16,10 +16,13 @@ import aaf_video_position from "./aaf_video_position.js";
 import aaf_video_crop from "./aaf_video_crop.js";
 import staticDissolve from "./staticDissolve.js";
 import staticEffect from "./staticEffect.js";
+import dreamfade from "./dreamfade.js";
+
 
 let DEFINITIONS = {
     AAF_VIDEO_SCALE: aaf_video_scale,
     CROSSFADE: crossfade,
+    DREAMFADE: dreamfade,
     HORIZONTAL_WIPE:horizontalWipe,
     VERTICAL_WIPE:verticalWipe,
     RANDOM_DISSOLVE:randomDissolve,
