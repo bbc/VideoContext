@@ -396,8 +396,8 @@ export default class VideoContext{
     * var ctx = new VideoContext(canvasElement);
     * var imageNode = ctx.createVideoSourceNode(imageElement);
     */
-    createImageSourceNode(src, sourceOffset=0, preloadTime=4){
-        let imageNode = new ImageNode(src, this._gl, this._renderGraph, this._currentTime, preloadTime);
+    createImageSourceNode(src, sourceOffset=0, preloadTime=4, imageElementAttributes={}){
+        let imageNode = new ImageNode(src, this._gl, this._renderGraph, this._currentTime, preloadTime, imageElementAttributes);
         this._sourceNodes.push(imageNode);
         return imageNode;
     }
@@ -589,14 +589,14 @@ export default class VideoContext{
 
 
     /**
-    * This allows manual calling of the update loop of the videoContext. 
+    * This allows manual calling of the update loop of the videoContext.
     *
     * @param {Number} dt - The difference in seconds between this and the previous calling of update.
     * @example
     *
     * var canvasElement = document.getElemenyById("canvas");
     * var ctx = new VideoContext(canvasElement, undefined, {"manualUpdate" : true});
-    * 
+    *
     * var previousTime;
     * function update(time){
     *     if (previousTime === undefined) previousTime = time;

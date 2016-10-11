@@ -6,14 +6,18 @@ export default class ImageNode extends SourceNode {
     * Initialise an instance of an ImageNode.
     * This should not be called directly, but created through a call to videoContext.createImageNode();
     */
-    constructor(src, gl, renderGraph, currentTime, preloadTime = 4){
+    constructor(src, gl, renderGraph, currentTime, preloadTime = 4, attributes = {}){
         super(src, gl, renderGraph, currentTime);
         this._preloadTime = preloadTime;
+        this._attributes = attributes;
     }
 
     _load(){
 
         if (this._element !== undefined){
+            for (var key in this._attributes) {
+                this._element[key] = this._attributes[key];
+            }
             return;
         }
         if (this._isResponsibleForElementLifeCycle){
@@ -28,6 +32,10 @@ export default class ImageNode extends SourceNode {
             this._element.onerror = () => {
                 console.error("ImageNode failed to load url:", this._elementURL);
             };
+
+            for (let key in this._attributes) {
+                this._element[key] = this._attributes[key];
+            }
         }
     }
 
@@ -35,7 +43,7 @@ export default class ImageNode extends SourceNode {
         super._destroy();
         if (this._isResponsibleForElementLifeCycle){
             this._element.src = "";
-            this._element = undefined;    
+            this._element = undefined;
             delete this._element;
         }
         this._ready = false;
