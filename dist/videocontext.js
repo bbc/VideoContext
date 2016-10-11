@@ -450,8 +450,9 @@ var VideoContext =
 	        value: function createImageSourceNode(src) {
 	            var sourceOffset = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
 	            var preloadTime = arguments.length <= 2 || arguments[2] === undefined ? 4 : arguments[2];
+	            var imageElementAttributes = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
 	
-	            var imageNode = new _SourceNodesImagenodeJs2["default"](src, this._gl, this._renderGraph, this._currentTime, preloadTime);
+	            var imageNode = new _SourceNodesImagenodeJs2["default"](src, this._gl, this._renderGraph, this._currentTime, preloadTime, imageElementAttributes);
 	            this._sourceNodes.push(imageNode);
 	            return imageNode;
 	        }
@@ -652,14 +653,14 @@ var VideoContext =
 	        }
 	
 	        /**
-	        * This allows manual calling of the update loop of the videoContext. 
+	        * This allows manual calling of the update loop of the videoContext.
 	        *
 	        * @param {Number} dt - The difference in seconds between this and the previous calling of update.
 	        * @example
 	        *
 	        * var canvasElement = document.getElemenyById("canvas");
 	        * var ctx = new VideoContext(canvasElement, undefined, {"manualUpdate" : true});
-	        * 
+	        *
 	        * var previousTime;
 	        * function update(time){
 	        *     if (previousTime === undefined) previousTime = time;
@@ -10711,7 +10712,7 @@ var VideoContext =
 	
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 	
-	var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+	var _get = function get(_x3, _x4, _x5) { var _again = true; _function: while (_again) { var object = _x3, property = _x4, receiver = _x5; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x3 = parent; _x4 = property; _x5 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 	
@@ -10733,11 +10734,13 @@ var VideoContext =
 	
 	    function ImageNode(src, gl, renderGraph, currentTime) {
 	        var preloadTime = arguments.length <= 4 || arguments[4] === undefined ? 4 : arguments[4];
+	        var attributes = arguments.length <= 5 || arguments[5] === undefined ? {} : arguments[5];
 	
 	        _classCallCheck(this, ImageNode);
 	
 	        _get(Object.getPrototypeOf(ImageNode.prototype), "constructor", this).call(this, src, gl, renderGraph, currentTime);
 	        this._preloadTime = preloadTime;
+	        this._attributes = attributes;
 	    }
 	
 	    _createClass(ImageNode, [{
@@ -10746,6 +10749,9 @@ var VideoContext =
 	            var _this = this;
 	
 	            if (this._element !== undefined) {
+	                for (var key in this._attributes) {
+	                    this._element[key] = this._attributes[key];
+	                }
 	                return;
 	            }
 	            if (this._isResponsibleForElementLifeCycle) {
@@ -10760,6 +10766,10 @@ var VideoContext =
 	                this._element.onerror = function () {
 	                    console.error("ImageNode failed to load url:", _this._elementURL);
 	                };
+	
+	                for (var _key in this._attributes) {
+	                    this._element[_key] = this._attributes[_key];
+	                }
 	            }
 	        }
 	    }, {
