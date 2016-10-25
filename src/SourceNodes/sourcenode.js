@@ -314,7 +314,7 @@ export default class SourceNode extends GraphNode{
         return true;
     }
 
-    _update(currentTime){
+    _update(currentTime, triggerTextureUpdate=true){
         this._rendered = true;
         let timeDelta = currentTime - this._currentTime; 
 
@@ -347,7 +347,7 @@ export default class SourceNode extends GraphNode{
         if (this._element === undefined || this._ready === false) return true;      
         
         if(this._state === STATE.playing){
-            updateTexture(this._gl, this._texture, this._element);
+            if(triggerTextureUpdate)updateTexture(this._gl, this._texture, this._element);
             if(this._stretchPaused){
                 this._stopTime += timeDelta;
             }

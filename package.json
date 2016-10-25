@@ -12,7 +12,7 @@
     "build_all": "./node_modules/webpack/bin/webpack.js --config webpack.config.js && ./node_modules/webpack/bin/webpack.js --config webpack.commonjs2.config.js && node ./node_modules/esdoc/out/src/ESDocCLI.js -c esdoc.json",
     "doc": "node ./node_modules/jsdoc/jsdoc.js -c jsdoc.json",
     "build": "./node_modules/webpack/bin/webpack.js --config webpack.config.js && ./node_modules/webpack/bin/webpack.js --config webpack.commonjs2.config.js",
-    "dev": "./node_modules/webpack/bin/webpack.js --watch --config webpack.config.js & ./node_modules/http-server/bin/http-server"
+    "dev": "./node_modules/webpack/bin/webpack.js --watch --config webpack.config.js & ./node_modules/reload/bin/reload -b"
   },
   "dependencies": {},
   "devDependencies": {
@@ -25,6 +25,7 @@
     "jsdoc": "^3.4.0",
     "mocha": "2.3.4",
     "node-libs-browser": "^0.5.2",
+    "reload": "^1.0.1",
     "webpack": "^1.9.11"
   },
   "main": "src/videocontext.js",
