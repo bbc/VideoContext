@@ -9389,7 +9389,7 @@ module.exports =
 	
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 	
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+	var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 	
@@ -9745,6 +9745,8 @@ module.exports =
 	    }, {
 	        key: "_update",
 	        value: function _update(currentTime) {
+	            var triggerTextureUpdate = arguments.length <= 1 || arguments[1] === undefined ? true : arguments[1];
+	
 	            this._rendered = true;
 	            var timeDelta = currentTime - this._currentTime;
 	
@@ -9776,7 +9778,7 @@ module.exports =
 	            if (this._element === undefined || this._ready === false) return true;
 	
 	            if (this._state === STATE.playing) {
-	                (0, _utilsJs.updateTexture)(this._gl, this._texture, this._element);
+	                if (triggerTextureUpdate) (0, _utilsJs.updateTexture)(this._gl, this._texture, this._element);
 	                if (this._stretchPaused) {
 	                    this._stopTime += timeDelta;
 	                }
@@ -10741,6 +10743,7 @@ module.exports =
 	        _get(Object.getPrototypeOf(ImageNode.prototype), "constructor", this).call(this, src, gl, renderGraph, currentTime);
 	        this._preloadTime = preloadTime;
 	        this._attributes = attributes;
+	        this._textureUploaded = false;
 	    }
 	
 	    _createClass(ImageNode, [{
@@ -10799,7 +10802,12 @@ module.exports =
 	        key: "_update",
 	        value: function _update(currentTime) {
 	            //if (!super._update(currentTime)) return false;
-	            _get(Object.getPrototypeOf(ImageNode.prototype), "_update", this).call(this, currentTime);
+	            if (this._textureUploaded) {
+	                _get(Object.getPrototypeOf(ImageNode.prototype), "_update", this).call(this, currentTime, false);
+	            } else {
+	                _get(Object.getPrototypeOf(ImageNode.prototype), "_update", this).call(this, currentTime);
+	            }
+	
 	            if (this._startTime - this._currentTime < this._preloadTime && this._state !== _sourcenode.SOURCENODESTATE.waiting && this._state !== _sourcenode.SOURCENODESTATE.ended) this._load();
 	
 	            if (this._state === _sourcenode.SOURCENODESTATE.playing) {
