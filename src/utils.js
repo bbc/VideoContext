@@ -72,6 +72,71 @@ export function clearTexture(gl, texture){
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0,0,0,0]));
 }
 
+export function exportToJSON(vc){
+
+    function qualifyURL(url) {
+        var a = document.createElement("a");
+        a.href = url;
+        return a.href;
+    }
+
+    function getOutputIDs(node, vc){
+        let outputs = [];
+        for (let output of node.outputs){
+            let outputID;
+            let index = vc._processingNodes.indexOf(output);
+            if (index > -1){
+                outputID = "processor"+index;
+            } else{
+                outputID = "destination";
+            }
+            outputs.push(outputID);
+        }
+        return outputs;
+    }
+
+    let result = {};
+
+    for(let index in vc._sourceNodes){
+        let source = vc._sourceNodes[index];
+        let id = "source" + index;
+        if(!source._isResponsibleForElementLifeCycle){
+            console.log("Warning - Cannont export source as it is created from an element, not a URL.", source);
+            continue;
+        }
+        let node = {
+            type: source.constructor.name,
+            url: qualifyURL(source._elementURL),
+            outputs:getOutputIDs(source, vc),
+            start: source._startTime,
+            stop: source._stopTime
+        };
+        result[id] = node;
+    }
+
+    for (let index in vc._processingNodes){
+        let processor = vc._processingNodes[index];
+        let id = "processor" + index;
+        let node = {
+            type: processor.constructor.name,
+            definition: processor._definition,
+            outputs: getOutputIDs(processor, vc)
+        };
+
+        if (node.type === "TransitionNode"){
+            node.transitions = processor._transitions;
+        }
+
+        result[id] = node;
+    }
+
+    result["destination"] = {
+        type:"Destination"
+    };
+
+    return JSON.stringify(result);
+}
+
 export function createControlFormForNode(node, nodeName){
     let rootDiv = document.createElement("div");
     

@@ -13,6 +13,7 @@ export default class ProcessingNode extends GraphNode{
         super(gl, renderGraph, inputNames, limitConnections);
         this._vertexShader = definition.vertexShader;
         this._fragmentShader = definition.fragmentShader;
+        this._definition = definition;
         this._properties = {};//definition.properties;
         //copy definition properties
         for(let propertyName in definition.properties){
