@@ -80,19 +80,19 @@ export function exportToJSON(vc){
         return a.href;
     }
 
-    function getOutputIDs(node, vc){
-        let outputs = [];
-        for (let output of node.outputs){
-            let outputID;
-            let index = vc._processingNodes.indexOf(output);
+    function getInputIDs(node, vc){
+        let inputs = [];
+        for (let input of node.inputs){
+            let inputID;
+            let index = vc._processingNodes.indexOf(input);
             if (index > -1){
-                outputID = "processor"+index;
+                inputID = "processor"+index;
             } else{
-                outputID = "destination";
+                inputID = "destination";
             }
-            outputs.push(outputID);
+            inputs.push(inputID);
         }
-        return outputs;
+        return inputs;
     }
 
     let result = {};
@@ -107,7 +107,6 @@ export function exportToJSON(vc){
         let node = {
             type: source.constructor.name,
             url: qualifyURL(source._elementURL),
-            outputs:getOutputIDs(source, vc),
             start: source._startTime,
             stop: source._stopTime
         };
@@ -120,7 +119,7 @@ export function exportToJSON(vc){
         let node = {
             type: processor.constructor.name,
             definition: processor._definition,
-            outputs: getOutputIDs(processor, vc)
+            inputs: getInputIDs(processor, vc)
         };
 
         if (node.type === "TransitionNode"){
@@ -131,7 +130,8 @@ export function exportToJSON(vc){
     }
 
     result["destination"] = {
-        type:"Destination"
+        type:"Destination",
+        inputs: getInputIDs(vc.destination, vc)
     };
 
     return JSON.stringify(result);

@@ -9982,24 +9982,24 @@ var VideoContext =
 	        return a.href;
 	    }
 	
-	    function getOutputIDs(node, vc) {
-	        var outputs = [];
+	    function getInputIDs(node, vc) {
+	        var inputs = [];
 	        var _iteratorNormalCompletion = true;
 	        var _didIteratorError = false;
 	        var _iteratorError = undefined;
 	
 	        try {
-	            for (var _iterator = node.outputs[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	                var output = _step.value;
+	            for (var _iterator = node.inputs[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	                var input = _step.value;
 	
-	                var outputID = undefined;
-	                var index = vc._processingNodes.indexOf(output);
+	                var inputID = undefined;
+	                var index = vc._processingNodes.indexOf(input);
 	                if (index > -1) {
-	                    outputID = "processor" + index;
+	                    inputID = "processor" + index;
 	                } else {
-	                    outputID = "destination";
+	                    inputID = "destination";
 	                }
-	                outputs.push(outputID);
+	                inputs.push(inputID);
 	            }
 	        } catch (err) {
 	            _didIteratorError = true;
@@ -10016,7 +10016,7 @@ var VideoContext =
 	            }
 	        }
 	
-	        return outputs;
+	        return inputs;
 	    }
 	
 	    var result = {};
@@ -10031,7 +10031,6 @@ var VideoContext =
 	        var node = {
 	            type: source.constructor.name,
 	            url: qualifyURL(source._elementURL),
-	            outputs: getOutputIDs(source, vc),
 	            start: source._startTime,
 	            stop: source._stopTime
 	        };
@@ -10044,7 +10043,7 @@ var VideoContext =
 	        var node = {
 	            type: processor.constructor.name,
 	            definition: processor._definition,
-	            outputs: getOutputIDs(processor, vc)
+	            inputs: getInputIDs(processor, vc)
 	        };
 	
 	        if (node.type === "TransitionNode") {
@@ -10055,7 +10054,8 @@ var VideoContext =
 	    }
 	
 	    result["destination"] = {
-	        type: "Destination"
+	        type: "Destination",
+	        inputs: getInputIDs(vc.destination, vc)
 	    };
 	
 	    return JSON.stringify(result);
