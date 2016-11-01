@@ -86,9 +86,14 @@ export function exportToJSON(vc){
             let inputID;
             let index = vc._processingNodes.indexOf(input);
             if (index > -1){
-                inputID = "processor"+index;
+                inputID = "processor" + index;
             } else{
-                inputID = "destination";
+                let index = vc._sourceNodes.indexOf(input);
+                if(index > -1){
+                    inputID = "source" + index;
+                } else {
+                    console.log("Warning, can't find input",input);
+                }
             }
             inputs.push(inputID);
         }

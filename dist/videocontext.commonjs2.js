@@ -9997,7 +9997,12 @@ module.exports =
 	                if (index > -1) {
 	                    inputID = "processor" + index;
 	                } else {
-	                    inputID = "destination";
+	                    var _index = vc._sourceNodes.indexOf(input);
+	                    if (_index > -1) {
+	                        inputID = "source" + _index;
+	                    } else {
+	                        console.log("Warning, can't find input", input);
+	                    }
 	                }
 	                inputs.push(inputID);
 	            }
