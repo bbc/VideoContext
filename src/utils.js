@@ -115,6 +115,9 @@ export function exportToJSON(vc){
             start: source._startTime,
             stop: source._stopTime
         };
+        if (source._sourceOffset){
+            node.sourceOffset = source._sourceOffset;
+        }
         result[id] = node;
     }
 
