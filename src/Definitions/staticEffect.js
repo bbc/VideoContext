@@ -28,7 +28,7 @@ let staticEffect = {
             }",
     "properties":{
         "weight":{"type":"uniform", "value":[1.0,1.0,1.0]},
-        "amount":{"type":"uniform", "amount":1.0}
+        "amount":{"type":"uniform", "value":1.0}
     },
     "inputs":["u_image"]
 };
