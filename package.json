@@ -1,6 +1,6 @@
 {
   "name": "videocontext",
-  "version": "0.25.3",
+  "version": "0.25.4",
   "description": "A WebGL & HTML5 graph based video composition library",
   "contributors": [
     {
@@ -20,6 +20,7 @@
     "babel-loader": "^5.1.4",
     "babel-polyfill": "^6.16.0",
     "chai": "3.4.1",
+    "eslint": "^3.9.1",
     "eslint-loader": "^1.4.0",
     "http-server": "^0.8.5",
     "jsdoc": "^3.4.0",
