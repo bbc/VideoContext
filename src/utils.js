@@ -131,8 +131,9 @@ export function exportToJSON(vc){
             properties:{}
         };
 
-        for(let property of node.definition.properties){
-            node.properties = processor[property];
+        for(let property in node.definition.properties){
+            console.log(">>>",property);
+            node.properties[property] = processor[property];
         }
 
         if (node.type === "TransitionNode"){
