@@ -127,8 +127,13 @@ export function exportToJSON(vc){
         let node = {
             type: processor.constructor.name,
             definition: processor._definition,
-            inputs: getInputIDs(processor, vc)
+            inputs: getInputIDs(processor, vc),
+            properties:{}
         };
+
+        for(let property of node.definition.properties){
+            node.properties = processor[property];
+        }
 
         if (node.type === "TransitionNode"){
             node.transitions = processor._transitions;
