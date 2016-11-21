@@ -10870,7 +10870,7 @@ var VideoContext =
 	                    _this._triggerCallbacks("loaded");
 	                };
 	                this._element.onerror = function () {
-	                    console.error("ImageNode failed to load url:", _this._elementURL);
+	                    console.error("ImageNode failed to load. url:", _this._elementURL);
 	                };
 	
 	                for (var _key in this._attributes) {
@@ -10884,6 +10884,7 @@ var VideoContext =
 	            _get(Object.getPrototypeOf(ImageNode.prototype), "_destroy", this).call(this);
 	            if (this._isResponsibleForElementLifeCycle) {
 	                this._element.src = "";
+	                this._element.onerror = undefined;
 	                this._element = undefined;
 	                delete this._element;
 	            }

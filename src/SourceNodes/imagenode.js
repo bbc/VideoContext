@@ -31,7 +31,7 @@ export default class ImageNode extends SourceNode {
                 this._triggerCallbacks("loaded");
             };
             this._element.onerror = () => {
-                console.error("ImageNode failed to load url:", this._elementURL);
+                console.error("ImageNode failed to load. url:", this._elementURL);
             };
 
             for (let key in this._attributes) {
@@ -44,6 +44,7 @@ export default class ImageNode extends SourceNode {
         super._destroy();
         if (this._isResponsibleForElementLifeCycle){
             this._element.src = "";
+            this._element.onerror = undefined;
             this._element = undefined;
             delete this._element;
         }
