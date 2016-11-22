@@ -28,15 +28,15 @@ The design is heavily inspired by the WebAudioAPI so should feel familiar to use
             var canvas = document.getElementById("canvas");
 
             var videoCtx = new VideoContext(canvas);
-            var videoNode1 = videoCtx.createVideoSourceNode("./video1.mp4");
+            var videoNode1 = videoCtx.video("./video1.mp4");
             videoNode1.start(0);
             videoNode1.stop(4);
 
-            var videoNode2 = videoCtx.createVideoSourceNode("./video2.mp4");
+            var videoNode2 = videoCtx.video("./video2.mp4");
             videoNode2.start(2);
             videoNode2.stop(6);
 
-            var crossFade = videoCtx.createTransitionNode(VideoContext.DEFINITIONS.CROSSFADE);
+            var crossFade = videoCtx.transition(VideoContext.DEFINITIONS.CROSSFADE);
             crossFade.transition(2,4,0.0,1.0, "mix");
 
             videoNode2.connect(crossFade);
@@ -135,7 +135,7 @@ There are a number of different types of nodes which can be used in the VideoCon
 ### VideoNode
 A video source node.
 ``` JavaScript
-var videoNode = videoCtx.createVideoSourceNode("./video1.mp4");
+var videoNode = videoCtx.video("./video1.mp4");
 videoNode.connect(videoCtx.destination);
 videoNode.start(0);
 videoNode.stop(4);
@@ -151,7 +151,7 @@ avconv -i input.mp4 -tune fastdecode -strict experimental output.mp4
 ### ImageNode
 An image source node.
 ``` JavaScript
-var imageNode = videoCtx.createImageSourceNode("cats.png");
+var imageNode = videoCtx.image("cats.png");
 imageNode.connect(videoCtx.destination);
 imageNode.start(0);
 imageNode.stop(4);
@@ -161,7 +161,7 @@ imageNode.stop(4);
 A canvas source node.
 ``` JavaScript
 var canvas = document.getElementById("input-cavnas");
-var canvasNode = videoCtx.createCanvasSorceNode(canvas);
+var canvasNode = videoCtx.canvas(canvas);
 canvasNode.connect(videoCtx.destination);
 canvasNode.start(0);
 canvasNode.stop(4);
@@ -221,12 +221,12 @@ var canvas = document.getElementById("canvas");
 var ctx = new VideoContext(canvas);
 
 //Create a video node and play it for 60 seconds.
-var videoNode = ctx.createVideoSourceNode("./video.mp4");
+var videoNode = ctx.video("./video.mp4");
 videoNode.start(0);
 videoNode.stop(60);
 
 //Create the sepia effect node (from the above Monochrome effect description).
-var sepiaEffect = ctx.createEffectNode(monochromDescription);
+var sepiaEffect = ctx.effect(monochromDescription);
 
 //Give a sepia tint to the monochrome output (note how shader description properties are automatically bound to the JavaScript object).
 sepiaEffect.outputMix = [1.25,1.18,0.9]; 
@@ -297,17 +297,17 @@ var canvas = document.getElementById("canvas");
 var ctx = new VideoContext(canvas);
 
 //Create a video node that plays for 10 seconds from time=0.
-var videoNode1 = ctx.createVideoSourceNode("./video1.mp4");
+var videoNode1 = ctx.video("./video1.mp4");
 videoNode1.start(0);
 videoNode1.stop(10);
 
 //Create a video node that plays for 10 seconds from time=8, overlapping videoNode1 by two seconds.
-var videoNode2 = ctx.createVideoSourceNode("./video2.mp4");
+var videoNode2 = ctx.video("./video2.mp4");
 videoNode2.start(8);
 videoNode2.stop(18);
 
 //Create the sepia effect node (from the above Monochrome effect description).
-var crossfadeEffect = ctx.createTransitionNode(crossfadeDescription);
+var crossfadeEffect = ctx.transition(crossfadeDescription);
 
 //Setup the transition. This will change the "mix" property of the cross-fade node from 0.0 to 1.0. 
 //Transision mix value from 0.0 to 1.0 at time=8 over a period of 2 seconds to time=10.
@@ -388,22 +388,22 @@ var canvas = document.getElementById("canvas");
 var ctx = new VideoContext(canvas);
 
 //Create a video node that plays for 10 seconds from time=0.
-var videoNode1 = ctx.createVideoSourceNode("./video1.mp4");
+var videoNode1 = ctx.video("./video1.mp4");
 videoNode1.start(0);
 videoNode1.stop(10);
 
 //Create a video node that plays for 5 seconds from time=10.
-var videoNode2 = ctx.createVideoSourceNode("./video2.mp4");
+var videoNode2 = ctx.video("./video2.mp4");
 videoNode2.start(10);
 videoNode2.stop(15);
 
 //Create a video node that plays for 12 seconds from time=15.
-var videoNode3 = ctx.createVideoSourceNode("./video3.mp4");
+var videoNode3 = ctx.video("./video3.mp4");
 videoNode3.start(15);
 videoNode3.stop(27);
 
 //Create the combine compositing node (from the above Combine effect description).
-var combineEffect = ctx.createCompositingNode(combineDecription);
+var combineEffect = ctx.compositor(combineDecription);
 
 //Connect all the videos to the combine effect. Collecting them together into a single point which can be connected to further points in the graph. (Making something logically equivalent to a track.)
 videoNode1.connect(combineEffect);
