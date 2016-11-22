@@ -1,6 +1,6 @@
 {
   "name": "videocontext",
-  "version": "0.25.8",
+  "version": "0.26.0",
   "description": "A WebGL & HTML5 graph based video composition library",
   "contributors": [
     {

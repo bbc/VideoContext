@@ -388,7 +388,7 @@ export default class VideoContext{
     * @depricated
     */
     createVideoSourceNode(src, sourceOffset=0, preloadTime=4, videoElementAttributes={}){
-        console.log("Warning: createVideoSourceNode will be depricated in v1.0, please switch to using VideoContext.video()");
+        this._depricate("Warning: createVideoSourceNode will be depricated in v1.0, please switch to using VideoContext.video()");
         return this.video(src, sourceOffset, preloadTime, videoElementAttributes);
     }
 
@@ -419,7 +419,7 @@ export default class VideoContext{
     * @depricated
     */
     createImageSourceNode(src, sourceOffset=0, preloadTime=4, imageElementAttributes={}){
-        console.log("Warning: createImageSourceNode will be depricated in v1.0, please switch to using VideoContext.image()");
+        this._depricate("Warning: createImageSourceNode will be depricated in v1.0, please switch to using VideoContext.image()");
         return this.image(src, sourceOffset, preloadTime, imageElementAttributes);
     }
 
@@ -439,7 +439,7 @@ export default class VideoContext{
     * @depricated
     */
     createCanvasSourceNode(canvas, sourceOffset=0, preloadTime=4){
-        console.log("Warning: createCanvasSourceNode will be depricated in v1.0, please switch to using VideoContext.canvas()");
+        this._depricate("Warning: createCanvasSourceNode will be depricated in v1.0, please switch to using VideoContext.canvas()");
         return this.canvas(canvas, sourceOffset, preloadTime);
     }
 
@@ -458,7 +458,7 @@ export default class VideoContext{
     * @depricated
     */
     createEffectNode(definition){
-        console.log("Warning: createEffectNode will be depricated in v1.0, please switch to using VideoContext.effect()");
+        this._depricate("Warning: createEffectNode will be depricated in v1.0, please switch to using VideoContext.effect()");
         return this.effect(definition);
     }
 
@@ -534,7 +534,7 @@ export default class VideoContext{
     * @depricated
     */
     createCompositingNode(definition){
-        console.log("Warning: createCompositingNode will be depricated in v1.0, please switch to using VideoContext.compositor()");
+        this._depricate("Warning: createCompositingNode will be depricated in v1.0, please switch to using VideoContext.compositor()");
         return this.compositor(definition);
     }
 
@@ -628,7 +628,7 @@ export default class VideoContext{
     * @depricated
     */
     createTransitionNode(definition){
-        console.log("Warning: createTransitionNode will be depricated in v1.0, please switch to using VideoContext.transition()");
+        this._depricate("Warning: createTransitionNode will be depricated in v1.0, please switch to using VideoContext.transition()");
         return this.transition(definition);
     }
 
@@ -788,6 +788,10 @@ export default class VideoContext{
             this._destinationNode._render();*/
 
         }
+    }
+
+    _depricate(msg){
+        console.log(msg);
     }
 
     static get DEFINITIONS() {

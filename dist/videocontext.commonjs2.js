@@ -439,7 +439,7 @@ module.exports =
 	            var preloadTime = arguments.length <= 2 || arguments[2] === undefined ? 4 : arguments[2];
 	            var videoElementAttributes = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
 	
-	            console.log("Warning: createVideoSourceNode will be depricated in v1.0, please switch to using VideoContext.video()");
+	            this._depricate("Warning: createVideoSourceNode will be depricated in v1.0, please switch to using VideoContext.video()");
 	            return this.video(src, sourceOffset, preloadTime, videoElementAttributes);
 	        }
 	
@@ -481,7 +481,7 @@ module.exports =
 	            var preloadTime = arguments.length <= 2 || arguments[2] === undefined ? 4 : arguments[2];
 	            var imageElementAttributes = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
 	
-	            console.log("Warning: createImageSourceNode will be depricated in v1.0, please switch to using VideoContext.image()");
+	            this._depricate("Warning: createImageSourceNode will be depricated in v1.0, please switch to using VideoContext.image()");
 	            return this.image(src, sourceOffset, preloadTime, imageElementAttributes);
 	        }
 	
@@ -510,7 +510,7 @@ module.exports =
 	            var sourceOffset = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
 	            var preloadTime = arguments.length <= 2 || arguments[2] === undefined ? 4 : arguments[2];
 	
-	            console.log("Warning: createCanvasSourceNode will be depricated in v1.0, please switch to using VideoContext.canvas()");
+	            this._depricate("Warning: createCanvasSourceNode will be depricated in v1.0, please switch to using VideoContext.canvas()");
 	            return this.canvas(canvas, sourceOffset, preloadTime);
 	        }
 	
@@ -532,7 +532,7 @@ module.exports =
 	    }, {
 	        key: "createEffectNode",
 	        value: function createEffectNode(definition) {
-	            console.log("Warning: createEffectNode will be depricated in v1.0, please switch to using VideoContext.effect()");
+	            this._depricate("Warning: createEffectNode will be depricated in v1.0, please switch to using VideoContext.effect()");
 	            return this.effect(definition);
 	        }
 	
@@ -612,7 +612,7 @@ module.exports =
 	    }, {
 	        key: "createCompositingNode",
 	        value: function createCompositingNode(definition) {
-	            console.log("Warning: createCompositingNode will be depricated in v1.0, please switch to using VideoContext.compositor()");
+	            this._depricate("Warning: createCompositingNode will be depricated in v1.0, please switch to using VideoContext.compositor()");
 	            return this.compositor(definition);
 	        }
 	
@@ -708,7 +708,7 @@ module.exports =
 	    }, {
 	        key: "createTransitionNode",
 	        value: function createTransitionNode(definition) {
-	            console.log("Warning: createTransitionNode will be depricated in v1.0, please switch to using VideoContext.transition()");
+	            this._depricate("Warning: createTransitionNode will be depricated in v1.0, please switch to using VideoContext.transition()");
 	            return this.transition(definition);
 	        }
 	    }, {
@@ -966,6 +966,11 @@ module.exports =
 	                    }
 	                }
 	            }
+	        }
+	    }, {
+	        key: "_depricate",
+	        value: function _depricate(msg) {
+	            console.log(msg);
 	        }
 	    }, {
 	        key: "element",
