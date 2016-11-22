@@ -22,7 +22,7 @@ export default class VideoContext{
     * @example
     * var canvasElement = document.getElemenyById("canvas");
     * var ctx = new VideoContext(canvasElement, function(){console.error("Sorry, your browser dosen\'t support WebGL");});
-    * var videoNode = ctx.createVideoSourceNode("video.mp4");
+    * var videoNode = ctx.video("video.mp4");
     * videoNode.connect(ctx.destination);
     * videoNode.start(0);
     * videoNode.stop(10);
@@ -166,7 +166,7 @@ export default class VideoContext{
     * @return {HTMLElement} The canvas that the VideoContext is using.
     *
     */
-    get canvas(){
+    get element(){
         return this._canvas;
     }
 
@@ -195,7 +195,7 @@ export default class VideoContext{
     * @example
     * var canvasElement = document.getElemenyById("canvas");
     * var ctx = new VideoContext(canvasElement);
-    * var videoNode = ctx.createVideoSourceNode("video.mp4");
+    * var videoNode = ctx.video("video.mp4");
     * videoNode.connect(ctx.destination);
     * videoNode.start(0);
     * videoNode.stop(20);
@@ -228,7 +228,7 @@ export default class VideoContext{
     * @example
     * var canvasElement = document.getElemenyById("canvas");
     * var ctx = new VideoContext(canvasElement);
-    * var videoNode = ctx.createVideoSourceNode("video.mp4");
+    * var videoNode = ctx.video("video.mp4");
     * videoNode.connect(ctx.destination);
     * videoNode.start(0);
     * videoNode.stop(10);
@@ -250,7 +250,7 @@ export default class VideoContext{
     * var ctx = new VideoContext(canvasElement);
     * console.log(ctx.duration); //prints 0
     *
-    * var videoNode = ctx.createVideoSourceNode("video.mp4");
+    * var videoNode = ctx.video("video.mp4");
     * videoNode.connect(ctx.destination);
     * videoNode.start(0);
     * videoNode.stop(10);
@@ -279,7 +279,7 @@ export default class VideoContext{
     * @example
     * var canvasElement = document.getElemenyById("canvas");
     * var ctx = new VideoContext(canvasElement);
-    * var videoNode = ctx.createVideoSourceNode("video.mp4");
+    * var videoNode = ctx.video("video.mp4");
     * videoNode.start(0);
     * videoNode.stop(10);
     * videoNode.connect(ctx.destination);
@@ -298,7 +298,7 @@ export default class VideoContext{
     * @example
     * var canvasElement = document.getElemenyById("canvas");
     * var ctx = new VideoContext(canvasElement);
-    * var videoNode = ctx.createVideoSourceNode("video.mp4");
+    * var videoNode = ctx.video("video.mp4");
     * videoNode.start(0);
     * videoNode.stop(10);
     * videoNode.connect(ctx.destination);
@@ -327,7 +327,7 @@ export default class VideoContext{
     * @example
     * var canvasElement = document.getElemenyById("canvas");
     * var ctx = new VideoContext(canvasElement);
-    * var videoNode = ctx.createVideoSourceNode("video.mp4");
+    * var videoNode = ctx.video("video.mp4");
     * videoNode.connect(ctx.destination);
     * videoNode.start(0);
     * videoNode.stop(10);
@@ -344,7 +344,7 @@ export default class VideoContext{
     * @example
     * var canvasElement = document.getElemenyById("canvas");
     * var ctx = new VideoContext(canvasElement);
-    * var videoNode = ctx.createVideoSourceNode("video.mp4");
+    * var videoNode = ctx.video("video.mp4");
     * videoNode.connect(ctx.destination);
     * videoNode.start(0);
     * videoNode.stop(20);
@@ -358,6 +358,10 @@ export default class VideoContext{
         return true;
     }
 
+
+
+
+
     /**
     * Create a new node representing a video source
     *
@@ -366,19 +370,28 @@ export default class VideoContext{
     * @example
     * var canvasElement = document.getElemenyById("canvas");
     * var ctx = new VideoContext(canvasElement);
-    * var videoNode = ctx.createVideoSourceNode("video.mp4");
+    * var videoNode = ctx.video("video.mp4");
     *
     * @example
     * var canvasElement = document.getElemenyById("canvas");
     * var videoElement = document.getElemenyById("video");
     * var ctx = new VideoContext(canvasElement);
-    * var videoNode = ctx.createVideoSourceNode(videoElement);
+    * var videoNode = ctx.video(videoElement);
     */
-    createVideoSourceNode(src, sourceOffset=0, preloadTime=4, videoElementAttributes={}){
+    video(src, sourceOffset=0, preloadTime=4, videoElementAttributes={}){
         let videoNode = new VideoNode(src, this._gl, this._renderGraph, this._currentTime, this._playbackRate, sourceOffset, preloadTime, videoElementAttributes);
         this._sourceNodes.push(videoNode);
         return videoNode;
     }
+
+    /**
+    * @depricated
+    */
+    createVideoSourceNode(src, sourceOffset=0, preloadTime=4, videoElementAttributes={}){
+        console.log("Warning: createVideoSourceNode will be depricated in v1.0, please switch to using VideoContext.video()");
+        return this.video(src, sourceOffset, preloadTime, videoElementAttributes);
+    }
+
 
     /**
     * Create a new node representing an image source
@@ -388,41 +401,65 @@ export default class VideoContext{
     * @example
     * var canvasElement = document.getElemenyById("canvas");
     * var ctx = new VideoContext(canvasElement);
-    * var imageNode = ctx.createVideoSourceNode("image.png");
+    * var imageNode = ctx.image("image.png");
     *
     * @example
     * var canvasElement = document.getElemenyById("canvas");
     * var imageElement = document.getElemenyById("image");
     * var ctx = new VideoContext(canvasElement);
-    * var imageNode = ctx.createVideoSourceNode(imageElement);
+    * var imageNode = ctx.image(imageElement);
     */
-    createImageSourceNode(src, sourceOffset=0, preloadTime=4, imageElementAttributes={}){
+    image(src, sourceOffset=0, preloadTime=4, imageElementAttributes={}){
         let imageNode = new ImageNode(src, this._gl, this._renderGraph, this._currentTime, preloadTime, imageElementAttributes);
         this._sourceNodes.push(imageNode);
         return imageNode;
     }
 
     /**
+    * @depricated
+    */
+    createImageSourceNode(src, sourceOffset=0, preloadTime=4, imageElementAttributes={}){
+        console.log("Warning: createImageSourceNode will be depricated in v1.0, please switch to using VideoContext.image()");
+        return this.image(src, sourceOffset, preloadTime, imageElementAttributes);
+    }
+
+
+    /**
     * Create a new node representing a canvas source
     *
     * @return {CanvasNode} A new canvas node.
     */
-    createCanvasSourceNode(canvas, sourceOffset=0, preloadTime=4){
+    canvas(canvas, sourceOffset=0, preloadTime=4){
         let canvasNode = new CanvasNode(canvas, this._gl, this._renderGraph, this._currentTime, preloadTime);
         this._sourceNodes.push(canvasNode);
         return canvasNode;
+    }    
+    
+    /**
+    * @depricated
+    */
+    createCanvasSourceNode(canvas, sourceOffset=0, preloadTime=4){
+        console.log("Warning: createCanvasSourceNode will be depricated in v1.0, please switch to using VideoContext.canvas()");
+        return this.canvas(canvas, sourceOffset, preloadTime);
     }
-
 
 
     /**
     * Create a new effect node.
     * @return {EffectNode} A new effect node created from the passed definition
     */
-    createEffectNode(definition){
+    effect(definition){
         let effectNode = new EffectNode(this._gl, this._renderGraph, definition);
         this._processingNodes.push(effectNode);
         return effectNode;
+    }
+    
+    /**
+    * @depricated
+    */
+    createEffectNode(definition){
+        console.log("Warning: createEffectNode will be depricated in v1.0, please switch to using VideoContext.effect()");
+        return this.effect(definition);
     }
 
     /**
@@ -468,13 +505,13 @@ export default class VideoContext{
     *     inputs:["u_image"]
     * };
     * //Create the node, passing in the definition.
-    * var trackNode = videoCtx.createCompositingNode(combineDefinition);
+    * var trackNode = videoCtx.compositor(combineDefinition);
     *
     * //create two videos which will play at back to back
-    * var videoNode1 = ctx.createVideoSourceNode("video1.mp4");
+    * var videoNode1 = ctx.video("video1.mp4");
     * videoNode1.play(0);
     * videoNode1.stop(10);
-    * var videoNode2 = ctx.createVideoSourceNode("video2.mp4");
+    * var videoNode2 = ctx.video("video2.mp4");
     * videoNode2.play(10);
     * videoNode2.stop(20);
     *
@@ -487,11 +524,21 @@ export default class VideoContext{
     * trackNode.connect(ctx.destination);
     *
     */
-    createCompositingNode(definition){
+    compositor(definition){
         let compositingNode = new CompositingNode(this._gl, this._renderGraph, definition);
         this._processingNodes.push(compositingNode);
-        return compositingNode;
+        return compositingNode;    
     }
+
+    /**
+    * @depricated
+    */
+    createCompositingNode(definition){
+        console.log("Warning: createCompositingNode will be depricated in v1.0, please switch to using VideoContext.compositor()");
+        return this.compositor(definition);
+    }
+
+
 
     /**
     * Create a new transition node.
@@ -548,13 +595,13 @@ export default class VideoContext{
     * };
     *
     * //Create the node, passing in the definition.
-    * var transitionNode = videoCtx.createTransitionNode(crossfadeDefinition);
+    * var transitionNode = videoCtx.transition(crossfadeDefinition);
     *
     * //create two videos which will overlap by two seconds
-    * var videoNode1 = ctx.createVideoSourceNode("video1.mp4");
+    * var videoNode1 = ctx.video("video1.mp4");
     * videoNode1.play(0);
     * videoNode1.stop(10);
-    * var videoNode2 = ctx.createVideoSourceNode("video2.mp4");
+    * var videoNode2 = ctx.video("video2.mp4");
     * videoNode2.play(8);
     * videoNode2.stop(18);
     *
@@ -571,11 +618,22 @@ export default class VideoContext{
     * //start playback
     * ctx.play();
     */
-    createTransitionNode(definition){
+    transition(definition){
         let transitionNode = new TransitionNode(this._gl, this._renderGraph, definition);
         this._processingNodes.push(transitionNode);
         return transitionNode;
     }
+    
+    /**
+    * @depricated
+    */
+    createTransitionNode(definition){
+        console.log("Warning: createTransitionNode will be depricated in v1.0, please switch to using VideoContext.transition()");
+        return this.transition(definition);
+    }
+
+
+
 
     _isStalled(){
         for (let i = 0; i < this._sourceNodes.length; i++) {
