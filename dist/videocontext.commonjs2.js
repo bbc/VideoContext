@@ -9993,6 +9993,7 @@ module.exports =
 	                var input = _step.value;
 	
 	                var inputID = undefined;
+	                var inputIndex = node.inputs.indexOf(input);
 	                var index = vc._processingNodes.indexOf(input);
 	                if (index > -1) {
 	                    inputID = "processor" + index;
@@ -10004,7 +10005,7 @@ module.exports =
 	                        console.log("Warning, can't find input", input);
 	                    }
 	                }
-	                inputs.push(inputID);
+	                inputs.push({ id: inputID, index: inputIndex });
 	            }
 	        } catch (err) {
 	            _didIteratorError = true;

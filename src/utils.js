@@ -83,7 +83,9 @@ export function exportToJSON(vc){
     function getInputIDs(node, vc){
         let inputs = [];
         for (let input of node.inputs){
+            if (input === undefined)continue;
             let inputID;
+            let inputIndex = node.inputs.indexOf(input);
             let index = vc._processingNodes.indexOf(input);
             if (index > -1){
                 inputID = "processor" + index;
@@ -95,7 +97,7 @@ export function exportToJSON(vc){
                     console.log("Warning, can't find input",input);
                 }
             }
-            inputs.push(inputID);
+            inputs.push({id:inputID, index:inputIndex});
         }
         return inputs;
     }
