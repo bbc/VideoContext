@@ -55,9 +55,13 @@ var VideoContext =
 	
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 	
+	var _get = function get(_x19, _x20, _x21) { var _again = true; _function: while (_again) { var object = _x19, property = _x20, receiver = _x21; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x19 = parent; _x20 = property; _x21 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
 	__webpack_require__(1);
 	
@@ -101,9 +105,15 @@ var VideoContext =
 	
 	var _DefinitionsDefinitionsJs2 = _interopRequireDefault(_DefinitionsDefinitionsJs);
 	
+	var _eventemitter3 = __webpack_require__(331);
+	
+	var _eventemitter32 = _interopRequireDefault(_eventemitter3);
+	
 	var updateablesManager = new _utilsJs.UpdateablesManager();
 	
-	var VideoContext = (function () {
+	var VideoContext = (function (_EventEmitter) {
+	    _inherits(VideoContext, _EventEmitter);
+	
 	    /**
 	    * Initialise the VideoContext and render to the specific canvas. A 2nd parameter can be passed to the constructor which is a function that get's called if the VideoContext fails to initialise.
 	    *
@@ -123,6 +133,7 @@ var VideoContext =
 	
 	        _classCallCheck(this, VideoContext);
 	
+	        _get(Object.getPrototypeOf(VideoContext.prototype), "constructor", this).call(this);
 	        this._canvas = canvas;
 	        var manualUpdate = false;
 	        this.endOnLastSourceEnd = true;
@@ -268,8 +279,7 @@ var VideoContext =
 	    }, {
 	        key: "registerCallback",
 	        value: function registerCallback(type, func) {
-	            if (!this._callbacks.has(type)) return false;
-	            this._callbacks.get(type).push(func);
+	            this.on("type", func);
 	        }
 	
 	        /**
@@ -292,66 +302,8 @@ var VideoContext =
 	        */
 	    }, {
 	        key: "unregisterCallback",
-	        value: function unregisterCallback(func) {
-	            var _iteratorNormalCompletion3 = true;
-	            var _didIteratorError3 = false;
-	            var _iteratorError3 = undefined;
-	
-	            try {
-	                for (var _iterator3 = this._callbacks.values()[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-	                    var funcArray = _step3.value;
-	
-	                    var index = funcArray.indexOf(func);
-	                    if (index !== -1) {
-	                        funcArray.splice(index, 1);
-	                        return true;
-	                    }
-	                }
-	            } catch (err) {
-	                _didIteratorError3 = true;
-	                _iteratorError3 = err;
-	            } finally {
-	                try {
-	                    if (!_iteratorNormalCompletion3 && _iterator3["return"]) {
-	                        _iterator3["return"]();
-	                    }
-	                } finally {
-	                    if (_didIteratorError3) {
-	                        throw _iteratorError3;
-	                    }
-	                }
-	            }
-	
-	            return false;
-	        }
-	    }, {
-	        key: "_callCallbacks",
-	        value: function _callCallbacks(type) {
-	            var funcArray = this._callbacks.get(type);
-	            var _iteratorNormalCompletion4 = true;
-	            var _didIteratorError4 = false;
-	            var _iteratorError4 = undefined;
-	
-	            try {
-	                for (var _iterator4 = funcArray[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-	                    var func = _step4.value;
-	
-	                    func(this._currentTime);
-	                }
-	            } catch (err) {
-	                _didIteratorError4 = true;
-	                _iteratorError4 = err;
-	            } finally {
-	                try {
-	                    if (!_iteratorNormalCompletion4 && _iterator4["return"]) {
-	                        _iterator4["return"]();
-	                    }
-	                } finally {
-	                    if (_didIteratorError4) {
-	                        throw _iteratorError4;
-	                    }
-	                }
-	            }
+	        value: function unregisterCallback(type, func) {
+	            return this.removeListener(type, func);
 	        }
 	
 	        /**
@@ -752,11 +704,10 @@ var VideoContext =
 	        key: "_update",
 	        value: function _update(dt) {
 	            if (this._state === VideoContext.STATE.PLAYING || this._state === VideoContext.STATE.STALLED || this._state === VideoContext.STATE.PAUSED) {
-	                this._callCallbacks("update");
-	
+	                this.emit("update");
 	                if (this._state !== VideoContext.STATE.PAUSED) {
 	                    if (this._isStalled()) {
-	                        this._callCallbacks("stalled");
+	                        this.emit("stalled");
 	                        this._state = VideoContext.STATE.STALLED;
 	                    } else {
 	                        this._state = VideoContext.STATE.PLAYING;
@@ -766,13 +717,13 @@ var VideoContext =
 	                if (this._state === VideoContext.STATE.PLAYING) {
 	                    //Handle timeline callbacks.
 	                    var activeCallbacks = new Map();
-	                    var _iteratorNormalCompletion5 = true;
-	                    var _didIteratorError5 = false;
-	                    var _iteratorError5 = undefined;
+	                    var _iteratorNormalCompletion3 = true;
+	                    var _didIteratorError3 = false;
+	                    var _iteratorError3 = undefined;
 	
 	                    try {
-	                        for (var _iterator5 = this._timelineCallbacks[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-	                            var callback = _step5.value;
+	                        for (var _iterator3 = this._timelineCallbacks[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+	                            var callback = _step3.value;
 	
 	                            if (callback.time >= this.currentTime && callback.time < this._currentTime + dt * this._playbackRate) {
 	                                //group the callbacks by time
@@ -783,16 +734,16 @@ var VideoContext =
 	
 	                        //Sort the groups of callbacks by the times of the groups
 	                    } catch (err) {
-	                        _didIteratorError5 = true;
-	                        _iteratorError5 = err;
+	                        _didIteratorError3 = true;
+	                        _iteratorError3 = err;
 	                    } finally {
 	                        try {
-	                            if (!_iteratorNormalCompletion5 && _iterator5["return"]) {
-	                                _iterator5["return"]();
+	                            if (!_iteratorNormalCompletion3 && _iterator3["return"]) {
+	                                _iterator3["return"]();
 	                            }
 	                        } finally {
-	                            if (_didIteratorError5) {
-	                                throw _iteratorError5;
+	                            if (_didIteratorError3) {
+	                                throw _iteratorError3;
 	                            }
 	                        }
 	                    }
@@ -802,39 +753,39 @@ var VideoContext =
 	                        return a - b;
 	                    });
 	
-	                    var _iteratorNormalCompletion6 = true;
-	                    var _didIteratorError6 = false;
-	                    var _iteratorError6 = undefined;
+	                    var _iteratorNormalCompletion4 = true;
+	                    var _didIteratorError4 = false;
+	                    var _iteratorError4 = undefined;
 	
 	                    try {
-	                        for (var _iterator6 = timeIntervals[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-	                            var t = _step6.value;
+	                        for (var _iterator4 = timeIntervals[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+	                            var t = _step4.value;
 	
 	                            var callbacks = activeCallbacks.get(t);
 	                            callbacks.sort(function (a, b) {
 	                                return a.ordering - b.ordering;
 	                            });
-	                            var _iteratorNormalCompletion7 = true;
-	                            var _didIteratorError7 = false;
-	                            var _iteratorError7 = undefined;
+	                            var _iteratorNormalCompletion5 = true;
+	                            var _didIteratorError5 = false;
+	                            var _iteratorError5 = undefined;
 	
 	                            try {
-	                                for (var _iterator7 = callbacks[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
-	                                    var callback = _step7.value;
+	                                for (var _iterator5 = callbacks[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+	                                    var callback = _step5.value;
 	
 	                                    callback.func();
 	                                }
 	                            } catch (err) {
-	                                _didIteratorError7 = true;
-	                                _iteratorError7 = err;
+	                                _didIteratorError5 = true;
+	                                _iteratorError5 = err;
 	                            } finally {
 	                                try {
-	                                    if (!_iteratorNormalCompletion7 && _iterator7["return"]) {
-	                                        _iterator7["return"]();
+	                                    if (!_iteratorNormalCompletion5 && _iterator5["return"]) {
+	                                        _iterator5["return"]();
 	                                    }
 	                                } finally {
-	                                    if (_didIteratorError7) {
-	                                        throw _iteratorError7;
+	                                    if (_didIteratorError5) {
+	                                        throw _iteratorError5;
 	                                    }
 	                                }
 	                            }
@@ -847,23 +798,23 @@ var VideoContext =
 	                        //     callback.func();
 	                        // }
 	                    } catch (err) {
-	                        _didIteratorError6 = true;
-	                        _iteratorError6 = err;
+	                        _didIteratorError4 = true;
+	                        _iteratorError4 = err;
 	                    } finally {
 	                        try {
-	                            if (!_iteratorNormalCompletion6 && _iterator6["return"]) {
-	                                _iterator6["return"]();
+	                            if (!_iteratorNormalCompletion4 && _iterator4["return"]) {
+	                                _iterator4["return"]();
 	                            }
 	                        } finally {
-	                            if (_didIteratorError6) {
-	                                throw _iteratorError6;
+	                            if (_didIteratorError4) {
+	                                throw _iteratorError4;
 	                            }
 	                        }
 	                    }
 	
 	                    this._currentTime += dt * this._playbackRate;
 	                    if (this._currentTime > this.duration && this._endOnLastSourceEnd) {
-	                        this._callCallbacks("ended");
+	                        this.emit("ended");
 	                        this._state = VideoContext.STATE.ENDED;
 	                    }
 	                }
@@ -902,13 +853,13 @@ var VideoContext =
 	                while (nodes.length > 0) {
 	                    var node = nodes.pop();
 	                    sortedNodes.push(node);
-	                    var _iteratorNormalCompletion8 = true;
-	                    var _didIteratorError8 = false;
-	                    var _iteratorError8 = undefined;
+	                    var _iteratorNormalCompletion6 = true;
+	                    var _didIteratorError6 = false;
+	                    var _iteratorError6 = undefined;
 	
 	                    try {
-	                        for (var _iterator8 = _rendergraphJs2["default"].outputEdgesFor(node, connections)[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
-	                            var edge = _step8.value;
+	                        for (var _iterator6 = _rendergraphJs2["default"].outputEdgesFor(node, connections)[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+	                            var edge = _step6.value;
 	
 	                            var index = connections.indexOf(edge);
 	                            if (index > -1) connections.splice(index, 1);
@@ -917,28 +868,28 @@ var VideoContext =
 	                            }
 	                        }
 	                    } catch (err) {
-	                        _didIteratorError8 = true;
-	                        _iteratorError8 = err;
+	                        _didIteratorError6 = true;
+	                        _iteratorError6 = err;
 	                    } finally {
 	                        try {
-	                            if (!_iteratorNormalCompletion8 && _iterator8["return"]) {
-	                                _iterator8["return"]();
+	                            if (!_iteratorNormalCompletion6 && _iterator6["return"]) {
+	                                _iterator6["return"]();
 	                            }
 	                        } finally {
-	                            if (_didIteratorError8) {
-	                                throw _iteratorError8;
+	                            if (_didIteratorError6) {
+	                                throw _iteratorError6;
 	                            }
 	                        }
 	                    }
 	                }
 	
-	                var _iteratorNormalCompletion9 = true;
-	                var _didIteratorError9 = false;
-	                var _iteratorError9 = undefined;
+	                var _iteratorNormalCompletion7 = true;
+	                var _didIteratorError7 = false;
+	                var _iteratorError7 = undefined;
 	
 	                try {
-	                    for (var _iterator9 = sortedNodes[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
-	                        var node = _step9.value;
+	                    for (var _iterator7 = sortedNodes[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+	                        var node = _step7.value;
 	
 	                        if (this._sourceNodes.indexOf(node) === -1) {
 	                            node._update(this._currentTime);
@@ -952,16 +903,16 @@ var VideoContext =
 	                    }
 	                    this._destinationNode._render();*/
 	                } catch (err) {
-	                    _didIteratorError9 = true;
-	                    _iteratorError9 = err;
+	                    _didIteratorError7 = true;
+	                    _iteratorError7 = err;
 	                } finally {
 	                    try {
-	                        if (!_iteratorNormalCompletion9 && _iterator9["return"]) {
-	                            _iterator9["return"]();
+	                        if (!_iteratorNormalCompletion7 && _iterator7["return"]) {
+	                            _iterator7["return"]();
 	                        }
 	                    } finally {
-	                        if (_didIteratorError9) {
-	                            throw _iteratorError9;
+	                        if (_didIteratorError7) {
+	                            throw _iteratorError7;
 	                        }
 	                    }
 	                }
@@ -1123,27 +1074,27 @@ var VideoContext =
 	    }, {
 	        key: "playbackRate",
 	        set: function set(rate) {
-	            var _iteratorNormalCompletion10 = true;
-	            var _didIteratorError10 = false;
-	            var _iteratorError10 = undefined;
+	            var _iteratorNormalCompletion8 = true;
+	            var _didIteratorError8 = false;
+	            var _iteratorError8 = undefined;
 	
 	            try {
-	                for (var _iterator10 = this._sourceNodes[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
-	                    var node = _step10.value;
+	                for (var _iterator8 = this._sourceNodes[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+	                    var node = _step8.value;
 	
 	                    if (node.constructor.name === "VideoNode") node._globalPlaybackRate = rate;
 	                }
 	            } catch (err) {
-	                _didIteratorError10 = true;
-	                _iteratorError10 = err;
+	                _didIteratorError8 = true;
+	                _iteratorError8 = err;
 	            } finally {
 	                try {
-	                    if (!_iteratorNormalCompletion10 && _iterator10["return"]) {
-	                        _iterator10["return"]();
+	                    if (!_iteratorNormalCompletion8 && _iterator8["return"]) {
+	                        _iterator8["return"]();
 	                    }
 	                } finally {
-	                    if (_didIteratorError10) {
-	                        throw _iteratorError10;
+	                    if (_didIteratorError8) {
+	                        throw _iteratorError8;
 	                    }
 	                }
 	            }
@@ -1166,7 +1117,7 @@ var VideoContext =
 	    }]);
 	
 	    return VideoContext;
-	})();
+	})(_eventemitter32["default"]);
 	
 	exports["default"] = VideoContext;
 	VideoContext.STATE = {};
@@ -13355,6 +13306,323 @@ var VideoContext =
 	
 	exports["default"] = dreamfade;
 	module.exports = exports["default"];
+
+/***/ },
+/* 331 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var has = Object.prototype.hasOwnProperty
+	  , prefix = '~';
+	
+	/**
+	 * Constructor to create a storage for our `EE` objects.
+	 * An `Events` instance is a plain object whose properties are event names.
+	 *
+	 * @constructor
+	 * @api private
+	 */
+	function Events() {}
+	
+	//
+	// We try to not inherit from `Object.prototype`. In some engines creating an
+	// instance in this way is faster than calling `Object.create(null)` directly.
+	// If `Object.create(null)` is not supported we prefix the event names with a
+	// character to make sure that the built-in object properties are not
+	// overridden or used as an attack vector.
+	//
+	if (Object.create) {
+	  Events.prototype = Object.create(null);
+	
+	  //
+	  // This hack is needed because the `__proto__` property is still inherited in
+	  // some old browsers like Android 4, iPhone 5.1, Opera 11 and Safari 5.
+	  //
+	  if (!new Events().__proto__) prefix = false;
+	}
+	
+	/**
+	 * Representation of a single event listener.
+	 *
+	 * @param {Function} fn The listener function.
+	 * @param {Mixed} context The context to invoke the listener with.
+	 * @param {Boolean} [once=false] Specify if the listener is a one-time listener.
+	 * @constructor
+	 * @api private
+	 */
+	function EE(fn, context, once) {
+	  this.fn = fn;
+	  this.context = context;
+	  this.once = once || false;
+	}
+	
+	/**
+	 * Minimal `EventEmitter` interface that is molded against the Node.js
+	 * `EventEmitter` interface.
+	 *
+	 * @constructor
+	 * @api public
+	 */
+	function EventEmitter() {
+	  this._events = new Events();
+	  this._eventsCount = 0;
+	}
+	
+	/**
+	 * Return an array listing the events for which the emitter has registered
+	 * listeners.
+	 *
+	 * @returns {Array}
+	 * @api public
+	 */
+	EventEmitter.prototype.eventNames = function eventNames() {
+	  var names = []
+	    , events
+	    , name;
+	
+	  if (this._eventsCount === 0) return names;
+	
+	  for (name in (events = this._events)) {
+	    if (has.call(events, name)) names.push(prefix ? name.slice(1) : name);
+	  }
+	
+	  if (Object.getOwnPropertySymbols) {
+	    return names.concat(Object.getOwnPropertySymbols(events));
+	  }
+	
+	  return names;
+	};
+	
+	/**
+	 * Return the listeners registered for a given event.
+	 *
+	 * @param {String|Symbol} event The event name.
+	 * @param {Boolean} exists Only check if there are listeners.
+	 * @returns {Array|Boolean}
+	 * @api public
+	 */
+	EventEmitter.prototype.listeners = function listeners(event, exists) {
+	  var evt = prefix ? prefix + event : event
+	    , available = this._events[evt];
+	
+	  if (exists) return !!available;
+	  if (!available) return [];
+	  if (available.fn) return [available.fn];
+	
+	  for (var i = 0, l = available.length, ee = new Array(l); i < l; i++) {
+	    ee[i] = available[i].fn;
+	  }
+	
+	  return ee;
+	};
+	
+	/**
+	 * Calls each of the listeners registered for a given event.
+	 *
+	 * @param {String|Symbol} event The event name.
+	 * @returns {Boolean} `true` if the event had listeners, else `false`.
+	 * @api public
+	 */
+	EventEmitter.prototype.emit = function emit(event, a1, a2, a3, a4, a5) {
+	  var evt = prefix ? prefix + event : event;
+	
+	  if (!this._events[evt]) return false;
+	
+	  var listeners = this._events[evt]
+	    , len = arguments.length
+	    , args
+	    , i;
+	
+	  if (listeners.fn) {
+	    if (listeners.once) this.removeListener(event, listeners.fn, undefined, true);
+	
+	    switch (len) {
+	      case 1: return listeners.fn.call(listeners.context), true;
+	      case 2: return listeners.fn.call(listeners.context, a1), true;
+	      case 3: return listeners.fn.call(listeners.context, a1, a2), true;
+	      case 4: return listeners.fn.call(listeners.context, a1, a2, a3), true;
+	      case 5: return listeners.fn.call(listeners.context, a1, a2, a3, a4), true;
+	      case 6: return listeners.fn.call(listeners.context, a1, a2, a3, a4, a5), true;
+	    }
+	
+	    for (i = 1, args = new Array(len -1); i < len; i++) {
+	      args[i - 1] = arguments[i];
+	    }
+	
+	    listeners.fn.apply(listeners.context, args);
+	  } else {
+	    var length = listeners.length
+	      , j;
+	
+	    for (i = 0; i < length; i++) {
+	      if (listeners[i].once) this.removeListener(event, listeners[i].fn, undefined, true);
+	
+	      switch (len) {
+	        case 1: listeners[i].fn.call(listeners[i].context); break;
+	        case 2: listeners[i].fn.call(listeners[i].context, a1); break;
+	        case 3: listeners[i].fn.call(listeners[i].context, a1, a2); break;
+	        case 4: listeners[i].fn.call(listeners[i].context, a1, a2, a3); break;
+	        default:
+	          if (!args) for (j = 1, args = new Array(len -1); j < len; j++) {
+	            args[j - 1] = arguments[j];
+	          }
+	
+	          listeners[i].fn.apply(listeners[i].context, args);
+	      }
+	    }
+	  }
+	
+	  return true;
+	};
+	
+	/**
+	 * Add a listener for a given event.
+	 *
+	 * @param {String|Symbol} event The event name.
+	 * @param {Function} fn The listener function.
+	 * @param {Mixed} [context=this] The context to invoke the listener with.
+	 * @returns {EventEmitter} `this`.
+	 * @api public
+	 */
+	EventEmitter.prototype.on = function on(event, fn, context) {
+	  var listener = new EE(fn, context || this)
+	    , evt = prefix ? prefix + event : event;
+	
+	  if (!this._events[evt]) this._events[evt] = listener, this._eventsCount++;
+	  else if (!this._events[evt].fn) this._events[evt].push(listener);
+	  else this._events[evt] = [this._events[evt], listener];
+	
+	  return this;
+	};
+	
+	/**
+	 * Add a one-time listener for a given event.
+	 *
+	 * @param {String|Symbol} event The event name.
+	 * @param {Function} fn The listener function.
+	 * @param {Mixed} [context=this] The context to invoke the listener with.
+	 * @returns {EventEmitter} `this`.
+	 * @api public
+	 */
+	EventEmitter.prototype.once = function once(event, fn, context) {
+	  var listener = new EE(fn, context || this, true)
+	    , evt = prefix ? prefix + event : event;
+	
+	  if (!this._events[evt]) this._events[evt] = listener, this._eventsCount++;
+	  else if (!this._events[evt].fn) this._events[evt].push(listener);
+	  else this._events[evt] = [this._events[evt], listener];
+	
+	  return this;
+	};
+	
+	/**
+	 * Remove the listeners of a given event.
+	 *
+	 * @param {String|Symbol} event The event name.
+	 * @param {Function} fn Only remove the listeners that match this function.
+	 * @param {Mixed} context Only remove the listeners that have this context.
+	 * @param {Boolean} once Only remove one-time listeners.
+	 * @returns {EventEmitter} `this`.
+	 * @api public
+	 */
+	EventEmitter.prototype.removeListener = function removeListener(event, fn, context, once) {
+	  var evt = prefix ? prefix + event : event;
+	
+	  if (!this._events[evt]) return this;
+	  if (!fn) {
+	    if (--this._eventsCount === 0) this._events = new Events();
+	    else delete this._events[evt];
+	    return this;
+	  }
+	
+	  var listeners = this._events[evt];
+	
+	  if (listeners.fn) {
+	    if (
+	         listeners.fn === fn
+	      && (!once || listeners.once)
+	      && (!context || listeners.context === context)
+	    ) {
+	      if (--this._eventsCount === 0) this._events = new Events();
+	      else delete this._events[evt];
+	    }
+	  } else {
+	    for (var i = 0, events = [], length = listeners.length; i < length; i++) {
+	      if (
+	           listeners[i].fn !== fn
+	        || (once && !listeners[i].once)
+	        || (context && listeners[i].context !== context)
+	      ) {
+	        events.push(listeners[i]);
+	      }
+	    }
+	
+	    //
+	    // Reset the array, or remove it completely if we have no more listeners.
+	    //
+	    if (events.length) this._events[evt] = events.length === 1 ? events[0] : events;
+	    else if (--this._eventsCount === 0) this._events = new Events();
+	    else delete this._events[evt];
+	  }
+	
+	  return this;
+	};
+	
+	/**
+	 * Remove all listeners, or those of the specified event.
+	 *
+	 * @param {String|Symbol} [event] The event name.
+	 * @returns {EventEmitter} `this`.
+	 * @api public
+	 */
+	EventEmitter.prototype.removeAllListeners = function removeAllListeners(event) {
+	  var evt;
+	
+	  if (event) {
+	    evt = prefix ? prefix + event : event;
+	    if (this._events[evt]) {
+	      if (--this._eventsCount === 0) this._events = new Events();
+	      else delete this._events[evt];
+	    }
+	  } else {
+	    this._events = new Events();
+	    this._eventsCount = 0;
+	  }
+	
+	  return this;
+	};
+	
+	//
+	// Alias methods names because people roll like that.
+	//
+	EventEmitter.prototype.off = EventEmitter.prototype.removeListener;
+	EventEmitter.prototype.addListener = EventEmitter.prototype.on;
+	
+	//
+	// This function doesn't apply anymore.
+	//
+	EventEmitter.prototype.setMaxListeners = function setMaxListeners() {
+	  return this;
+	};
+	
+	//
+	// Expose the prefix.
+	//
+	EventEmitter.prefixed = prefix;
+	
+	//
+	// Allow `EventEmitter` to be imported as module namespace.
+	//
+	EventEmitter.EventEmitter = EventEmitter;
+	
+	//
+	// Expose the module.
+	//
+	if (true) {
+	  module.exports = EventEmitter;
+	}
+
 
 /***/ }
 /******/ ]);

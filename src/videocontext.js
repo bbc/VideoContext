@@ -12,10 +12,10 @@ import TransitionNode from "./ProcessingNodes/transitionnode.js";
 import RenderGraph from "./rendergraph.js";
 import { createSigmaGraphDataFromRenderGraph, visualiseVideoContextTimeline, visualiseVideoContextGraph, createControlFormForNode, UpdateablesManager, exportToJSON } from "./utils.js";
 import DEFINITIONS from "./Definitions/definitions.js";
-
+import EventEmitter from "eventemitter3";
 let updateablesManager = new UpdateablesManager();
 
-export default class VideoContext{
+export default class VideoContext extends EventEmitter{
     /**
     * Initialise the VideoContext and render to the specific canvas. A 2nd parameter can be passed to the constructor which is a function that get's called if the VideoContext fails to initialise.
     *
@@ -30,6 +30,7 @@ export default class VideoContext{
     *
     */
     constructor(canvas, initErrorCallback, options={"preserveDrawingBuffer":true, "manualUpdate":false, "endOnLastSourceEnd":true, webglContextAttributes: {preserveDrawingBuffer: true, alpha: false }}){
+        super();
         this._canvas = canvas;
         let manualUpdate = false;
         this.endOnLastSourceEnd = true;
@@ -120,8 +121,7 @@ export default class VideoContext{
     * ctx.registerCallback("ended", function(){console.log("Playback ended");});
     */
     registerCallback(type, func){
-        if (!this._callbacks.has(type)) return false;
-        this._callbacks.get(type).push(func);
+        this.on("type", func);
     }
 
     /**
@@ -142,22 +142,8 @@ export default class VideoContext{
     * ctx.unregisterCallback(updateCallback);
     *
     */
-    unregisterCallback(func){
-        for(let funcArray of this._callbacks.values()){
-            let index = funcArray.indexOf(func);
-            if (index !== -1){
-                funcArray.splice(index, 1);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    _callCallbacks(type){
-        let funcArray = this._callbacks.get(type);
-        for (let func of funcArray){
-            func(this._currentTime);
-        }
+    unregisterCallback(type, func){
+        return this.removeListener(type, func);
     }
 
     /**
@@ -673,11 +659,10 @@ export default class VideoContext{
 
     _update(dt){
         if (this._state === VideoContext.STATE.PLAYING || this._state === VideoContext.STATE.STALLED || this._state === VideoContext.STATE.PAUSED) {
-            this._callCallbacks("update");
-
+            this.emit("update");
             if (this._state !== VideoContext.STATE.PAUSED){
                 if (this._isStalled()){
-                    this._callCallbacks("stalled");
+                    this.emit("stalled");
                     this._state = VideoContext.STATE.STALLED;
                 }else{
                     this._state = VideoContext.STATE.PLAYING;
@@ -722,7 +707,7 @@ export default class VideoContext{
 
                 this._currentTime += dt * this._playbackRate;
                 if(this._currentTime > this.duration && this._endOnLastSourceEnd){
-                    this._callCallbacks("ended");
+                    this.emit("ended");
                     this._state = VideoContext.STATE.ENDED;
                 }
             }
