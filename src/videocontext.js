@@ -121,7 +121,7 @@ export default class VideoContext extends EventEmitter{
     * ctx.registerCallback("ended", function(){console.log("Playback ended");});
     */
     registerCallback(type, func){
-        this.on("type", func);
+        this.on(type, func);
     }
 
     /**

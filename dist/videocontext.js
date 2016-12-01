@@ -279,7 +279,7 @@ var VideoContext =
 	    }, {
 	        key: "registerCallback",
 	        value: function registerCallback(type, func) {
-	            this.on("type", func);
+	            this.on(type, func);
 	        }
 	
 	        /**
