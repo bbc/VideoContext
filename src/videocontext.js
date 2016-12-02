@@ -355,11 +355,13 @@ export default class VideoContext{
         //Mark the elements in the video element cache as being able to be controlled programattically.
         if (this._videoElementCache){
             for (var i = 0; i < this._videoElementCache.length; i++) {
-                let videoElement = this._videoElementCache[i]
+                let videoElement = this._videoElementCache[i];
                 videoElement.play().then(()=>{
-                    videoElement.pause();
-                }, (err)=>{
-                    videoElement.pause();
+                    try {
+                        videoElement.pause();
+                    } catch(e) {
+                        //catch the inevitable DOM exception.
+                    }
                 });
             }    
         }

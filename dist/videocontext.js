@@ -400,9 +400,11 @@ var VideoContext =
 	                var _loop = function () {
 	                    var videoElement = _this._videoElementCache[i];
 	                    videoElement.play().then(function () {
-	                        videoElement.pause();
-	                    }, function (err) {
-	                        videoElement.pause();
+	                        try {
+	                            videoElement.pause();
+	                        } catch (e) {
+	                            //catch the inevitable DOM exception.
+	                        }
 	                    });
 	                };
 	
