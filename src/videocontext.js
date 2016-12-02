@@ -29,7 +29,7 @@ export default class VideoContext{
     * ctx.play();
     *
     */
-    constructor(canvas, initErrorCallback, options={"preserveDrawingBuffer":true, "manualUpdate":false, "endOnLastSourceEnd":true, webglContextAttributes: {preserveDrawingBuffer: true, alpha: false }}){
+    constructor(canvas, initErrorCallback, options={"preserveDrawingBuffer":true, "manualUpdate":false, "endOnLastSourceEnd":true, useVideoElementCache:false, videoElementCacheSize:5, webglContextAttributes: {preserveDrawingBuffer: true, alpha: false }}){
         this._canvas = canvas;
         let manualUpdate = false;
         this.endOnLastSourceEnd = true;
@@ -50,6 +50,22 @@ export default class VideoContext{
             console.error("Failed to intialise WebGL.");
             if(initErrorCallback)initErrorCallback();
             return;
+        }
+
+        // Initialise the video element cache
+        this._useVideoElementCache = options.useVideoElementCache;
+        if (this._useVideoElementCache){
+            this._videoElementCache = [];
+            if (options.videoElementCacheSize === undefined) options.videoElementCacheSize = 5;
+            console.log("USING VIDEO CACHE");
+            console.log(options.videoElementCacheSize);
+            for (var i = 0; i < options.videoElementCacheSize; i++) {
+                let videoElement = document.createElement("video");
+                videoElement.setAttribute("crossorigin", "anonymous");
+                videoElement.setAttribute("webkit-playsinline", "");
+                videoElement.src = "";
+                this._videoElementCache.push(videoElement);
+            }
         }
 
 
@@ -335,6 +351,20 @@ export default class VideoContext{
     */
     play(){
         console.debug("VideoContext - playing");
+        
+        //Mark the elements in the video element cache as being able to be controlled programattically.
+        if (this._videoElementCache){
+            for (var i = 0; i < this._videoElementCache.length; i++) {
+                let videoElement = this._videoElementCache[i]
+                videoElement.play().then(()=>{
+                    videoElement.pause();
+                }, (err)=>{
+                    videoElement.pause();
+                });
+            }    
+        }
+        
+
         this._state = VideoContext.STATE.PLAYING;
         return true;
     }
@@ -359,7 +389,32 @@ export default class VideoContext{
     }
 
 
+    _getVideoElementCacheRemaining(){
+        let cacheCount = 0;
+        if (this._useVideoElementCache){
+            for (var i = 0; i < this._videoElementCache.length; i++) {
+                let videoElement = this._videoElementCache[i];
+                // For some reason an uninitialised videoElement has its sr attribute set to the windows href. Hence the below check.
+                if (videoElement.src === "" || videoElement.src === undefined || videoElement.src === window.location.href)cacheCount += 1;
+            }
+        }
+        return cacheCount;
+    }
 
+    _getCachedVideoElement(){
+        if (this._useVideoElementCache){
+            for (var i = 0; i < this._videoElementCache.length; i++) {
+                let videoElement = this._videoElementCache[i];
+                // For some reason an uninitialised videoElement has its sr attribute set to the windows href. Hence the below check.
+                if (videoElement.src === "" || videoElement.src === undefined || videoElement.src === window.location.href) return videoElement;
+            }    
+        } else {
+            console.error("Video element cache not enabled, pass {useVideoElementCache:true} into the VideoContext constructor.");
+            return;
+        }
+        console.error("No available video element in the cache");
+        return;
+    }
 
 
     /**
@@ -379,7 +434,14 @@ export default class VideoContext{
     * var videoNode = ctx.video(videoElement);
     */
     video(src, sourceOffset=0, preloadTime=4, videoElementAttributes={}){
-        let videoNode = new VideoNode(src, this._gl, this._renderGraph, this._currentTime, this._playbackRate, sourceOffset, preloadTime, videoElementAttributes);
+        let videoNode;
+        if (this._useVideoElementCache && typeof src === "string"){
+            let videoElement = this._getCachedVideoElement();
+            videoElement.src = src;
+            videoNode = new VideoNode(videoElement, this._gl, this._renderGraph, this._currentTime, this._playbackRate, sourceOffset, preloadTime, this._useVideoElementCache, videoElementAttributes);
+        } else{
+            videoNode = new VideoNode(src, this._gl, this._renderGraph, this._currentTime, this._playbackRate, sourceOffset, preloadTime, this._useVideoElementCache, videoElementAttributes);
+        }
         this._sourceNodes.push(videoNode);
         return videoNode;
     }

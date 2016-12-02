@@ -6,11 +6,16 @@ export default class VideoNode extends SourceNode {
     * Initialise an instance of a VideoNode.
     * This should not be called directly, but created through a call to videoContext.createVideoNode();
     */
-    constructor(src, gl, renderGraph, currentTime, globalPlaybackRate=1.0, sourceOffset=0, preloadTime = 4, attributes = {}){
+    constructor(src, gl, renderGraph, currentTime, globalPlaybackRate=1.0, sourceOffset=0, preloadTime = 4, usingVideoElementCache=false, attributes = {}){
         super(src, gl, renderGraph, currentTime);
         this._preloadTime = preloadTime;
         this._sourceOffset = sourceOffset;
         this._globalPlaybackRate = globalPlaybackRate;
+        this._usingVideoElementCache = usingVideoElementCache;
+        if (this._usingVideoElementCache){
+            this._isResponsibleForElementLifeCycle = true;
+            this._element.currentTime = this._sourceOffset;
+        }
         this._playbackRate = 1.0;
         this._playbackRateUpdated = true;
         this._attributes = attributes;
@@ -94,7 +99,7 @@ export default class VideoNode extends SourceNode {
         if (this._isResponsibleForElementLifeCycle && this._element !== undefined){
             this._element.src = "";
             this._element = undefined;
-            delete this._element;
+            if(!this._usingVideoElementCache) delete this._element;
         }
         this._ready = false;
     }

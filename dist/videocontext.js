@@ -119,7 +119,7 @@ var VideoContext =
 	    */
 	
 	    function VideoContext(canvas, initErrorCallback) {
-	        var options = arguments.length <= 2 || arguments[2] === undefined ? { "preserveDrawingBuffer": true, "manualUpdate": false, "endOnLastSourceEnd": true, webglContextAttributes: { preserveDrawingBuffer: true, alpha: false } } : arguments[2];
+	        var options = arguments.length <= 2 || arguments[2] === undefined ? { "preserveDrawingBuffer": true, "manualUpdate": false, "endOnLastSourceEnd": true, useVideoElementCache: false, videoElementCacheSize: 5, webglContextAttributes: { preserveDrawingBuffer: true, alpha: false } } : arguments[2];
 	
 	        _classCallCheck(this, VideoContext);
 	
@@ -142,6 +142,22 @@ var VideoContext =
 	            console.error("Failed to intialise WebGL.");
 	            if (initErrorCallback) initErrorCallback();
 	            return;
+	        }
+	
+	        // Initialise the video element cache
+	        this._useVideoElementCache = options.useVideoElementCache;
+	        if (this._useVideoElementCache) {
+	            this._videoElementCache = [];
+	            if (options.videoElementCacheSize === undefined) options.videoElementCacheSize = 5;
+	            console.log("USING VIDEO CACHE");
+	            console.log(options.videoElementCacheSize);
+	            for (var i = 0; i < options.videoElementCacheSize; i++) {
+	                var videoElement = document.createElement("video");
+	                videoElement.setAttribute("crossorigin", "anonymous");
+	                videoElement.setAttribute("webkit-playsinline", "");
+	                videoElement.src = "";
+	                this._videoElementCache.push(videoElement);
+	            }
 	        }
 	
 	        this._renderGraph = new _rendergraphJs2["default"]();
@@ -375,7 +391,26 @@ var VideoContext =
 	        * ctx.play();
 	        */
 	        value: function play() {
+	            var _this = this;
+	
 	            console.debug("VideoContext - playing");
+	
+	            //Mark the elements in the video element cache as being able to be controlled programattically.
+	            if (this._videoElementCache) {
+	                var _loop = function () {
+	                    var videoElement = _this._videoElementCache[i];
+	                    videoElement.play().then(function () {
+	                        videoElement.pause();
+	                    }, function (err) {
+	                        videoElement.pause();
+	                    });
+	                };
+	
+	                for (var i = 0; i < this._videoElementCache.length; i++) {
+	                    _loop();
+	                }
+	            }
+	
 	            this._state = VideoContext.STATE.PLAYING;
 	            return true;
 	        }
@@ -399,6 +434,35 @@ var VideoContext =
 	            console.debug("VideoContext - pausing");
 	            this._state = VideoContext.STATE.PAUSED;
 	            return true;
+	        }
+	    }, {
+	        key: "_getVideoElementCacheRemaining",
+	        value: function _getVideoElementCacheRemaining() {
+	            var cacheCount = 0;
+	            if (this._useVideoElementCache) {
+	                for (var i = 0; i < this._videoElementCache.length; i++) {
+	                    var videoElement = this._videoElementCache[i];
+	                    // For some reason an uninitialised videoElement has its sr attribute set to the windows href. Hence the below check.
+	                    if (videoElement.src === "" || videoElement.src === undefined || videoElement.src === window.location.href) cacheCount += 1;
+	                }
+	            }
+	            return cacheCount;
+	        }
+	    }, {
+	        key: "_getCachedVideoElement",
+	        value: function _getCachedVideoElement() {
+	            if (this._useVideoElementCache) {
+	                for (var i = 0; i < this._videoElementCache.length; i++) {
+	                    var videoElement = this._videoElementCache[i];
+	                    // For some reason an uninitialised videoElement has its sr attribute set to the windows href. Hence the below check.
+	                    if (videoElement.src === "" || videoElement.src === undefined || videoElement.src === window.location.href) return videoElement;
+	                }
+	            } else {
+	                console.error("Video element cache not enabled, pass {useVideoElementCache:true} into the VideoContext constructor.");
+	                return;
+	            }
+	            console.error("No available video element in the cache");
+	            return;
 	        }
 	
 	        /**
@@ -424,7 +488,14 @@ var VideoContext =
 	            var preloadTime = arguments.length <= 2 || arguments[2] === undefined ? 4 : arguments[2];
 	            var videoElementAttributes = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
 	
-	            var videoNode = new _SourceNodesVideonodeJs2["default"](src, this._gl, this._renderGraph, this._currentTime, this._playbackRate, sourceOffset, preloadTime, videoElementAttributes);
+	            var videoNode = undefined;
+	            if (this._useVideoElementCache && typeof src === "string") {
+	                var videoElement = this._getCachedVideoElement();
+	                videoElement.src = src;
+	                videoNode = new _SourceNodesVideonodeJs2["default"](videoElement, this._gl, this._renderGraph, this._currentTime, this._playbackRate, sourceOffset, preloadTime, this._useVideoElementCache, videoElementAttributes);
+	            } else {
+	                videoNode = new _SourceNodesVideonodeJs2["default"](src, this._gl, this._renderGraph, this._currentTime, this._playbackRate, sourceOffset, preloadTime, this._useVideoElementCache, videoElementAttributes);
+	            }
 	            this._sourceNodes.push(videoNode);
 	            return videoNode;
 	        }
@@ -8457,8 +8528,9 @@ var VideoContext =
 	  runtime = global.regeneratorRuntime = inModule ? module.exports : {};
 	
 	  function wrap(innerFn, outerFn, self, tryLocsList) {
-	    // If outerFn provided, then outerFn.prototype instanceof Generator.
-	    var generator = Object.create((outerFn || Generator).prototype);
+	    // If outerFn provided and outerFn.prototype is a Generator, then outerFn.prototype instanceof Generator.
+	    var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator;
+	    var generator = Object.create(protoGenerator.prototype);
 	    var context = new Context(tryLocsList || []);
 	
 	    // The ._invoke method unifies the implementations of the .next,
@@ -9098,40 +9170,12 @@ var VideoContext =
 	// shim for using process in browser
 	
 	var process = module.exports = {};
-	
-	// cached from whatever global is present so that test runners that stub it
-	// don't break things.  But we need to wrap it in a try catch in case it is
-	// wrapped in strict mode code which doesn't define any globals.  It's inside a
-	// function because try/catches deoptimize in certain engines.
-	
-	var cachedSetTimeout;
-	var cachedClearTimeout;
-	
-	(function () {
-	  try {
-	    cachedSetTimeout = setTimeout;
-	  } catch (e) {
-	    cachedSetTimeout = function () {
-	      throw new Error('setTimeout is not defined');
-	    }
-	  }
-	  try {
-	    cachedClearTimeout = clearTimeout;
-	  } catch (e) {
-	    cachedClearTimeout = function () {
-	      throw new Error('clearTimeout is not defined');
-	    }
-	  }
-	} ())
 	var queue = [];
 	var draining = false;
 	var currentQueue;
 	var queueIndex = -1;
 	
 	function cleanUpNextTick() {
-	    if (!draining || !currentQueue) {
-	        return;
-	    }
 	    draining = false;
 	    if (currentQueue.length) {
 	        queue = currentQueue.concat(queue);
@@ -9147,7 +9191,7 @@ var VideoContext =
 	    if (draining) {
 	        return;
 	    }
-	    var timeout = cachedSetTimeout(cleanUpNextTick);
+	    var timeout = setTimeout(cleanUpNextTick);
 	    draining = true;
 	
 	    var len = queue.length;
@@ -9164,7 +9208,7 @@ var VideoContext =
 	    }
 	    currentQueue = null;
 	    draining = false;
-	    cachedClearTimeout(timeout);
+	    clearTimeout(timeout);
 	}
 	
 	process.nextTick = function (fun) {
@@ -9176,7 +9220,7 @@ var VideoContext =
 	    }
 	    queue.push(new Item(fun, args));
 	    if (queue.length === 1 && !draining) {
-	        cachedSetTimeout(drainQueue, 0);
+	        setTimeout(drainQueue, 0);
 	    }
 	};
 	
@@ -9262,7 +9306,7 @@ var VideoContext =
 	
 	var _set = function set(object, property, value, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent !== null) { set(parent, property, value, receiver); } } else if ("value" in desc && desc.writable) { desc.value = value; } else { var setter = desc.set; if (setter !== undefined) { setter.call(receiver, value); } } return value; };
 	
-	var _get = function get(_x5, _x6, _x7) { var _again = true; _function: while (_again) { var object = _x5, property = _x6, receiver = _x7; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x5 = parent; _x6 = property; _x7 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+	var _get = function get(_x6, _x7, _x8) { var _again = true; _function: while (_again) { var object = _x6, property = _x7, receiver = _x8; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x6 = parent; _x7 = property; _x8 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 	
@@ -9286,7 +9330,8 @@ var VideoContext =
 	        var globalPlaybackRate = arguments.length <= 4 || arguments[4] === undefined ? 1.0 : arguments[4];
 	        var sourceOffset = arguments.length <= 5 || arguments[5] === undefined ? 0 : arguments[5];
 	        var preloadTime = arguments.length <= 6 || arguments[6] === undefined ? 4 : arguments[6];
-	        var attributes = arguments.length <= 7 || arguments[7] === undefined ? {} : arguments[7];
+	        var usingVideoElementCache = arguments.length <= 7 || arguments[7] === undefined ? false : arguments[7];
+	        var attributes = arguments.length <= 8 || arguments[8] === undefined ? {} : arguments[8];
 	
 	        _classCallCheck(this, VideoNode);
 	
@@ -9294,6 +9339,11 @@ var VideoContext =
 	        this._preloadTime = preloadTime;
 	        this._sourceOffset = sourceOffset;
 	        this._globalPlaybackRate = globalPlaybackRate;
+	        this._usingVideoElementCache = usingVideoElementCache;
+	        if (this._usingVideoElementCache) {
+	            this._isResponsibleForElementLifeCycle = true;
+	            this._element.currentTime = this._sourceOffset;
+	        }
 	        this._playbackRate = 1.0;
 	        this._playbackRateUpdated = true;
 	        this._attributes = attributes;
@@ -9352,7 +9402,7 @@ var VideoContext =
 	            if (this._isResponsibleForElementLifeCycle && this._element !== undefined) {
 	                this._element.src = "";
 	                this._element = undefined;
-	                delete this._element;
+	                if (!this._usingVideoElementCache) delete this._element;
 	            }
 	            this._ready = false;
 	        }
