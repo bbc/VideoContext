@@ -95,9 +95,13 @@ var VideoContext =
 	
 	var _rendergraphJs2 = _interopRequireDefault(_rendergraphJs);
 	
+	var _videoelementcacheJs = __webpack_require__(311);
+	
+	var _videoelementcacheJs2 = _interopRequireDefault(_videoelementcacheJs);
+	
 	var _utilsJs = __webpack_require__(300);
 	
-	var _DefinitionsDefinitionsJs = __webpack_require__(311);
+	var _DefinitionsDefinitionsJs = __webpack_require__(312);
 	
 	var _DefinitionsDefinitionsJs2 = _interopRequireDefault(_DefinitionsDefinitionsJs);
 	
@@ -119,7 +123,7 @@ var VideoContext =
 	    */
 	
 	    function VideoContext(canvas, initErrorCallback) {
-	        var options = arguments.length <= 2 || arguments[2] === undefined ? { "preserveDrawingBuffer": true, "manualUpdate": false, "endOnLastSourceEnd": true, useVideoElementCache: false, videoElementCacheSize: 5, webglContextAttributes: { preserveDrawingBuffer: true, alpha: false } } : arguments[2];
+	        var options = arguments.length <= 2 || arguments[2] === undefined ? { "preserveDrawingBuffer": true, "manualUpdate": false, "endOnLastSourceEnd": true, useVideoElementCache: true, videoElementCacheSize: 6, webglContextAttributes: { preserveDrawingBuffer: true, alpha: false } } : arguments[2];
 	
 	        _classCallCheck(this, VideoContext);
 	
@@ -145,19 +149,11 @@ var VideoContext =
 	        }
 	
 	        // Initialise the video element cache
+	        if (!options.useVideoElementCache) options.useVideoElementCache = true;
 	        this._useVideoElementCache = options.useVideoElementCache;
 	        if (this._useVideoElementCache) {
-	            this._videoElementCache = [];
-	            if (options.videoElementCacheSize === undefined) options.videoElementCacheSize = 5;
-	            console.log("USING VIDEO CACHE");
-	            console.log(options.videoElementCacheSize);
-	            for (var i = 0; i < options.videoElementCacheSize; i++) {
-	                var videoElement = document.createElement("video");
-	                videoElement.setAttribute("crossorigin", "anonymous");
-	                videoElement.setAttribute("webkit-playsinline", "");
-	                videoElement.src = "";
-	                this._videoElementCache.push(videoElement);
-	            }
+	            if (!options.videoElementCacheSize) options.videoElementCacheSize = 5;
+	            this._videoElementCache = new _videoelementcacheJs2["default"](options.videoElementCacheSize);
 	        }
 	
 	        this._renderGraph = new _rendergraphJs2["default"]();
@@ -391,28 +387,10 @@ var VideoContext =
 	        * ctx.play();
 	        */
 	        value: function play() {
-	            var _this = this;
-	
 	            console.debug("VideoContext - playing");
-	
-	            //Mark the elements in the video element cache as being able to be controlled programattically.
-	            if (this._videoElementCache) {
-	                var _loop = function () {
-	                    var videoElement = _this._videoElementCache[i];
-	                    videoElement.play().then(function () {
-	                        try {
-	                            videoElement.pause();
-	                        } catch (e) {
-	                            //catch the inevitable DOM exception.
-	                        }
-	                    });
-	                };
-	
-	                for (var i = 0; i < this._videoElementCache.length; i++) {
-	                    _loop();
-	                }
-	            }
-	
+	            //Initialise the video elemnt cache
+	            if (this._videoElementCache) this._videoElementCache.init();
+	            // set the state.
 	            this._state = VideoContext.STATE.PLAYING;
 	            return true;
 	        }
@@ -436,35 +414,6 @@ var VideoContext =
 	            console.debug("VideoContext - pausing");
 	            this._state = VideoContext.STATE.PAUSED;
 	            return true;
-	        }
-	    }, {
-	        key: "_getVideoElementCacheRemaining",
-	        value: function _getVideoElementCacheRemaining() {
-	            var cacheCount = 0;
-	            if (this._useVideoElementCache) {
-	                for (var i = 0; i < this._videoElementCache.length; i++) {
-	                    var videoElement = this._videoElementCache[i];
-	                    // For some reason an uninitialised videoElement has its sr attribute set to the windows href. Hence the below check.
-	                    if (videoElement.src === "" || videoElement.src === undefined || videoElement.src === window.location.href) cacheCount += 1;
-	                }
-	            }
-	            return cacheCount;
-	        }
-	    }, {
-	        key: "_getCachedVideoElement",
-	        value: function _getCachedVideoElement() {
-	            if (this._useVideoElementCache) {
-	                for (var i = 0; i < this._videoElementCache.length; i++) {
-	                    var videoElement = this._videoElementCache[i];
-	                    // For some reason an uninitialised videoElement has its sr attribute set to the windows href. Hence the below check.
-	                    if (videoElement.src === "" || videoElement.src === undefined || videoElement.src === window.location.href) return videoElement;
-	                }
-	            } else {
-	                console.error("Video element cache not enabled, pass {useVideoElementCache:true} into the VideoContext constructor.");
-	                return;
-	            }
-	            console.error("No available video element in the cache");
-	            return;
 	        }
 	
 	        /**
@@ -490,14 +439,7 @@ var VideoContext =
 	            var preloadTime = arguments.length <= 2 || arguments[2] === undefined ? 4 : arguments[2];
 	            var videoElementAttributes = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
 	
-	            var videoNode = undefined;
-	            if (this._useVideoElementCache && typeof src === "string") {
-	                var videoElement = this._getCachedVideoElement();
-	                videoElement.src = src;
-	                videoNode = new _SourceNodesVideonodeJs2["default"](videoElement, this._gl, this._renderGraph, this._currentTime, this._playbackRate, sourceOffset, preloadTime, this._useVideoElementCache, videoElementAttributes);
-	            } else {
-	                videoNode = new _SourceNodesVideonodeJs2["default"](src, this._gl, this._renderGraph, this._currentTime, this._playbackRate, sourceOffset, preloadTime, this._useVideoElementCache, videoElementAttributes);
-	            }
+	            var videoNode = new _SourceNodesVideonodeJs2["default"](src, this._gl, this._renderGraph, this._currentTime, this._playbackRate, sourceOffset, preloadTime, this._videoElementCache, videoElementAttributes);
 	            this._sourceNodes.push(videoNode);
 	            return videoNode;
 	        }
@@ -8530,9 +8472,8 @@ var VideoContext =
 	  runtime = global.regeneratorRuntime = inModule ? module.exports : {};
 	
 	  function wrap(innerFn, outerFn, self, tryLocsList) {
-	    // If outerFn provided and outerFn.prototype is a Generator, then outerFn.prototype instanceof Generator.
-	    var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator;
-	    var generator = Object.create(protoGenerator.prototype);
+	    // If outerFn provided, then outerFn.prototype instanceof Generator.
+	    var generator = Object.create((outerFn || Generator).prototype);
 	    var context = new Context(tryLocsList || []);
 	
 	    // The ._invoke method unifies the implementations of the .next,
@@ -9172,12 +9113,40 @@ var VideoContext =
 	// shim for using process in browser
 	
 	var process = module.exports = {};
+	
+	// cached from whatever global is present so that test runners that stub it
+	// don't break things.  But we need to wrap it in a try catch in case it is
+	// wrapped in strict mode code which doesn't define any globals.  It's inside a
+	// function because try/catches deoptimize in certain engines.
+	
+	var cachedSetTimeout;
+	var cachedClearTimeout;
+	
+	(function () {
+	  try {
+	    cachedSetTimeout = setTimeout;
+	  } catch (e) {
+	    cachedSetTimeout = function () {
+	      throw new Error('setTimeout is not defined');
+	    }
+	  }
+	  try {
+	    cachedClearTimeout = clearTimeout;
+	  } catch (e) {
+	    cachedClearTimeout = function () {
+	      throw new Error('clearTimeout is not defined');
+	    }
+	  }
+	} ())
 	var queue = [];
 	var draining = false;
 	var currentQueue;
 	var queueIndex = -1;
 	
 	function cleanUpNextTick() {
+	    if (!draining || !currentQueue) {
+	        return;
+	    }
 	    draining = false;
 	    if (currentQueue.length) {
 	        queue = currentQueue.concat(queue);
@@ -9193,7 +9162,7 @@ var VideoContext =
 	    if (draining) {
 	        return;
 	    }
-	    var timeout = setTimeout(cleanUpNextTick);
+	    var timeout = cachedSetTimeout(cleanUpNextTick);
 	    draining = true;
 	
 	    var len = queue.length;
@@ -9210,7 +9179,7 @@ var VideoContext =
 	    }
 	    currentQueue = null;
 	    draining = false;
-	    clearTimeout(timeout);
+	    cachedClearTimeout(timeout);
 	}
 	
 	process.nextTick = function (fun) {
@@ -9222,7 +9191,7 @@ var VideoContext =
 	    }
 	    queue.push(new Item(fun, args));
 	    if (queue.length === 1 && !draining) {
-	        setTimeout(drainQueue, 0);
+	        cachedSetTimeout(drainQueue, 0);
 	    }
 	};
 	
@@ -9332,7 +9301,7 @@ var VideoContext =
 	        var globalPlaybackRate = arguments.length <= 4 || arguments[4] === undefined ? 1.0 : arguments[4];
 	        var sourceOffset = arguments.length <= 5 || arguments[5] === undefined ? 0 : arguments[5];
 	        var preloadTime = arguments.length <= 6 || arguments[6] === undefined ? 4 : arguments[6];
-	        var usingVideoElementCache = arguments.length <= 7 || arguments[7] === undefined ? false : arguments[7];
+	        var videoElementCache = arguments.length <= 7 || arguments[7] === undefined ? undefined : arguments[7];
 	        var attributes = arguments.length <= 8 || arguments[8] === undefined ? {} : arguments[8];
 	
 	        _classCallCheck(this, VideoNode);
@@ -9341,10 +9310,10 @@ var VideoContext =
 	        this._preloadTime = preloadTime;
 	        this._sourceOffset = sourceOffset;
 	        this._globalPlaybackRate = globalPlaybackRate;
-	        this._usingVideoElementCache = usingVideoElementCache;
-	        if (this._usingVideoElementCache) {
+	        this._videoElementCache = videoElementCache;
+	        if (this._videoElementCache) {
 	            this._isResponsibleForElementLifeCycle = true;
-	            this._element.currentTime = this._sourceOffset;
+	            //this._element.currentTime = this._sourceOffset;
 	        }
 	        this._playbackRate = 1.0;
 	        this._playbackRateUpdated = true;
@@ -9385,11 +9354,15 @@ var VideoContext =
 	                return;
 	            }
 	            if (this._isResponsibleForElementLifeCycle) {
-	                this._element = document.createElement("video");
-	                this._element.setAttribute("crossorigin", "anonymous");
-	                this._element.setAttribute("webkit-playsinline", "");
+	                if (this._videoElementCache) {
+	                    this._element = this._videoElementCache.get();
+	                } else {
+	                    this._element = document.createElement("video");
+	                    this._element.setAttribute("crossorigin", "anonymous");
+	                    this._element.setAttribute("webkit-playsinline", "");
+	                    this._playbackRateUpdated = true;
+	                }
 	                this._element.src = this._elementURL;
-	                this._playbackRateUpdated = true;
 	
 	                for (var _key in this._attributes) {
 	                    this._element[_key] = this._attributes[_key];
@@ -9403,8 +9376,11 @@ var VideoContext =
 	            _get(Object.getPrototypeOf(VideoNode.prototype), "_destroy", this).call(this);
 	            if (this._isResponsibleForElementLifeCycle && this._element !== undefined) {
 	                this._element.src = "";
+	                for (var key in this._attributes) {
+	                    this._element.removeAttribute(key);
+	                }
 	                this._element = undefined;
-	                if (!this._usingVideoElementCache) delete this._element;
+	                if (!this._videoElementCache) delete this._element;
 	            }
 	            this._ready = false;
 	        }
@@ -12333,6 +12309,165 @@ var VideoContext =
 
 /***/ },
 /* 311 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var VideoElementCache = (function () {
+	    function VideoElementCache() {
+	        var cache_size = arguments.length <= 0 || arguments[0] === undefined ? 3 : arguments[0];
+	
+	        _classCallCheck(this, VideoElementCache);
+	
+	        this._elements = [];
+	        this._elementsInitialised = false;
+	        for (var i = 0; i < cache_size; i++) {
+	            var element = this._createElement();
+	            this._elements.push(element);
+	        }
+	    }
+	
+	    _createClass(VideoElementCache, [{
+	        key: "_createElement",
+	        value: function _createElement() {
+	            var videoElement = document.createElement("video");
+	            videoElement.setAttribute("crossorigin", "anonymous");
+	            videoElement.setAttribute("webkit-playsinline", "");
+	            videoElement.src = "";
+	            return videoElement;
+	        }
+	    }, {
+	        key: "init",
+	        value: function init() {
+	            if (!this._elementsInitialised) {
+	                var _iteratorNormalCompletion = true;
+	                var _didIteratorError = false;
+	                var _iteratorError = undefined;
+	
+	                try {
+	                    var _loop = function () {
+	                        var element = _step.value;
+	
+	                        element.play().then(function () {
+	                            element.pause();
+	                        }, function (e) {
+	                            if (e.name !== "NotSupportedError") throw e;
+	                        });
+	                    };
+	
+	                    for (var _iterator = this._elements[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	                        _loop();
+	                    }
+	                } catch (err) {
+	                    _didIteratorError = true;
+	                    _iteratorError = err;
+	                } finally {
+	                    try {
+	                        if (!_iteratorNormalCompletion && _iterator["return"]) {
+	                            _iterator["return"]();
+	                        }
+	                    } finally {
+	                        if (_didIteratorError) {
+	                            throw _iteratorError;
+	                        }
+	                    }
+	                }
+	            }
+	            this._elementsInitialised = true;
+	        }
+	    }, {
+	        key: "get",
+	        value: function get() {
+	            console.log("GETTING FORM CACHE");
+	            //Try and get an already intialised element.
+	            var _iteratorNormalCompletion2 = true;
+	            var _didIteratorError2 = false;
+	            var _iteratorError2 = undefined;
+	
+	            try {
+	                for (var _iterator2 = this._elements[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+	                    var _element = _step2.value;
+	
+	                    // For some reason an uninitialised videoElement has its sr attribute set to the windows href. Hence the below check.
+	                    if (_element.src === "" || _element.src === undefined || _element.src === window.location.href) return _element;
+	                }
+	                //Fallback to creating a new element if non exists.
+	            } catch (err) {
+	                _didIteratorError2 = true;
+	                _iteratorError2 = err;
+	            } finally {
+	                try {
+	                    if (!_iteratorNormalCompletion2 && _iterator2["return"]) {
+	                        _iterator2["return"]();
+	                    }
+	                } finally {
+	                    if (_didIteratorError2) {
+	                        throw _iteratorError2;
+	                    }
+	                }
+	            }
+	
+	            console.debug("No available video element in the cache, creating a new one. This may break mobile, make your initial cache larger.");
+	            var element = this._createElement();
+	            this._elements.push(element);
+	            this._elementsInitialised = false;
+	            return element;
+	        }
+	    }, {
+	        key: "length",
+	        get: function get() {
+	            return this._elements.length;
+	        }
+	    }, {
+	        key: "unused",
+	        get: function get() {
+	            var count = 0;
+	            var _iteratorNormalCompletion3 = true;
+	            var _didIteratorError3 = false;
+	            var _iteratorError3 = undefined;
+	
+	            try {
+	                for (var _iterator3 = this._elements[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+	                    var element = _step3.value;
+	
+	                    // For some reason an uninitialised videoElement has its sr attribute set to the windows href. Hence the below check.
+	                    if (element.src === "" || element.src === undefined || element.src === window.location.href) count += 1;
+	                }
+	            } catch (err) {
+	                _didIteratorError3 = true;
+	                _iteratorError3 = err;
+	            } finally {
+	                try {
+	                    if (!_iteratorNormalCompletion3 && _iterator3["return"]) {
+	                        _iterator3["return"]();
+	                    }
+	                } finally {
+	                    if (_didIteratorError3) {
+	                        throw _iteratorError3;
+	                    }
+	                }
+	            }
+	
+	            return count;
+	        }
+	    }]);
+	
+	    return VideoElementCache;
+	})();
+	
+	exports["default"] = VideoElementCache;
+	module.exports = exports["default"];
+
+/***/ },
+/* 312 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -12343,79 +12478,79 @@ var VideoContext =
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 	
-	var _aaf_video_scaleJs = __webpack_require__(312);
+	var _aaf_video_scaleJs = __webpack_require__(313);
 	
 	var _aaf_video_scaleJs2 = _interopRequireDefault(_aaf_video_scaleJs);
 	
-	var _crossfadeJs = __webpack_require__(313);
+	var _crossfadeJs = __webpack_require__(314);
 	
 	var _crossfadeJs2 = _interopRequireDefault(_crossfadeJs);
 	
-	var _horizontalWipeJs = __webpack_require__(314);
+	var _horizontalWipeJs = __webpack_require__(315);
 	
 	var _horizontalWipeJs2 = _interopRequireDefault(_horizontalWipeJs);
 	
-	var _verticalWipeJs = __webpack_require__(315);
+	var _verticalWipeJs = __webpack_require__(316);
 	
 	var _verticalWipeJs2 = _interopRequireDefault(_verticalWipeJs);
 	
-	var _randomDissolveJs = __webpack_require__(316);
+	var _randomDissolveJs = __webpack_require__(317);
 	
 	var _randomDissolveJs2 = _interopRequireDefault(_randomDissolveJs);
 	
-	var _toColorAndBackFadeJs = __webpack_require__(317);
+	var _toColorAndBackFadeJs = __webpack_require__(318);
 	
 	var _toColorAndBackFadeJs2 = _interopRequireDefault(_toColorAndBackFadeJs);
 	
-	var _starWipeJs = __webpack_require__(318);
+	var _starWipeJs = __webpack_require__(319);
 	
 	var _starWipeJs2 = _interopRequireDefault(_starWipeJs);
 	
-	var _combineJs = __webpack_require__(319);
+	var _combineJs = __webpack_require__(320);
 	
 	var _combineJs2 = _interopRequireDefault(_combineJs);
 	
-	var _colorThresholdJs = __webpack_require__(320);
+	var _colorThresholdJs = __webpack_require__(321);
 	
 	var _colorThresholdJs2 = _interopRequireDefault(_colorThresholdJs);
 	
-	var _monochromeJs = __webpack_require__(321);
+	var _monochromeJs = __webpack_require__(322);
 	
 	var _monochromeJs2 = _interopRequireDefault(_monochromeJs);
 	
-	var _horizontalBlurJs = __webpack_require__(322);
+	var _horizontalBlurJs = __webpack_require__(323);
 	
 	var _horizontalBlurJs2 = _interopRequireDefault(_horizontalBlurJs);
 	
-	var _verticalBlurJs = __webpack_require__(323);
+	var _verticalBlurJs = __webpack_require__(324);
 	
 	var _verticalBlurJs2 = _interopRequireDefault(_verticalBlurJs);
 	
-	var _aaf_video_flopJs = __webpack_require__(324);
+	var _aaf_video_flopJs = __webpack_require__(325);
 	
 	var _aaf_video_flopJs2 = _interopRequireDefault(_aaf_video_flopJs);
 	
-	var _aaf_video_flipJs = __webpack_require__(325);
+	var _aaf_video_flipJs = __webpack_require__(326);
 	
 	var _aaf_video_flipJs2 = _interopRequireDefault(_aaf_video_flipJs);
 	
-	var _aaf_video_positionJs = __webpack_require__(326);
+	var _aaf_video_positionJs = __webpack_require__(327);
 	
 	var _aaf_video_positionJs2 = _interopRequireDefault(_aaf_video_positionJs);
 	
-	var _aaf_video_cropJs = __webpack_require__(327);
+	var _aaf_video_cropJs = __webpack_require__(328);
 	
 	var _aaf_video_cropJs2 = _interopRequireDefault(_aaf_video_cropJs);
 	
-	var _staticDissolveJs = __webpack_require__(328);
+	var _staticDissolveJs = __webpack_require__(329);
 	
 	var _staticDissolveJs2 = _interopRequireDefault(_staticDissolveJs);
 	
-	var _staticEffectJs = __webpack_require__(329);
+	var _staticEffectJs = __webpack_require__(330);
 	
 	var _staticEffectJs2 = _interopRequireDefault(_staticEffectJs);
 	
-	var _dreamfadeJs = __webpack_require__(330);
+	var _dreamfadeJs = __webpack_require__(331);
 	
 	var _dreamfadeJs2 = _interopRequireDefault(_dreamfadeJs);
 	
@@ -12445,7 +12580,7 @@ var VideoContext =
 	module.exports = exports["default"];
 
 /***/ },
-/* 312 */
+/* 313 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -12490,7 +12625,7 @@ var VideoContext =
 	module.exports = exports["default"];
 
 /***/ },
-/* 313 */
+/* 314 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -12539,7 +12674,7 @@ var VideoContext =
 	module.exports = exports["default"];
 
 /***/ },
-/* 314 */
+/* 315 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -12584,7 +12719,7 @@ var VideoContext =
 	module.exports = exports["default"];
 
 /***/ },
-/* 315 */
+/* 316 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -12629,7 +12764,7 @@ var VideoContext =
 	module.exports = exports["default"];
 
 /***/ },
-/* 316 */
+/* 317 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -12677,7 +12812,7 @@ var VideoContext =
 	module.exports = exports["default"];
 
 /***/ },
-/* 317 */
+/* 318 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -12724,7 +12859,7 @@ var VideoContext =
 	module.exports = exports["default"];
 
 /***/ },
-/* 318 */
+/* 319 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -12833,7 +12968,7 @@ var VideoContext =
 	module.exports = exports["default"];
 
 /***/ },
-/* 319 */
+/* 320 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -12872,7 +13007,7 @@ var VideoContext =
 	module.exports = exports["default"];
 
 /***/ },
-/* 320 */
+/* 321 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -12916,7 +13051,7 @@ var VideoContext =
 	module.exports = exports["default"];
 
 /***/ },
-/* 321 */
+/* 322 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -12961,7 +13096,7 @@ var VideoContext =
 	module.exports = exports["default"];
 
 /***/ },
-/* 322 */
+/* 323 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -13029,7 +13164,7 @@ var VideoContext =
 	module.exports = exports["default"];
 
 /***/ },
-/* 323 */
+/* 324 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -13097,7 +13232,7 @@ var VideoContext =
 	module.exports = exports["default"];
 
 /***/ },
-/* 324 */
+/* 325 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -13133,7 +13268,7 @@ var VideoContext =
 	module.exports = exports["default"];
 
 /***/ },
-/* 325 */
+/* 326 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -13169,7 +13304,7 @@ var VideoContext =
 	module.exports = exports["default"];
 
 /***/ },
-/* 326 */
+/* 327 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -13214,7 +13349,7 @@ var VideoContext =
 	module.exports = exports["default"];
 
 /***/ },
-/* 327 */
+/* 328 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -13262,7 +13397,7 @@ var VideoContext =
 	module.exports = exports["default"];
 
 /***/ },
-/* 328 */
+/* 329 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -13311,7 +13446,7 @@ var VideoContext =
 	module.exports = exports["default"];
 
 /***/ },
-/* 329 */
+/* 330 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -13358,7 +13493,7 @@ var VideoContext =
 	module.exports = exports["default"];
 
 /***/ },
-/* 330 */
+/* 331 */
 /***/ function(module, exports) {
 
 	"use strict";

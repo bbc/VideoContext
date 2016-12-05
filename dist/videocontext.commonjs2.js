@@ -95,9 +95,13 @@ module.exports =
 	
 	var _rendergraphJs2 = _interopRequireDefault(_rendergraphJs);
 	
+	var _videoelementcacheJs = __webpack_require__(311);
+	
+	var _videoelementcacheJs2 = _interopRequireDefault(_videoelementcacheJs);
+	
 	var _utilsJs = __webpack_require__(300);
 	
-	var _DefinitionsDefinitionsJs = __webpack_require__(311);
+	var _DefinitionsDefinitionsJs = __webpack_require__(312);
 	
 	var _DefinitionsDefinitionsJs2 = _interopRequireDefault(_DefinitionsDefinitionsJs);
 	
@@ -119,7 +123,7 @@ module.exports =
 	    */
 	
 	    function VideoContext(canvas, initErrorCallback) {
-	        var options = arguments.length <= 2 || arguments[2] === undefined ? { "preserveDrawingBuffer": true, "manualUpdate": false, "endOnLastSourceEnd": true, webglContextAttributes: { preserveDrawingBuffer: true, alpha: false } } : arguments[2];
+	        var options = arguments.length <= 2 || arguments[2] === undefined ? { "preserveDrawingBuffer": true, "manualUpdate": false, "endOnLastSourceEnd": true, useVideoElementCache: true, videoElementCacheSize: 6, webglContextAttributes: { preserveDrawingBuffer: true, alpha: false } } : arguments[2];
 	
 	        _classCallCheck(this, VideoContext);
 	
@@ -142,6 +146,14 @@ module.exports =
 	            console.error("Failed to intialise WebGL.");
 	            if (initErrorCallback) initErrorCallback();
 	            return;
+	        }
+	
+	        // Initialise the video element cache
+	        if (!options.useVideoElementCache) options.useVideoElementCache = true;
+	        this._useVideoElementCache = options.useVideoElementCache;
+	        if (this._useVideoElementCache) {
+	            if (!options.videoElementCacheSize) options.videoElementCacheSize = 5;
+	            this._videoElementCache = new _videoelementcacheJs2["default"](options.videoElementCacheSize);
 	        }
 	
 	        this._renderGraph = new _rendergraphJs2["default"]();
@@ -376,6 +388,9 @@ module.exports =
 	        */
 	        value: function play() {
 	            console.debug("VideoContext - playing");
+	            //Initialise the video elemnt cache
+	            if (this._videoElementCache) this._videoElementCache.init();
+	            // set the state.
 	            this._state = VideoContext.STATE.PLAYING;
 	            return true;
 	        }
@@ -424,7 +439,7 @@ module.exports =
 	            var preloadTime = arguments.length <= 2 || arguments[2] === undefined ? 4 : arguments[2];
 	            var videoElementAttributes = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
 	
-	            var videoNode = new _SourceNodesVideonodeJs2["default"](src, this._gl, this._renderGraph, this._currentTime, this._playbackRate, sourceOffset, preloadTime, videoElementAttributes);
+	            var videoNode = new _SourceNodesVideonodeJs2["default"](src, this._gl, this._renderGraph, this._currentTime, this._playbackRate, sourceOffset, preloadTime, this._videoElementCache, videoElementAttributes);
 	            this._sourceNodes.push(videoNode);
 	            return videoNode;
 	        }
@@ -9262,7 +9277,7 @@ module.exports =
 	
 	var _set = function set(object, property, value, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent !== null) { set(parent, property, value, receiver); } } else if ("value" in desc && desc.writable) { desc.value = value; } else { var setter = desc.set; if (setter !== undefined) { setter.call(receiver, value); } } return value; };
 	
-	var _get = function get(_x5, _x6, _x7) { var _again = true; _function: while (_again) { var object = _x5, property = _x6, receiver = _x7; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x5 = parent; _x6 = property; _x7 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+	var _get = function get(_x6, _x7, _x8) { var _again = true; _function: while (_again) { var object = _x6, property = _x7, receiver = _x8; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x6 = parent; _x7 = property; _x8 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 	
@@ -9286,7 +9301,8 @@ module.exports =
 	        var globalPlaybackRate = arguments.length <= 4 || arguments[4] === undefined ? 1.0 : arguments[4];
 	        var sourceOffset = arguments.length <= 5 || arguments[5] === undefined ? 0 : arguments[5];
 	        var preloadTime = arguments.length <= 6 || arguments[6] === undefined ? 4 : arguments[6];
-	        var attributes = arguments.length <= 7 || arguments[7] === undefined ? {} : arguments[7];
+	        var videoElementCache = arguments.length <= 7 || arguments[7] === undefined ? undefined : arguments[7];
+	        var attributes = arguments.length <= 8 || arguments[8] === undefined ? {} : arguments[8];
 	
 	        _classCallCheck(this, VideoNode);
 	
@@ -9294,6 +9310,11 @@ module.exports =
 	        this._preloadTime = preloadTime;
 	        this._sourceOffset = sourceOffset;
 	        this._globalPlaybackRate = globalPlaybackRate;
+	        this._videoElementCache = videoElementCache;
+	        if (this._videoElementCache) {
+	            this._isResponsibleForElementLifeCycle = true;
+	            //this._element.currentTime = this._sourceOffset;
+	        }
 	        this._playbackRate = 1.0;
 	        this._playbackRateUpdated = true;
 	        this._attributes = attributes;
@@ -9333,11 +9354,15 @@ module.exports =
 	                return;
 	            }
 	            if (this._isResponsibleForElementLifeCycle) {
-	                this._element = document.createElement("video");
-	                this._element.setAttribute("crossorigin", "anonymous");
-	                this._element.setAttribute("webkit-playsinline", "");
+	                if (this._videoElementCache) {
+	                    this._element = this._videoElementCache.get();
+	                } else {
+	                    this._element = document.createElement("video");
+	                    this._element.setAttribute("crossorigin", "anonymous");
+	                    this._element.setAttribute("webkit-playsinline", "");
+	                    this._playbackRateUpdated = true;
+	                }
 	                this._element.src = this._elementURL;
-	                this._playbackRateUpdated = true;
 	
 	                for (var _key in this._attributes) {
 	                    this._element[_key] = this._attributes[_key];
@@ -9351,8 +9376,11 @@ module.exports =
 	            _get(Object.getPrototypeOf(VideoNode.prototype), "_destroy", this).call(this);
 	            if (this._isResponsibleForElementLifeCycle && this._element !== undefined) {
 	                this._element.src = "";
+	                for (var key in this._attributes) {
+	                    this._element.removeAttribute(key);
+	                }
 	                this._element = undefined;
-	                delete this._element;
+	                if (!this._videoElementCache) delete this._element;
 	            }
 	            this._ready = false;
 	        }
@@ -12281,6 +12309,165 @@ module.exports =
 
 /***/ },
 /* 311 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var VideoElementCache = (function () {
+	    function VideoElementCache() {
+	        var cache_size = arguments.length <= 0 || arguments[0] === undefined ? 3 : arguments[0];
+	
+	        _classCallCheck(this, VideoElementCache);
+	
+	        this._elements = [];
+	        this._elementsInitialised = false;
+	        for (var i = 0; i < cache_size; i++) {
+	            var element = this._createElement();
+	            this._elements.push(element);
+	        }
+	    }
+	
+	    _createClass(VideoElementCache, [{
+	        key: "_createElement",
+	        value: function _createElement() {
+	            var videoElement = document.createElement("video");
+	            videoElement.setAttribute("crossorigin", "anonymous");
+	            videoElement.setAttribute("webkit-playsinline", "");
+	            videoElement.src = "";
+	            return videoElement;
+	        }
+	    }, {
+	        key: "init",
+	        value: function init() {
+	            if (!this._elementsInitialised) {
+	                var _iteratorNormalCompletion = true;
+	                var _didIteratorError = false;
+	                var _iteratorError = undefined;
+	
+	                try {
+	                    var _loop = function () {
+	                        var element = _step.value;
+	
+	                        element.play().then(function () {
+	                            element.pause();
+	                        }, function (e) {
+	                            if (e.name !== "NotSupportedError") throw e;
+	                        });
+	                    };
+	
+	                    for (var _iterator = this._elements[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	                        _loop();
+	                    }
+	                } catch (err) {
+	                    _didIteratorError = true;
+	                    _iteratorError = err;
+	                } finally {
+	                    try {
+	                        if (!_iteratorNormalCompletion && _iterator["return"]) {
+	                            _iterator["return"]();
+	                        }
+	                    } finally {
+	                        if (_didIteratorError) {
+	                            throw _iteratorError;
+	                        }
+	                    }
+	                }
+	            }
+	            this._elementsInitialised = true;
+	        }
+	    }, {
+	        key: "get",
+	        value: function get() {
+	            console.log("GETTING FORM CACHE");
+	            //Try and get an already intialised element.
+	            var _iteratorNormalCompletion2 = true;
+	            var _didIteratorError2 = false;
+	            var _iteratorError2 = undefined;
+	
+	            try {
+	                for (var _iterator2 = this._elements[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+	                    var _element = _step2.value;
+	
+	                    // For some reason an uninitialised videoElement has its sr attribute set to the windows href. Hence the below check.
+	                    if (_element.src === "" || _element.src === undefined || _element.src === window.location.href) return _element;
+	                }
+	                //Fallback to creating a new element if non exists.
+	            } catch (err) {
+	                _didIteratorError2 = true;
+	                _iteratorError2 = err;
+	            } finally {
+	                try {
+	                    if (!_iteratorNormalCompletion2 && _iterator2["return"]) {
+	                        _iterator2["return"]();
+	                    }
+	                } finally {
+	                    if (_didIteratorError2) {
+	                        throw _iteratorError2;
+	                    }
+	                }
+	            }
+	
+	            console.debug("No available video element in the cache, creating a new one. This may break mobile, make your initial cache larger.");
+	            var element = this._createElement();
+	            this._elements.push(element);
+	            this._elementsInitialised = false;
+	            return element;
+	        }
+	    }, {
+	        key: "length",
+	        get: function get() {
+	            return this._elements.length;
+	        }
+	    }, {
+	        key: "unused",
+	        get: function get() {
+	            var count = 0;
+	            var _iteratorNormalCompletion3 = true;
+	            var _didIteratorError3 = false;
+	            var _iteratorError3 = undefined;
+	
+	            try {
+	                for (var _iterator3 = this._elements[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+	                    var element = _step3.value;
+	
+	                    // For some reason an uninitialised videoElement has its sr attribute set to the windows href. Hence the below check.
+	                    if (element.src === "" || element.src === undefined || element.src === window.location.href) count += 1;
+	                }
+	            } catch (err) {
+	                _didIteratorError3 = true;
+	                _iteratorError3 = err;
+	            } finally {
+	                try {
+	                    if (!_iteratorNormalCompletion3 && _iterator3["return"]) {
+	                        _iterator3["return"]();
+	                    }
+	                } finally {
+	                    if (_didIteratorError3) {
+	                        throw _iteratorError3;
+	                    }
+	                }
+	            }
+	
+	            return count;
+	        }
+	    }]);
+	
+	    return VideoElementCache;
+	})();
+	
+	exports["default"] = VideoElementCache;
+	module.exports = exports["default"];
+
+/***/ },
+/* 312 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -12291,79 +12478,79 @@ module.exports =
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 	
-	var _aaf_video_scaleJs = __webpack_require__(312);
+	var _aaf_video_scaleJs = __webpack_require__(313);
 	
 	var _aaf_video_scaleJs2 = _interopRequireDefault(_aaf_video_scaleJs);
 	
-	var _crossfadeJs = __webpack_require__(313);
+	var _crossfadeJs = __webpack_require__(314);
 	
 	var _crossfadeJs2 = _interopRequireDefault(_crossfadeJs);
 	
-	var _horizontalWipeJs = __webpack_require__(314);
+	var _horizontalWipeJs = __webpack_require__(315);
 	
 	var _horizontalWipeJs2 = _interopRequireDefault(_horizontalWipeJs);
 	
-	var _verticalWipeJs = __webpack_require__(315);
+	var _verticalWipeJs = __webpack_require__(316);
 	
 	var _verticalWipeJs2 = _interopRequireDefault(_verticalWipeJs);
 	
-	var _randomDissolveJs = __webpack_require__(316);
+	var _randomDissolveJs = __webpack_require__(317);
 	
 	var _randomDissolveJs2 = _interopRequireDefault(_randomDissolveJs);
 	
-	var _toColorAndBackFadeJs = __webpack_require__(317);
+	var _toColorAndBackFadeJs = __webpack_require__(318);
 	
 	var _toColorAndBackFadeJs2 = _interopRequireDefault(_toColorAndBackFadeJs);
 	
-	var _starWipeJs = __webpack_require__(318);
+	var _starWipeJs = __webpack_require__(319);
 	
 	var _starWipeJs2 = _interopRequireDefault(_starWipeJs);
 	
-	var _combineJs = __webpack_require__(319);
+	var _combineJs = __webpack_require__(320);
 	
 	var _combineJs2 = _interopRequireDefault(_combineJs);
 	
-	var _colorThresholdJs = __webpack_require__(320);
+	var _colorThresholdJs = __webpack_require__(321);
 	
 	var _colorThresholdJs2 = _interopRequireDefault(_colorThresholdJs);
 	
-	var _monochromeJs = __webpack_require__(321);
+	var _monochromeJs = __webpack_require__(322);
 	
 	var _monochromeJs2 = _interopRequireDefault(_monochromeJs);
 	
-	var _horizontalBlurJs = __webpack_require__(322);
+	var _horizontalBlurJs = __webpack_require__(323);
 	
 	var _horizontalBlurJs2 = _interopRequireDefault(_horizontalBlurJs);
 	
-	var _verticalBlurJs = __webpack_require__(323);
+	var _verticalBlurJs = __webpack_require__(324);
 	
 	var _verticalBlurJs2 = _interopRequireDefault(_verticalBlurJs);
 	
-	var _aaf_video_flopJs = __webpack_require__(324);
+	var _aaf_video_flopJs = __webpack_require__(325);
 	
 	var _aaf_video_flopJs2 = _interopRequireDefault(_aaf_video_flopJs);
 	
-	var _aaf_video_flipJs = __webpack_require__(325);
+	var _aaf_video_flipJs = __webpack_require__(326);
 	
 	var _aaf_video_flipJs2 = _interopRequireDefault(_aaf_video_flipJs);
 	
-	var _aaf_video_positionJs = __webpack_require__(326);
+	var _aaf_video_positionJs = __webpack_require__(327);
 	
 	var _aaf_video_positionJs2 = _interopRequireDefault(_aaf_video_positionJs);
 	
-	var _aaf_video_cropJs = __webpack_require__(327);
+	var _aaf_video_cropJs = __webpack_require__(328);
 	
 	var _aaf_video_cropJs2 = _interopRequireDefault(_aaf_video_cropJs);
 	
-	var _staticDissolveJs = __webpack_require__(328);
+	var _staticDissolveJs = __webpack_require__(329);
 	
 	var _staticDissolveJs2 = _interopRequireDefault(_staticDissolveJs);
 	
-	var _staticEffectJs = __webpack_require__(329);
+	var _staticEffectJs = __webpack_require__(330);
 	
 	var _staticEffectJs2 = _interopRequireDefault(_staticEffectJs);
 	
-	var _dreamfadeJs = __webpack_require__(330);
+	var _dreamfadeJs = __webpack_require__(331);
 	
 	var _dreamfadeJs2 = _interopRequireDefault(_dreamfadeJs);
 	
@@ -12393,7 +12580,7 @@ module.exports =
 	module.exports = exports["default"];
 
 /***/ },
-/* 312 */
+/* 313 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -12438,7 +12625,7 @@ module.exports =
 	module.exports = exports["default"];
 
 /***/ },
-/* 313 */
+/* 314 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -12487,7 +12674,7 @@ module.exports =
 	module.exports = exports["default"];
 
 /***/ },
-/* 314 */
+/* 315 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -12532,7 +12719,7 @@ module.exports =
 	module.exports = exports["default"];
 
 /***/ },
-/* 315 */
+/* 316 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -12577,7 +12764,7 @@ module.exports =
 	module.exports = exports["default"];
 
 /***/ },
-/* 316 */
+/* 317 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -12625,7 +12812,7 @@ module.exports =
 	module.exports = exports["default"];
 
 /***/ },
-/* 317 */
+/* 318 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -12672,7 +12859,7 @@ module.exports =
 	module.exports = exports["default"];
 
 /***/ },
-/* 318 */
+/* 319 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -12781,7 +12968,7 @@ module.exports =
 	module.exports = exports["default"];
 
 /***/ },
-/* 319 */
+/* 320 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -12820,7 +13007,7 @@ module.exports =
 	module.exports = exports["default"];
 
 /***/ },
-/* 320 */
+/* 321 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -12864,7 +13051,7 @@ module.exports =
 	module.exports = exports["default"];
 
 /***/ },
-/* 321 */
+/* 322 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -12909,7 +13096,7 @@ module.exports =
 	module.exports = exports["default"];
 
 /***/ },
-/* 322 */
+/* 323 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -12977,7 +13164,7 @@ module.exports =
 	module.exports = exports["default"];
 
 /***/ },
-/* 323 */
+/* 324 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -13045,7 +13232,7 @@ module.exports =
 	module.exports = exports["default"];
 
 /***/ },
-/* 324 */
+/* 325 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -13081,7 +13268,7 @@ module.exports =
 	module.exports = exports["default"];
 
 /***/ },
-/* 325 */
+/* 326 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -13117,7 +13304,7 @@ module.exports =
 	module.exports = exports["default"];
 
 /***/ },
-/* 326 */
+/* 327 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -13162,7 +13349,7 @@ module.exports =
 	module.exports = exports["default"];
 
 /***/ },
-/* 327 */
+/* 328 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -13210,7 +13397,7 @@ module.exports =
 	module.exports = exports["default"];
 
 /***/ },
-/* 328 */
+/* 329 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -13259,7 +13446,7 @@ module.exports =
 	module.exports = exports["default"];
 
 /***/ },
-/* 329 */
+/* 330 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -13306,7 +13493,7 @@ module.exports =
 	module.exports = exports["default"];
 
 /***/ },
-/* 330 */
+/* 331 */
 /***/ function(module, exports) {
 
 	"use strict";

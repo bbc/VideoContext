@@ -6,15 +6,15 @@ export default class VideoNode extends SourceNode {
     * Initialise an instance of a VideoNode.
     * This should not be called directly, but created through a call to videoContext.createVideoNode();
     */
-    constructor(src, gl, renderGraph, currentTime, globalPlaybackRate=1.0, sourceOffset=0, preloadTime = 4, usingVideoElementCache=false, attributes = {}){
+    constructor(src, gl, renderGraph, currentTime, globalPlaybackRate=1.0, sourceOffset=0, preloadTime = 4, videoElementCache=undefined, attributes = {}){
         super(src, gl, renderGraph, currentTime);
         this._preloadTime = preloadTime;
         this._sourceOffset = sourceOffset;
         this._globalPlaybackRate = globalPlaybackRate;
-        this._usingVideoElementCache = usingVideoElementCache;
-        if (this._usingVideoElementCache){
+        this._videoElementCache = videoElementCache;
+        if (this._videoElementCache){
             this._isResponsibleForElementLifeCycle = true;
-            this._element.currentTime = this._sourceOffset;
+            //this._element.currentTime = this._sourceOffset;
         }
         this._playbackRate = 1.0;
         this._playbackRateUpdated = true;
@@ -81,11 +81,15 @@ export default class VideoNode extends SourceNode {
             return;
         }
         if (this._isResponsibleForElementLifeCycle){
-            this._element = document.createElement("video");
-            this._element.setAttribute("crossorigin", "anonymous");
-            this._element.setAttribute("webkit-playsinline", "");
+            if (this._videoElementCache){
+                this._element = this._videoElementCache.get();
+            }else{
+                this._element = document.createElement("video");
+                this._element.setAttribute("crossorigin", "anonymous");
+                this._element.setAttribute("webkit-playsinline", "");
+                this._playbackRateUpdated = true;
+            }
             this._element.src = this._elementURL;
-            this._playbackRateUpdated = true;
 
             for (let key in this._attributes) {
                 this._element[key] = this._attributes[key];
@@ -98,8 +102,11 @@ export default class VideoNode extends SourceNode {
         super._destroy();
         if (this._isResponsibleForElementLifeCycle && this._element !== undefined){
             this._element.src = "";
+            for (let key in this._attributes){
+                this._element.removeAttribute(key);
+            }
             this._element = undefined;
-            if(!this._usingVideoElementCache) delete this._element;
+            if(!this._videoElementCache) delete this._element;
         }
         this._ready = false;
     }
