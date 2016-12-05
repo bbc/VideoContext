@@ -32,7 +32,6 @@ class VideoElementCache {
     }
 
     get() {
-        console.log("GETTING FORM CACHE");
         //Try and get an already intialised element.
         for (let element of this._elements) {
             // For some reason an uninitialised videoElement has its sr attribute set to the windows href. Hence the below check.

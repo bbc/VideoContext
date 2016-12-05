@@ -12386,7 +12386,6 @@ var VideoContext =
 	    }, {
 	        key: "get",
 	        value: function get() {
-	            console.log("GETTING FORM CACHE");
 	            //Try and get an already intialised element.
 	            var _iteratorNormalCompletion2 = true;
 	            var _didIteratorError2 = false;
