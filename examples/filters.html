@@ -20,13 +20,13 @@
 			var canvas = document.getElementById("canvas");
 			var videoContext = new VideoContext(canvas);
 
-			var videoNode = videoContext.createVideoSourceNode("../assets/introductions-rant.mp4", 0, 4, {volume:0.2, loop:true});
+			var videoNode = videoContext.video("../assets/introductions-rant.mp4", 0, 4, {volume:0.2, loop:true});
 			videoNode.startAt(0);
 			
 
-			var filter1Node = videoContext.createEffectNode(VideoContext.DEFINITIONS.MONOCHROME);
-			var filter2Node = videoContext.createEffectNode(VideoContext.DEFINITIONS.HORIZONTAL_BLUR);
-			var filter3Node = videoContext.createEffectNode(VideoContext.DEFINITIONS.COLORTHRESHOLD);
+			var filter1Node = videoContext.effect(VideoContext.DEFINITIONS.MONOCHROME);
+			var filter2Node = videoContext.effect(VideoContext.DEFINITIONS.HORIZONTAL_BLUR);
+			var filter3Node = videoContext.effect(VideoContext.DEFINITIONS.COLORTHRESHOLD);
 
 
 			videoNode.connect(filter1Node);

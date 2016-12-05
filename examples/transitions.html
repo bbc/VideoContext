@@ -20,16 +20,16 @@
 			var canvas = document.getElementById("canvas");
 			var videoContext = new VideoContext(canvas);
 
-			var videoNode1 = videoContext.createVideoSourceNode("../assets/introductions-rant.mp4", 0, 4, {volume:0.2, loop:true});
+			var videoNode1 = videoContext.video("../assets/introductions-rant.mp4", 0, 4, {volume:0.2, loop:true});
 			videoNode1.startAt(0);
 			videoNode1.stopAt(8);
 			
-			var videoNode2 = videoContext.createVideoSourceNode("../assets/introductions-rant.mp4", 30, 4, {volume:0.2, loop:true});
+			var videoNode2 = videoContext.video("../assets/introductions-rant.mp4", 30, 4, {volume:0.2, loop:true});
 			videoNode2.startAt(3);
 			videoNode2.stopAt(11);
 
 
-			var crossFade = videoContext.createTransitionNode(VideoContext.DEFINITIONS.CROSSFADE);
+			var crossFade = videoContext.transition(VideoContext.DEFINITIONS.CROSSFADE);
 
 			videoNode2.connect(crossFade);
 			videoNode1.connect(crossFade);
