@@ -21,11 +21,15 @@ class VideoElementCache {
     init(){
         if (!this._elementsInitialised){
             for(let element of this._elements){
-                element.play().then(()=>{
-                    element.pause();
-                }, (e)=>{
-                    if (e.name !== "NotSupportedError")throw(e);
-                });
+                try {
+                    element.play().then(()=>{
+                        element.pause();
+                    }, (e)=>{
+                        if (e.name !== "NotSupportedError")throw(e);
+                    });
+                } catch(e) {
+                    //console.log(e.name);
+                }
             }    
         }
         this._elementsInitialised = true;

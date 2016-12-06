@@ -293,16 +293,16 @@ export default class SourceNode extends GraphNode{
     }
 
     _pause(){
-        this._triggerCallbacks("pause");
 
-        if(this._state === STATE.playing){
+        if(this._state === STATE.playing || (this._currentTime === 0 && this._startTime === 0)){
+            this._triggerCallbacks("pause");
             this._state = STATE.paused;
         }
     }
     _play(){
-        this._triggerCallbacks("play");
 
         if(this._state === STATE.paused){
+            this._triggerCallbacks("play");
             this._state = STATE.playing;
         }
     }
@@ -326,14 +326,15 @@ export default class SourceNode extends GraphNode{
 
         this._triggerCallbacks("render", currentTime);
 
-        
+
         if (currentTime < this._startTime){
             clearTexture(this._gl, this._texture);
             this._state = STATE.sequenced;
         }
-        
+
+
         if (currentTime >= this._startTime && this._state !== STATE.paused){
-            if (this._state !== STATE.playing)this._triggerCallbacks("play");
+            if (this._state !== STATE.playing) this._triggerCallbacks("play");
             this._state = STATE.playing;
         }
 

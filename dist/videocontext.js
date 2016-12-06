@@ -885,17 +885,17 @@ var VideoContext =
 	
 	                for (var i = 0; i < this._sourceNodes.length; i++) {
 	                    var sourceNode = this._sourceNodes[i];
-	                    sourceNode._update(this._currentTime);
 	
 	                    if (this._state === VideoContext.STATE.STALLED) {
 	                        if (sourceNode._isReady() && sourceNode._state === _SourceNodesSourcenodeJs.SOURCENODESTATE.playing) sourceNode._pause();
 	                    }
 	                    if (this._state === VideoContext.STATE.PAUSED) {
-	                        if (sourceNode._state === _SourceNodesSourcenodeJs.SOURCENODESTATE.playing) sourceNode._pause();
+	                        sourceNode._pause();
 	                    }
 	                    if (this._state === VideoContext.STATE.PLAYING) {
-	                        if (sourceNode._state === _SourceNodesSourcenodeJs.SOURCENODESTATE.paused) sourceNode._play();
+	                        sourceNode._play();
 	                    }
+	                    sourceNode._update(this._currentTime);
 	                }
 	
 	                /*
@@ -9824,18 +9824,18 @@ var VideoContext =
 	    }, {
 	        key: "_pause",
 	        value: function _pause() {
-	            this._triggerCallbacks("pause");
 	
-	            if (this._state === STATE.playing) {
+	            if (this._state === STATE.playing || this._currentTime === 0 && this._startTime === 0) {
+	                this._triggerCallbacks("pause");
 	                this._state = STATE.paused;
 	            }
 	        }
 	    }, {
 	        key: "_play",
 	        value: function _play() {
-	            this._triggerCallbacks("play");
 	
 	            if (this._state === STATE.paused) {
+	                this._triggerCallbacks("play");
 	                this._state = STATE.playing;
 	            }
 	        }
@@ -12356,11 +12356,15 @@ var VideoContext =
 	                    var _loop = function () {
 	                        var element = _step.value;
 	
-	                        element.play().then(function () {
-	                            element.pause();
-	                        }, function (e) {
-	                            if (e.name !== "NotSupportedError") throw e;
-	                        });
+	                        try {
+	                            element.play().then(function () {
+	                                element.pause();
+	                            }, function (e) {
+	                                if (e.name !== "NotSupportedError") throw e;
+	                            });
+	                        } catch (e) {
+	                            //console.log(e.name);
+	                        }
 	                    };
 	
 	                    for (var _iterator = this._elements[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {

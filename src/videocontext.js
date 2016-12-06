@@ -738,17 +738,17 @@ export default class VideoContext{
 
             for (let i = 0; i < this._sourceNodes.length; i++) {
                 let sourceNode = this._sourceNodes[i];
-                sourceNode._update(this._currentTime);
 
                 if(this._state === VideoContext.STATE.STALLED){
                     if (sourceNode._isReady() && sourceNode._state === SOURCENODESTATE.playing) sourceNode._pause();
                 }
                 if(this._state === VideoContext.STATE.PAUSED){
-                    if (sourceNode._state === SOURCENODESTATE.playing)sourceNode._pause();
+                    sourceNode._pause();
                 }
                 if(this._state === VideoContext.STATE.PLAYING){
-                    if (sourceNode._state === SOURCENODESTATE.paused)sourceNode._play();
+                    sourceNode._play();
                 }
+                sourceNode._update(this._currentTime);
             }
 
 
