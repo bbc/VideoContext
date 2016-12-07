@@ -1,7 +1,8 @@
 {
   "name": "videocontext",
-  "version": "0.27.2",
+  "version": "0.27.3",
   "description": "A WebGL & HTML5 graph based video composition library",
+  "keywords":["video", "context", "composition", "timeline", "html5", "webgl"],
   "contributors": [
     {
       "name": "Matthew Shotton",
