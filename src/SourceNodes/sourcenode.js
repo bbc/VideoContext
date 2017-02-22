@@ -224,6 +224,12 @@ export default class SourceNode extends GraphNode{
         return true;
     }
     
+
+    get startTime(){
+        return this._startTime;
+    }
+
+
     /**
     * Stop playback at VideoContext.currentTime plus passed time. If passed time is negative, will play as soon as possible.
     *
@@ -271,6 +277,12 @@ export default class SourceNode extends GraphNode{
         this._triggerCallbacks("durationchange", this.duration);
         return true;
     }
+
+
+    get stopTime(){
+        return this._stopTime;
+    }
+
 
     _seek(time){
         this._triggerCallbacks("seek", time);

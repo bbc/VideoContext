@@ -9748,6 +9748,8 @@ var VideoContext =
 	            this._state = STATE.sequenced;
 	            return true;
 	        }
+	    }, {
+	        key: "stop",
 	
 	        /**
 	        * Stop playback at VideoContext.currentTime plus passed time. If passed time is negative, will play as soon as possible.
@@ -9755,8 +9757,6 @@ var VideoContext =
 	        * @param {number} time - the time from the currentTime of the video context which to stop playback.
 	        * @return {boolean} Will return true is seqeuncing has succeded, or false if the playback has already ended or if start hasn't been called yet, or if time is less than the start time.
 	        */
-	    }, {
-	        key: "stop",
 	        value: function stop(time) {
 	            if (this._state === STATE.ended) {
 	                console.debug("SourceNode has already ended. Cannot call stop.");
@@ -9967,6 +9967,16 @@ var VideoContext =
 	        },
 	        get: function get() {
 	            return this._stretchPaused;
+	        }
+	    }, {
+	        key: "startTime",
+	        get: function get() {
+	            return this._startTime;
+	        }
+	    }, {
+	        key: "stopTime",
+	        get: function get() {
+	            return this._stopTime;
 	        }
 	    }]);
 	
