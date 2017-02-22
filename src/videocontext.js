@@ -1,6 +1,5 @@
 //Matthew Shotton, R&D User Experience,© BBC 2015
 
-import "babel-polyfill";
 import VideoNode from "./SourceNodes/videonode.js";
 import ImageNode from "./SourceNodes/imagenode.js";
 import CanvasNode from "./SourceNodes/canvasnode.js";
