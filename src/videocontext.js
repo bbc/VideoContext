@@ -403,7 +403,9 @@ export default class VideoContext{
 
     /**
     * Create a new node representing an image source
-    *
+    * @param {string|Image} src - The url or image element to create the image node from.
+    * @param {number} [preloadTime] - How long before a node is to be displayed to attmept to load it.
+    * @param {Object} [imageElementAttributes] - Any attributes to be given to the underlying image element.
     * @return {ImageNode} A new image node.
     *
     * @example
@@ -417,7 +419,7 @@ export default class VideoContext{
     * var ctx = new VideoContext(canvasElement);
     * var imageNode = ctx.image(imageElement);
     */
-    image(src, sourceOffset=0, preloadTime=4, imageElementAttributes={}){
+    image(src, preloadTime=4, imageElementAttributes={}){
         let imageNode = new ImageNode(src, this._gl, this._renderGraph, this._currentTime, preloadTime, imageElementAttributes);
         this._sourceNodes.push(imageNode);
         return imageNode;
@@ -434,11 +436,11 @@ export default class VideoContext{
 
     /**
     * Create a new node representing a canvas source
-    *
+    * @param {Canvas} src - The canvas element to create the canvas node from.
     * @return {CanvasNode} A new canvas node.
     */
-    canvas(canvas, sourceOffset=0, preloadTime=4){
-        let canvasNode = new CanvasNode(canvas, this._gl, this._renderGraph, this._currentTime, preloadTime);
+    canvas(canvas){
+        let canvasNode = new CanvasNode(canvas, this._gl, this._renderGraph, this._currentTime);
         this._sourceNodes.push(canvasNode);
         return canvasNode;
     }    
@@ -454,6 +456,7 @@ export default class VideoContext{
 
     /**
     * Create a new effect node.
+    * @param {Object} definition - this is an object defining the shaders, inputs, and properties of the compositing node to create. Builtin definitions can be found by accessing VideoContext.DEFINITIONS.
     * @return {EffectNode} A new effect node created from the passed definition
     */
     effect(definition){
@@ -478,7 +481,7 @@ export default class VideoContext{
     * A compositing node is slightly different to other processing nodes in that it only has one input in it's definition but can have unlimited connections made to it.
     * The shader in the definition is run for each input in turn, drawing them to the output buffer. This means there can be no interaction between the spearte inputs to a compositing node, as they are individually processed in seperate shader passes.
     *
-    * @param {Object} definition - this is an object defining the shaders, inputs, and properties of the compositing node to create.
+    * @param {Object} definition - this is an object defining the shaders, inputs, and properties of the compositing node to create. Builtin definitions can be found by accessing VideoContext.DEFINITIONS
     *
     * @return {CompositingNode} A new compositing node created from the passed definition.
     *
