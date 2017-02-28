@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>VideoContext - Filter Example</title>
+		<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- <script type="text/javascript" src="https://cdn.rawgit.com/bbc/VideoContext/master/dist/videocontext.js"></script> -->
+	<script type="text/javascript" src="../dist/videocontext.js"></script>
+	<script type="text/javascript" src="../js/utils.js"></script>
+	<style type="text/css">
+	.credits,a {
+		color: #bbb;
+		text-align: center;
+		font-size: 0.75em;
+	}
+	</style>
+</head>
+<body>
+	<script type="text/javascript">
+		window.onload = function(){
+			var canvas = document.getElementById("canvas");
+			var videoContext = new VideoContext(canvas);
+
+			var videoNode = videoContext.video("../assets/introductions-rant.mp4", 0, 4, {volume:0.2, loop:true});
+			videoNode.startAt(0);
+			
+
+			var filter1Node = videoContext.effect(VideoContext.DEFINITIONS.MONOCHROME);
+			var filter2Node = videoContext.effect(VideoContext.DEFINITIONS.HORIZONTAL_BLUR);
+			var filter3Node = videoContext.effect(VideoContext.DEFINITIONS.COLORTHRESHOLD);
+
+
+			videoNode.connect(filter1Node);
+
+			filter1Node.connect(videoContext.destination);
+			filter2Node.connect(videoContext.destination);
+			filter3Node.connect(videoContext.destination);
+
+			//Wire in button controls
+			var playButton = document.getElementById("play-button");
+			var pauseButton = document.getElementById("pause-button");
+			var filter1Button = document.getElementById("filter-1");
+			var filter2Button = document.getElementById("filter-2");
+			var filter3Button = document.getElementById("filter-3");
+			var filterNoneButton = document.getElementById("filter-none");
+
+			playButton.onclick = videoContext.play.bind(videoContext);
+			pauseButton.onclick = videoContext.pause.bind(videoContext);
+
+			filter1Button.onclick = function(){
+				videoNode.disconnect();
+				videoNode.connect(filter1Node);
+			};
+
+			filter2Button.onclick = function(){
+				videoNode.disconnect();
+				videoNode.connect(filter2Node);
+			};
+
+
+			filter3Button.onclick = function(){
+				videoNode.disconnect();
+				videoNode.connect(filter3Node);
+			};
+
+			filterNoneButton.onclick = function(){
+				videoNode.disconnect();
+				videoNode.connect(videoContext.destination);
+			};
+
+			//Set-up the visualisation using the convienience function in ../js/utils.js
+			InitVisualisations(videoContext, "graph-canvas", "visualisation-canvas");
+		}
+	</script>
+
+
+	<div class="pure-g">
+    	<div class="pure-u-1-3"></div>
+    	<div class="pure-u-1-3">
+    		<h1>VideoContext</h1>
+    		<h2>Filter Example</h2>
+		    <p>
+		        <canvas id="canvas" width="480", height="270"></canvas>
+		    </p>
+		    <p>
+		        <button class="pure-button" id="play-button">Play</button><button class="pure-button" id="pause-button">Pause</button> 
+				<button class="pure-button" id="filter-1">Filter 1</button><button class="pure-button" id="filter-2">Filter 2</button><button class="pure-button" id="filter-3">Filter 3</button>
+
+				<button class="pure-button" id="filter-none">None</button>
+
+		        <canvas id="visualisation-canvas" width="480", height="20"></canvas>
+    		</p>
+    		<p>
+        		<h3>Graph</h3>
+        		<canvas id="graph-canvas" width="480", height="200"></canvas>
+    		</p>
+    		<div class="credits">
+	    		<p>
+	    			Clip taken from <a href="https://vimeo.com/125095515">#Introductions</a> 
+				</p>
+				<p>
+	    			By LaBeouf, Rönkkö & Turner in collaboration with Central Saint Martins BA Fine Art 2015 students. Joshua Parker's section.
+	    		</p>
+    		</div>
+    	</div>
+    	<div class="pure-u-1-3"></div>
+    </div>
+
+	
+    
+</body>
+</html>

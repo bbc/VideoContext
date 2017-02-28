@@ -1,0 +1,3044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Class: VideoContext</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Class: VideoContext</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>VideoContext</h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+    
+
+    <h4 class="name" id="VideoContext"><span class="type-signature"></span>new VideoContext<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Initialise the VideoContext and render to the specific canvas. A 2nd parameter can be passed to the constructor which is a function that get's called if the VideoContext fails to initialise.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line32">line 32</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>var canvasElement = document.getElemenyById("canvas");
+var ctx = new VideoContext(canvasElement, function(){console.error("Sorry, your browser dosen\'t support WebGL");});
+var videoNode = ctx.video("video.mp4");
+videoNode.connect(ctx.destination);
+videoNode.start(0);
+videoNode.stop(10);
+ctx.play();</code></pre>
+
+
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<h4 class="name" id="currentTime"><span class="type-signature"></span>currentTime<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>Set the progress through the internal timeline.
+Setting this can be used as a way to implement a scrubaable timeline.</p>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line214">line 214</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>var canvasElement = document.getElemenyById("canvas");
+var ctx = new VideoContext(canvasElement);
+var videoNode = ctx.video("video.mp4");
+videoNode.connect(ctx.destination);
+videoNode.start(0);
+videoNode.stop(20);
+ctx.currentTime = 10; // seek 10 seconds in
+ctx.play();</code></pre>
+
+
+
+        
+            
+<h4 class="name" id="currentTime"><span class="type-signature"></span>currentTime<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>Get how far through the internal timeline has been played.</p>
+<p>Getting this value will give the current playhead position. Can be used for updating timelines.</p>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line247">line 247</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>var canvasElement = document.getElemenyById("canvas");
+var ctx = new VideoContext(canvasElement);
+var videoNode = ctx.video("video.mp4");
+videoNode.connect(ctx.destination);
+videoNode.start(0);
+videoNode.stop(10);
+ctx.play();
+setTimeout(funtion(){console.log(ctx.currentTime);},1000); //should print roughly 1.0</code></pre>
+
+
+
+        
+            
+<h4 class="name" id="destination"><span class="type-signature"></span>destination<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>Get the final node in the render graph which represents the canvas to display content on to.</p>
+<p>This proprety is read-only and there can only ever be one destination node. Other nodes can connect to this but you cannot connect this node to anything.</p>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line296">line 296</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>var canvasElement = document.getElemenyById("canvas");
+var ctx = new VideoContext(canvasElement);
+var videoNode = ctx.video("video.mp4");
+videoNode.start(0);
+videoNode.stop(10);
+videoNode.connect(ctx.destination);</code></pre>
+
+
+
+        
+            
+<h4 class="name" id="duration"><span class="type-signature"></span>duration<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>Get the time at which the last node in the current internal timeline finishes playing.</p>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line270">line 270</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>var canvasElement = document.getElemenyById("canvas");
+var ctx = new VideoContext(canvasElement);
+console.log(ctx.duration); //prints 0
+
+var videoNode = ctx.video("video.mp4");
+videoNode.connect(ctx.destination);
+videoNode.start(0);
+videoNode.stop(10);
+
+console.log(ctx.duration); //prints 10
+
+ctx.play();</code></pre>
+
+
+
+        
+            
+<h4 class="name" id="element"><span class="type-signature"></span>element<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>Get the canvas that the VideoContext is using.</p>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line177">line 177</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="playbackRate"><span class="type-signature"></span>playbackRate<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>Return the current playbackRate of the video context.</p>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line328">line 328</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="playbackRate"><span class="type-signature"></span>playbackRate<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>Set the playback rate of the VideoContext instance.
+This will alter the playback speed of all media elements played through the VideoContext.</p>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line316">line 316</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>var canvasElement = document.getElemenyById("canvas");
+var ctx = new VideoContext(canvasElement);
+var videoNode = ctx.video("video.mp4");
+videoNode.start(0);
+videoNode.stop(10);
+videoNode.connect(ctx.destination);
+ctx.playbackRate = 2;
+ctx.play(); // Double playback rate means this will finish playing in 5 seconds.</code></pre>
+
+
+
+        
+            
+<h4 class="name" id="state"><span class="type-signature"></span>state<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>Get the current state.</p>
+<p>This will be either</p>
+<ul>
+<li>VideoContext.STATE.PLAYING: all sources are active</li>
+<li>VideoContext.STATE.PAUSED: all sources are paused</li>
+<li>VideoContext.STATE.STALLED: one or more sources is unable to play</li>
+<li>VideoContext.STATE.ENDED: all sources have finished playing</li>
+<li>VideoContext.STATE.BROKEN: the render graph is in a broken state</li>
+</ul>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line193">line 193</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id="canvas"><span class="type-signature"></span>canvas<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="CanvasNode.html">CanvasNode</a>}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Create a new node representing a canvas source</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line440">line 440</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>A new canvas node.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="CanvasNode.html">CanvasNode</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="compositor"><span class="type-signature"></span>compositor<span class="signature">(definition)</span><span class="type-signature"> &rarr; {<a href="CompositingNode.html">CompositingNode</a>}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Create a new compositiing node.</p>
+<p>Compositing nodes are used for operations such as combining multiple video sources into a single track/connection for further processing in the graph.</p>
+<p>A compositing node is slightly different to other processing nodes in that it only has one input in it's definition but can have unlimited connections made to it.
+The shader in the definition is run for each input in turn, drawing them to the output buffer. This means there can be no interaction between the spearte inputs to a compositing node, as they are individually processed in seperate shader passes.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>definition</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>this is an object defining the shaders, inputs, and properties of the compositing node to create.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line535">line 535</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>A new compositing node created from the passed definition.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="CompositingNode.html">CompositingNode</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>var canvasElement = document.getElemenyById("canvas");
+var ctx = new VideoContext(canvasElement);
+
+//A simple compositing node definition which just renders all the inputs to the output buffer.
+var combineDefinition = {
+    vertexShader : "\
+        attribute vec2 a_position;\
+        attribute vec2 a_texCoord;\
+        varying vec2 v_texCoord;\
+        void main() {\
+            gl_Position = vec4(vec2(2.0,2.0)*vec2(1.0, 1.0), 0.0, 1.0);\
+            v_texCoord = a_texCoord;\
+        }",
+    fragmentShader : "\
+        precision mediump float;\
+        uniform sampler2D u_image;\
+        uniform float a;\
+        varying vec2 v_texCoord;\
+        varying float v_progress;\
+        void main(){\
+            vec4 color = texture2D(u_image, v_texCoord);\
+            gl_FragColor = color;\
+        }",
+    properties:{
+        "a":{type:"uniform", value:0.0},
+    },
+    inputs:["u_image"]
+};
+//Create the node, passing in the definition.
+var trackNode = videoCtx.compositor(combineDefinition);
+
+//create two videos which will play at back to back
+var videoNode1 = ctx.video("video1.mp4");
+videoNode1.play(0);
+videoNode1.stop(10);
+var videoNode2 = ctx.video("video2.mp4");
+videoNode2.play(10);
+videoNode2.stop(20);
+
+//Connect the nodes to the combine node. This will give a single connection representing the two videos which can
+//be connected to other effects such as LUTs, chromakeyers, etc.
+videoNode1.connect(trackNode);
+videoNode2.connect(trackNode);
+
+//Don't do anything exciting, just connect it to the output.
+trackNode.connect(ctx.destination);</code></pre>
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="createCanvasSourceNode"><span class="type-signature"></span>createCanvasSourceNode<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line449">line 449</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="createCompositingNode"><span class="type-signature"></span>createCompositingNode<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line544">line 544</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="createEffectNode"><span class="type-signature"></span>createEffectNode<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line468">line 468</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="createImageSourceNode"><span class="type-signature"></span>createImageSourceNode<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line429">line 429</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="createTransitionNode"><span class="type-signature"></span>createTransitionNode<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line638">line 638</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="createVideoSourceNode"><span class="type-signature"></span>createVideoSourceNode<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line398">line 398</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="effect"><span class="type-signature"></span>effect<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="EffectNode.html">EffectNode</a>}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Create a new effect node.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line459">line 459</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>A new effect node created from the passed definition</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="EffectNode.html">EffectNode</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="image"><span class="type-signature"></span>image<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="ImageNode.html">ImageNode</a>}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Create a new node representing an image source</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line420">line 420</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>A new image node.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="ImageNode.html">ImageNode</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+    <h5>Examples</h5>
+    
+    <pre class="prettyprint"><code>var canvasElement = document.getElemenyById("canvas");
+var ctx = new VideoContext(canvasElement);
+var imageNode = ctx.image("image.png");</code></pre>
+
+    <pre class="prettyprint"><code>var canvasElement = document.getElemenyById("canvas");
+var imageElement = document.getElemenyById("image");
+var ctx = new VideoContext(canvasElement);
+var imageNode = ctx.image(imageElement);</code></pre>
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="pause"><span class="type-signature"></span>pause<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Pause playback of the VideoContext</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line366">line 366</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>var canvasElement = document.getElemenyById("canvas");
+var ctx = new VideoContext(canvasElement);
+var videoNode = ctx.video("video.mp4");
+videoNode.connect(ctx.destination);
+videoNode.start(0);
+videoNode.stop(20);
+ctx.currentTime = 10; // seek 10 seconds in
+ctx.play();
+setTimeout(function(){ctx.pause();}, 1000); //pause playback after roughly one second.</code></pre>
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="play"><span class="type-signature"></span>play<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Start the VideoContext playing</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line344">line 344</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>var canvasElement = document.getElemenyById("canvas");
+var ctx = new VideoContext(canvasElement);
+var videoNode = ctx.video("video.mp4");
+videoNode.connect(ctx.destination);
+videoNode.start(0);
+videoNode.stop(10);
+ctx.play();</code></pre>
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="registerCallback"><span class="type-signature"></span>registerCallback<span class="signature">(type, func)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Regsiter a callback to listen to one of the following events: &quot;stalled&quot;, &quot;update&quot;, &quot;ended&quot;</p>
+<p>&quot;stalled&quot; happend anytime playback is stopped due to unavailbale data for playing assets (i.e video still loading)
+. &quot;update&quot; is called any time a frame is rendered to the screen. &quot;ended&quot; is called once plackback has finished
+(i.e ctx.currentTime == ctx.duration).</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>the event to register against (&quot;stalled&quot;, &quot;update&quot;, or &quot;ended&quot;).</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>func</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>the callback to register.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line130">line 130</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>var canvasElement = document.getElemenyById("canvas");
+var ctx = new VideoContext(canvasElement);
+ctx.registerCallback("stalled", function(){console.log("Playback stalled");});
+ctx.registerCallback("update", function(){console.log("new frame");});
+ctx.registerCallback("ended", function(){console.log("Playback ended");});</code></pre>
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="registerTimelineCallback"><span class="type-signature"></span>registerTimelineCallback<span class="signature">(time, func, ordering)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Register a callback to happen at a specific point in time.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>time</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>the time at which to trigger the callback.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>func</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>the callback to register.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>ordering</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>the order in which to call the callback if more than one is registered for the same time.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line91">line 91</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="transition"><span class="type-signature"></span>transition<span class="signature">(definition)</span><span class="type-signature"> &rarr; {<a href="TransitionNode.html">TransitionNode</a>}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Create a new transition node.</p>
+<p>Transistion nodes are a type of effect node which have parameters which can be changed as events on the timeline.</p>
+<p>For example a transition node which cross-fades between two videos could have a &quot;mix&quot; property which sets the
+progress through the transistion. Rather than having to write your own code to adjust this property at specfic
+points in time a transition node has a &quot;transition&quot; function which takes a startTime, stopTime, targetValue, and a
+propertyName (which will be &quot;mix&quot;). This will linearly interpolate the property from the curernt value to
+tragetValue between the startTime and stopTime.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>definition</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>this is an object defining the shaders, inputs, and properties of the transition node to create.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line629">line 629</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>A new transition node created from the passed definition.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="TransitionNode.html">TransitionNode</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>var canvasElement = document.getElemenyById("canvas");
+var ctx = new VideoContext(canvasElement);
+
+//A simple cross-fade node definition which cross-fades between two videos based on the mix property.
+var crossfadeDefinition = {
+    vertexShader : "\
+       attribute vec2 a_position;\
+       attribute vec2 a_texCoord;\
+       varying vec2 v_texCoord;\
+       void main() {\
+           gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+           v_texCoord = a_texCoord;\
+        }",
+    fragmentShader : "\
+        precision mediump float;\
+        uniform sampler2D u_image_a;\
+        uniform sampler2D u_image_b;\
+        uniform float mix;\
+        varying vec2 v_texCoord;\
+        varying float v_mix;\
+        void main(){\
+            vec4 color_a = texture2D(u_image_a, v_texCoord);\
+            vec4 color_b = texture2D(u_image_b, v_texCoord);\
+            color_a[0] *= mix;\
+            color_a[1] *= mix;\
+            color_a[2] *= mix;\
+            color_a[3] *= mix;\
+            color_b[0] *= (1.0 - mix);\
+            color_b[1] *= (1.0 - mix);\
+            color_b[2] *= (1.0 - mix);\
+            color_b[3] *= (1.0 - mix);\
+            gl_FragColor = color_a + color_b;\
+        }",
+    properties:{
+        "mix":{type:"uniform", value:0.0},
+    },
+    inputs:["u_image_a","u_image_b"]
+};
+
+//Create the node, passing in the definition.
+var transitionNode = videoCtx.transition(crossfadeDefinition);
+
+//create two videos which will overlap by two seconds
+var videoNode1 = ctx.video("video1.mp4");
+videoNode1.play(0);
+videoNode1.stop(10);
+var videoNode2 = ctx.video("video2.mp4");
+videoNode2.play(8);
+videoNode2.stop(18);
+
+//Connect the nodes to the transistion node.
+videoNode1.connect(transitionNode);
+videoNode2.connect(transitionNode);
+
+//Set-up a transition which happens at the crossover point of the playback of the two videos
+transitionNode.transition(8,10,1.0,"mix");
+
+//Connect the transition node to the output
+transitionNode.connect(ctx.destination);
+
+//start playback
+ctx.play();</code></pre>
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="unregisterCallback"><span class="type-signature"></span>unregisterCallback<span class="signature">(func)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Remove a previously registed callback</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>func</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>the callback to remove.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line153">line 153</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>var canvasElement = document.getElemenyById("canvas");
+var ctx = new VideoContext(canvasElement);
+
+//the callback
+var updateCallback = function(){console.log("new frame")};
+
+//register the callback
+ctx.registerCallback("update", updateCallback);
+//then unregister it
+ctx.unregisterCallback(updateCallback);</code></pre>
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="unregisterTimelineCallback"><span class="type-signature"></span>unregisterTimelineCallback<span class="signature">(func)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Unregister a callback which happens at a specific point in time.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>func</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>the callback to unregister.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line100">line 100</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="update"><span class="type-signature"></span>update<span class="signature">(dt)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>This allows manual calling of the update loop of the videoContext.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>dt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The difference in seconds between this and the previous calling of update.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line677">line 677</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>var canvasElement = document.getElemenyById("canvas");
+var ctx = new VideoContext(canvasElement, undefined, {"manualUpdate" : true});
+
+var previousTime;
+function update(time){
+    if (previousTime === undefined) previousTime = time;
+    var dt = (time - previousTime)/1000;
+    ctx.update(dt);
+    previousTime = time;
+    requestAnimationFrame(update);
+}
+update();</code></pre>
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="video"><span class="type-signature"></span>video<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="VideoNode.html">VideoNode</a>}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Create a new node representing a video source</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line389">line 389</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>A new video node.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="VideoNode.html">VideoNode</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+    <h5>Examples</h5>
+    
+    <pre class="prettyprint"><code>var canvasElement = document.getElemenyById("canvas");
+var ctx = new VideoContext(canvasElement);
+var videoNode = ctx.video("video.mp4");</code></pre>
+
+    <pre class="prettyprint"><code>var canvasElement = document.getElemenyById("canvas");
+var videoElement = document.getElemenyById("video");
+var ctx = new VideoContext(canvasElement);
+var videoNode = ctx.video(videoElement);</code></pre>
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="CanvasNode.html">CanvasNode</a></li><li><a href="CompositingNode.html">CompositingNode</a></li><li><a href="DestinationNode.html">DestinationNode</a></li><li><a href="EffectNode.html">EffectNode</a></li><li><a href="GraphNode.html">GraphNode</a></li><li><a href="ImageNode.html">ImageNode</a></li><li><a href="ProcessingNode.html">ProcessingNode</a></li><li><a href="RenderGraph.html">RenderGraph</a></li><li><a href="SourceNode.html">SourceNode</a></li><li><a href="TransitionNode.html">TransitionNode</a></li><li><a href="VideoContext.html">VideoContext</a></li><li><a href="VideoNode.html">VideoNode</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Tue Feb 28 2017 10:56:23 GMT+0000 (GMT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

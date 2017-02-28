@@ -1,7 +1,7 @@
 {
     "opts": {
         "encoding": "utf8",
-        "destination": "./doc/",
+        "destination": "./doc/api/",
         "recurse": true
     },
     "tags": {
