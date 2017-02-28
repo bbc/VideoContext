@@ -16,6 +16,9 @@
     "plugins": ["plugins/markdown"],
     "templates": {
         "cleverLinks": true,
-        "monospaceLinks": false
+        "monospaceLinks": false,
+        "default": {
+            "includeDate": false
+        }
     }
 }
