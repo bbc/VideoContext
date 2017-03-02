@@ -47,6 +47,10 @@ export default class VideoContext{
     /**
     * Initialise the VideoContext and render to the specific canvas. A 2nd parameter can be passed to the constructor which is a function that get's called if the VideoContext fails to initialise.
     *
+    * @param {Canvas} canvas - the canvas element to render the output to.
+    * @param {function} initErrorCallback - a callback for if initialising the canvas failed.
+    * @param {Object} options - a nuber of custom options which can be set on the VideoContext, generally best left as default.
+    *
     * @example
     * var canvasElement = document.getElemenyById("canvas");
     * var ctx = new VideoContext(canvasElement, function(){console.error("Sorry, your browser dosen\'t support WebGL");});
