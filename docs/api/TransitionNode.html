@@ -140,7 +140,7 @@
 
     
 
-    <h4 class="name" id="clearTransition"><span class="type-signature"></span>clearTransition<span class="signature">(propertyName, time)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="clearTransition"><span class="type-signature"></span>clearTransition<span class="signature">(propertyName, time)</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
 
     
 
@@ -263,7 +263,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line74">line 74</a>
+        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line78">line 78</a>
     </li></ul></dd>
     
 
@@ -286,6 +286,28 @@
 
 
 
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>returns True if a transition is removed, false otherwise.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Boolean</span>
+
+
+    </dd>
+</dl>
+
+    
 
 
 
@@ -294,7 +316,7 @@
 
     
 
-    <h4 class="name" id="clearTransition"><span class="type-signature"></span>clearTransition<span class="signature">(propertyName, time)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="clearTransition"><span class="type-signature"></span>clearTransition<span class="signature">(propertyName, time)</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
 
     
 
@@ -417,7 +439,160 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line74">line 74</a>
+        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line78">line 78</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>returns True if a transition is removed, false otherwise.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="clearTransitions"><span class="type-signature"></span>clearTransitions<span class="signature">(propertyName)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Clear all transistions on the passed property. If no property is defined clear all transitions on the node.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>propertyName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The name of the property to clear transitions on, if undefined clear all transitions on the node.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line62">line 62</a>
     </li></ul></dd>
     
 
@@ -548,7 +723,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line60">line 60</a>
+        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line62">line 62</a>
     </li></ul></dd>
     
 
@@ -579,138 +754,7 @@
 
     
 
-    <h4 class="name" id="clearTransitions"><span class="type-signature"></span>clearTransitions<span class="signature">(propertyName)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Clear all transistions on the passed property. If no property is defined clear all transitions on the node.</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>propertyName</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The name of the property to clear transitions on, if undefined clear all transitions on the node.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line60">line 60</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id="transition"><span class="type-signature"></span>transition<span class="signature">(startTime, endTime, currentValue, targetValue, propertyName)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="transition"><span class="type-signature"></span>transition<span class="signature">(startTime, endTime, currentValue, targetValue, propertyName)</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
 
     
 
@@ -902,7 +946,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line48">line 48</a>
+        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line50">line 50</a>
     </li></ul></dd>
     
 
@@ -925,6 +969,28 @@
 
 
 
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>returns True if a transition is successfully added, false otherwise.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Boolean</span>
+
+
+    </dd>
+</dl>
+
+    
 
 
 
@@ -933,7 +999,7 @@
 
     
 
-    <h4 class="name" id="transition"><span class="type-signature"></span>transition<span class="signature">(startTime, endTime, currentValue, targetValue, propertyName)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="transition"><span class="type-signature"></span>transition<span class="signature">(startTime, endTime, currentValue, targetValue, propertyName)</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
 
     
 
@@ -1125,7 +1191,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line48">line 48</a>
+        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line50">line 50</a>
     </li></ul></dd>
     
 
@@ -1148,6 +1214,28 @@
 
 
 
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>returns True if a transition is successfully added, false otherwise.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Boolean</span>
+
+
+    </dd>
+</dl>
+
+    
 
 
 
@@ -1283,7 +1371,7 @@
 
     
 
-    <h4 class="name" id="clearTransition"><span class="type-signature"></span>clearTransition<span class="signature">(propertyName, time)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="clearTransition"><span class="type-signature"></span>clearTransition<span class="signature">(propertyName, time)</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
 
     
 
@@ -1406,7 +1494,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line74">line 74</a>
+        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line78">line 78</a>
     </li></ul></dd>
     
 
@@ -1429,6 +1517,28 @@
 
 
 
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>returns True if a transition is removed, false otherwise.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Boolean</span>
+
+
+    </dd>
+</dl>
+
+    
 
 
 
@@ -1437,7 +1547,7 @@
 
     
 
-    <h4 class="name" id="clearTransition"><span class="type-signature"></span>clearTransition<span class="signature">(propertyName, time)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="clearTransition"><span class="type-signature"></span>clearTransition<span class="signature">(propertyName, time)</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
 
     
 
@@ -1560,7 +1670,160 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line74">line 74</a>
+        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line78">line 78</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>returns True if a transition is removed, false otherwise.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="clearTransitions"><span class="type-signature"></span>clearTransitions<span class="signature">(propertyName)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Clear all transistions on the passed property. If no property is defined clear all transitions on the node.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>propertyName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The name of the property to clear transitions on, if undefined clear all transitions on the node.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line62">line 62</a>
     </li></ul></dd>
     
 
@@ -1691,7 +1954,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line60">line 60</a>
+        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line62">line 62</a>
     </li></ul></dd>
     
 
@@ -1722,138 +1985,7 @@
 
     
 
-    <h4 class="name" id="clearTransitions"><span class="type-signature"></span>clearTransitions<span class="signature">(propertyName)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Clear all transistions on the passed property. If no property is defined clear all transitions on the node.</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>propertyName</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The name of the property to clear transitions on, if undefined clear all transitions on the node.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line60">line 60</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id="transition"><span class="type-signature"></span>transition<span class="signature">(startTime, endTime, currentValue, targetValue, propertyName)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="transition"><span class="type-signature"></span>transition<span class="signature">(startTime, endTime, currentValue, targetValue, propertyName)</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
 
     
 
@@ -2045,7 +2177,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line48">line 48</a>
+        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line50">line 50</a>
     </li></ul></dd>
     
 
@@ -2068,6 +2200,28 @@
 
 
 
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>returns True if a transition is successfully added, false otherwise.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Boolean</span>
+
+
+    </dd>
+</dl>
+
+    
 
 
 
@@ -2076,7 +2230,7 @@
 
     
 
-    <h4 class="name" id="transition"><span class="type-signature"></span>transition<span class="signature">(startTime, endTime, currentValue, targetValue, propertyName)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="transition"><span class="type-signature"></span>transition<span class="signature">(startTime, endTime, currentValue, targetValue, propertyName)</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
 
     
 
@@ -2268,7 +2422,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line48">line 48</a>
+        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line50">line 50</a>
     </li></ul></dd>
     
 
@@ -2291,6 +2445,28 @@
 
 
 
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>returns True if a transition is successfully added, false otherwise.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Boolean</span>
+
+
+    </dd>
+</dl>
+
+    
 
 
 

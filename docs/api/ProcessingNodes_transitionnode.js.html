@@ -72,6 +72,8 @@ export default class TransitionNode extends EffectNode{
     * @param {number} currentValue - The value to start the transition at.
     * @param {number} targetValue - The value to transition to by endTime.
     * @param {String} propertyName - The name of the property to clear transitions on, if undefined default to "mix".
+    * 
+    * @return {Boolean} returns True if a transition is successfully added, false otherwise.
     */
     transition(startTime, endTime, currentValue, targetValue, propertyName="mix"){
         let transition = {start:startTime + this._currentTime, end:endTime + this._currentTime, current:currentValue, target:targetValue, property:propertyName};
@@ -98,6 +100,8 @@ export default class TransitionNode extends EffectNode{
     * 
     * @param {String} propertyName - The name of the property to clear a transition on.
     * @param {number} time - A time which lies within the property you're trying to clear.
+    *
+    * @return {Boolean} returns True if a transition is removed, false otherwise.
     */
     clearTransition(propertyName, time){
         let transitionIndex = undefined;

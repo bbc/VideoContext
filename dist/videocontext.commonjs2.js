@@ -3737,6 +3737,8 @@ module.exports =
 	        * @param {number} currentValue - The value to start the transition at.
 	        * @param {number} targetValue - The value to transition to by endTime.
 	        * @param {String} propertyName - The name of the property to clear transitions on, if undefined default to "mix".
+	        * 
+	        * @return {Boolean} returns True if a transition is successfully added, false otherwise.
 	        */
 	    }, {
 	        key: "transition",
@@ -3769,6 +3771,8 @@ module.exports =
 	        * 
 	        * @param {String} propertyName - The name of the property to clear a transition on.
 	        * @param {number} time - A time which lies within the property you're trying to clear.
+	        *
+	        * @return {Boolean} returns True if a transition is removed, false otherwise.
 	        */
 	    }, {
 	        key: "clearTransition",
