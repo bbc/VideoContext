@@ -112,7 +112,6 @@ export function exportToJSON(vc){
         if(!source._isResponsibleForElementLifeCycle){
             console.log("Warning - Trying to export source created from an element not a URL. URL of export will be set to the elements src attribute and may be incorrect", source);
             node_url = source.element.src;
-            continue;
         } else {
             node_url = qualifyURL(source._elementURL);
         }
