@@ -2082,13 +2082,18 @@ var VideoContext =
 	    for (var index in vc._sourceNodes) {
 	        var source = vc._sourceNodes[index];
 	        var id = "source" + index;
+	        var node_url = "";
+	
 	        if (!source._isResponsibleForElementLifeCycle) {
-	            console.log("Warning - Cannont export source as it is created from an element, not a URL.", source);
+	            console.log("Warning - Trying to export source created from an element not a URL. URL of export will be set to the elements src attribute and may be incorrect", source);
+	            node_url = source.element.src;
 	            continue;
+	        } else {
+	            node_url = qualifyURL(source._elementURL);
 	        }
 	        var node = {
 	            type: source.constructor.name,
-	            url: qualifyURL(source._elementURL),
+	            url: node_url,
 	            start: source._startTime,
 	            stop: source._stopTime
 	        };

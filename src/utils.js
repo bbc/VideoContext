@@ -107,13 +107,18 @@ export function exportToJSON(vc){
     for(let index in vc._sourceNodes){
         let source = vc._sourceNodes[index];
         let id = "source" + index;
+        let node_url = "";
+
         if(!source._isResponsibleForElementLifeCycle){
-            console.log("Warning - Cannont export source as it is created from an element, not a URL.", source);
+            console.log("Warning - Trying to export source created from an element not a URL. URL of export will be set to the elements src attribute and may be incorrect", source);
+            node_url = source.element.src;
             continue;
+        } else {
+            node_url = qualifyURL(source._elementURL);
         }
         let node = {
             type: source.constructor.name,
-            url: qualifyURL(source._elementURL),
+            url: node_url,
             start: source._startTime,
             stop: source._stopTime
         };
