@@ -158,8 +158,10 @@ export default class VideoNode extends SourceNode {
         }
         else if (this._state === SOURCENODESTATE.ended && this._element !== undefined){
             this._element.pause();
-            this._isElementPlaying = false;
-            this._destroy();
+            if (this._isElementPlaying){
+                this._isElementPlaying = false;
+                this._destroy();    
+            }
             return false;
         }
     }

@@ -1369,8 +1369,10 @@ var VideoContext =
 	                return true;
 	            } else if (this._state === _sourcenode.SOURCENODESTATE.ended && this._element !== undefined) {
 	                this._element.pause();
-	                this._isElementPlaying = false;
-	                this._destroy();
+	                if (this._isElementPlaying) {
+	                    this._isElementPlaying = false;
+	                    this._destroy();
+	                }
 	                return false;
 	            }
 	        }
