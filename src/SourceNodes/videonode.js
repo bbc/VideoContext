@@ -12,10 +12,10 @@ export default class VideoNode extends SourceNode {
         this._sourceOffset = sourceOffset;
         this._globalPlaybackRate = globalPlaybackRate;
         this._videoElementCache = videoElementCache;
-        if (this._videoElementCache){
-            this._isResponsibleForElementLifeCycle = true;
+        // if (this._videoElementCache){
+            // this._isResponsibleForElementLifeCycle = true;
             //this._element.currentTime = this._sourceOffset;
-        }
+        // }
         this._playbackRate = 1.0;
         this._playbackRateUpdated = true;
         this._attributes = attributes;
