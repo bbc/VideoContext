@@ -109,6 +109,7 @@ export default class VideoNode extends SourceNode {
             if(!this._videoElementCache) delete this._element;
         }
         this._ready = false;
+        this._isElementPlaying = false;
     }
 
     _seek(time){
@@ -159,7 +160,6 @@ export default class VideoNode extends SourceNode {
         else if (this._state === SOURCENODESTATE.ended && this._element !== undefined){
             this._element.pause();
             if (this._isElementPlaying){
-                this._isElementPlaying = false;
                 this._destroy();    
             }
             return false;

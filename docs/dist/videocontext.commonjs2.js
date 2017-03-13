@@ -1320,6 +1320,7 @@ module.exports =
 	                if (!this._videoElementCache) delete this._element;
 	            }
 	            this._ready = false;
+	            this._isElementPlaying = false;
 	        }
 	    }, {
 	        key: "_seek",
@@ -1370,7 +1371,6 @@ module.exports =
 	            } else if (this._state === _sourcenode.SOURCENODESTATE.ended && this._element !== undefined) {
 	                this._element.pause();
 	                if (this._isElementPlaying) {
-	                    this._isElementPlaying = false;
 	                    this._destroy();
 	                }
 	                return false;
