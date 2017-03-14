@@ -37,8 +37,8 @@ let starWipe = {
             }\
             \
             void main(){\
-                vec4 color_a = texture2D(u_image_a, v_texCoord);\
-                vec4 color_b = texture2D(u_image_b, v_texCoord);\
+                vec4 color_a = texture2D(u_image_b, v_texCoord);\
+                vec4 color_b = texture2D(u_image_a, v_texCoord);\
                 vec2 t0_p0,t0_p1,t0_p2,t1_p0,t1_p1,t1_p2,t2_p0,t2_p1,t2_p2,t3_p0,t3_p1,t3_p2;\
                 vec2 t4_p0,t4_p1,t4_p2,t5_p0,t5_p1,t5_p2,t6_p0,t6_p1,t6_p2,t7_p0,t7_p1,t7_p2;\
                 \

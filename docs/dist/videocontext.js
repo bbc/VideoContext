@@ -4866,8 +4866,8 @@ var VideoContext =
 	            }\
 	            \
 	            void main(){\
-	                vec4 color_a = texture2D(u_image_a, v_texCoord);\
-	                vec4 color_b = texture2D(u_image_b, v_texCoord);\
+	                vec4 color_a = texture2D(u_image_b, v_texCoord);\
+	                vec4 color_b = texture2D(u_image_a, v_texCoord);\
 	                vec2 t0_p0,t0_p1,t0_p2,t1_p0,t1_p1,t1_p2,t2_p0,t2_p1,t2_p2,t3_p0,t3_p1,t3_p2;\
 	                vec2 t4_p0,t4_p1,t4_p2,t5_p0,t5_p1,t5_p2,t6_p0,t6_p1,t6_p2,t7_p0,t7_p1,t7_p2;\
 	                \
@@ -5484,14 +5484,14 @@ var VideoContext =
 	        vec2 pos = vec2(v_texCoord[0] + ((sin(v_texCoord[1]*(10.0*wobble*3.14) + wobble*10.0)/13.0)), v_texCoord[1]);\
 	        vec4 color_a = texture2D(u_image_a, pos);\
 	        vec4 color_b = texture2D(u_image_b, pos);\
-	        color_a[0] *= mix;\
-	        color_a[1] *= mix;\
-	        color_a[2] *= mix;\
-	        color_a[3] *= mix;\
-	        color_b[0] *= (1.0 - mix);\
-	        color_b[1] *= (1.0 - mix);\
-	        color_b[2] *= (1.0 - mix);\
-	        color_b[3] *= (1.0 - mix);\
+	        color_a[0] *= (1.0 - mix);\
+	        color_a[1] *= (1.0 - mix);\
+	        color_a[2] *= (1.0 - mix);\
+	        color_a[3] *= (1.0 - mix);\
+	        color_b[0] *= mix;\
+	        color_b[1] *= mix;\
+	        color_b[2] *= mix;\
+	        color_b[3] *= mix;\
 	        gl_FragColor = color_a + color_b;\
 	    }",
 	    "properties": {
