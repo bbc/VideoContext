@@ -2925,6 +2925,7 @@ module.exports =
 	                this._element.setAttribute("crossorigin", "anonymous");
 	                this._element.src = this._elementURL;
 	                this._element.onload = function () {
+	                    console.log("image loaded!!");
 	                    _this._ready = true;
 	                    _this._triggerCallbacks("loaded");
 	                };
@@ -2955,7 +2956,6 @@ module.exports =
 	            _get(Object.getPrototypeOf(ImageNode.prototype), "_seek", this).call(this, time);
 	            if (this.state === _sourcenode.SOURCENODESTATE.playing || this.state === _sourcenode.SOURCENODESTATE.paused) {
 	                if (this._element === undefined) this._load();
-	                this._ready = false;
 	            }
 	            if ((this._state === _sourcenode.SOURCENODESTATE.sequenced || this._state === _sourcenode.SOURCENODESTATE.ended) && this._element !== undefined) {
 	                this._destroy();

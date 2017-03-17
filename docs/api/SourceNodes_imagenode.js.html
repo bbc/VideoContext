@@ -55,6 +55,7 @@ export default class ImageNode extends SourceNode {
             this._element.setAttribute("crossorigin", "anonymous");
             this._element.src = this._elementURL;
             this._element.onload = () => {
+                console.log("image loaded!!");
                 this._ready = true;
                 this._triggerCallbacks("loaded");
             };
@@ -83,7 +84,6 @@ export default class ImageNode extends SourceNode {
         super._seek(time);
         if (this.state === SOURCENODESTATE.playing || this.state === SOURCENODESTATE.paused){
             if (this._element === undefined) this._load();
-            this._ready = false;
         }
         if((this._state === SOURCENODESTATE.sequenced || this._state === SOURCENODESTATE.ended) &amp;&amp; this._element !== undefined){
             this._destroy();
