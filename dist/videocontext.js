@@ -135,7 +135,7 @@ var VideoContext =
 	        var webglContextAttributes = { preserveDrawingBuffer: true, alpha: false };
 	
 	        if ("manualUpdate" in options) manualUpdate = options.manualUpdate;
-	        if ("endOnLastSourceEnd" in options) this.endOnLastSourceEnd = options.endOnLastSourceEnd;
+	        if ("endOnLastSourceEnd" in options) this._endOnLastSourceEnd = options.endOnLastSourceEnd;
 	        if ("webglContextAttributes" in options) webglContextAttributes = options.webglContextAttributes;
 	
 	        if (webglContextAttributes.alpha === undefined) webglContextAttributes.alpha = false;
