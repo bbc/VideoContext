@@ -421,6 +421,10 @@ module.exports =
 	        /**
 	        * Create a new node representing a video source
 	        *
+	        * @param {string|Video} - The URL or video element to create the video from.
+	        * @sourceOffset {number} - Offset into the start of the source video to start playing from.
+	        * @preloadTime {number} - How many seconds before the video is to be played to start loading it.
+	        * @videoElementAttributes {Object} - A dictionary of attributes to map onto the underlying video element.
 	        * @return {VideoNode} A new video node.
 	        *
 	        * @example
@@ -855,13 +859,6 @@ module.exports =
 	                                }
 	                            }
 	                        }
-	
-	                        // activeCallbacks.sort(function(a, b) {
-	                        //     return a.ordering - b.ordering;
-	                        // });
-	                        // for(let callback of activeCallbacks){
-	                        //     callback.func();
-	                        // }
 	                    } catch (err) {
 	                        _didIteratorError6 = true;
 	                        _iteratorError6 = err;
@@ -879,8 +876,12 @@ module.exports =
 	
 	                    this._currentTime += dt * this._playbackRate;
 	                    if (this._currentTime > this.duration && this._endOnLastSourceEnd) {
-	                        this._callCallbacks("ended");
+	                        //Do an update od the sourcenodes in case anything in the "ended" callbacks modifes currentTime and sources haven't had a chance to stop.
+	                        for (var i = 0; i < this._sourceNodes.length; i++) {
+	                            this._sourceNodes[i]._update(this._currentTime);
+	                        }
 	                        this._state = VideoContext.STATE.ENDED;
+	                        this._callCallbacks("ended");
 	                    }
 	                }
 	
@@ -961,12 +962,6 @@ module.exports =
 	                            node._render();
 	                        }
 	                    }
-	
-	                    /*for (let node of this._processingNodes) {
-	                        node._update(this._currentTime);
-	                        node._render();
-	                    }
-	                    this._destinationNode._render();*/
 	                } catch (err) {
 	                    _didIteratorError9 = true;
 	                    _iteratorError9 = err;
@@ -1034,6 +1029,7 @@ module.exports =
 	        set: function set(currentTime) {
 	            console.debug("VideoContext - seeking to", currentTime);
 	            if (currentTime < this._duration && this._state === VideoContext.STATE.ENDED) this._state = VideoContext.STATE.PAUSED;
+	
 	            if (typeof currentTime === "string" || currentTime instanceof String) {
 	                currentTime = parseFloat(currentTime);
 	            }

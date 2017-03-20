@@ -218,6 +218,7 @@ export default class VideoContext{
     set currentTime(currentTime){
         console.debug("VideoContext - seeking to", currentTime);
         if (currentTime < this._duration && this._state === VideoContext.STATE.ENDED) this._state = VideoContext.STATE.PAUSED;
+
         if (typeof currentTime === "string" || currentTime instanceof String){
             currentTime = parseFloat(currentTime);
         }
@@ -377,6 +378,10 @@ export default class VideoContext{
     /**
     * Create a new node representing a video source
     *
+    * @param {string|Video} - The URL or video element to create the video from.
+    * @sourceOffset {number} - Offset into the start of the source video to start playing from.
+    * @preloadTime {number} - How many seconds before the video is to be played to start loading it.
+    * @videoElementAttributes {Object} - A dictionary of attributes to map onto the underlying video element.
     * @return {VideoNode} A new video node.
     *
     * @example
@@ -727,18 +732,14 @@ export default class VideoContext{
                     }
                 }
 
-                // activeCallbacks.sort(function(a, b) {
-                //     return a.ordering - b.ordering;
-                // });
-                // for(let callback of activeCallbacks){
-                //     callback.func();
-                // }
-
-
                 this._currentTime += dt * this._playbackRate;
                 if(this._currentTime > this.duration && this._endOnLastSourceEnd){
-                    this._callCallbacks("ended");
+                    //Do an update od the sourcenodes in case anything in the "ended" callbacks modifes currentTime and sources haven't had a chance to stop.
+                    for (let i = 0; i < this._sourceNodes.length; i++) {
+                        this._sourceNodes[i]._update(this._currentTime);
+                    }
                     this._state = VideoContext.STATE.ENDED;
+                    this._callCallbacks("ended");
                 }
             }
 
@@ -756,7 +757,6 @@ export default class VideoContext{
                 }
                 sourceNode._update(this._currentTime);
             }
-
 
 
 
@@ -795,12 +795,6 @@ export default class VideoContext{
                     node._render();
                 }
             }
-
-            /*for (let node of this._processingNodes) {
-                node._update(this._currentTime);
-                node._render();
-            }
-            this._destinationNode._render();*/
 
         }
     }
