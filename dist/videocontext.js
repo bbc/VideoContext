@@ -165,12 +165,15 @@ var VideoContext =
 	        this._currentTime = 0;
 	        this._state = VideoContext.STATE.PAUSED;
 	        this._playbackRate = 1.0;
+	        this._sourcesPlaying = false;
 	        this._destinationNode = new _DestinationNodeDestinationnodeJs2["default"](this._gl, this._renderGraph);
 	
 	        this._callbacks = new Map();
 	        this._callbacks.set("stalled", []);
 	        this._callbacks.set("update", []);
 	        this._callbacks.set("ended", []);
+	        this._callbacks.set("content", []);
+	        this._callbacks.set("nocontent", []);
 	
 	        this._timelineCallbacks = [];
 	
@@ -263,11 +266,13 @@ var VideoContext =
 	        }
 	
 	        /**
-	        * Regsiter a callback to listen to one of the following events: "stalled", "update", "ended"
+	        * Regsiter a callback to listen to one of the following events: "stalled", "update", "ended", "content", "nocontent"
 	        *
 	        * "stalled" happend anytime playback is stopped due to unavailbale data for playing assets (i.e video still loading)
 	        * . "update" is called any time a frame is rendered to the screen. "ended" is called once plackback has finished
-	        * (i.e ctx.currentTime == ctx.duration).
+	        * (i.e ctx.currentTime == ctx.duration). "content" is called a the start of a time region where there is content 
+	        * playing out of one or more sourceNodes. "nocontent" is called at the start of any time region where the 
+	        * VideoContext is still playing, but there are currently no activly playing soureces.
 	        *
 	        * @param {String} type - the event to register against ("stalled", "update", or "ended").
 	        * @param {Function} func - the callback to register.
@@ -885,6 +890,8 @@ var VideoContext =
 	                    }
 	                }
 	
+	                var sourcesPlaying = false;
+	
 	                for (var i = 0; i < this._sourceNodes.length; i++) {
 	                    var sourceNode = this._sourceNodes[i];
 	
@@ -898,6 +905,18 @@ var VideoContext =
 	                        sourceNode._play();
 	                    }
 	                    sourceNode._update(this._currentTime);
+	                    if (sourceNode._state === _SourceNodesSourcenodeJs.SOURCENODESTATE.paused || sourceNode._state === _SourceNodesSourcenodeJs.SOURCENODESTATE.playing) {
+	                        sourcesPlaying = true;
+	                    }
+	                }
+	
+	                if (sourcesPlaying !== this._sourcesPlaying) {
+	                    if (sourcesPlaying === true) {
+	                        this._callCallbacks("content");
+	                    } else {
+	                        this._callCallbacks("nocontent");
+	                    }
+	                    this._sourcesPlaying = sourcesPlaying;
 	                }
 	
 	                /*
