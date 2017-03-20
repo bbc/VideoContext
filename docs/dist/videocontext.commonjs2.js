@@ -998,7 +998,7 @@ module.exports =
 	        * Get the current state.
 	        *
 	        * This will be either
-	        *  - VideoContext.STATE.PLAYING: all sources are active
+	        *  - VideoContext.STATE.PLAYING: current sources on timeline are active
 	        *  - VideoContext.STATE.PAUSED: all sources are paused
 	        *  - VideoContext.STATE.STALLED: one or more sources is unable to play
 	        *  - VideoContext.STATE.ENDED: all sources have finished playing
