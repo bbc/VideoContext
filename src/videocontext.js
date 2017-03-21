@@ -24,7 +24,7 @@ export default class VideoContext{
     * @param {Object} options - a nuber of custom options which can be set on the VideoContext, generally best left as default.
     *
     * @example
-    * var canvasElement = document.getElemenyById("canvas");
+    * var canvasElement = document.getElementById("canvas");
     * var ctx = new VideoContext(canvasElement, function(){console.error("Sorry, your browser dosen\'t support WebGL");});
     * var videoNode = ctx.video("video.mp4");
     * videoNode.connect(ctx.destination);
@@ -125,7 +125,7 @@ export default class VideoContext{
     * @param {Function} func - the callback to register.
     *
     * @example
-    * var canvasElement = document.getElemenyById("canvas");
+    * var canvasElement = document.getElementById("canvas");
     * var ctx = new VideoContext(canvasElement);
     * ctx.registerCallback("stalled", function(){console.log("Playback stalled");});
     * ctx.registerCallback("update", function(){console.log("new frame");});
@@ -142,7 +142,7 @@ export default class VideoContext{
     * @param {Function} func - the callback to remove.
     *
     * @example
-    * var canvasElement = document.getElemenyById("canvas");
+    * var canvasElement = document.getElementById("canvas");
     * var ctx = new VideoContext(canvasElement);
     *
     * //the callback
@@ -205,7 +205,7 @@ export default class VideoContext{
     * @param {number} currentTime - this is the currentTime to set the context to.
     *
     * @example
-    * var canvasElement = document.getElemenyById("canvas");
+    * var canvasElement = document.getElementById("canvas");
     * var ctx = new VideoContext(canvasElement);
     * var videoNode = ctx.video("video.mp4");
     * videoNode.connect(ctx.destination);
@@ -238,14 +238,14 @@ export default class VideoContext{
     * @return {number} The time in seconds through the current playlist.
     *
     * @example
-    * var canvasElement = document.getElemenyById("canvas");
+    * var canvasElement = document.getElementById("canvas");
     * var ctx = new VideoContext(canvasElement);
     * var videoNode = ctx.video("video.mp4");
     * videoNode.connect(ctx.destination);
     * videoNode.start(0);
     * videoNode.stop(10);
     * ctx.play();
-    * setTimeout(funtion(){console.log(ctx.currentTime);},1000); //should print roughly 1.0
+    * setTimeout(function(){console.log(ctx.currentTime);},1000); //should print roughly 1.0
     *
     */
     get currentTime(){
@@ -258,7 +258,7 @@ export default class VideoContext{
     * @return {number} The end time in seconds of the last video node to finish playing.
     *
     * @example
-    * var canvasElement = document.getElemenyById("canvas");
+    * var canvasElement = document.getElementById("canvas");
     * var ctx = new VideoContext(canvasElement);
     * console.log(ctx.duration); //prints 0
     *
@@ -289,7 +289,7 @@ export default class VideoContext{
     *
     * @return {DestinationNode} A graph node represnting the canvas to display the content on.
     * @example
-    * var canvasElement = document.getElemenyById("canvas");
+    * var canvasElement = document.getElementById("canvas");
     * var ctx = new VideoContext(canvasElement);
     * var videoNode = ctx.video("video.mp4");
     * videoNode.start(0);
@@ -308,7 +308,7 @@ export default class VideoContext{
     * @param {number} rate - this is the playback rate.
     *
     * @example
-    * var canvasElement = document.getElemenyById("canvas");
+    * var canvasElement = document.getElementById("canvas");
     * var ctx = new VideoContext(canvasElement);
     * var videoNode = ctx.video("video.mp4");
     * videoNode.start(0);
@@ -337,7 +337,7 @@ export default class VideoContext{
     /**
     * Start the VideoContext playing
     * @example
-    * var canvasElement = document.getElemenyById("canvas");
+    * var canvasElement = document.getElementById("canvas");
     * var ctx = new VideoContext(canvasElement);
     * var videoNode = ctx.video("video.mp4");
     * videoNode.connect(ctx.destination);
@@ -357,7 +357,7 @@ export default class VideoContext{
     /**
     * Pause playback of the VideoContext
     * @example
-    * var canvasElement = document.getElemenyById("canvas");
+    * var canvasElement = document.getElementById("canvas");
     * var ctx = new VideoContext(canvasElement);
     * var videoNode = ctx.video("video.mp4");
     * videoNode.connect(ctx.destination);
@@ -380,13 +380,13 @@ export default class VideoContext{
     * @return {VideoNode} A new video node.
     *
     * @example
-    * var canvasElement = document.getElemenyById("canvas");
+    * var canvasElement = document.getElementById("canvas");
     * var ctx = new VideoContext(canvasElement);
     * var videoNode = ctx.video("video.mp4");
     *
     * @example
-    * var canvasElement = document.getElemenyById("canvas");
-    * var videoElement = document.getElemenyById("video");
+    * var canvasElement = document.getElementById("canvas");
+    * var videoElement = document.getElementById("video");
     * var ctx = new VideoContext(canvasElement);
     * var videoNode = ctx.video(videoElement);
     */
@@ -413,13 +413,13 @@ export default class VideoContext{
     * @return {ImageNode} A new image node.
     *
     * @example
-    * var canvasElement = document.getElemenyById("canvas");
+    * var canvasElement = document.getElementById("canvas");
     * var ctx = new VideoContext(canvasElement);
     * var imageNode = ctx.image("image.png");
     *
     * @example
-    * var canvasElement = document.getElemenyById("canvas");
-    * var imageElement = document.getElemenyById("image");
+    * var canvasElement = document.getElementById("canvas");
+    * var imageElement = document.getElementById("image");
     * var ctx = new VideoContext(canvasElement);
     * var imageNode = ctx.image(imageElement);
     */
@@ -491,7 +491,7 @@ export default class VideoContext{
     *
     * @example
     *
-    * var canvasElement = document.getElemenyById("canvas");
+    * var canvasElement = document.getElementById("canvas");
     * var ctx = new VideoContext(canvasElement);
     *
     * //A simple compositing node definition which just renders all the inputs to the output buffer.
@@ -570,7 +570,7 @@ export default class VideoContext{
     * @return {TransitionNode} A new transition node created from the passed definition.
     * @example
     *
-    * var canvasElement = document.getElemenyById("canvas");
+    * var canvasElement = document.getElementById("canvas");
     * var ctx = new VideoContext(canvasElement);
     *
     * //A simple cross-fade node definition which cross-fades between two videos based on the mix property.
@@ -667,7 +667,7 @@ export default class VideoContext{
     * @param {Number} dt - The difference in seconds between this and the previous calling of update.
     * @example
     *
-    * var canvasElement = document.getElemenyById("canvas");
+    * var canvasElement = document.getElementById("canvas");
     * var ctx = new VideoContext(canvasElement, undefined, {"manualUpdate" : true});
     *
     * var previousTime;
