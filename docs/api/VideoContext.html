@@ -213,7 +213,7 @@
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>var canvasElement = document.getElemenyById("canvas");
+    <pre class="prettyprint"><code>var canvasElement = document.getElementById("canvas");
 var ctx = new VideoContext(canvasElement, function(){console.error("Sorry, your browser dosen\'t support WebGL");});
 var videoNode = ctx.video("video.mp4");
 videoNode.connect(ctx.destination);
@@ -303,7 +303,7 @@ Setting this can be used as a way to implement a scrubaable timeline.</p>
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>var canvasElement = document.getElemenyById("canvas");
+    <pre class="prettyprint"><code>var canvasElement = document.getElementById("canvas");
 var ctx = new VideoContext(canvasElement);
 var videoNode = ctx.video("video.mp4");
 videoNode.connect(ctx.destination);
@@ -378,14 +378,14 @@ ctx.play();</code></pre>
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>var canvasElement = document.getElemenyById("canvas");
+    <pre class="prettyprint"><code>var canvasElement = document.getElementById("canvas");
 var ctx = new VideoContext(canvasElement);
 var videoNode = ctx.video("video.mp4");
 videoNode.connect(ctx.destination);
 videoNode.start(0);
 videoNode.stop(10);
 ctx.play();
-setTimeout(funtion(){console.log(ctx.currentTime);},1000); //should print roughly 1.0</code></pre>
+setTimeout(function(){console.log(ctx.currentTime);},1000); //should print roughly 1.0</code></pre>
 
 
 
@@ -453,7 +453,7 @@ setTimeout(funtion(){console.log(ctx.currentTime);},1000); //should print roughl
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>var canvasElement = document.getElemenyById("canvas");
+    <pre class="prettyprint"><code>var canvasElement = document.getElementById("canvas");
 var ctx = new VideoContext(canvasElement);
 var videoNode = ctx.video("video.mp4");
 videoNode.start(0);
@@ -525,7 +525,7 @@ videoNode.connect(ctx.destination);</code></pre>
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>var canvasElement = document.getElemenyById("canvas");
+    <pre class="prettyprint"><code>var canvasElement = document.getElementById("canvas");
 var ctx = new VideoContext(canvasElement);
 console.log(ctx.duration); //prints 0
 
@@ -728,7 +728,7 @@ This will alter the playback speed of all media elements played through the Vide
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>var canvasElement = document.getElemenyById("canvas");
+    <pre class="prettyprint"><code>var canvasElement = document.getElementById("canvas");
 var ctx = new VideoContext(canvasElement);
 var videoNode = ctx.video("video.mp4");
 videoNode.start(0);
@@ -1125,7 +1125,7 @@ The shader in the definition is run for each input in turn, drawing them to the 
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>var canvasElement = document.getElemenyById("canvas");
+    <pre class="prettyprint"><code>var canvasElement = document.getElementById("canvas");
 var ctx = new VideoContext(canvasElement);
 
 //A simple compositing node definition which just renders all the inputs to the output buffer.
@@ -2028,12 +2028,12 @@ trackNode.connect(ctx.destination);</code></pre>
 
     <h5>Examples</h5>
     
-    <pre class="prettyprint"><code>var canvasElement = document.getElemenyById("canvas");
+    <pre class="prettyprint"><code>var canvasElement = document.getElementById("canvas");
 var ctx = new VideoContext(canvasElement);
 var imageNode = ctx.image("image.png");</code></pre>
 
-    <pre class="prettyprint"><code>var canvasElement = document.getElemenyById("canvas");
-var imageElement = document.getElemenyById("image");
+    <pre class="prettyprint"><code>var canvasElement = document.getElementById("canvas");
+var imageElement = document.getElementById("image");
 var ctx = new VideoContext(canvasElement);
 var imageNode = ctx.image(imageElement);</code></pre>
 
@@ -2122,7 +2122,7 @@ var imageNode = ctx.image(imageElement);</code></pre>
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>var canvasElement = document.getElemenyById("canvas");
+    <pre class="prettyprint"><code>var canvasElement = document.getElementById("canvas");
 var ctx = new VideoContext(canvasElement);
 var videoNode = ctx.video("video.mp4");
 videoNode.connect(ctx.destination);
@@ -2217,7 +2217,7 @@ setTimeout(function(){ctx.pause();}, 1000); //pause playback after roughly one s
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>var canvasElement = document.getElemenyById("canvas");
+    <pre class="prettyprint"><code>var canvasElement = document.getElementById("canvas");
 var ctx = new VideoContext(canvasElement);
 var videoNode = ctx.video("video.mp4");
 videoNode.connect(ctx.destination);
@@ -2387,7 +2387,7 @@ VideoContext is still playing, but there are currently no activly playing sourec
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>var canvasElement = document.getElemenyById("canvas");
+    <pre class="prettyprint"><code>var canvasElement = document.getElementById("canvas");
 var ctx = new VideoContext(canvasElement);
 ctx.registerCallback("stalled", function(){console.log("Playback stalled");});
 ctx.registerCallback("update", function(){console.log("new frame");});
@@ -2732,7 +2732,7 @@ tragetValue between the startTime and stopTime.</p>
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>var canvasElement = document.getElemenyById("canvas");
+    <pre class="prettyprint"><code>var canvasElement = document.getElementById("canvas");
 var ctx = new VideoContext(canvasElement);
 
 //A simple cross-fade node definition which cross-fades between two videos based on the mix property.
@@ -2929,7 +2929,7 @@ ctx.play();</code></pre>
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>var canvasElement = document.getElemenyById("canvas");
+    <pre class="prettyprint"><code>var canvasElement = document.getElementById("canvas");
 var ctx = new VideoContext(canvasElement);
 
 //the callback
@@ -3205,7 +3205,7 @@ ctx.unregisterCallback(updateCallback);</code></pre>
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>var canvasElement = document.getElemenyById("canvas");
+    <pre class="prettyprint"><code>var canvasElement = document.getElementById("canvas");
 var ctx = new VideoContext(canvasElement, undefined, {"manualUpdate" : true});
 
 var previousTime;
@@ -3377,12 +3377,12 @@ update();</code></pre>
 
     <h5>Examples</h5>
     
-    <pre class="prettyprint"><code>var canvasElement = document.getElemenyById("canvas");
+    <pre class="prettyprint"><code>var canvasElement = document.getElementById("canvas");
 var ctx = new VideoContext(canvasElement);
 var videoNode = ctx.video("video.mp4");</code></pre>
 
-    <pre class="prettyprint"><code>var canvasElement = document.getElemenyById("canvas");
-var videoElement = document.getElemenyById("video");
+    <pre class="prettyprint"><code>var canvasElement = document.getElementById("canvas");
+var videoElement = document.getElementById("video");
 var ctx = new VideoContext(canvasElement);
 var videoNode = ctx.video(videoElement);</code></pre>
 
