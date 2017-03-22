@@ -1162,7 +1162,10 @@ var VideoContext =
 	                for (var _iterator10 = this._sourceNodes[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
 	                    var node = _step10.value;
 	
-	                    if (node.constructor.name === "VideoNode") node._globalPlaybackRate = rate;
+	                    if (node.constructor.name === "VideoNode") {
+	                        node._globalPlaybackRate = rate;
+	                        node._playbackRateUpdated = true;
+	                    }
 	                }
 	            } catch (err) {
 	                _didIteratorError10 = true;
