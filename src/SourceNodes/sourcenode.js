@@ -1,4 +1,4 @@
-//Matthew Shotton, R&D User Experience,© BBC 2015
+//Matthew Shotton, R&D User Experience,¬© BBC 2015
 import { updateTexture, clearTexture, createElementTexutre } from "../utils.js";
 import GraphNode from "../graphnode";
 
@@ -33,6 +33,7 @@ export default class SourceNode extends GraphNode{
         this._texture = createElementTexutre(gl);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0,0,0,0]));
         this._callbacks = [];
+        this._renderPaused = false;
     }
 
     /**
@@ -285,6 +286,8 @@ export default class SourceNode extends GraphNode{
 
 
     _seek(time){
+        this._renderPaused = false;
+
         this._triggerCallbacks("seek", time);
 
         if (this._state === STATE.waiting) return;
@@ -305,10 +308,10 @@ export default class SourceNode extends GraphNode{
     }
 
     _pause(){
-
         if(this._state === STATE.playing || (this._currentTime === 0 && this._startTime === 0)){
             this._triggerCallbacks("pause");
             this._state = STATE.paused;
+            this._renderPaused = false;
         }
     }
     _play(){
@@ -359,6 +362,10 @@ export default class SourceNode extends GraphNode{
         //update this source nodes texture
         if (this._element === undefined || this._ready === false) return true;      
         
+        if (!this._renderPaused && this._state === STATE.paused) {
+            if(triggerTextureUpdate)updateTexture(this._gl, this._texture, this._element);
+            this._renderPaused = true;
+        }
         if(this._state === STATE.playing){
             if(triggerTextureUpdate)updateTexture(this._gl, this._texture, this._element);
             if(this._stretchPaused){
