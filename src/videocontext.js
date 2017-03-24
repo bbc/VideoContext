@@ -324,6 +324,9 @@ export default class VideoContext{
     * ctx.play(); // Double playback rate means this will finish playing in 5 seconds.
     */
     set playbackRate(rate){
+        if (rate <= 0){
+            throw new RangeError("playbackRate must be greater than 0");
+        }
         for (let node of this._sourceNodes) {
             if (node.constructor.name === "VideoNode"){
                 node._globalPlaybackRate = rate;
@@ -846,3 +849,4 @@ VideoContext.visualiseVideoContextGraph = visualiseVideoContextGraph;
 VideoContext.createControlFormForNode = createControlFormForNode;
 VideoContext.createSigmaGraphDataFromRenderGraph = createSigmaGraphDataFromRenderGraph;
 VideoContext.exportToJSON = exportToJSON;
+VideoContext.updateablesManager = updateablesManager;

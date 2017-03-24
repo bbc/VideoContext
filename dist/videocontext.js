@@ -1154,6 +1154,9 @@ var VideoContext =
 	    }, {
 	        key: "playbackRate",
 	        set: function set(rate) {
+	            if (rate <= 0) {
+	                throw new RangeError("playbackRate must be greater than 0");
+	            }
 	            var _iteratorNormalCompletion10 = true;
 	            var _didIteratorError10 = false;
 	            var _iteratorError10 = undefined;
@@ -1215,6 +1218,7 @@ var VideoContext =
 	VideoContext.createControlFormForNode = _utilsJs.createControlFormForNode;
 	VideoContext.createSigmaGraphDataFromRenderGraph = _utilsJs.createSigmaGraphDataFromRenderGraph;
 	VideoContext.exportToJSON = _utilsJs.exportToJSON;
+	VideoContext.updateablesManager = updateablesManager;
 	module.exports = exports["default"];
 
 /***/ },
