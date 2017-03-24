@@ -1505,6 +1505,7 @@ var VideoContext =
 	        this._texture = (0, _utilsJs.createElementTexutre)(gl);
 	        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 0]));
 	        this._callbacks = [];
+	        this._renderPaused = false;
 	    }
 	
 	    /**
@@ -1764,6 +1765,8 @@ var VideoContext =
 	    }, {
 	        key: "_seek",
 	        value: function _seek(time) {
+	            this._renderPaused = false;
+	
 	            this._triggerCallbacks("seek", time);
 	
 	            if (this._state === STATE.waiting) return;
@@ -1785,10 +1788,10 @@ var VideoContext =
 	    }, {
 	        key: "_pause",
 	        value: function _pause() {
-	
 	            if (this._state === STATE.playing || this._currentTime === 0 && this._startTime === 0) {
 	                this._triggerCallbacks("pause");
 	                this._state = STATE.paused;
+	                this._renderPaused = false;
 	            }
 	        }
 	    }, {
@@ -1843,6 +1846,10 @@ var VideoContext =
 	            //update this source nodes texture
 	            if (this._element === undefined || this._ready === false) return true;
 	
+	            if (!this._renderPaused && this._state === STATE.paused) {
+	                if (triggerTextureUpdate) (0, _utilsJs.updateTexture)(this._gl, this._texture, this._element);
+	                this._renderPaused = true;
+	            }
 	            if (this._state === STATE.playing) {
 	                if (triggerTextureUpdate) (0, _utilsJs.updateTexture)(this._gl, this._texture, this._element);
 	                if (this._stretchPaused) {
