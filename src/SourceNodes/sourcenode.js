@@ -1,4 +1,4 @@
-//Matthew Shotton, R&D User Experience,¬© BBC 2015
+//Matthew Shotton, R&D User Experience,© BBC 2015
 import { updateTexture, clearTexture, createElementTexutre } from "../utils.js";
 import GraphNode from "../graphnode";
 
