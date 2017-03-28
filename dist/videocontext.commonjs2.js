@@ -165,7 +165,7 @@ module.exports =
 	        this._currentTime = 0;
 	        this._state = VideoContext.STATE.PAUSED;
 	        this._playbackRate = 1.0;
-	        this._sourcesPlaying = false;
+	        this._sourcesPlaying = undefined;
 	        this._destinationNode = new _DestinationNodeDestinationnodeJs2["default"](this._gl, this._renderGraph);
 	
 	        this._callbacks = new Map();
@@ -910,7 +910,7 @@ module.exports =
 	                    }
 	                }
 	
-	                if (sourcesPlaying !== this._sourcesPlaying) {
+	                if (sourcesPlaying !== this._sourcesPlaying && this._state === VideoContext.STATE.PLAYING) {
 	                    if (sourcesPlaying === true) {
 	                        this._callCallbacks("content");
 	                    } else {
