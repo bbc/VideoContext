@@ -776,6 +776,16 @@ var VideoContext =
 	    }, {
 	        key: "_update",
 	        value: function _update(dt) {
+	            //Remove any destroyed nodes
+	
+	            this._sourceNodes = this._sourceNodes.filter(function (sourceNode) {
+	                if (!sourceNode.destroyed) return sourceNode;
+	            });
+	
+	            this._processingNodes = this._processingNodes.filter(function (processingNode) {
+	                if (!processingNode.destroyed) return processingNode;
+	            });
+	
 	            if (this._state === VideoContext.STATE.PLAYING || this._state === VideoContext.STATE.STALLED || this._state === VideoContext.STATE.PAUSED) {
 	                this._callCallbacks("update");
 	
@@ -997,6 +1007,103 @@ var VideoContext =
 	                }
 	            }
 	        }
+	
+	        /**
+	        * Destroy all nodes in the graph and reset the timeline. After calling this any created nodes will be unusable.
+	        */
+	    }, {
+	        key: "reset",
+	        value: function reset() {
+	            var _iteratorNormalCompletion10 = true;
+	            var _didIteratorError10 = false;
+	            var _iteratorError10 = undefined;
+	
+	            try {
+	                for (var _iterator10 = this._callbacks[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
+	                    var callback = _step10.value;
+	
+	                    this.unregisterCallback(callback);
+	                }
+	            } catch (err) {
+	                _didIteratorError10 = true;
+	                _iteratorError10 = err;
+	            } finally {
+	                try {
+	                    if (!_iteratorNormalCompletion10 && _iterator10["return"]) {
+	                        _iterator10["return"]();
+	                    }
+	                } finally {
+	                    if (_didIteratorError10) {
+	                        throw _iteratorError10;
+	                    }
+	                }
+	            }
+	
+	            var _iteratorNormalCompletion11 = true;
+	            var _didIteratorError11 = false;
+	            var _iteratorError11 = undefined;
+	
+	            try {
+	                for (var _iterator11 = this._sourceNodes[Symbol.iterator](), _step11; !(_iteratorNormalCompletion11 = (_step11 = _iterator11.next()).done); _iteratorNormalCompletion11 = true) {
+	                    var node = _step11.value;
+	
+	                    node.destroy();
+	                }
+	            } catch (err) {
+	                _didIteratorError11 = true;
+	                _iteratorError11 = err;
+	            } finally {
+	                try {
+	                    if (!_iteratorNormalCompletion11 && _iterator11["return"]) {
+	                        _iterator11["return"]();
+	                    }
+	                } finally {
+	                    if (_didIteratorError11) {
+	                        throw _iteratorError11;
+	                    }
+	                }
+	            }
+	
+	            var _iteratorNormalCompletion12 = true;
+	            var _didIteratorError12 = false;
+	            var _iteratorError12 = undefined;
+	
+	            try {
+	                for (var _iterator12 = this._processingNodes[Symbol.iterator](), _step12; !(_iteratorNormalCompletion12 = (_step12 = _iterator12.next()).done); _iteratorNormalCompletion12 = true) {
+	                    var node = _step12.value;
+	
+	                    node.destroy();
+	                }
+	            } catch (err) {
+	                _didIteratorError12 = true;
+	                _iteratorError12 = err;
+	            } finally {
+	                try {
+	                    if (!_iteratorNormalCompletion12 && _iterator12["return"]) {
+	                        _iterator12["return"]();
+	                    }
+	                } finally {
+	                    if (_didIteratorError12) {
+	                        throw _iteratorError12;
+	                    }
+	                }
+	            }
+	
+	            this._update(0);
+	            this._sourceNodes = [];
+	            this._processingNodes = [];
+	            this._timeline = [];
+	            this._currentTime = 0;
+	            this._state = VideoContext.STATE.PAUSED;
+	            this._playbackRate = 1.0;
+	            this._sourcesPlaying = undefined;
+	            this._callbacks.set("stalled", []);
+	            this._callbacks.set("update", []);
+	            this._callbacks.set("ended", []);
+	            this._callbacks.set("content", []);
+	            this._callbacks.set("nocontent", []);
+	            this._timelineCallbacks = [];
+	        }
 	    }, {
 	        key: "_depricate",
 	        value: function _depricate(msg) {
@@ -1157,13 +1264,13 @@ var VideoContext =
 	            if (rate <= 0) {
 	                throw new RangeError("playbackRate must be greater than 0");
 	            }
-	            var _iteratorNormalCompletion10 = true;
-	            var _didIteratorError10 = false;
-	            var _iteratorError10 = undefined;
+	            var _iteratorNormalCompletion13 = true;
+	            var _didIteratorError13 = false;
+	            var _iteratorError13 = undefined;
 	
 	            try {
-	                for (var _iterator10 = this._sourceNodes[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
-	                    var node = _step10.value;
+	                for (var _iterator13 = this._sourceNodes[Symbol.iterator](), _step13; !(_iteratorNormalCompletion13 = (_step13 = _iterator13.next()).done); _iteratorNormalCompletion13 = true) {
+	                    var node = _step13.value;
 	
 	                    if (node.constructor.name === "VideoNode") {
 	                        node._globalPlaybackRate = rate;
@@ -1171,16 +1278,16 @@ var VideoContext =
 	                    }
 	                }
 	            } catch (err) {
-	                _didIteratorError10 = true;
-	                _iteratorError10 = err;
+	                _didIteratorError13 = true;
+	                _iteratorError13 = err;
 	            } finally {
 	                try {
-	                    if (!_iteratorNormalCompletion10 && _iterator10["return"]) {
-	                        _iterator10["return"]();
+	                    if (!_iteratorNormalCompletion13 && _iterator13["return"]) {
+	                        _iterator13["return"]();
 	                    }
 	                } finally {
-	                    if (_didIteratorError10) {
-	                        throw _iteratorError10;
+	                    if (_didIteratorError13) {
+	                        throw _iteratorError13;
 	                    }
 	                }
 	            }
@@ -1406,6 +1513,14 @@ var VideoContext =
 	                this._element.pause();
 	                this._isElementPlaying = false;
 	            }
+	            this._destroy();
+	        }
+	    }, {
+	        key: "destroy",
+	        value: function destroy() {
+	            if (this._element) this._element.pause();
+	            this._isElementPlaying = false;
+	            _get(Object.getPrototypeOf(VideoNode.prototype), "destroy", this).call(this);
 	            this._destroy();
 	        }
 	    }, {
@@ -1869,6 +1984,26 @@ var VideoContext =
 	            this._startTime = NaN;
 	            this._stopTime = Infinity;
 	            this._state = STATE.waiting;
+	        }
+	
+	        /**
+	        * Destroy and clean-up the node.
+	        */
+	    }, {
+	        key: "destroy",
+	        value: function destroy() {
+	            _get(Object.getPrototypeOf(SourceNode.prototype), "destroy", this).call(this);
+	            this._triggerCallbacks("destroy");
+	            this.unregisterCallback();
+	            delete this._element;
+	            this._elementURL = undefined;
+	            this._state = STATE.waiting;
+	            this._currentTime = 0;
+	            this._startTime = NaN;
+	            this._stopTime = Infinity;
+	            this._ready = false;
+	            this._loadCalled = false;
+	            this._texture = undefined;
 	        }
 	    }, {
 	        key: "state",
@@ -2793,6 +2928,7 @@ var VideoContext =
 	        this._renderGraph = renderGraph;
 	        this._limitConnections = limitConnections;
 	        this._inputNames = inputNames;
+	        this._destroyed = false;
 	
 	        //Setup WebGL output texture
 	        this._gl = gl;
@@ -2841,6 +2977,41 @@ var VideoContext =
 	            }
 	            return this._renderGraph.unregisterConnection(this, targetNode);
 	        }
+	
+	        /**
+	        * Destory this node, removing it from the graph.
+	        */
+	    }, {
+	        key: "destroy",
+	        value: function destroy() {
+	            this.disconnect();
+	            var _iteratorNormalCompletion = true;
+	            var _didIteratorError = false;
+	            var _iteratorError = undefined;
+	
+	            try {
+	                for (var _iterator = this.inputs[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	                    var input = _step.value;
+	
+	                    input.disconnect(this);
+	                }
+	            } catch (err) {
+	                _didIteratorError = true;
+	                _iteratorError = err;
+	            } finally {
+	                try {
+	                    if (!_iteratorNormalCompletion && _iterator["return"]) {
+	                        _iterator["return"]();
+	                    }
+	                } finally {
+	                    if (_didIteratorError) {
+	                        throw _iteratorError;
+	                    }
+	                }
+	            }
+	
+	            this._destroyed = true;
+	        }
 	    }, {
 	        key: "inputNames",
 	        get: function get() {
@@ -2883,6 +3054,17 @@ var VideoContext =
 	        key: "outputs",
 	        get: function get() {
 	            return this._renderGraph.getOutputsForNode(this);
+	        }
+	
+	        /**
+	        * Get whether the node has been destroyed or not.
+	        *
+	        * @return {boolean} A true/false value of whather the node has been destoryed or not.
+	        */
+	    }, {
+	        key: "destroyed",
+	        get: function get() {
+	            return this._destroyed;
 	        }
 	    }]);
 	

@@ -731,6 +731,17 @@ export default class VideoContext{
 
 
     _update(dt){
+        //Remove any destroyed nodes
+
+        this._sourceNodes = this._sourceNodes.filter(sourceNode=>{
+            if (!sourceNode.destroyed) return sourceNode;
+        });
+        
+        this._processingNodes = this._processingNodes.filter(processingNode=>{
+            if (!processingNode.destroyed) return processingNode;
+        });
+        
+
         if (this._state === VideoContext.STATE.PLAYING || this._state === VideoContext.STATE.STALLED || this._state === VideoContext.STATE.PAUSED) {
             this._callCallbacks("update");
 
@@ -849,6 +860,35 @@ export default class VideoContext{
                 }
             }
         }
+    }
+
+    /**
+    * Destroy all nodes in the graph and reset the timeline. After calling this any created nodes will be unusable.
+    */
+    reset(){
+        for (let callback of this._callbacks){
+            this.unregisterCallback(callback);
+        }
+        for (let node of this._sourceNodes){
+            node.destroy();
+        }
+        for (let node of this._processingNodes){
+            node.destroy();
+        }
+        this._update(0);
+        this._sourceNodes = [];
+        this._processingNodes = [];
+        this._timeline = [];
+        this._currentTime = 0;
+        this._state = VideoContext.STATE.PAUSED;
+        this._playbackRate = 1.0;
+        this._sourcesPlaying = undefined;
+        this._callbacks.set("stalled", []);
+        this._callbacks.set("update", []);
+        this._callbacks.set("ended", []);
+        this._callbacks.set("content", []);
+        this._callbacks.set("nocontent", []);
+        this._timelineCallbacks = [];
     }
 
     _depricate(msg){
