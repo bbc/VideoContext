@@ -175,4 +175,11 @@ export default class VideoNode extends SourceNode {
         this._destroy();
     }
 
+    destroy(){
+        if (this._element) this._element.pause();
+        this._isElementPlaying = false;    
+        super.destroy();
+        this._destroy();
+    }
+
 }

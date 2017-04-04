@@ -384,6 +384,24 @@ export default class SourceNode extends GraphNode{
         this._stopTime = Infinity;
         this._state = STATE.waiting;
     }
+
+    /**
+    * Destroy and clean-up the node.
+    */
+    destroy(){
+        super.destroy();
+        this._triggerCallbacks("destroy");
+        this.unregisterCallback();
+        delete this._element;
+        this._elementURL = undefined;
+        this._state = STATE.waiting;
+        this._currentTime = 0;
+        this._startTime = NaN;
+        this._stopTime = Infinity;
+        this._ready = false;
+        this._loadCalled = false;
+        this._texture = undefined;
+    }
 }
 
 export {STATE as SOURCENODESTATE};
