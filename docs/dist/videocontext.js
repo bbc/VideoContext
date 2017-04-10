@@ -1394,6 +1394,8 @@ var VideoContext =
 	    _createClass(VideoNode, [{
 	        key: "_load",
 	        value: function _load() {
+	            var _this = this;
+	
 	            _get(Object.getPrototypeOf(VideoNode.prototype), "_load", this).call(this);
 	            if (this._element !== undefined) {
 	
@@ -1435,6 +1437,10 @@ var VideoContext =
 	                }
 	            }
 	            this._element.currentTime = this._sourceOffset;
+	            this._element.onerror = function () {
+	                console.debug("Error with element", _this._element);
+	                _this._triggerCallbacks("error");
+	            };
 	        }
 	    }, {
 	        key: "_destroy",
@@ -1660,7 +1666,7 @@ var VideoContext =
 	        }
 	
 	        /**
-	        * Register callbacks against one of these events: "load", "destory", "seek", "pause", "play", "ended", "durationchange", "loaded"
+	        * Register callbacks against one of these events: "load", "destory", "seek", "pause", "play", "ended", "durationchange", "loaded", "error"
 	        *
 	        * @param {String} type - the type of event to register the callback against.
 	        * @param {function} func - the function to call.
@@ -3148,6 +3154,10 @@ var VideoContext =
 	                    this._element[_key] = this._attributes[_key];
 	                }
 	            }
+	            this._element.onerror = function () {
+	                console.debug("Error with element", _this._element);
+	                _this._triggerCallbacks("error");
+	            };
 	        }
 	    }, {
 	        key: "_destroy",

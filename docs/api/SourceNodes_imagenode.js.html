@@ -67,6 +67,10 @@ export default class ImageNode extends SourceNode {
                 this._element[key] = this._attributes[key];
             }
         }
+        this._element.onerror = () => {
+            console.debug("Error with element", this._element);
+            this._triggerCallbacks("error");
+        };
     }
 
     _destroy(){
