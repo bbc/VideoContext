@@ -108,6 +108,14 @@ export default class ProcessingNode extends GraphNode{
         //console.log(gl.getUniformLocation(this._program, "u_image"));
     }
 
+    setProperty(name, value){
+        this._properties[name].value = value;
+    }
+
+    getProperty(name){
+        return this._properties[name].value;
+    }
+
     _update(currentTime){
         this._currentTime = currentTime;
     }
