@@ -105,13 +105,32 @@ export default class ProcessingNode extends GraphNode{
         gl.enableVertexAttribArray(texCoordLocation);
         gl.vertexAttribPointer(texCoordLocation, 2, gl.FLOAT, false, 0, 0);
 
-        //console.log(gl.getUniformLocation(this._program, "u_image"));
     }
 
+    /**
+    * Sets the passed processing node property to the passed value.
+    * @param {string} name - The name of the processing node parameter to modify.
+    * @param {Object} value - The value to set it to.
+    *
+    * @example 
+    * var ctx = new VideoContext();
+    * var monoNode = ctx.effect(VideoContext.DEFINITIONS.MONOCHROME);
+    * monoNode.setProperty("inputMix", [1.0,0.0,0.0]); //Just use red channel
+    */
     setProperty(name, value){
         this._properties[name].value = value;
     }
 
+    /**
+    * Sets the passed processing node property to the passed value.
+    * @param {string} name - The name of the processing node parameter to get.
+    *
+    * @example 
+    * var ctx = new VideoContext();
+    * var monoNode = ctx.effect(VideoContext.DEFINITIONS.MONOCHROME);
+    * console.log(monoNode.getProperty("inputMix")); //Will output [0.4,0.6,0.2], the default value from the effect definition.
+    * 
+    */
     getProperty(name){
         return this._properties[name].value;
     }
