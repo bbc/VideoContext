@@ -1439,6 +1439,9 @@ module.exports =
 	            this._element.currentTime = this._sourceOffset;
 	            this._element.onerror = function () {
 	                console.debug("Error with element", _this._element);
+	                _this._state === _sourcenode.SOURCENODESTATE.error;
+	                //Event though there's an error ready should be set to true so the node can output transparenn
+	                _this._ready = true;
 	                _this._triggerCallbacks("error");
 	            };
 	        }
@@ -1590,7 +1593,7 @@ module.exports =
 	
 	var _graphnode2 = _interopRequireDefault(_graphnode);
 	
-	var STATE = { "waiting": 0, "sequenced": 1, "playing": 2, "paused": 3, "ended": 4 };
+	var STATE = { "waiting": 0, "sequenced": 1, "playing": 2, "paused": 3, "ended": 4, "error": 5 };
 	
 	var SourceNode = (function (_GraphNode) {
 	    _inherits(SourceNode, _GraphNode);
@@ -1927,7 +1930,7 @@ module.exports =
 	    }, {
 	        key: "_isReady",
 	        value: function _isReady() {
-	            if (this._state === STATE.playing || this._state === STATE.paused) {
+	            if (this._state === STATE.playing || this._state === STATE.paused || this._state === STATE.error) {
 	                return this._ready;
 	            }
 	            return true;
@@ -1944,7 +1947,7 @@ module.exports =
 	            this._currentTime = currentTime;
 	
 	            //update the state
-	            if (this._state === STATE.waiting || this._state === STATE.ended) return false;
+	            if (this._state === STATE.waiting || this._state === STATE.ended || this._state === STATE.error) return false;
 	
 	            this._triggerCallbacks("render", currentTime);
 	
@@ -3156,6 +3159,9 @@ module.exports =
 	            }
 	            this._element.onerror = function () {
 	                console.debug("Error with element", _this._element);
+	                _this._state === _sourcenode.SOURCENODESTATE.error;
+	                //Event though there's an error ready should be set to true so the node can output transparenn
+	                _this._ready = true;
 	                _this._triggerCallbacks("error");
 	            };
 	        }
