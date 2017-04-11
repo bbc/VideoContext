@@ -2,7 +2,7 @@
 import { updateTexture, clearTexture, createElementTexutre } from "../utils.js";
 import GraphNode from "../graphnode";
 
-let STATE = {"waiting":0, "sequenced":1, "playing":2, "paused":3, "ended":4};
+let STATE = {"waiting":0, "sequenced":1, "playing":2, "paused":3, "ended":4, "error":5};
 
 export default class SourceNode extends GraphNode{
     /**
@@ -323,7 +323,7 @@ export default class SourceNode extends GraphNode{
     }
 
     _isReady(){
-        if (this._state === STATE.playing || this._state === STATE.paused){
+        if (this._state === STATE.playing || this._state === STATE.paused || this._state === STATE.error){
             return this._ready;
         }
         return true;
@@ -337,7 +337,7 @@ export default class SourceNode extends GraphNode{
         this._currentTime = currentTime;
 
         //update the state
-        if (this._state === STATE.waiting || this._state === STATE.ended) return false;
+        if (this._state === STATE.waiting || this._state === STATE.ended || this._state === STATE.error) return false;
 
         this._triggerCallbacks("render", currentTime);
 
