@@ -41,7 +41,7 @@ export default class ImageNode extends SourceNode {
         }
         this._element.onerror = () => {
             console.debug("Error with element", this._element);
-            this._state === SOURCENODESTATE.error;
+            this._state = SOURCENODESTATE.error;
             //Event though there's an error ready should be set to true so the node can output transparenn
             this._ready = true;
             this._triggerCallbacks("error");
