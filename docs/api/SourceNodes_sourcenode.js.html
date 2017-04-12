@@ -376,7 +376,7 @@ export default class SourceNode extends GraphNode{
         }
 
 
-        if (currentTime >= this._startTime &amp;&amp; this._state !== STATE.paused){
+        if (currentTime >= this._startTime &amp;&amp; this._state !== STATE.paused &amp;&amp; this._state !== STATE.error){
             if (this._state !== STATE.playing) this._triggerCallbacks("play");
             this._state = STATE.playing;
         }
