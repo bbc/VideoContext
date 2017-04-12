@@ -12,10 +12,6 @@ export default class VideoNode extends SourceNode {
         this._sourceOffset = sourceOffset;
         this._globalPlaybackRate = globalPlaybackRate;
         this._videoElementCache = videoElementCache;
-        // if (this._videoElementCache){
-            // this._isResponsibleForElementLifeCycle = true;
-            //this._element.currentTime = this._sourceOffset;
-        // }
         this._playbackRate = 1.0;
         this._playbackRateUpdated = true;
         this._attributes = attributes;
@@ -76,7 +72,9 @@ export default class VideoNode extends SourceNode {
                 this._ready = true;
 
             } else{
-                this._ready = false;
+                if(this._state !== SOURCENODESTATE.error){
+                    this._ready = false;
+                }
             }
             return;
         }
@@ -99,14 +97,14 @@ export default class VideoNode extends SourceNode {
             this._element.currentTime = this._sourceOffset;
             this._element.onerror = () => {
                 console.debug("Error with element", this._element);
-                this._state === SOURCENODESTATE.error;
+                this._state = SOURCENODESTATE.error;
                 //Event though there's an error ready should be set to true so the node can output transparenn
                 this._ready = true;
                 this._triggerCallbacks("error");
             };
         }else{
             //If the element doesn't exist for whatever reason enter the error state.
-            this._state === SOURCENODESTATE.error;
+            this._state = SOURCENODESTATE.error;
             this._ready = true;
             this._triggerCallbacks("error");    
         }
