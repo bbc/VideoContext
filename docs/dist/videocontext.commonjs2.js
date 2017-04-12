@@ -1436,14 +1436,21 @@ module.exports =
 	                    this._element[_key] = this._attributes[_key];
 	                }
 	            }
-	            this._element.currentTime = this._sourceOffset;
-	            this._element.onerror = function () {
-	                console.debug("Error with element", _this._element);
-	                _this._state === _sourcenode.SOURCENODESTATE.error;
-	                //Event though there's an error ready should be set to true so the node can output transparenn
-	                _this._ready = true;
-	                _this._triggerCallbacks("error");
-	            };
+	            if (this._element) {
+	                this._element.currentTime = this._sourceOffset;
+	                this._element.onerror = function () {
+	                    console.debug("Error with element", _this._element);
+	                    _this._state === _sourcenode.SOURCENODESTATE.error;
+	                    //Event though there's an error ready should be set to true so the node can output transparenn
+	                    _this._ready = true;
+	                    _this._triggerCallbacks("error");
+	                };
+	            } else {
+	                //If the element doesn't exist for whatever reason enter the error state.
+	                this._state === _sourcenode.SOURCENODESTATE.error;
+	                this._ready = true;
+	                this._triggerCallbacks("error");
+	            }
 	        }
 	    }, {
 	        key: "_destroy",
