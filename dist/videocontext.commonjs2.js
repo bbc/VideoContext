@@ -1437,6 +1437,7 @@ module.exports =
 	            if (this._element) {
 	                this._element.currentTime = this._sourceOffset;
 	                this._element.onerror = function () {
+	                    if (_this._element === undefined) return;
 	                    console.debug("Error with element", _this._element);
 	                    _this._state = _sourcenode.SOURCENODESTATE.error;
 	                    //Event though there's an error ready should be set to true so the node can output transparenn
