@@ -2294,7 +2294,6 @@ var VideoContext =
 	        };
 	
 	        for (var property in node.definition.properties) {
-	            console.log(">>>", property);
 	            node.properties[property] = processor[property];
 	        }
 	
