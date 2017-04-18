@@ -138,7 +138,6 @@ export function exportToJSON(vc){
         };
 
         for(let property in node.definition.properties){
-            console.log(">>>",property);
             node.properties[property] = processor[property];
         }
 
