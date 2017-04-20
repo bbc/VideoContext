@@ -54,6 +54,25 @@ export default class TransitionNode extends EffectNode{
         return true;
     }
 
+
+    /**
+    * Create a transition on the timeline at an absolute time.
+    * 
+    * @param {number} startTime - The time at which the transition should start (relative to time 0).
+    * @param {number} endTime - The time at which the transition should be completed by (relative to time 0).
+    * @param {number} currentValue - The value to start the transition at.
+    * @param {number} targetValue - The value to transition to by endTime.
+    * @param {String} propertyName - The name of the property to clear transitions on, if undefined default to "mix".
+    * 
+    * @return {Boolean} returns True if a transition is successfully added, false otherwise.
+    */
+    transitionAt(startTime, endTime, currentValue, targetValue, propertyName="mix"){
+        let transition = {start:startTime, end:endTime, current:currentValue, target:targetValue, property:propertyName};
+        if (!this._doesTransitionFitOnTimeline(transition))return false;
+        this._insertTransitionInTimeline(transition);
+        return true;
+    }
+
     /**
     * Clear all transistions on the passed property. If no property is defined clear all transitions on the node.
     * 
