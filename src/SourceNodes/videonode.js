@@ -48,6 +48,10 @@ export default class VideoNode extends SourceNode {
         return this._playbackRate;
     }
 
+    get elementURL(){
+        return this._elementURL;
+    }
+
     _load(){
         super._load();
         if (this._element !== undefined){

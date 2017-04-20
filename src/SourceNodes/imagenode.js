@@ -13,6 +13,10 @@ export default class ImageNode extends SourceNode {
         this._textureUploaded = false;
     }
 
+    get elementURL(){
+        return this._elementURL;
+    }
+
     _load(){
 
         if (this._element !== undefined){

@@ -118,8 +118,8 @@ export function exportToJSON(vc){
         let node = {
             type: source.constructor.name,
             url: node_url,
-            start: source._startTime,
-            stop: source._stopTime
+            start: source.startTime,
+            stop: source.stopTime
         };
         if (source._sourceOffset){
             node.sourceOffset = source._sourceOffset;
