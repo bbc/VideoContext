@@ -1564,6 +1564,11 @@ module.exports =
 	        get: function get() {
 	            return this._stretchPaused;
 	        }
+	    }, {
+	        key: "elementURL",
+	        get: function get() {
+	            return this._elementURL;
+	        }
 	    }]);
 	
 	    return VideoNode;
@@ -2274,8 +2279,8 @@ module.exports =
 	        var node = {
 	            type: source.constructor.name,
 	            url: node_url,
-	            start: source._startTime,
-	            stop: source._stopTime
+	            start: source.startTime,
+	            stop: source.stopTime
 	        };
 	        if (source._sourceOffset) {
 	            node.sourceOffset = source._sourceOffset;
@@ -3214,6 +3219,11 @@ module.exports =
 	                return false;
 	            }
 	        }
+	    }, {
+	        key: "elementURL",
+	        get: function get() {
+	            return this._elementURL;
+	        }
 	    }]);
 	
 	    return ImageNode;
@@ -3920,7 +3930,7 @@ module.exports =
 	
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 	
-	var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+	var _get = function get(_x3, _x4, _x5) { var _again = true; _function: while (_again) { var object = _x3, property = _x4, receiver = _x5; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x3 = parent; _x4 = property; _x5 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 	
@@ -4014,6 +4024,28 @@ module.exports =
 	            var propertyName = arguments.length <= 4 || arguments[4] === undefined ? "mix" : arguments[4];
 	
 	            var transition = { start: startTime + this._currentTime, end: endTime + this._currentTime, current: currentValue, target: targetValue, property: propertyName };
+	            if (!this._doesTransitionFitOnTimeline(transition)) return false;
+	            this._insertTransitionInTimeline(transition);
+	            return true;
+	        }
+	
+	        /**
+	        * Create a transition on the timeline at an absolute time.
+	        * 
+	        * @param {number} startTime - The time at which the transition should start (relative to time 0).
+	        * @param {number} endTime - The time at which the transition should be completed by (relative to time 0).
+	        * @param {number} currentValue - The value to start the transition at.
+	        * @param {number} targetValue - The value to transition to by endTime.
+	        * @param {String} propertyName - The name of the property to clear transitions on, if undefined default to "mix".
+	        * 
+	        * @return {Boolean} returns True if a transition is successfully added, false otherwise.
+	        */
+	    }, {
+	        key: "transitionAt",
+	        value: function transitionAt(startTime, endTime, currentValue, targetValue) {
+	            var propertyName = arguments.length <= 4 || arguments[4] === undefined ? "mix" : arguments[4];
+	
+	            var transition = { start: startTime, end: endTime, current: currentValue, target: targetValue, property: propertyName };
 	            if (!this._doesTransitionFitOnTimeline(transition)) return false;
 	            this._insertTransitionInTimeline(transition);
 	            return true;

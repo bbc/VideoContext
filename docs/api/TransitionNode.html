@@ -263,7 +263,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line78">line 78</a>
+        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line97">line 97</a>
     </li></ul></dd>
     
 
@@ -439,7 +439,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line78">line 78</a>
+        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line97">line 97</a>
     </li></ul></dd>
     
 
@@ -592,7 +592,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line62">line 62</a>
+        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line81">line 81</a>
     </li></ul></dd>
     
 
@@ -723,7 +723,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line62">line 62</a>
+        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line81">line 81</a>
     </li></ul></dd>
     
 
@@ -1192,6 +1192,496 @@
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
         <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line50">line 50</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>returns True if a transition is successfully added, false otherwise.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="transitionAt"><span class="type-signature"></span>transitionAt<span class="signature">(startTime, endTime, currentValue, targetValue, propertyName)</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Create a transition on the timeline at an absolute time.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>startTime</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The time at which the transition should start (relative to time 0).</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>endTime</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The time at which the transition should be completed by (relative to time 0).</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>currentValue</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The value to start the transition at.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>targetValue</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The value to transition to by endTime.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>propertyName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The name of the property to clear transitions on, if undefined default to &quot;mix&quot;.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line69">line 69</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>returns True if a transition is successfully added, false otherwise.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="transitionAt"><span class="type-signature"></span>transitionAt<span class="signature">(startTime, endTime, currentValue, targetValue, propertyName)</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Create a transition on the timeline at an absolute time.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>startTime</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The time at which the transition should start (relative to time 0).</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>endTime</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The time at which the transition should be completed by (relative to time 0).</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>currentValue</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The value to start the transition at.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>targetValue</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The value to transition to by endTime.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>propertyName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The name of the property to clear transitions on, if undefined default to &quot;mix&quot;.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line69">line 69</a>
     </li></ul></dd>
     
 
@@ -1494,7 +1984,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line78">line 78</a>
+        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line97">line 97</a>
     </li></ul></dd>
     
 
@@ -1670,7 +2160,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line78">line 78</a>
+        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line97">line 97</a>
     </li></ul></dd>
     
 
@@ -1823,7 +2313,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line62">line 62</a>
+        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line81">line 81</a>
     </li></ul></dd>
     
 
@@ -1954,7 +2444,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line62">line 62</a>
+        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line81">line 81</a>
     </li></ul></dd>
     
 
@@ -2423,6 +2913,496 @@
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
         <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line50">line 50</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>returns True if a transition is successfully added, false otherwise.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="transitionAt"><span class="type-signature"></span>transitionAt<span class="signature">(startTime, endTime, currentValue, targetValue, propertyName)</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Create a transition on the timeline at an absolute time.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>startTime</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The time at which the transition should start (relative to time 0).</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>endTime</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The time at which the transition should be completed by (relative to time 0).</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>currentValue</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The value to start the transition at.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>targetValue</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The value to transition to by endTime.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>propertyName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The name of the property to clear transitions on, if undefined default to &quot;mix&quot;.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line69">line 69</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>returns True if a transition is successfully added, false otherwise.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="transitionAt"><span class="type-signature"></span>transitionAt<span class="signature">(startTime, endTime, currentValue, targetValue, propertyName)</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Create a transition on the timeline at an absolute time.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>startTime</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The time at which the transition should start (relative to time 0).</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>endTime</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The time at which the transition should be completed by (relative to time 0).</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>currentValue</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The value to start the transition at.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>targetValue</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The value to transition to by endTime.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>propertyName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The name of the property to clear transitions on, if undefined default to &quot;mix&quot;.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="ProcessingNodes_transitionnode.js.html">ProcessingNodes/transitionnode.js</a>, <a href="ProcessingNodes_transitionnode.js.html#line69">line 69</a>
     </li></ul></dd>
     
 
