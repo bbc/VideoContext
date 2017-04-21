@@ -1,4 +1,5 @@
 //Matthew Shotton, R&D User Experience,© BBC 2015
+import DEFINITIONS from "./Definitions/definitions.js";
 
 /*
 * Utility function to compile a WebGL Vertex or Fragment shader.
@@ -450,6 +451,29 @@ export function createSigmaGraphDataFromRenderGraph(videoContext){
 
 
     return graph;
+}
+
+
+export function importSimpleEDL(ctx, playlist){
+    // Create a "track" node to connect all the clips to. 
+    let trackNode = ctx.compositor(DEFINITIONS.COMBINE);
+    
+    // Create a source node for each of the clips.
+    for (let clip of playlist){
+        let node;
+        if (clip.type === "video"){
+            node = ctx.video(clip.src, clip.sourceStart);
+        } else if (clip.type === "image"){
+            node = ctx.image(clip.src, clip.sourceStart);
+        }else {
+            console.debug("Clip type \"" + clip.type + "\" not recognised, skipping.");
+            continue;
+        }
+        node.startAt(clip.start);
+        node.stopAt(clip.start +  clip.duration);
+        node.connect(trackNode);
+    }
+    return trackNode;
 }
 
 export function visualiseVideoContextTimeline(videoContext, canvas, currentTime){

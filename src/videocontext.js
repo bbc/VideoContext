@@ -10,7 +10,7 @@ import EffectNode from "./ProcessingNodes/effectnode.js";
 import TransitionNode from "./ProcessingNodes/transitionnode.js";
 import RenderGraph from "./rendergraph.js";
 import VideoElementCache from "./videoelementcache.js";
-import { createSigmaGraphDataFromRenderGraph, visualiseVideoContextTimeline, visualiseVideoContextGraph, createControlFormForNode, UpdateablesManager, exportToJSON } from "./utils.js";
+import { createSigmaGraphDataFromRenderGraph, visualiseVideoContextTimeline, visualiseVideoContextGraph, createControlFormForNode, UpdateablesManager, exportToJSON, importSimpleEDL} from "./utils.js";
 import DEFINITIONS from "./Definitions/definitions.js";
 
 let updateablesManager = new UpdateablesManager();
@@ -890,3 +890,4 @@ VideoContext.createControlFormForNode = createControlFormForNode;
 VideoContext.createSigmaGraphDataFromRenderGraph = createSigmaGraphDataFromRenderGraph;
 VideoContext.exportToJSON = exportToJSON;
 VideoContext.updateablesManager = updateablesManager;
+VideoContext.importSimpleEDL = importSimpleEDL;
