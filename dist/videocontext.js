@@ -63,43 +63,43 @@ var VideoContext =
 	
 	var _SourceNodesVideonodeJs2 = _interopRequireDefault(_SourceNodesVideonodeJs);
 	
-	var _SourceNodesImagenodeJs = __webpack_require__(5);
+	var _SourceNodesImagenodeJs = __webpack_require__(25);
 	
 	var _SourceNodesImagenodeJs2 = _interopRequireDefault(_SourceNodesImagenodeJs);
 	
-	var _SourceNodesCanvasnodeJs = __webpack_require__(6);
+	var _SourceNodesCanvasnodeJs = __webpack_require__(26);
 	
 	var _SourceNodesCanvasnodeJs2 = _interopRequireDefault(_SourceNodesCanvasnodeJs);
 	
 	var _SourceNodesSourcenodeJs = __webpack_require__(2);
 	
-	var _ProcessingNodesCompositingnodeJs = __webpack_require__(7);
+	var _ProcessingNodesCompositingnodeJs = __webpack_require__(27);
 	
 	var _ProcessingNodesCompositingnodeJs2 = _interopRequireDefault(_ProcessingNodesCompositingnodeJs);
 	
-	var _DestinationNodeDestinationnodeJs = __webpack_require__(10);
+	var _DestinationNodeDestinationnodeJs = __webpack_require__(30);
 	
 	var _DestinationNodeDestinationnodeJs2 = _interopRequireDefault(_DestinationNodeDestinationnodeJs);
 	
-	var _ProcessingNodesEffectnodeJs = __webpack_require__(11);
+	var _ProcessingNodesEffectnodeJs = __webpack_require__(31);
 	
 	var _ProcessingNodesEffectnodeJs2 = _interopRequireDefault(_ProcessingNodesEffectnodeJs);
 	
-	var _ProcessingNodesTransitionnodeJs = __webpack_require__(12);
+	var _ProcessingNodesTransitionnodeJs = __webpack_require__(32);
 	
 	var _ProcessingNodesTransitionnodeJs2 = _interopRequireDefault(_ProcessingNodesTransitionnodeJs);
 	
-	var _rendergraphJs = __webpack_require__(13);
+	var _rendergraphJs = __webpack_require__(33);
 	
 	var _rendergraphJs2 = _interopRequireDefault(_rendergraphJs);
 	
-	var _videoelementcacheJs = __webpack_require__(14);
+	var _videoelementcacheJs = __webpack_require__(34);
 	
 	var _videoelementcacheJs2 = _interopRequireDefault(_videoelementcacheJs);
 	
 	var _utilsJs = __webpack_require__(3);
 	
-	var _DefinitionsDefinitionsJs = __webpack_require__(15);
+	var _DefinitionsDefinitionsJs = __webpack_require__(4);
 	
 	var _DefinitionsDefinitionsJs2 = _interopRequireDefault(_DefinitionsDefinitionsJs);
 	
@@ -1326,6 +1326,7 @@ var VideoContext =
 	VideoContext.createSigmaGraphDataFromRenderGraph = _utilsJs.createSigmaGraphDataFromRenderGraph;
 	VideoContext.exportToJSON = _utilsJs.exportToJSON;
 	VideoContext.updateablesManager = updateablesManager;
+	VideoContext.importSimpleEDL = _utilsJs.importSimpleEDL;
 	module.exports = exports["default"];
 
 /***/ },
@@ -1600,7 +1601,7 @@ var VideoContext =
 	
 	var _utilsJs = __webpack_require__(3);
 	
-	var _graphnode = __webpack_require__(4);
+	var _graphnode = __webpack_require__(24);
 	
 	var _graphnode2 = _interopRequireDefault(_graphnode);
 	
@@ -2111,20 +2112,9 @@ var VideoContext =
 
 /***/ },
 /* 3 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	//Matthew Shotton, R&D User Experience,© BBC 2015
-	
-	/*
-	* Utility function to compile a WebGL Vertex or Fragment shader.
-	* 
-	* @param {WebGLRenderingContext} gl - the webgl context fo which to build the shader.
-	* @param {String} shaderSource - A string of shader code to compile.
-	* @param {number} shaderType - Shader type, either WebGLRenderingContext.VERTEX_SHADER or WebGLRenderingContext.FRAGMENT_SHADER.
-	*
-	* @return {WebGLShader} A compiled shader.
-	*
-	*/
 	"use strict";
 	
 	Object.defineProperty(exports, "__esModule", {
@@ -2142,9 +2132,27 @@ var VideoContext =
 	exports.createControlFormForNode = createControlFormForNode;
 	exports.visualiseVideoContextGraph = visualiseVideoContextGraph;
 	exports.createSigmaGraphDataFromRenderGraph = createSigmaGraphDataFromRenderGraph;
+	exports.importSimpleEDL = importSimpleEDL;
 	exports.visualiseVideoContextTimeline = visualiseVideoContextTimeline;
 	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var _DefinitionsDefinitionsJs = __webpack_require__(4);
+	
+	var _DefinitionsDefinitionsJs2 = _interopRequireDefault(_DefinitionsDefinitionsJs);
+	
+	/*
+	* Utility function to compile a WebGL Vertex or Fragment shader.
+	* 
+	* @param {WebGLRenderingContext} gl - the webgl context fo which to build the shader.
+	* @param {String} shaderSource - A string of shader code to compile.
+	* @param {number} shaderType - Shader type, either WebGLRenderingContext.VERTEX_SHADER or WebGLRenderingContext.FRAGMENT_SHADER.
+	*
+	* @return {WebGLShader} A compiled shader.
+	*
+	*/
 	
 	function compileShader(gl, shaderSource, shaderType) {
 	    var shader = gl.createShader(shaderType);
@@ -2685,6 +2693,50 @@ var VideoContext =
 	    return graph;
 	}
 	
+	function importSimpleEDL(ctx, playlist) {
+	    // Create a "track" node to connect all the clips to.
+	    var trackNode = ctx.compositor(_DefinitionsDefinitionsJs2["default"].COMBINE);
+	
+	    // Create a source node for each of the clips.
+	    var _iteratorNormalCompletion5 = true;
+	    var _didIteratorError5 = false;
+	    var _iteratorError5 = undefined;
+	
+	    try {
+	        for (var _iterator5 = playlist[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+	            var clip = _step5.value;
+	
+	            var node = undefined;
+	            if (clip.type === "video") {
+	                node = ctx.video(clip.src, clip.sourceStart);
+	            } else if (clip.type === "image") {
+	                node = ctx.image(clip.src, clip.sourceStart);
+	            } else {
+	                console.debug("Clip type \"" + clip.type + "\" not recognised, skipping.");
+	                continue;
+	            }
+	            node.startAt(clip.start);
+	            node.stopAt(clip.start + clip.duration);
+	            node.connect(trackNode);
+	        }
+	    } catch (err) {
+	        _didIteratorError5 = true;
+	        _iteratorError5 = err;
+	    } finally {
+	        try {
+	            if (!_iteratorNormalCompletion5 && _iterator5["return"]) {
+	                _iterator5["return"]();
+	            }
+	        } finally {
+	            if (_didIteratorError5) {
+	                throw _iteratorError5;
+	            }
+	        }
+	    }
+	
+	    return trackNode;
+	}
+	
 	function visualiseVideoContextTimeline(videoContext, canvas, currentTime) {
 	    var ctx = canvas.getContext("2d");
 	    var w = canvas.width;
@@ -2717,23 +2769,23 @@ var VideoContext =
 	    ctx.clearRect(0, 0, w, h);
 	    ctx.fillStyle = "#999";
 	
-	    var _iteratorNormalCompletion5 = true;
-	    var _didIteratorError5 = false;
-	    var _iteratorError5 = undefined;
+	    var _iteratorNormalCompletion6 = true;
+	    var _didIteratorError6 = false;
+	    var _iteratorError6 = undefined;
 	
 	    try {
-	        for (var _iterator5 = videoContext._processingNodes[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-	            var node = _step5.value;
+	        for (var _iterator6 = videoContext._processingNodes[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+	            var node = _step6.value;
 	
 	            if (node.constructor.name !== "TransitionNode") continue;
 	            for (var propertyName in node._transitions) {
-	                var _iteratorNormalCompletion6 = true;
-	                var _didIteratorError6 = false;
-	                var _iteratorError6 = undefined;
+	                var _iteratorNormalCompletion7 = true;
+	                var _didIteratorError7 = false;
+	                var _iteratorError7 = undefined;
 	
 	                try {
-	                    for (var _iterator6 = node._transitions[propertyName][Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-	                        var transition = _step6.value;
+	                    for (var _iterator7 = node._transitions[propertyName][Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+	                        var transition = _step7.value;
 	
 	                        var tW = (transition.end - transition.start) * pixelsPerSecond;
 	                        var tH = h;
@@ -2744,32 +2796,32 @@ var VideoContext =
 	                        ctx.fill();
 	                    }
 	                } catch (err) {
-	                    _didIteratorError6 = true;
-	                    _iteratorError6 = err;
+	                    _didIteratorError7 = true;
+	                    _iteratorError7 = err;
 	                } finally {
 	                    try {
-	                        if (!_iteratorNormalCompletion6 && _iterator6["return"]) {
-	                            _iterator6["return"]();
+	                        if (!_iteratorNormalCompletion7 && _iterator7["return"]) {
+	                            _iterator7["return"]();
 	                        }
 	                    } finally {
-	                        if (_didIteratorError6) {
-	                            throw _iteratorError6;
+	                        if (_didIteratorError7) {
+	                            throw _iteratorError7;
 	                        }
 	                    }
 	                }
 	            }
 	        }
 	    } catch (err) {
-	        _didIteratorError5 = true;
-	        _iteratorError5 = err;
+	        _didIteratorError6 = true;
+	        _iteratorError6 = err;
 	    } finally {
 	        try {
-	            if (!_iteratorNormalCompletion5 && _iterator5["return"]) {
-	                _iterator5["return"]();
+	            if (!_iteratorNormalCompletion6 && _iterator6["return"]) {
+	                _iterator6["return"]();
 	            }
 	        } finally {
-	            if (_didIteratorError5) {
-	                throw _iteratorError5;
+	            if (_didIteratorError6) {
+	                throw _iteratorError6;
 	            }
 	        }
 	    }
@@ -2921,6 +2973,1083 @@ var VideoContext =
 
 /***/ },
 /* 4 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+	
+	var _aaf_video_scaleJs = __webpack_require__(5);
+	
+	var _aaf_video_scaleJs2 = _interopRequireDefault(_aaf_video_scaleJs);
+	
+	var _crossfadeJs = __webpack_require__(6);
+	
+	var _crossfadeJs2 = _interopRequireDefault(_crossfadeJs);
+	
+	var _horizontalWipeJs = __webpack_require__(7);
+	
+	var _horizontalWipeJs2 = _interopRequireDefault(_horizontalWipeJs);
+	
+	var _verticalWipeJs = __webpack_require__(8);
+	
+	var _verticalWipeJs2 = _interopRequireDefault(_verticalWipeJs);
+	
+	var _randomDissolveJs = __webpack_require__(9);
+	
+	var _randomDissolveJs2 = _interopRequireDefault(_randomDissolveJs);
+	
+	var _toColorAndBackFadeJs = __webpack_require__(10);
+	
+	var _toColorAndBackFadeJs2 = _interopRequireDefault(_toColorAndBackFadeJs);
+	
+	var _starWipeJs = __webpack_require__(11);
+	
+	var _starWipeJs2 = _interopRequireDefault(_starWipeJs);
+	
+	var _combineJs = __webpack_require__(12);
+	
+	var _combineJs2 = _interopRequireDefault(_combineJs);
+	
+	var _colorThresholdJs = __webpack_require__(13);
+	
+	var _colorThresholdJs2 = _interopRequireDefault(_colorThresholdJs);
+	
+	var _monochromeJs = __webpack_require__(14);
+	
+	var _monochromeJs2 = _interopRequireDefault(_monochromeJs);
+	
+	var _horizontalBlurJs = __webpack_require__(15);
+	
+	var _horizontalBlurJs2 = _interopRequireDefault(_horizontalBlurJs);
+	
+	var _verticalBlurJs = __webpack_require__(16);
+	
+	var _verticalBlurJs2 = _interopRequireDefault(_verticalBlurJs);
+	
+	var _aaf_video_flopJs = __webpack_require__(17);
+	
+	var _aaf_video_flopJs2 = _interopRequireDefault(_aaf_video_flopJs);
+	
+	var _aaf_video_flipJs = __webpack_require__(18);
+	
+	var _aaf_video_flipJs2 = _interopRequireDefault(_aaf_video_flipJs);
+	
+	var _aaf_video_positionJs = __webpack_require__(19);
+	
+	var _aaf_video_positionJs2 = _interopRequireDefault(_aaf_video_positionJs);
+	
+	var _aaf_video_cropJs = __webpack_require__(20);
+	
+	var _aaf_video_cropJs2 = _interopRequireDefault(_aaf_video_cropJs);
+	
+	var _staticDissolveJs = __webpack_require__(21);
+	
+	var _staticDissolveJs2 = _interopRequireDefault(_staticDissolveJs);
+	
+	var _staticEffectJs = __webpack_require__(22);
+	
+	var _staticEffectJs2 = _interopRequireDefault(_staticEffectJs);
+	
+	var _dreamfadeJs = __webpack_require__(23);
+	
+	var _dreamfadeJs2 = _interopRequireDefault(_dreamfadeJs);
+	
+	var DEFINITIONS = {
+	    AAF_VIDEO_SCALE: _aaf_video_scaleJs2["default"],
+	    CROSSFADE: _crossfadeJs2["default"],
+	    DREAMFADE: _dreamfadeJs2["default"],
+	    HORIZONTAL_WIPE: _horizontalWipeJs2["default"],
+	    VERTICAL_WIPE: _verticalWipeJs2["default"],
+	    RANDOM_DISSOLVE: _randomDissolveJs2["default"],
+	    STATIC_DISSOLVE: _staticDissolveJs2["default"],
+	    STATIC_EFFECT: _staticEffectJs2["default"],
+	    TO_COLOR_AND_BACK: _toColorAndBackFadeJs2["default"],
+	    STAR_WIPE: _starWipeJs2["default"],
+	    COMBINE: _combineJs2["default"],
+	    COLORTHRESHOLD: _colorThresholdJs2["default"],
+	    MONOCHROME: _monochromeJs2["default"],
+	    HORIZONTAL_BLUR: _horizontalBlurJs2["default"],
+	    VERTICAL_BLUR: _verticalBlurJs2["default"],
+	    AAF_VIDEO_CROP: _aaf_video_cropJs2["default"],
+	    AAF_VIDEO_POSITION: _aaf_video_positionJs2["default"],
+	    AAF_VIDEO_FLIP: _aaf_video_flipJs2["default"],
+	    AAF_VIDEO_FLOP: _aaf_video_flopJs2["default"]
+	};
+	
+	exports["default"] = DEFINITIONS;
+	module.exports = exports["default"];
+
+/***/ },
+/* 5 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var aaf_video_scale = {
+	    "title": "AAF Video Scale Effect",
+	    "description": "A scale effect based on the AAF spec.",
+	    "vertexShader": "\
+	        attribute vec2 a_position;\
+	        attribute vec2 a_texCoord;\
+	        varying vec2 v_texCoord;\
+	        void main() {\
+	            gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+	            v_texCoord = a_texCoord;\
+	        }",
+	    "fragmentShader": "\
+	        precision mediump float;\
+	        uniform sampler2D u_image;\
+	        uniform float scaleX;\
+	        uniform float scaleY;\
+	        varying vec2 v_texCoord;\
+	        varying float v_progress;\
+	        void main(){\
+	            vec2 pos = vec2(v_texCoord[0]*1.0/scaleX - (1.0/scaleX/2.0 -0.5), v_texCoord[1]*1.0/scaleY - (1.0/scaleY/2.0 -0.5));\
+	                vec4 color = texture2D(u_image, pos);\
+	                if (pos[0] < 0.0 || pos[0] > 1.0 || pos[1] < 0.0 || pos[1] > 1.0){\
+	                    color = vec4(0.0,0.0,0.0,0.0);\
+	                }\
+	                gl_FragColor = color;\
+	            }",
+	    "properties": {
+	        "scaleX": { "type": "uniform", "value": 1.0 },
+	        "scaleY": { "type": "uniform", "value": 1.0 }
+	    },
+	    "inputs": ["u_image"]
+	};
+	
+	exports["default"] = aaf_video_scale;
+	module.exports = exports["default"];
+
+/***/ },
+/* 6 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var crossfade = {
+	    "title": "Cross-Fade",
+	    "description": "A cross-fade effect. Typically used as a transistion.",
+	    "vertexShader": "\
+	    attribute vec2 a_position;\
+	    attribute vec2 a_texCoord;\
+	    varying vec2 v_texCoord;\
+	    void main() {\
+	        gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+	        v_texCoord = a_texCoord;\
+	    }",
+	    "fragmentShader": "\
+	    precision mediump float;\
+	    uniform sampler2D u_image_a;\
+	    uniform sampler2D u_image_b;\
+	    uniform float mix;\
+	    varying vec2 v_texCoord;\
+	    varying float v_mix;\
+	    void main(){\
+	        vec4 color_a = texture2D(u_image_a, v_texCoord);\
+	        vec4 color_b = texture2D(u_image_b, v_texCoord);\
+	        color_a[0] *= (1.0 - mix);\
+	        color_a[1] *= (1.0 - mix);\
+	        color_a[2] *= (1.0 - mix);\
+	        color_a[3] *= (1.0 - mix);\
+	        color_b[0] *= mix;\
+	        color_b[1] *= mix;\
+	        color_b[2] *= mix;\
+	        color_b[3] *= mix;\
+	        gl_FragColor = color_a + color_b;\
+	    }",
+	    "properties": {
+	        "mix": { "type": "uniform", "value": 0.0 }
+	    },
+	    "inputs": ["u_image_a", "u_image_b"]
+	};
+	
+	exports["default"] = crossfade;
+	module.exports = exports["default"];
+
+/***/ },
+/* 7 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var horizontal_wipe = {
+	    "title": "Horizontal Wipe",
+	    "description": "A horizontal wipe effect. Typically used as a transistion.",
+	    "vertexShader": "\
+	            attribute vec2 a_position;\
+	            attribute vec2 a_texCoord;\
+	            varying vec2 v_texCoord;\
+	            void main() {\
+	                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+	                v_texCoord = a_texCoord;\
+	            }",
+	    "fragmentShader": "\
+	            precision mediump float;\
+	            uniform sampler2D u_image_a;\
+	            uniform sampler2D u_image_b;\
+	            uniform float mix;\
+	            varying vec2 v_texCoord;\
+	            varying float v_mix;\
+	            void main(){\
+	                vec4 color_a = texture2D(u_image_a, v_texCoord);\
+	                vec4 color_b = texture2D(u_image_b, v_texCoord);\
+	                if (v_texCoord[0] > mix){\
+	                    gl_FragColor = color_a;\
+	                } else {\
+	                    gl_FragColor = color_b;\
+	                }\
+	            }",
+	    "properties": {
+	        "mix": { "type": "uniform", "value": 0.0 }
+	    },
+	    "inputs": ["u_image_a", "u_image_b"]
+	};
+	
+	exports["default"] = horizontal_wipe;
+	module.exports = exports["default"];
+
+/***/ },
+/* 8 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var verticalWipe = {
+	    "title": "vertical Wipe",
+	    "description": "A vertical wipe effect. Typically used as a transistion.",
+	    "vertexShader": "\
+	            attribute vec2 a_position;\
+	            attribute vec2 a_texCoord;\
+	            varying vec2 v_texCoord;\
+	            void main() {\
+	                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+	                v_texCoord = a_texCoord;\
+	            }",
+	    "fragmentShader": "\
+	            precision mediump float;\
+	            uniform sampler2D u_image_a;\
+	            uniform sampler2D u_image_b;\
+	            uniform float mix;\
+	            varying vec2 v_texCoord;\
+	            varying float v_mix;\
+	            void main(){\
+	                vec4 color_a = texture2D(u_image_a, v_texCoord);\
+	                vec4 color_b = texture2D(u_image_b, v_texCoord);\
+	                if (v_texCoord[1] > mix){\
+	                    gl_FragColor = color_a;\
+	                } else {\
+	                    gl_FragColor = color_b;\
+	                }\
+	            }",
+	    "properties": {
+	        "mix": { "type": "uniform", "value": 0.0 }
+	    },
+	    "inputs": ["u_image_a", "u_image_b"]
+	};
+	
+	exports["default"] = verticalWipe;
+	module.exports = exports["default"];
+
+/***/ },
+/* 9 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var randomDissolve = {
+	    "title": "Random Dissolve",
+	    "description": "A random dissolve effect. Typically used as a transistion.",
+	    "vertexShader": "\
+	            attribute vec2 a_position;\
+	            attribute vec2 a_texCoord;\
+	            varying vec2 v_texCoord;\
+	            void main() {\
+	                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+	                v_texCoord = a_texCoord;\
+	            }",
+	    "fragmentShader": "\
+	            precision mediump float;\
+	            uniform sampler2D u_image_a;\
+	            uniform sampler2D u_image_b;\
+	            uniform float mix;\
+	            varying vec2 v_texCoord;\
+	            varying float v_mix;\
+	            float rand(vec2 co){\
+	               return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);\
+	            }\
+	            void main(){\
+	                vec4 color_a = texture2D(u_image_a, v_texCoord);\
+	                vec4 color_b = texture2D(u_image_b, v_texCoord);\
+	                if (clamp(rand(v_texCoord),  0.01, 1.001) > mix){\
+	                    gl_FragColor = color_a;\
+	                } else {\
+	                    gl_FragColor = color_b;\
+	                }\
+	            }",
+	    "properties": {
+	        "mix": { "type": "uniform", "value": 0.0 }
+	    },
+	    "inputs": ["u_image_a", "u_image_b"]
+	};
+	
+	exports["default"] = randomDissolve;
+	module.exports = exports["default"];
+
+/***/ },
+/* 10 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var toColorAndBackFade = {
+	    "title": "To Color And Back Fade",
+	    "description": "A fade to black and back effect. Setting mix to 0.5 is a fully solid color frame. Typically used as a transistion.",
+	    "vertexShader": "\
+	            attribute vec2 a_position;\
+	            attribute vec2 a_texCoord;\
+	            varying vec2 v_texCoord;\
+	            void main() {\
+	                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+	                v_texCoord = a_texCoord;\
+	            }",
+	    "fragmentShader": "\
+	            precision mediump float;\
+	            uniform sampler2D u_image_a;\
+	            uniform sampler2D u_image_b;\
+	            uniform float mix;\
+	            uniform vec4 color;\
+	            varying vec2 v_texCoord;\
+	            varying float v_mix;\
+	            void main(){\
+	                vec4 color_a = texture2D(u_image_a, v_texCoord);\
+	                vec4 color_b = texture2D(u_image_b, v_texCoord);\
+	                float mix_amount = (mix *2.0) - 1.0;\
+	                if(mix_amount < 0.0){\
+	                    gl_FragColor = abs(mix_amount) * color_a + (1.0 - abs(mix_amount)) * color;\
+	                } else {\
+	                    gl_FragColor = mix_amount * color_b + (1.0 - mix_amount) * color;\
+	                }\
+	            }",
+	    "properties": {
+	        "mix": { "type": "uniform", "value": 0.0 },
+	        "color": { "type": "uniform", "value": [0.0, 0.0, 0.0, 0.0] }
+	    },
+	    "inputs": ["u_image_a", "u_image_b"]
+	};
+	exports["default"] = toColorAndBackFade;
+	module.exports = exports["default"];
+
+/***/ },
+/* 11 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var starWipe = {
+	    "title": "Star Wipe Fade",
+	    "description": "A classic star wipe transistion. Typically used as a transistion.",
+	    "vertexShader": "\
+	            attribute vec2 a_position;\
+	            attribute vec2 a_texCoord;\
+	            varying vec2 v_texCoord;\
+	            void main() {\
+	                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+	                v_texCoord = a_texCoord;\
+	            }",
+	    "fragmentShader": "\
+	            precision mediump float;\
+	            uniform sampler2D u_image_a;\
+	            uniform sampler2D u_image_b;\
+	            uniform float mix;\
+	            varying vec2 v_texCoord;\
+	            varying float v_mix;\
+	            float sign (vec2 p1, vec2 p2, vec2 p3){\
+	                return (p1[0] - p3[0]) * (p2[1] - p3[1]) - (p2[0] - p3[0]) * (p1[1] - p3[1]);\
+	            }\
+	            bool pointInTriangle(vec2 pt, vec2 v1, vec2 v2, vec2 v3){\
+	                bool b1, b2, b3;\
+	                b1 = sign(pt, v1, v2) < 0.0;\
+	                b2 = sign(pt, v2, v3) < 0.0;\
+	                b3 = sign(pt, v3, v1) < 0.0;\
+	                return ((b1 == b2) && (b2 == b3));\
+	            }\
+	            vec2 rotatePointAboutPoint(vec2 point, vec2 pivot, float angle){\
+	                float s = sin(angle);\
+	                float c = cos(angle);\
+	                float x = point[0] - pivot[0];\
+	                float y = point[1] - pivot[1];\
+	                float new_x = x * c - y * s;\
+	                float new_y = x * s + y * c;\
+	                return vec2(new_x + pivot[0], new_y+pivot[1]);\
+	            }\
+	            \
+	            void main(){\
+	                vec4 color_a = texture2D(u_image_b, v_texCoord);\
+	                vec4 color_b = texture2D(u_image_a, v_texCoord);\
+	                vec2 t0_p0,t0_p1,t0_p2,t1_p0,t1_p1,t1_p2,t2_p0,t2_p1,t2_p2,t3_p0,t3_p1,t3_p2;\
+	                vec2 t4_p0,t4_p1,t4_p2,t5_p0,t5_p1,t5_p2,t6_p0,t6_p1,t6_p2,t7_p0,t7_p1,t7_p2;\
+	                \
+	                \
+	                t0_p0 = vec2(0.0, 0.25) * clamp(mix,0.0,1.0) * 2.0 + vec2(0.5,0.5);\
+	                t0_p1 = vec2(0.0, -0.25) * clamp(mix,0.0,1.0) * 2.0 + vec2(0.5,0.5);\
+	                t0_p2 = vec2(1.0, 0.0) * clamp(mix,0.0,1.0) * 2.0 + vec2(0.5,0.5);\
+	                \
+	                t1_p0 = rotatePointAboutPoint(t0_p0, vec2(0.5,0.5), 0.7854);\
+	                t1_p1 = rotatePointAboutPoint(t0_p1, vec2(0.5,0.5), 0.7854);\
+	                t1_p2 = rotatePointAboutPoint(t0_p2, vec2(0.5,0.5), 0.7854);\
+	                \
+	                t2_p0 = rotatePointAboutPoint(t0_p0, vec2(0.5,0.5), 0.7854 * 2.0);\
+	                t2_p1 = rotatePointAboutPoint(t0_p1, vec2(0.5,0.5), 0.7854 * 2.0);\
+	                t2_p2 = rotatePointAboutPoint(t0_p2, vec2(0.5,0.5), 0.7854 * 2.0);\
+	                \
+	                t3_p0 = rotatePointAboutPoint(t0_p0, vec2(0.5,0.5), 0.7854 * 3.0);\
+	                t3_p1 = rotatePointAboutPoint(t0_p1, vec2(0.5,0.5), 0.7854 * 3.0);\
+	                t3_p2 = rotatePointAboutPoint(t0_p2, vec2(0.5,0.5), 0.7854 * 3.0);\
+	                \
+	                t4_p0 = rotatePointAboutPoint(t0_p0, vec2(0.5,0.5), 0.7854 * 4.0);\
+	                t4_p1 = rotatePointAboutPoint(t0_p1, vec2(0.5,0.5), 0.7854 * 4.0);\
+	                t4_p2 = rotatePointAboutPoint(t0_p2, vec2(0.5,0.5), 0.7854 * 4.0);\
+	                \
+	                t5_p0 = rotatePointAboutPoint(t0_p0, vec2(0.5,0.5), 0.7854 * 5.0);\
+	                t5_p1 = rotatePointAboutPoint(t0_p1, vec2(0.5,0.5), 0.7854 * 5.0);\
+	                t5_p2 = rotatePointAboutPoint(t0_p2, vec2(0.5,0.5), 0.7854 * 5.0);\
+	                \
+	                t6_p0 = rotatePointAboutPoint(t0_p0, vec2(0.5,0.5), 0.7854 * 6.0);\
+	                t6_p1 = rotatePointAboutPoint(t0_p1, vec2(0.5,0.5), 0.7854 * 6.0);\
+	                t6_p2 = rotatePointAboutPoint(t0_p2, vec2(0.5,0.5), 0.7854 * 6.0);\
+	                \
+	                t7_p0 = rotatePointAboutPoint(t0_p0, vec2(0.5,0.5), 0.7854 * 7.0);\
+	                t7_p1 = rotatePointAboutPoint(t0_p1, vec2(0.5,0.5), 0.7854 * 7.0);\
+	                t7_p2 = rotatePointAboutPoint(t0_p2, vec2(0.5,0.5), 0.7854 * 7.0);\
+	                \
+	                if(mix > 0.99){\
+	                    gl_FragColor = color_a;\
+	                    return;\
+	                }\
+	                if(mix < 0.01){\
+	                    gl_FragColor = color_b;\
+	                    return;\
+	                }\
+	                if(pointInTriangle(v_texCoord, t0_p0, t0_p1, t0_p2) || pointInTriangle(v_texCoord, t1_p0, t1_p1, t1_p2) || pointInTriangle(v_texCoord, t2_p0, t2_p1, t2_p2) || pointInTriangle(v_texCoord, t3_p0, t3_p1, t3_p2) || pointInTriangle(v_texCoord, t4_p0, t4_p1, t4_p2) || pointInTriangle(v_texCoord, t5_p0, t5_p1, t5_p2) || pointInTriangle(v_texCoord, t6_p0, t6_p1, t6_p2) || pointInTriangle(v_texCoord, t7_p0, t7_p1, t7_p2)){\
+	                    gl_FragColor = color_a;\
+	                } else {\
+	                    gl_FragColor = color_b;\
+	                }\
+	            }",
+	    "properties": {
+	        "mix": { "type": "uniform", "value": 1.0 }
+	    },
+	    "inputs": ["u_image_a", "u_image_b"]
+	};
+	
+	exports["default"] = starWipe;
+	module.exports = exports["default"];
+
+/***/ },
+/* 12 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var combine = {
+	    "title": "Combine",
+	    "description": "A basic effect which renders the input to the output, Typically used as a combine node for layering up media with alpha transparency.",
+	    "vertexShader": "\
+	            attribute vec2 a_position;\
+	            attribute vec2 a_texCoord;\
+	            varying vec2 v_texCoord;\
+	            void main() {\
+	                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+	                v_texCoord = a_texCoord;\
+	            }",
+	    "fragmentShader": "\
+	            precision mediump float;\
+	            uniform sampler2D u_image;\
+	            uniform float a;\
+	            varying vec2 v_texCoord;\
+	            varying float v_mix;\
+	            void main(){\
+	                vec4 color = texture2D(u_image, v_texCoord);\
+	                gl_FragColor = color;\
+	            }",
+	    "properties": {
+	        "a": { "type": "uniform", "value": 0.0 }
+	    },
+	    "inputs": ["u_image"]
+	};
+	
+	exports["default"] = combine;
+	module.exports = exports["default"];
+
+/***/ },
+/* 13 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var colorThreshold = {
+	    "title": "Color Threshold",
+	    "description": "Turns all pixels with a greater value than the specified threshold transparent.",
+	    "vertexShader": "\
+	            attribute vec2 a_position;\
+	            attribute vec2 a_texCoord;\
+	            varying vec2 v_texCoord;\
+	            void main() {\
+	                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+	                v_texCoord = a_texCoord;\
+	            }",
+	    "fragmentShader": "\
+	            precision mediump float;\
+	            uniform sampler2D u_image;\
+	            uniform float a;\
+	            uniform vec3 colorAlphaThreshold;\
+	            varying vec2 v_texCoord;\
+	            varying float v_mix;\
+	            void main(){\
+	                vec4 color = texture2D(u_image, v_texCoord);\
+	                if (color[0] > colorAlphaThreshold[0] && color[1]> colorAlphaThreshold[1] && color[2]> colorAlphaThreshold[2]){\
+	                    color = vec4(0.0,0.0,0.0,0.0);\
+	                }\
+	                gl_FragColor = color;\
+	            }",
+	    "properties": {
+	        "a": { "type": "uniform", "value": 0.0 },
+	        "colorAlphaThreshold": { "type": "uniform", "value": [0.0, 0.55, 0.0] }
+	    },
+	    "inputs": ["u_image"]
+	};
+	
+	exports["default"] = colorThreshold;
+	module.exports = exports["default"];
+
+/***/ },
+/* 14 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var monochrome = {
+	    "title": "Monochrome",
+	    "description": "Change images to a single chroma (e.g can be used to make a black & white filter). Input color mix and output color mix can be adjusted.",
+	    "vertexShader": "\
+	            attribute vec2 a_position;\
+	            attribute vec2 a_texCoord;\
+	            varying vec2 v_texCoord;\
+	            void main() {\
+	                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+	                v_texCoord = a_texCoord;\
+	            }",
+	    "fragmentShader": "\
+	            precision mediump float;\
+	            uniform sampler2D u_image;\
+	            uniform vec3 inputMix;\
+	            uniform vec3 outputMix;\
+	            varying vec2 v_texCoord;\
+	            varying float v_mix;\
+	            void main(){\
+	                vec4 color = texture2D(u_image, v_texCoord);\
+	                float mono = color[0]*inputMix[0] + color[1]*inputMix[1] + color[2]*inputMix[2];\
+	                color[0] = mono * outputMix[0];\
+	                color[1] = mono * outputMix[1];\
+	                color[2] = mono * outputMix[2];\
+	                gl_FragColor = color;\
+	            }",
+	    "properties": {
+	        "inputMix": { "type": "uniform", "value": [0.4, 0.6, 0.2] },
+	        "outputMix": { "type": "uniform", "value": [1.0, 1.0, 1.0] }
+	    },
+	    "inputs": ["u_image"]
+	};
+	
+	exports["default"] = monochrome;
+	module.exports = exports["default"];
+
+/***/ },
+/* 15 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var horizontal_blur = {
+	    "title": "Horizontal Blur",
+	    "description": "A horizontal blur effect. Adpated from http://xissburg.com/faster-gaussian-blur-in-glsl/",
+	    "vertexShader": "\
+	        attribute vec2 a_position;\
+	        attribute vec2 a_texCoord;\
+	        uniform float blurAmount;\
+	        varying vec2 v_texCoord;\
+	        varying vec2 v_blurTexCoords[14];\
+	        void main() {\
+	            gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+	            v_texCoord = a_texCoord;\
+	            v_blurTexCoords[ 0] = v_texCoord + vec2(-0.028 * blurAmount, 0.0);\
+	            v_blurTexCoords[ 1] = v_texCoord + vec2(-0.024 * blurAmount, 0.0);\
+	            v_blurTexCoords[ 2] = v_texCoord + vec2(-0.020 * blurAmount, 0.0);\
+	            v_blurTexCoords[ 3] = v_texCoord + vec2(-0.016 * blurAmount, 0.0);\
+	            v_blurTexCoords[ 4] = v_texCoord + vec2(-0.012 * blurAmount, 0.0);\
+	            v_blurTexCoords[ 5] = v_texCoord + vec2(-0.008 * blurAmount, 0.0);\
+	            v_blurTexCoords[ 6] = v_texCoord + vec2(-0.004 * blurAmount, 0.0);\
+	            v_blurTexCoords[ 7] = v_texCoord + vec2( 0.004 * blurAmount, 0.0);\
+	            v_blurTexCoords[ 8] = v_texCoord + vec2( 0.008 * blurAmount, 0.0);\
+	            v_blurTexCoords[ 9] = v_texCoord + vec2( 0.012 * blurAmount, 0.0);\
+	            v_blurTexCoords[10] = v_texCoord + vec2( 0.016 * blurAmount, 0.0);\
+	            v_blurTexCoords[11] = v_texCoord + vec2( 0.020 * blurAmount, 0.0);\
+	            v_blurTexCoords[12] = v_texCoord + vec2( 0.024 * blurAmount, 0.0);\
+	            v_blurTexCoords[13] = v_texCoord + vec2( 0.028 * blurAmount, 0.0);\
+	        }",
+	    "fragmentShader": "\
+	        precision mediump float;\
+	        uniform sampler2D u_image;\
+	        varying vec2 v_texCoord;\
+	        varying vec2 v_blurTexCoords[14];\
+	        void main(){\
+	            gl_FragColor = vec4(0.0);\
+	            gl_FragColor += texture2D(u_image, v_blurTexCoords[ 0])*0.0044299121055113265;\
+	            gl_FragColor += texture2D(u_image, v_blurTexCoords[ 1])*0.00895781211794;\
+	            gl_FragColor += texture2D(u_image, v_blurTexCoords[ 2])*0.0215963866053;\
+	            gl_FragColor += texture2D(u_image, v_blurTexCoords[ 3])*0.0443683338718;\
+	            gl_FragColor += texture2D(u_image, v_blurTexCoords[ 4])*0.0776744219933;\
+	            gl_FragColor += texture2D(u_image, v_blurTexCoords[ 5])*0.115876621105;\
+	            gl_FragColor += texture2D(u_image, v_blurTexCoords[ 6])*0.147308056121;\
+	            gl_FragColor += texture2D(u_image, v_texCoord         )*0.159576912161;\
+	            gl_FragColor += texture2D(u_image, v_blurTexCoords[ 7])*0.147308056121;\
+	            gl_FragColor += texture2D(u_image, v_blurTexCoords[ 8])*0.115876621105;\
+	            gl_FragColor += texture2D(u_image, v_blurTexCoords[ 9])*0.0776744219933;\
+	            gl_FragColor += texture2D(u_image, v_blurTexCoords[10])*0.0443683338718;\
+	            gl_FragColor += texture2D(u_image, v_blurTexCoords[11])*0.0215963866053;\
+	            gl_FragColor += texture2D(u_image, v_blurTexCoords[12])*0.00895781211794;\
+	            gl_FragColor += texture2D(u_image, v_blurTexCoords[13])*0.0044299121055113265;\
+	        }",
+	    "properties": {
+	        "blurAmount": { "type": "uniform", "value": 1.0 }
+	    },
+	    "inputs": ["u_image"]
+	};
+	
+	exports["default"] = horizontal_blur;
+	module.exports = exports["default"];
+
+/***/ },
+/* 16 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var verticalBlur = {
+	    "title": "Vertical Blur",
+	    "description": "A vertical blur effect. Adpated from http://xissburg.com/faster-gaussian-blur-in-glsl/",
+	    "vertexShader": "\
+	        attribute vec2 a_position;\
+	        attribute vec2 a_texCoord;\
+	        varying vec2 v_texCoord;\
+	        uniform float blurAmount;\
+	        varying vec2 v_blurTexCoords[14];\
+	        void main() {\
+	            gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+	            v_texCoord = a_texCoord;\
+	            v_blurTexCoords[ 0] = v_texCoord + vec2(0.0,-0.028 * blurAmount);\
+	            v_blurTexCoords[ 1] = v_texCoord + vec2(0.0,-0.024 * blurAmount);\
+	            v_blurTexCoords[ 2] = v_texCoord + vec2(0.0,-0.020 * blurAmount);\
+	            v_blurTexCoords[ 3] = v_texCoord + vec2(0.0,-0.016 * blurAmount);\
+	            v_blurTexCoords[ 4] = v_texCoord + vec2(0.0,-0.012 * blurAmount);\
+	            v_blurTexCoords[ 5] = v_texCoord + vec2(0.0,-0.008 * blurAmount);\
+	            v_blurTexCoords[ 6] = v_texCoord + vec2(0.0,-0.004 * blurAmount);\
+	            v_blurTexCoords[ 7] = v_texCoord + vec2(0.0, 0.004 * blurAmount);\
+	            v_blurTexCoords[ 8] = v_texCoord + vec2(0.0, 0.008 * blurAmount);\
+	            v_blurTexCoords[ 9] = v_texCoord + vec2(0.0, 0.012 * blurAmount);\
+	            v_blurTexCoords[10] = v_texCoord + vec2(0.0, 0.016 * blurAmount);\
+	            v_blurTexCoords[11] = v_texCoord + vec2(0.0, 0.020 * blurAmount);\
+	            v_blurTexCoords[12] = v_texCoord + vec2(0.0, 0.024 * blurAmount);\
+	            v_blurTexCoords[13] = v_texCoord + vec2(0.0, 0.028 * blurAmount);\
+	        }",
+	    "fragmentShader": "\
+	        precision mediump float;\
+	        uniform sampler2D u_image;\
+	        varying vec2 v_texCoord;\
+	        varying vec2 v_blurTexCoords[14];\
+	        void main(){\
+	            gl_FragColor = vec4(0.0);\
+	            gl_FragColor += texture2D(u_image, v_blurTexCoords[ 0])*0.0044299121055113265;\
+	            gl_FragColor += texture2D(u_image, v_blurTexCoords[ 1])*0.00895781211794;\
+	            gl_FragColor += texture2D(u_image, v_blurTexCoords[ 2])*0.0215963866053;\
+	            gl_FragColor += texture2D(u_image, v_blurTexCoords[ 3])*0.0443683338718;\
+	            gl_FragColor += texture2D(u_image, v_blurTexCoords[ 4])*0.0776744219933;\
+	            gl_FragColor += texture2D(u_image, v_blurTexCoords[ 5])*0.115876621105;\
+	            gl_FragColor += texture2D(u_image, v_blurTexCoords[ 6])*0.147308056121;\
+	            gl_FragColor += texture2D(u_image, v_texCoord         )*0.159576912161;\
+	            gl_FragColor += texture2D(u_image, v_blurTexCoords[ 7])*0.147308056121;\
+	            gl_FragColor += texture2D(u_image, v_blurTexCoords[ 8])*0.115876621105;\
+	            gl_FragColor += texture2D(u_image, v_blurTexCoords[ 9])*0.0776744219933;\
+	            gl_FragColor += texture2D(u_image, v_blurTexCoords[10])*0.0443683338718;\
+	            gl_FragColor += texture2D(u_image, v_blurTexCoords[11])*0.0215963866053;\
+	            gl_FragColor += texture2D(u_image, v_blurTexCoords[12])*0.00895781211794;\
+	            gl_FragColor += texture2D(u_image, v_blurTexCoords[13])*0.0044299121055113265;\
+	        }",
+	    "properties": {
+	        "blurAmount": { "type": "uniform", "value": 1.0 }
+	    },
+	    "inputs": ["u_image"]
+	};
+	
+	exports["default"] = verticalBlur;
+	module.exports = exports["default"];
+
+/***/ },
+/* 17 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var aaf_video_flop = {
+	    "title": "AAF Video Flop Effect",
+	    "description": "A flop effect based on the AAF spec. Mirrors the image in the y-axis",
+	    "vertexShader": "\
+	            attribute vec2 a_position;\
+	            attribute vec2 a_texCoord;\
+	            varying vec2 v_texCoord;\
+	            void main() {\
+	                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+	                v_texCoord = a_texCoord;\
+	            }",
+	    "fragmentShader": "\
+	            precision mediump float;\
+	            uniform sampler2D u_image;\
+	            varying vec2 v_texCoord;\
+	            void main(){\
+	                vec2 coord = vec2(1.0 - v_texCoord[0] ,v_texCoord[1]);\
+	                vec4 color = texture2D(u_image, coord);\
+	                gl_FragColor = color;\
+	            }",
+	    "properties": {},
+	    "inputs": ["u_image"]
+	};
+	
+	exports["default"] = aaf_video_flop;
+	module.exports = exports["default"];
+
+/***/ },
+/* 18 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var aaf_video_flip = {
+	    "title": "AAF Video Scale Effect",
+	    "description": "A flip effect based on the AAF spec. Mirrors the image in the x-axis",
+	    "vertexShader": "\
+	            attribute vec2 a_position;\
+	            attribute vec2 a_texCoord;\
+	            varying vec2 v_texCoord;\
+	            void main() {\
+	                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+	                v_texCoord = a_texCoord;\
+	            }",
+	    "fragmentShader": "\
+	            precision mediump float;\
+	            uniform sampler2D u_image;\
+	            varying vec2 v_texCoord;\
+	            void main(){\
+	                vec2 coord = vec2(v_texCoord[0] ,1.0 - v_texCoord[1]);\
+	                vec4 color = texture2D(u_image, coord);\
+	                gl_FragColor = color;\
+	            }",
+	    "properties": {},
+	    "inputs": ["u_image"]
+	};
+	
+	exports["default"] = aaf_video_flip;
+	module.exports = exports["default"];
+
+/***/ },
+/* 19 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var aaf_video_position = {
+	    "title": "AAF Video Position Effect",
+	    "description": "A position effect based on the AAF spec.",
+	    "vertexShader": "\
+	        attribute vec2 a_position;\
+	        attribute vec2 a_texCoord;\
+	        varying vec2 v_texCoord;\
+	        void main() {\
+	            gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+	            v_texCoord = a_texCoord;\
+	        }",
+	    "fragmentShader": "\
+	        precision mediump float;\
+	        uniform sampler2D u_image;\
+	        uniform float positionOffsetX;\
+	        uniform float positionOffsetY;\
+	        varying vec2 v_texCoord;\
+	        varying float v_progress;\
+	        void main(){\
+	            vec2 pos = vec2(v_texCoord[0] - positionOffsetX/2.0, v_texCoord[1] -  positionOffsetY/2.0);\
+	            vec4 color = texture2D(u_image, pos);\
+	            if (pos[0] < 0.0 || pos[0] > 1.0 || pos[1] < 0.0 || pos[1] > 1.0){\
+	                color = vec4(0.0,0.0,0.0,0.0);\
+	            }\
+	            gl_FragColor = color;\
+	        }",
+	    "properties": {
+	        "positionOffsetX": { "type": "uniform", "value": 0.0 },
+	        "positionOffsetY": { "type": "uniform", "value": 0.0 }
+	    },
+	    "inputs": ["u_image"]
+	};
+	
+	exports["default"] = aaf_video_position;
+	module.exports = exports["default"];
+
+/***/ },
+/* 20 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var aaf_video_crop = {
+	    "title": "AAF Video Crop Effect",
+	    "description": "A crop effect based on the AAF spec.",
+	    "vertexShader": "\
+	            attribute vec2 a_position;\
+	            attribute vec2 a_texCoord;\
+	            varying vec2 v_texCoord;\
+	            void main() {\
+	                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+	                v_texCoord = a_texCoord;\
+	            }",
+	    "fragmentShader": "\
+	            precision mediump float;\
+	            uniform sampler2D u_image;\
+	            uniform float cropLeft;\
+	            uniform float cropRight;\
+	            uniform float cropTop;\
+	            uniform float cropBottom;\
+	            varying vec2 v_texCoord;\
+	            void main(){\
+	                vec4 color = texture2D(u_image, v_texCoord);\
+	                if (v_texCoord[0] < (cropLeft+1.0)/2.0) color = vec4(0.0,0.0,0.0,0.0);\
+	                if (v_texCoord[0] > (cropRight+1.0)/2.0) color = vec4(0.0,0.0,0.0,0.0);\
+	                if (v_texCoord[1] < (-cropBottom+1.0)/2.0) color = vec4(0.0,0.0,0.0,0.0);\
+	                if (v_texCoord[1] > (-cropTop+1.0)/2.0) color = vec4(0.0,0.0,0.0,0.0);\
+	                gl_FragColor = color;\
+	            }",
+	    "properties": {
+	        "cropLeft": { "type": "uniform", "value": -1.0 },
+	        "cropRight": { "type": "uniform", "value": 1.0 },
+	        "cropTop": { "type": "uniform", "value": -1.0 },
+	        "cropBottom": { "type": "uniform", "value": 1.0 }
+	    },
+	    "inputs": ["u_image"]
+	};
+	
+	exports["default"] = aaf_video_crop;
+	module.exports = exports["default"];
+
+/***/ },
+/* 21 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var staticDissolve = {
+	    "title": "Static Dissolve",
+	    "description": "A static dissolve effect. Typically used as a transistion.",
+	    "vertexShader": "\
+	            attribute vec2 a_position;\
+	            attribute vec2 a_texCoord;\
+	            varying vec2 v_texCoord;\
+	            void main() {\
+	                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+	                v_texCoord = a_texCoord;\
+	            }",
+	    "fragmentShader": "\
+	            precision mediump float;\
+	            uniform sampler2D u_image_a;\
+	            uniform sampler2D u_image_b;\
+	            uniform float mix;\
+	            uniform float currentTime;\
+	            varying vec2 v_texCoord;\
+	            varying float v_mix;\
+	            float rand(vec2 co, float currentTime){\
+	               return fract(sin(dot(co.xy,vec2(12.9898,78.233))+currentTime) * 43758.5453);\
+	            }\
+	            void main(){\
+	                vec4 color_a = texture2D(u_image_a, v_texCoord);\
+	                vec4 color_b = texture2D(u_image_b, v_texCoord);\
+	                if (clamp(rand(v_texCoord, currentTime),  0.01, 1.001) > mix){\
+	                    gl_FragColor = color_a;\
+	                } else {\
+	                    gl_FragColor = color_b;\
+	                }\
+	            }",
+	    "properties": {
+	        "mix": { "type": "uniform", "value": 0.0 }
+	    },
+	    "inputs": ["u_image_a", "u_image_b"]
+	};
+	
+	exports["default"] = staticDissolve;
+	module.exports = exports["default"];
+
+/***/ },
+/* 22 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var staticEffect = {
+	    "title": "Static",
+	    "description": "A static effect to add pseudo random noise to a video",
+	    "vertexShader": "\
+	            attribute vec2 a_position;\
+	            attribute vec2 a_texCoord;\
+	            varying vec2 v_texCoord;\
+	            void main() {\
+	                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+	                v_texCoord = a_texCoord;\
+	            }",
+	    "fragmentShader": "\
+	            precision mediump float;\
+	            uniform sampler2D u_image;\
+	            uniform float currentTime;\
+	            uniform float amount;\
+	            varying vec2 v_texCoord;\
+	            uniform vec3 weight;\
+	            float rand(vec2 co, float currentTime){\
+	               return fract(sin(dot(co.xy,vec2(12.9898,78.233))+currentTime) * 43758.5453);\
+	            }\
+	            void main(){\
+	                vec4 color = texture2D(u_image, v_texCoord);\
+	                color[0] = color[0] + (2.0*(clamp(rand(v_texCoord, currentTime),  0.01, 1.001)-0.5)) * weight[0] * amount;\
+	                color[1] = color[1] + (2.0*(clamp(rand(v_texCoord, currentTime),  0.01, 1.001)-0.5)) * weight[1] * amount;\
+	                color[2] = color[2] + (2.0*(clamp(rand(v_texCoord, currentTime),  0.01, 1.001)-0.5)) * weight[2] *amount;\
+	                gl_FragColor = color;\
+	            }",
+	    "properties": {
+	        "weight": { "type": "uniform", "value": [1.0, 1.0, 1.0] },
+	        "amount": { "type": "uniform", "value": 1.0 }
+	    },
+	    "inputs": ["u_image"]
+	};
+	
+	exports["default"] = staticEffect;
+	module.exports = exports["default"];
+
+/***/ },
+/* 23 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var dreamfade = {
+	    "title": "Dream-Fade",
+	    "description": "A wobbly dream effect. Typically used as a transistion.",
+	    "vertexShader": "\
+	    attribute vec2 a_position;\
+	    attribute vec2 a_texCoord;\
+	    varying vec2 v_texCoord;\
+	    void main() {\
+	        gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+	        v_texCoord = a_texCoord;\
+	    }",
+	    "fragmentShader": "\
+	    precision mediump float;\
+	    uniform sampler2D u_image_a;\
+	    uniform sampler2D u_image_b;\
+	    uniform float mix;\
+	    varying vec2 v_texCoord;\
+	    varying float v_mix;\
+	    void main(){\
+	        float wobble = 1.0 - abs((mix*2.0)-1.0);\
+	        vec2 pos = vec2(v_texCoord[0] + ((sin(v_texCoord[1]*(10.0*wobble*3.14) + wobble*10.0)/13.0)), v_texCoord[1]);\
+	        vec4 color_a = texture2D(u_image_a, pos);\
+	        vec4 color_b = texture2D(u_image_b, pos);\
+	        color_a[0] *= (1.0 - mix);\
+	        color_a[1] *= (1.0 - mix);\
+	        color_a[2] *= (1.0 - mix);\
+	        color_a[3] *= (1.0 - mix);\
+	        color_b[0] *= mix;\
+	        color_b[1] *= mix;\
+	        color_b[2] *= mix;\
+	        color_b[3] *= mix;\
+	        gl_FragColor = color_a + color_b;\
+	    }",
+	    "properties": {
+	        "mix": { "type": "uniform", "value": 0.0 }
+	    },
+	    "inputs": ["u_image_a", "u_image_b"]
+	};
+	
+	exports["default"] = dreamfade;
+	module.exports = exports["default"];
+
+/***/ },
+/* 24 */
 /***/ function(module, exports) {
 
 	//Matthew Shotton, R&D User Experience,© BBC 2015
@@ -3094,7 +4223,7 @@ var VideoContext =
 	module.exports = exports["default"];
 
 /***/ },
-/* 5 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//Matthew Shotton, R&D User Experience,© BBC 2015
@@ -3233,7 +4362,7 @@ var VideoContext =
 	module.exports = exports["default"];
 
 /***/ },
-/* 6 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//Matthew Shotton, R&D User Experience,© BBC 2015
@@ -3324,7 +4453,7 @@ var VideoContext =
 	module.exports = exports["default"];
 
 /***/ },
-/* 7 */
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//Matthew Shotton, R&D User Experience,© BBC 2015
@@ -3344,7 +4473,7 @@ var VideoContext =
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var _processingnode = __webpack_require__(8);
+	var _processingnode = __webpack_require__(28);
 	
 	var _processingnode2 = _interopRequireDefault(_processingnode);
 	
@@ -3429,7 +4558,7 @@ var VideoContext =
 	module.exports = exports["default"];
 
 /***/ },
-/* 8 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//Matthew Shotton, R&D User Experience,© BBC 2015
@@ -3449,13 +4578,13 @@ var VideoContext =
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var _graphnode = __webpack_require__(4);
+	var _graphnode = __webpack_require__(24);
 	
 	var _graphnode2 = _interopRequireDefault(_graphnode);
 	
 	var _utilsJs = __webpack_require__(3);
 	
-	var _exceptionsJs = __webpack_require__(9);
+	var _exceptionsJs = __webpack_require__(29);
 	
 	var ProcessingNode = (function (_GraphNode) {
 	    _inherits(ProcessingNode, _GraphNode);
@@ -3690,7 +4819,7 @@ var VideoContext =
 	module.exports = exports["default"];
 
 /***/ },
-/* 9 */
+/* 29 */
 /***/ function(module, exports) {
 
 	//Matthew Shotton, R&D User Experience,© BBC 2015
@@ -3713,7 +4842,7 @@ var VideoContext =
 	}
 
 /***/ },
-/* 10 */
+/* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//Matthew Shotton, R&D User Experience,© BBC 2015
@@ -3733,7 +4862,7 @@ var VideoContext =
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var _ProcessingNodesProcessingnode = __webpack_require__(8);
+	var _ProcessingNodesProcessingnode = __webpack_require__(28);
 	
 	var _ProcessingNodesProcessingnode2 = _interopRequireDefault(_ProcessingNodesProcessingnode);
 	
@@ -3834,7 +4963,7 @@ var VideoContext =
 	module.exports = exports["default"];
 
 /***/ },
-/* 11 */
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//Matthew Shotton, R&D User Experience,© BBC 2015
@@ -3854,7 +4983,7 @@ var VideoContext =
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var _processingnode = __webpack_require__(8);
+	var _processingnode = __webpack_require__(28);
 	
 	var _processingnode2 = _interopRequireDefault(_processingnode);
 	
@@ -3918,7 +5047,7 @@ var VideoContext =
 	module.exports = exports["default"];
 
 /***/ },
-/* 12 */
+/* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//Matthew Shotton, R&D User Experience,© BBC 2015
@@ -3938,7 +5067,7 @@ var VideoContext =
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var _effectnode = __webpack_require__(11);
+	var _effectnode = __webpack_require__(31);
 	
 	var _effectnode2 = _interopRequireDefault(_effectnode);
 	
@@ -4129,7 +5258,7 @@ var VideoContext =
 	module.exports = exports["default"];
 
 /***/ },
-/* 13 */
+/* 33 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//Matthew Shotton, R&D User Experience,© BBC 2015
@@ -4143,7 +5272,7 @@ var VideoContext =
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
-	var _exceptionsJs = __webpack_require__(9);
+	var _exceptionsJs = __webpack_require__(29);
 	
 	var RenderGraph = (function () {
 	    /**
@@ -4559,7 +5688,7 @@ var VideoContext =
 	module.exports = exports["default"];
 
 /***/ },
-/* 14 */
+/* 34 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -4718,1083 +5847,6 @@ var VideoContext =
 	})();
 	
 	exports["default"] = VideoElementCache;
-	module.exports = exports["default"];
-
-/***/ },
-/* 15 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-	
-	var _aaf_video_scaleJs = __webpack_require__(16);
-	
-	var _aaf_video_scaleJs2 = _interopRequireDefault(_aaf_video_scaleJs);
-	
-	var _crossfadeJs = __webpack_require__(17);
-	
-	var _crossfadeJs2 = _interopRequireDefault(_crossfadeJs);
-	
-	var _horizontalWipeJs = __webpack_require__(18);
-	
-	var _horizontalWipeJs2 = _interopRequireDefault(_horizontalWipeJs);
-	
-	var _verticalWipeJs = __webpack_require__(19);
-	
-	var _verticalWipeJs2 = _interopRequireDefault(_verticalWipeJs);
-	
-	var _randomDissolveJs = __webpack_require__(20);
-	
-	var _randomDissolveJs2 = _interopRequireDefault(_randomDissolveJs);
-	
-	var _toColorAndBackFadeJs = __webpack_require__(21);
-	
-	var _toColorAndBackFadeJs2 = _interopRequireDefault(_toColorAndBackFadeJs);
-	
-	var _starWipeJs = __webpack_require__(22);
-	
-	var _starWipeJs2 = _interopRequireDefault(_starWipeJs);
-	
-	var _combineJs = __webpack_require__(23);
-	
-	var _combineJs2 = _interopRequireDefault(_combineJs);
-	
-	var _colorThresholdJs = __webpack_require__(24);
-	
-	var _colorThresholdJs2 = _interopRequireDefault(_colorThresholdJs);
-	
-	var _monochromeJs = __webpack_require__(25);
-	
-	var _monochromeJs2 = _interopRequireDefault(_monochromeJs);
-	
-	var _horizontalBlurJs = __webpack_require__(26);
-	
-	var _horizontalBlurJs2 = _interopRequireDefault(_horizontalBlurJs);
-	
-	var _verticalBlurJs = __webpack_require__(27);
-	
-	var _verticalBlurJs2 = _interopRequireDefault(_verticalBlurJs);
-	
-	var _aaf_video_flopJs = __webpack_require__(28);
-	
-	var _aaf_video_flopJs2 = _interopRequireDefault(_aaf_video_flopJs);
-	
-	var _aaf_video_flipJs = __webpack_require__(29);
-	
-	var _aaf_video_flipJs2 = _interopRequireDefault(_aaf_video_flipJs);
-	
-	var _aaf_video_positionJs = __webpack_require__(30);
-	
-	var _aaf_video_positionJs2 = _interopRequireDefault(_aaf_video_positionJs);
-	
-	var _aaf_video_cropJs = __webpack_require__(31);
-	
-	var _aaf_video_cropJs2 = _interopRequireDefault(_aaf_video_cropJs);
-	
-	var _staticDissolveJs = __webpack_require__(32);
-	
-	var _staticDissolveJs2 = _interopRequireDefault(_staticDissolveJs);
-	
-	var _staticEffectJs = __webpack_require__(33);
-	
-	var _staticEffectJs2 = _interopRequireDefault(_staticEffectJs);
-	
-	var _dreamfadeJs = __webpack_require__(34);
-	
-	var _dreamfadeJs2 = _interopRequireDefault(_dreamfadeJs);
-	
-	var DEFINITIONS = {
-	    AAF_VIDEO_SCALE: _aaf_video_scaleJs2["default"],
-	    CROSSFADE: _crossfadeJs2["default"],
-	    DREAMFADE: _dreamfadeJs2["default"],
-	    HORIZONTAL_WIPE: _horizontalWipeJs2["default"],
-	    VERTICAL_WIPE: _verticalWipeJs2["default"],
-	    RANDOM_DISSOLVE: _randomDissolveJs2["default"],
-	    STATIC_DISSOLVE: _staticDissolveJs2["default"],
-	    STATIC_EFFECT: _staticEffectJs2["default"],
-	    TO_COLOR_AND_BACK: _toColorAndBackFadeJs2["default"],
-	    STAR_WIPE: _starWipeJs2["default"],
-	    COMBINE: _combineJs2["default"],
-	    COLORTHRESHOLD: _colorThresholdJs2["default"],
-	    MONOCHROME: _monochromeJs2["default"],
-	    HORIZONTAL_BLUR: _horizontalBlurJs2["default"],
-	    VERTICAL_BLUR: _verticalBlurJs2["default"],
-	    AAF_VIDEO_CROP: _aaf_video_cropJs2["default"],
-	    AAF_VIDEO_POSITION: _aaf_video_positionJs2["default"],
-	    AAF_VIDEO_FLIP: _aaf_video_flipJs2["default"],
-	    AAF_VIDEO_FLOP: _aaf_video_flopJs2["default"]
-	};
-	
-	exports["default"] = DEFINITIONS;
-	module.exports = exports["default"];
-
-/***/ },
-/* 16 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	var aaf_video_scale = {
-	    "title": "AAF Video Scale Effect",
-	    "description": "A scale effect based on the AAF spec.",
-	    "vertexShader": "\
-	        attribute vec2 a_position;\
-	        attribute vec2 a_texCoord;\
-	        varying vec2 v_texCoord;\
-	        void main() {\
-	            gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
-	            v_texCoord = a_texCoord;\
-	        }",
-	    "fragmentShader": "\
-	        precision mediump float;\
-	        uniform sampler2D u_image;\
-	        uniform float scaleX;\
-	        uniform float scaleY;\
-	        varying vec2 v_texCoord;\
-	        varying float v_progress;\
-	        void main(){\
-	            vec2 pos = vec2(v_texCoord[0]*1.0/scaleX - (1.0/scaleX/2.0 -0.5), v_texCoord[1]*1.0/scaleY - (1.0/scaleY/2.0 -0.5));\
-	                vec4 color = texture2D(u_image, pos);\
-	                if (pos[0] < 0.0 || pos[0] > 1.0 || pos[1] < 0.0 || pos[1] > 1.0){\
-	                    color = vec4(0.0,0.0,0.0,0.0);\
-	                }\
-	                gl_FragColor = color;\
-	            }",
-	    "properties": {
-	        "scaleX": { "type": "uniform", "value": 1.0 },
-	        "scaleY": { "type": "uniform", "value": 1.0 }
-	    },
-	    "inputs": ["u_image"]
-	};
-	
-	exports["default"] = aaf_video_scale;
-	module.exports = exports["default"];
-
-/***/ },
-/* 17 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	var crossfade = {
-	    "title": "Cross-Fade",
-	    "description": "A cross-fade effect. Typically used as a transistion.",
-	    "vertexShader": "\
-	    attribute vec2 a_position;\
-	    attribute vec2 a_texCoord;\
-	    varying vec2 v_texCoord;\
-	    void main() {\
-	        gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
-	        v_texCoord = a_texCoord;\
-	    }",
-	    "fragmentShader": "\
-	    precision mediump float;\
-	    uniform sampler2D u_image_a;\
-	    uniform sampler2D u_image_b;\
-	    uniform float mix;\
-	    varying vec2 v_texCoord;\
-	    varying float v_mix;\
-	    void main(){\
-	        vec4 color_a = texture2D(u_image_a, v_texCoord);\
-	        vec4 color_b = texture2D(u_image_b, v_texCoord);\
-	        color_a[0] *= (1.0 - mix);\
-	        color_a[1] *= (1.0 - mix);\
-	        color_a[2] *= (1.0 - mix);\
-	        color_a[3] *= (1.0 - mix);\
-	        color_b[0] *= mix;\
-	        color_b[1] *= mix;\
-	        color_b[2] *= mix;\
-	        color_b[3] *= mix;\
-	        gl_FragColor = color_a + color_b;\
-	    }",
-	    "properties": {
-	        "mix": { "type": "uniform", "value": 0.0 }
-	    },
-	    "inputs": ["u_image_a", "u_image_b"]
-	};
-	
-	exports["default"] = crossfade;
-	module.exports = exports["default"];
-
-/***/ },
-/* 18 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	var horizontal_wipe = {
-	    "title": "Horizontal Wipe",
-	    "description": "A horizontal wipe effect. Typically used as a transistion.",
-	    "vertexShader": "\
-	            attribute vec2 a_position;\
-	            attribute vec2 a_texCoord;\
-	            varying vec2 v_texCoord;\
-	            void main() {\
-	                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
-	                v_texCoord = a_texCoord;\
-	            }",
-	    "fragmentShader": "\
-	            precision mediump float;\
-	            uniform sampler2D u_image_a;\
-	            uniform sampler2D u_image_b;\
-	            uniform float mix;\
-	            varying vec2 v_texCoord;\
-	            varying float v_mix;\
-	            void main(){\
-	                vec4 color_a = texture2D(u_image_a, v_texCoord);\
-	                vec4 color_b = texture2D(u_image_b, v_texCoord);\
-	                if (v_texCoord[0] > mix){\
-	                    gl_FragColor = color_a;\
-	                } else {\
-	                    gl_FragColor = color_b;\
-	                }\
-	            }",
-	    "properties": {
-	        "mix": { "type": "uniform", "value": 0.0 }
-	    },
-	    "inputs": ["u_image_a", "u_image_b"]
-	};
-	
-	exports["default"] = horizontal_wipe;
-	module.exports = exports["default"];
-
-/***/ },
-/* 19 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	var verticalWipe = {
-	    "title": "vertical Wipe",
-	    "description": "A vertical wipe effect. Typically used as a transistion.",
-	    "vertexShader": "\
-	            attribute vec2 a_position;\
-	            attribute vec2 a_texCoord;\
-	            varying vec2 v_texCoord;\
-	            void main() {\
-	                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
-	                v_texCoord = a_texCoord;\
-	            }",
-	    "fragmentShader": "\
-	            precision mediump float;\
-	            uniform sampler2D u_image_a;\
-	            uniform sampler2D u_image_b;\
-	            uniform float mix;\
-	            varying vec2 v_texCoord;\
-	            varying float v_mix;\
-	            void main(){\
-	                vec4 color_a = texture2D(u_image_a, v_texCoord);\
-	                vec4 color_b = texture2D(u_image_b, v_texCoord);\
-	                if (v_texCoord[1] > mix){\
-	                    gl_FragColor = color_a;\
-	                } else {\
-	                    gl_FragColor = color_b;\
-	                }\
-	            }",
-	    "properties": {
-	        "mix": { "type": "uniform", "value": 0.0 }
-	    },
-	    "inputs": ["u_image_a", "u_image_b"]
-	};
-	
-	exports["default"] = verticalWipe;
-	module.exports = exports["default"];
-
-/***/ },
-/* 20 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	var randomDissolve = {
-	    "title": "Random Dissolve",
-	    "description": "A random dissolve effect. Typically used as a transistion.",
-	    "vertexShader": "\
-	            attribute vec2 a_position;\
-	            attribute vec2 a_texCoord;\
-	            varying vec2 v_texCoord;\
-	            void main() {\
-	                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
-	                v_texCoord = a_texCoord;\
-	            }",
-	    "fragmentShader": "\
-	            precision mediump float;\
-	            uniform sampler2D u_image_a;\
-	            uniform sampler2D u_image_b;\
-	            uniform float mix;\
-	            varying vec2 v_texCoord;\
-	            varying float v_mix;\
-	            float rand(vec2 co){\
-	               return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);\
-	            }\
-	            void main(){\
-	                vec4 color_a = texture2D(u_image_a, v_texCoord);\
-	                vec4 color_b = texture2D(u_image_b, v_texCoord);\
-	                if (clamp(rand(v_texCoord),  0.01, 1.001) > mix){\
-	                    gl_FragColor = color_a;\
-	                } else {\
-	                    gl_FragColor = color_b;\
-	                }\
-	            }",
-	    "properties": {
-	        "mix": { "type": "uniform", "value": 0.0 }
-	    },
-	    "inputs": ["u_image_a", "u_image_b"]
-	};
-	
-	exports["default"] = randomDissolve;
-	module.exports = exports["default"];
-
-/***/ },
-/* 21 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	var toColorAndBackFade = {
-	    "title": "To Color And Back Fade",
-	    "description": "A fade to black and back effect. Setting mix to 0.5 is a fully solid color frame. Typically used as a transistion.",
-	    "vertexShader": "\
-	            attribute vec2 a_position;\
-	            attribute vec2 a_texCoord;\
-	            varying vec2 v_texCoord;\
-	            void main() {\
-	                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
-	                v_texCoord = a_texCoord;\
-	            }",
-	    "fragmentShader": "\
-	            precision mediump float;\
-	            uniform sampler2D u_image_a;\
-	            uniform sampler2D u_image_b;\
-	            uniform float mix;\
-	            uniform vec4 color;\
-	            varying vec2 v_texCoord;\
-	            varying float v_mix;\
-	            void main(){\
-	                vec4 color_a = texture2D(u_image_a, v_texCoord);\
-	                vec4 color_b = texture2D(u_image_b, v_texCoord);\
-	                float mix_amount = (mix *2.0) - 1.0;\
-	                if(mix_amount < 0.0){\
-	                    gl_FragColor = abs(mix_amount) * color_a + (1.0 - abs(mix_amount)) * color;\
-	                } else {\
-	                    gl_FragColor = mix_amount * color_b + (1.0 - mix_amount) * color;\
-	                }\
-	            }",
-	    "properties": {
-	        "mix": { "type": "uniform", "value": 0.0 },
-	        "color": { "type": "uniform", "value": [0.0, 0.0, 0.0, 0.0] }
-	    },
-	    "inputs": ["u_image_a", "u_image_b"]
-	};
-	exports["default"] = toColorAndBackFade;
-	module.exports = exports["default"];
-
-/***/ },
-/* 22 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	var starWipe = {
-	    "title": "Star Wipe Fade",
-	    "description": "A classic star wipe transistion. Typically used as a transistion.",
-	    "vertexShader": "\
-	            attribute vec2 a_position;\
-	            attribute vec2 a_texCoord;\
-	            varying vec2 v_texCoord;\
-	            void main() {\
-	                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
-	                v_texCoord = a_texCoord;\
-	            }",
-	    "fragmentShader": "\
-	            precision mediump float;\
-	            uniform sampler2D u_image_a;\
-	            uniform sampler2D u_image_b;\
-	            uniform float mix;\
-	            varying vec2 v_texCoord;\
-	            varying float v_mix;\
-	            float sign (vec2 p1, vec2 p2, vec2 p3){\
-	                return (p1[0] - p3[0]) * (p2[1] - p3[1]) - (p2[0] - p3[0]) * (p1[1] - p3[1]);\
-	            }\
-	            bool pointInTriangle(vec2 pt, vec2 v1, vec2 v2, vec2 v3){\
-	                bool b1, b2, b3;\
-	                b1 = sign(pt, v1, v2) < 0.0;\
-	                b2 = sign(pt, v2, v3) < 0.0;\
-	                b3 = sign(pt, v3, v1) < 0.0;\
-	                return ((b1 == b2) && (b2 == b3));\
-	            }\
-	            vec2 rotatePointAboutPoint(vec2 point, vec2 pivot, float angle){\
-	                float s = sin(angle);\
-	                float c = cos(angle);\
-	                float x = point[0] - pivot[0];\
-	                float y = point[1] - pivot[1];\
-	                float new_x = x * c - y * s;\
-	                float new_y = x * s + y * c;\
-	                return vec2(new_x + pivot[0], new_y+pivot[1]);\
-	            }\
-	            \
-	            void main(){\
-	                vec4 color_a = texture2D(u_image_b, v_texCoord);\
-	                vec4 color_b = texture2D(u_image_a, v_texCoord);\
-	                vec2 t0_p0,t0_p1,t0_p2,t1_p0,t1_p1,t1_p2,t2_p0,t2_p1,t2_p2,t3_p0,t3_p1,t3_p2;\
-	                vec2 t4_p0,t4_p1,t4_p2,t5_p0,t5_p1,t5_p2,t6_p0,t6_p1,t6_p2,t7_p0,t7_p1,t7_p2;\
-	                \
-	                \
-	                t0_p0 = vec2(0.0, 0.25) * clamp(mix,0.0,1.0) * 2.0 + vec2(0.5,0.5);\
-	                t0_p1 = vec2(0.0, -0.25) * clamp(mix,0.0,1.0) * 2.0 + vec2(0.5,0.5);\
-	                t0_p2 = vec2(1.0, 0.0) * clamp(mix,0.0,1.0) * 2.0 + vec2(0.5,0.5);\
-	                \
-	                t1_p0 = rotatePointAboutPoint(t0_p0, vec2(0.5,0.5), 0.7854);\
-	                t1_p1 = rotatePointAboutPoint(t0_p1, vec2(0.5,0.5), 0.7854);\
-	                t1_p2 = rotatePointAboutPoint(t0_p2, vec2(0.5,0.5), 0.7854);\
-	                \
-	                t2_p0 = rotatePointAboutPoint(t0_p0, vec2(0.5,0.5), 0.7854 * 2.0);\
-	                t2_p1 = rotatePointAboutPoint(t0_p1, vec2(0.5,0.5), 0.7854 * 2.0);\
-	                t2_p2 = rotatePointAboutPoint(t0_p2, vec2(0.5,0.5), 0.7854 * 2.0);\
-	                \
-	                t3_p0 = rotatePointAboutPoint(t0_p0, vec2(0.5,0.5), 0.7854 * 3.0);\
-	                t3_p1 = rotatePointAboutPoint(t0_p1, vec2(0.5,0.5), 0.7854 * 3.0);\
-	                t3_p2 = rotatePointAboutPoint(t0_p2, vec2(0.5,0.5), 0.7854 * 3.0);\
-	                \
-	                t4_p0 = rotatePointAboutPoint(t0_p0, vec2(0.5,0.5), 0.7854 * 4.0);\
-	                t4_p1 = rotatePointAboutPoint(t0_p1, vec2(0.5,0.5), 0.7854 * 4.0);\
-	                t4_p2 = rotatePointAboutPoint(t0_p2, vec2(0.5,0.5), 0.7854 * 4.0);\
-	                \
-	                t5_p0 = rotatePointAboutPoint(t0_p0, vec2(0.5,0.5), 0.7854 * 5.0);\
-	                t5_p1 = rotatePointAboutPoint(t0_p1, vec2(0.5,0.5), 0.7854 * 5.0);\
-	                t5_p2 = rotatePointAboutPoint(t0_p2, vec2(0.5,0.5), 0.7854 * 5.0);\
-	                \
-	                t6_p0 = rotatePointAboutPoint(t0_p0, vec2(0.5,0.5), 0.7854 * 6.0);\
-	                t6_p1 = rotatePointAboutPoint(t0_p1, vec2(0.5,0.5), 0.7854 * 6.0);\
-	                t6_p2 = rotatePointAboutPoint(t0_p2, vec2(0.5,0.5), 0.7854 * 6.0);\
-	                \
-	                t7_p0 = rotatePointAboutPoint(t0_p0, vec2(0.5,0.5), 0.7854 * 7.0);\
-	                t7_p1 = rotatePointAboutPoint(t0_p1, vec2(0.5,0.5), 0.7854 * 7.0);\
-	                t7_p2 = rotatePointAboutPoint(t0_p2, vec2(0.5,0.5), 0.7854 * 7.0);\
-	                \
-	                if(mix > 0.99){\
-	                    gl_FragColor = color_a;\
-	                    return;\
-	                }\
-	                if(mix < 0.01){\
-	                    gl_FragColor = color_b;\
-	                    return;\
-	                }\
-	                if(pointInTriangle(v_texCoord, t0_p0, t0_p1, t0_p2) || pointInTriangle(v_texCoord, t1_p0, t1_p1, t1_p2) || pointInTriangle(v_texCoord, t2_p0, t2_p1, t2_p2) || pointInTriangle(v_texCoord, t3_p0, t3_p1, t3_p2) || pointInTriangle(v_texCoord, t4_p0, t4_p1, t4_p2) || pointInTriangle(v_texCoord, t5_p0, t5_p1, t5_p2) || pointInTriangle(v_texCoord, t6_p0, t6_p1, t6_p2) || pointInTriangle(v_texCoord, t7_p0, t7_p1, t7_p2)){\
-	                    gl_FragColor = color_a;\
-	                } else {\
-	                    gl_FragColor = color_b;\
-	                }\
-	            }",
-	    "properties": {
-	        "mix": { "type": "uniform", "value": 1.0 }
-	    },
-	    "inputs": ["u_image_a", "u_image_b"]
-	};
-	
-	exports["default"] = starWipe;
-	module.exports = exports["default"];
-
-/***/ },
-/* 23 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	var combine = {
-	    "title": "Combine",
-	    "description": "A basic effect which renders the input to the output, Typically used as a combine node for layering up media with alpha transparency.",
-	    "vertexShader": "\
-	            attribute vec2 a_position;\
-	            attribute vec2 a_texCoord;\
-	            varying vec2 v_texCoord;\
-	            void main() {\
-	                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
-	                v_texCoord = a_texCoord;\
-	            }",
-	    "fragmentShader": "\
-	            precision mediump float;\
-	            uniform sampler2D u_image;\
-	            uniform float a;\
-	            varying vec2 v_texCoord;\
-	            varying float v_mix;\
-	            void main(){\
-	                vec4 color = texture2D(u_image, v_texCoord);\
-	                gl_FragColor = color;\
-	            }",
-	    "properties": {
-	        "a": { "type": "uniform", "value": 0.0 }
-	    },
-	    "inputs": ["u_image"]
-	};
-	
-	exports["default"] = combine;
-	module.exports = exports["default"];
-
-/***/ },
-/* 24 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	var colorThreshold = {
-	    "title": "Color Threshold",
-	    "description": "Turns all pixels with a greater value than the specified threshold transparent.",
-	    "vertexShader": "\
-	            attribute vec2 a_position;\
-	            attribute vec2 a_texCoord;\
-	            varying vec2 v_texCoord;\
-	            void main() {\
-	                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
-	                v_texCoord = a_texCoord;\
-	            }",
-	    "fragmentShader": "\
-	            precision mediump float;\
-	            uniform sampler2D u_image;\
-	            uniform float a;\
-	            uniform vec3 colorAlphaThreshold;\
-	            varying vec2 v_texCoord;\
-	            varying float v_mix;\
-	            void main(){\
-	                vec4 color = texture2D(u_image, v_texCoord);\
-	                if (color[0] > colorAlphaThreshold[0] && color[1]> colorAlphaThreshold[1] && color[2]> colorAlphaThreshold[2]){\
-	                    color = vec4(0.0,0.0,0.0,0.0);\
-	                }\
-	                gl_FragColor = color;\
-	            }",
-	    "properties": {
-	        "a": { "type": "uniform", "value": 0.0 },
-	        "colorAlphaThreshold": { "type": "uniform", "value": [0.0, 0.55, 0.0] }
-	    },
-	    "inputs": ["u_image"]
-	};
-	
-	exports["default"] = colorThreshold;
-	module.exports = exports["default"];
-
-/***/ },
-/* 25 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	var monochrome = {
-	    "title": "Monochrome",
-	    "description": "Change images to a single chroma (e.g can be used to make a black & white filter). Input color mix and output color mix can be adjusted.",
-	    "vertexShader": "\
-	            attribute vec2 a_position;\
-	            attribute vec2 a_texCoord;\
-	            varying vec2 v_texCoord;\
-	            void main() {\
-	                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
-	                v_texCoord = a_texCoord;\
-	            }",
-	    "fragmentShader": "\
-	            precision mediump float;\
-	            uniform sampler2D u_image;\
-	            uniform vec3 inputMix;\
-	            uniform vec3 outputMix;\
-	            varying vec2 v_texCoord;\
-	            varying float v_mix;\
-	            void main(){\
-	                vec4 color = texture2D(u_image, v_texCoord);\
-	                float mono = color[0]*inputMix[0] + color[1]*inputMix[1] + color[2]*inputMix[2];\
-	                color[0] = mono * outputMix[0];\
-	                color[1] = mono * outputMix[1];\
-	                color[2] = mono * outputMix[2];\
-	                gl_FragColor = color;\
-	            }",
-	    "properties": {
-	        "inputMix": { "type": "uniform", "value": [0.4, 0.6, 0.2] },
-	        "outputMix": { "type": "uniform", "value": [1.0, 1.0, 1.0] }
-	    },
-	    "inputs": ["u_image"]
-	};
-	
-	exports["default"] = monochrome;
-	module.exports = exports["default"];
-
-/***/ },
-/* 26 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	var horizontal_blur = {
-	    "title": "Horizontal Blur",
-	    "description": "A horizontal blur effect. Adpated from http://xissburg.com/faster-gaussian-blur-in-glsl/",
-	    "vertexShader": "\
-	        attribute vec2 a_position;\
-	        attribute vec2 a_texCoord;\
-	        uniform float blurAmount;\
-	        varying vec2 v_texCoord;\
-	        varying vec2 v_blurTexCoords[14];\
-	        void main() {\
-	            gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
-	            v_texCoord = a_texCoord;\
-	            v_blurTexCoords[ 0] = v_texCoord + vec2(-0.028 * blurAmount, 0.0);\
-	            v_blurTexCoords[ 1] = v_texCoord + vec2(-0.024 * blurAmount, 0.0);\
-	            v_blurTexCoords[ 2] = v_texCoord + vec2(-0.020 * blurAmount, 0.0);\
-	            v_blurTexCoords[ 3] = v_texCoord + vec2(-0.016 * blurAmount, 0.0);\
-	            v_blurTexCoords[ 4] = v_texCoord + vec2(-0.012 * blurAmount, 0.0);\
-	            v_blurTexCoords[ 5] = v_texCoord + vec2(-0.008 * blurAmount, 0.0);\
-	            v_blurTexCoords[ 6] = v_texCoord + vec2(-0.004 * blurAmount, 0.0);\
-	            v_blurTexCoords[ 7] = v_texCoord + vec2( 0.004 * blurAmount, 0.0);\
-	            v_blurTexCoords[ 8] = v_texCoord + vec2( 0.008 * blurAmount, 0.0);\
-	            v_blurTexCoords[ 9] = v_texCoord + vec2( 0.012 * blurAmount, 0.0);\
-	            v_blurTexCoords[10] = v_texCoord + vec2( 0.016 * blurAmount, 0.0);\
-	            v_blurTexCoords[11] = v_texCoord + vec2( 0.020 * blurAmount, 0.0);\
-	            v_blurTexCoords[12] = v_texCoord + vec2( 0.024 * blurAmount, 0.0);\
-	            v_blurTexCoords[13] = v_texCoord + vec2( 0.028 * blurAmount, 0.0);\
-	        }",
-	    "fragmentShader": "\
-	        precision mediump float;\
-	        uniform sampler2D u_image;\
-	        varying vec2 v_texCoord;\
-	        varying vec2 v_blurTexCoords[14];\
-	        void main(){\
-	            gl_FragColor = vec4(0.0);\
-	            gl_FragColor += texture2D(u_image, v_blurTexCoords[ 0])*0.0044299121055113265;\
-	            gl_FragColor += texture2D(u_image, v_blurTexCoords[ 1])*0.00895781211794;\
-	            gl_FragColor += texture2D(u_image, v_blurTexCoords[ 2])*0.0215963866053;\
-	            gl_FragColor += texture2D(u_image, v_blurTexCoords[ 3])*0.0443683338718;\
-	            gl_FragColor += texture2D(u_image, v_blurTexCoords[ 4])*0.0776744219933;\
-	            gl_FragColor += texture2D(u_image, v_blurTexCoords[ 5])*0.115876621105;\
-	            gl_FragColor += texture2D(u_image, v_blurTexCoords[ 6])*0.147308056121;\
-	            gl_FragColor += texture2D(u_image, v_texCoord         )*0.159576912161;\
-	            gl_FragColor += texture2D(u_image, v_blurTexCoords[ 7])*0.147308056121;\
-	            gl_FragColor += texture2D(u_image, v_blurTexCoords[ 8])*0.115876621105;\
-	            gl_FragColor += texture2D(u_image, v_blurTexCoords[ 9])*0.0776744219933;\
-	            gl_FragColor += texture2D(u_image, v_blurTexCoords[10])*0.0443683338718;\
-	            gl_FragColor += texture2D(u_image, v_blurTexCoords[11])*0.0215963866053;\
-	            gl_FragColor += texture2D(u_image, v_blurTexCoords[12])*0.00895781211794;\
-	            gl_FragColor += texture2D(u_image, v_blurTexCoords[13])*0.0044299121055113265;\
-	        }",
-	    "properties": {
-	        "blurAmount": { "type": "uniform", "value": 1.0 }
-	    },
-	    "inputs": ["u_image"]
-	};
-	
-	exports["default"] = horizontal_blur;
-	module.exports = exports["default"];
-
-/***/ },
-/* 27 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	var verticalBlur = {
-	    "title": "Vertical Blur",
-	    "description": "A vertical blur effect. Adpated from http://xissburg.com/faster-gaussian-blur-in-glsl/",
-	    "vertexShader": "\
-	        attribute vec2 a_position;\
-	        attribute vec2 a_texCoord;\
-	        varying vec2 v_texCoord;\
-	        uniform float blurAmount;\
-	        varying vec2 v_blurTexCoords[14];\
-	        void main() {\
-	            gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
-	            v_texCoord = a_texCoord;\
-	            v_blurTexCoords[ 0] = v_texCoord + vec2(0.0,-0.028 * blurAmount);\
-	            v_blurTexCoords[ 1] = v_texCoord + vec2(0.0,-0.024 * blurAmount);\
-	            v_blurTexCoords[ 2] = v_texCoord + vec2(0.0,-0.020 * blurAmount);\
-	            v_blurTexCoords[ 3] = v_texCoord + vec2(0.0,-0.016 * blurAmount);\
-	            v_blurTexCoords[ 4] = v_texCoord + vec2(0.0,-0.012 * blurAmount);\
-	            v_blurTexCoords[ 5] = v_texCoord + vec2(0.0,-0.008 * blurAmount);\
-	            v_blurTexCoords[ 6] = v_texCoord + vec2(0.0,-0.004 * blurAmount);\
-	            v_blurTexCoords[ 7] = v_texCoord + vec2(0.0, 0.004 * blurAmount);\
-	            v_blurTexCoords[ 8] = v_texCoord + vec2(0.0, 0.008 * blurAmount);\
-	            v_blurTexCoords[ 9] = v_texCoord + vec2(0.0, 0.012 * blurAmount);\
-	            v_blurTexCoords[10] = v_texCoord + vec2(0.0, 0.016 * blurAmount);\
-	            v_blurTexCoords[11] = v_texCoord + vec2(0.0, 0.020 * blurAmount);\
-	            v_blurTexCoords[12] = v_texCoord + vec2(0.0, 0.024 * blurAmount);\
-	            v_blurTexCoords[13] = v_texCoord + vec2(0.0, 0.028 * blurAmount);\
-	        }",
-	    "fragmentShader": "\
-	        precision mediump float;\
-	        uniform sampler2D u_image;\
-	        varying vec2 v_texCoord;\
-	        varying vec2 v_blurTexCoords[14];\
-	        void main(){\
-	            gl_FragColor = vec4(0.0);\
-	            gl_FragColor += texture2D(u_image, v_blurTexCoords[ 0])*0.0044299121055113265;\
-	            gl_FragColor += texture2D(u_image, v_blurTexCoords[ 1])*0.00895781211794;\
-	            gl_FragColor += texture2D(u_image, v_blurTexCoords[ 2])*0.0215963866053;\
-	            gl_FragColor += texture2D(u_image, v_blurTexCoords[ 3])*0.0443683338718;\
-	            gl_FragColor += texture2D(u_image, v_blurTexCoords[ 4])*0.0776744219933;\
-	            gl_FragColor += texture2D(u_image, v_blurTexCoords[ 5])*0.115876621105;\
-	            gl_FragColor += texture2D(u_image, v_blurTexCoords[ 6])*0.147308056121;\
-	            gl_FragColor += texture2D(u_image, v_texCoord         )*0.159576912161;\
-	            gl_FragColor += texture2D(u_image, v_blurTexCoords[ 7])*0.147308056121;\
-	            gl_FragColor += texture2D(u_image, v_blurTexCoords[ 8])*0.115876621105;\
-	            gl_FragColor += texture2D(u_image, v_blurTexCoords[ 9])*0.0776744219933;\
-	            gl_FragColor += texture2D(u_image, v_blurTexCoords[10])*0.0443683338718;\
-	            gl_FragColor += texture2D(u_image, v_blurTexCoords[11])*0.0215963866053;\
-	            gl_FragColor += texture2D(u_image, v_blurTexCoords[12])*0.00895781211794;\
-	            gl_FragColor += texture2D(u_image, v_blurTexCoords[13])*0.0044299121055113265;\
-	        }",
-	    "properties": {
-	        "blurAmount": { "type": "uniform", "value": 1.0 }
-	    },
-	    "inputs": ["u_image"]
-	};
-	
-	exports["default"] = verticalBlur;
-	module.exports = exports["default"];
-
-/***/ },
-/* 28 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	var aaf_video_flop = {
-	    "title": "AAF Video Flop Effect",
-	    "description": "A flop effect based on the AAF spec. Mirrors the image in the y-axis",
-	    "vertexShader": "\
-	            attribute vec2 a_position;\
-	            attribute vec2 a_texCoord;\
-	            varying vec2 v_texCoord;\
-	            void main() {\
-	                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
-	                v_texCoord = a_texCoord;\
-	            }",
-	    "fragmentShader": "\
-	            precision mediump float;\
-	            uniform sampler2D u_image;\
-	            varying vec2 v_texCoord;\
-	            void main(){\
-	                vec2 coord = vec2(1.0 - v_texCoord[0] ,v_texCoord[1]);\
-	                vec4 color = texture2D(u_image, coord);\
-	                gl_FragColor = color;\
-	            }",
-	    "properties": {},
-	    "inputs": ["u_image"]
-	};
-	
-	exports["default"] = aaf_video_flop;
-	module.exports = exports["default"];
-
-/***/ },
-/* 29 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	var aaf_video_flip = {
-	    "title": "AAF Video Scale Effect",
-	    "description": "A flip effect based on the AAF spec. Mirrors the image in the x-axis",
-	    "vertexShader": "\
-	            attribute vec2 a_position;\
-	            attribute vec2 a_texCoord;\
-	            varying vec2 v_texCoord;\
-	            void main() {\
-	                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
-	                v_texCoord = a_texCoord;\
-	            }",
-	    "fragmentShader": "\
-	            precision mediump float;\
-	            uniform sampler2D u_image;\
-	            varying vec2 v_texCoord;\
-	            void main(){\
-	                vec2 coord = vec2(v_texCoord[0] ,1.0 - v_texCoord[1]);\
-	                vec4 color = texture2D(u_image, coord);\
-	                gl_FragColor = color;\
-	            }",
-	    "properties": {},
-	    "inputs": ["u_image"]
-	};
-	
-	exports["default"] = aaf_video_flip;
-	module.exports = exports["default"];
-
-/***/ },
-/* 30 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	var aaf_video_position = {
-	    "title": "AAF Video Position Effect",
-	    "description": "A position effect based on the AAF spec.",
-	    "vertexShader": "\
-	        attribute vec2 a_position;\
-	        attribute vec2 a_texCoord;\
-	        varying vec2 v_texCoord;\
-	        void main() {\
-	            gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
-	            v_texCoord = a_texCoord;\
-	        }",
-	    "fragmentShader": "\
-	        precision mediump float;\
-	        uniform sampler2D u_image;\
-	        uniform float positionOffsetX;\
-	        uniform float positionOffsetY;\
-	        varying vec2 v_texCoord;\
-	        varying float v_progress;\
-	        void main(){\
-	            vec2 pos = vec2(v_texCoord[0] - positionOffsetX/2.0, v_texCoord[1] -  positionOffsetY/2.0);\
-	            vec4 color = texture2D(u_image, pos);\
-	            if (pos[0] < 0.0 || pos[0] > 1.0 || pos[1] < 0.0 || pos[1] > 1.0){\
-	                color = vec4(0.0,0.0,0.0,0.0);\
-	            }\
-	            gl_FragColor = color;\
-	        }",
-	    "properties": {
-	        "positionOffsetX": { "type": "uniform", "value": 0.0 },
-	        "positionOffsetY": { "type": "uniform", "value": 0.0 }
-	    },
-	    "inputs": ["u_image"]
-	};
-	
-	exports["default"] = aaf_video_position;
-	module.exports = exports["default"];
-
-/***/ },
-/* 31 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	var aaf_video_crop = {
-	    "title": "AAF Video Crop Effect",
-	    "description": "A crop effect based on the AAF spec.",
-	    "vertexShader": "\
-	            attribute vec2 a_position;\
-	            attribute vec2 a_texCoord;\
-	            varying vec2 v_texCoord;\
-	            void main() {\
-	                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
-	                v_texCoord = a_texCoord;\
-	            }",
-	    "fragmentShader": "\
-	            precision mediump float;\
-	            uniform sampler2D u_image;\
-	            uniform float cropLeft;\
-	            uniform float cropRight;\
-	            uniform float cropTop;\
-	            uniform float cropBottom;\
-	            varying vec2 v_texCoord;\
-	            void main(){\
-	                vec4 color = texture2D(u_image, v_texCoord);\
-	                if (v_texCoord[0] < (cropLeft+1.0)/2.0) color = vec4(0.0,0.0,0.0,0.0);\
-	                if (v_texCoord[0] > (cropRight+1.0)/2.0) color = vec4(0.0,0.0,0.0,0.0);\
-	                if (v_texCoord[1] < (-cropBottom+1.0)/2.0) color = vec4(0.0,0.0,0.0,0.0);\
-	                if (v_texCoord[1] > (-cropTop+1.0)/2.0) color = vec4(0.0,0.0,0.0,0.0);\
-	                gl_FragColor = color;\
-	            }",
-	    "properties": {
-	        "cropLeft": { "type": "uniform", "value": -1.0 },
-	        "cropRight": { "type": "uniform", "value": 1.0 },
-	        "cropTop": { "type": "uniform", "value": -1.0 },
-	        "cropBottom": { "type": "uniform", "value": 1.0 }
-	    },
-	    "inputs": ["u_image"]
-	};
-	
-	exports["default"] = aaf_video_crop;
-	module.exports = exports["default"];
-
-/***/ },
-/* 32 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	var staticDissolve = {
-	    "title": "Static Dissolve",
-	    "description": "A static dissolve effect. Typically used as a transistion.",
-	    "vertexShader": "\
-	            attribute vec2 a_position;\
-	            attribute vec2 a_texCoord;\
-	            varying vec2 v_texCoord;\
-	            void main() {\
-	                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
-	                v_texCoord = a_texCoord;\
-	            }",
-	    "fragmentShader": "\
-	            precision mediump float;\
-	            uniform sampler2D u_image_a;\
-	            uniform sampler2D u_image_b;\
-	            uniform float mix;\
-	            uniform float currentTime;\
-	            varying vec2 v_texCoord;\
-	            varying float v_mix;\
-	            float rand(vec2 co, float currentTime){\
-	               return fract(sin(dot(co.xy,vec2(12.9898,78.233))+currentTime) * 43758.5453);\
-	            }\
-	            void main(){\
-	                vec4 color_a = texture2D(u_image_a, v_texCoord);\
-	                vec4 color_b = texture2D(u_image_b, v_texCoord);\
-	                if (clamp(rand(v_texCoord, currentTime),  0.01, 1.001) > mix){\
-	                    gl_FragColor = color_a;\
-	                } else {\
-	                    gl_FragColor = color_b;\
-	                }\
-	            }",
-	    "properties": {
-	        "mix": { "type": "uniform", "value": 0.0 }
-	    },
-	    "inputs": ["u_image_a", "u_image_b"]
-	};
-	
-	exports["default"] = staticDissolve;
-	module.exports = exports["default"];
-
-/***/ },
-/* 33 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	var staticEffect = {
-	    "title": "Static",
-	    "description": "A static effect to add pseudo random noise to a video",
-	    "vertexShader": "\
-	            attribute vec2 a_position;\
-	            attribute vec2 a_texCoord;\
-	            varying vec2 v_texCoord;\
-	            void main() {\
-	                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
-	                v_texCoord = a_texCoord;\
-	            }",
-	    "fragmentShader": "\
-	            precision mediump float;\
-	            uniform sampler2D u_image;\
-	            uniform float currentTime;\
-	            uniform float amount;\
-	            varying vec2 v_texCoord;\
-	            uniform vec3 weight;\
-	            float rand(vec2 co, float currentTime){\
-	               return fract(sin(dot(co.xy,vec2(12.9898,78.233))+currentTime) * 43758.5453);\
-	            }\
-	            void main(){\
-	                vec4 color = texture2D(u_image, v_texCoord);\
-	                color[0] = color[0] + (2.0*(clamp(rand(v_texCoord, currentTime),  0.01, 1.001)-0.5)) * weight[0] * amount;\
-	                color[1] = color[1] + (2.0*(clamp(rand(v_texCoord, currentTime),  0.01, 1.001)-0.5)) * weight[1] * amount;\
-	                color[2] = color[2] + (2.0*(clamp(rand(v_texCoord, currentTime),  0.01, 1.001)-0.5)) * weight[2] *amount;\
-	                gl_FragColor = color;\
-	            }",
-	    "properties": {
-	        "weight": { "type": "uniform", "value": [1.0, 1.0, 1.0] },
-	        "amount": { "type": "uniform", "value": 1.0 }
-	    },
-	    "inputs": ["u_image"]
-	};
-	
-	exports["default"] = staticEffect;
-	module.exports = exports["default"];
-
-/***/ },
-/* 34 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	var dreamfade = {
-	    "title": "Dream-Fade",
-	    "description": "A wobbly dream effect. Typically used as a transistion.",
-	    "vertexShader": "\
-	    attribute vec2 a_position;\
-	    attribute vec2 a_texCoord;\
-	    varying vec2 v_texCoord;\
-	    void main() {\
-	        gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
-	        v_texCoord = a_texCoord;\
-	    }",
-	    "fragmentShader": "\
-	    precision mediump float;\
-	    uniform sampler2D u_image_a;\
-	    uniform sampler2D u_image_b;\
-	    uniform float mix;\
-	    varying vec2 v_texCoord;\
-	    varying float v_mix;\
-	    void main(){\
-	        float wobble = 1.0 - abs((mix*2.0)-1.0);\
-	        vec2 pos = vec2(v_texCoord[0] + ((sin(v_texCoord[1]*(10.0*wobble*3.14) + wobble*10.0)/13.0)), v_texCoord[1]);\
-	        vec4 color_a = texture2D(u_image_a, pos);\
-	        vec4 color_b = texture2D(u_image_b, pos);\
-	        color_a[0] *= (1.0 - mix);\
-	        color_a[1] *= (1.0 - mix);\
-	        color_a[2] *= (1.0 - mix);\
-	        color_a[3] *= (1.0 - mix);\
-	        color_b[0] *= mix;\
-	        color_b[1] *= mix;\
-	        color_b[2] *= mix;\
-	        color_b[3] *= mix;\
-	        gl_FragColor = color_a + color_b;\
-	    }",
-	    "properties": {
-	        "mix": { "type": "uniform", "value": 0.0 }
-	    },
-	    "inputs": ["u_image_a", "u_image_b"]
-	};
-	
-	exports["default"] = dreamfade;
 	module.exports = exports["default"];
 
 /***/ }
