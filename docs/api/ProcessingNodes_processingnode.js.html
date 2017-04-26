@@ -132,6 +132,7 @@ export default class ProcessingNode extends GraphNode{
         let texCoordLocation = gl.getAttribLocation(this._program, "a_texCoord");
         gl.enableVertexAttribArray(texCoordLocation);
         gl.vertexAttribPointer(texCoordLocation, 2, gl.FLOAT, false, 0, 0);
+        this._displayName = "ProcessingNode";
 
     }
 

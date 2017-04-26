@@ -1386,6 +1386,7 @@ module.exports =
 	        if (this._attributes.loop) {
 	            this._loopElement = this._attributes.loop;
 	        }
+	        this._displayName = "VideoNode";
 	    }
 	
 	    _createClass(VideoNode, [{
@@ -1642,6 +1643,7 @@ module.exports =
 	        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 0]));
 	        this._callbacks = [];
 	        this._renderPaused = false;
+	        this._displayName = "SourceNode";
 	    }
 	
 	    /**
@@ -2285,7 +2287,7 @@ module.exports =
 	            node_url = qualifyURL(source._elementURL);
 	        }
 	        var node = {
-	            type: source.constructor.name,
+	            type: source.displayName,
 	            url: node_url,
 	            start: source.startTime,
 	            stop: source.stopTime
@@ -2300,7 +2302,7 @@ module.exports =
 	        var processor = vc._processingNodes[index];
 	        var id = "processor" + index;
 	        var node = {
-	            type: processor.constructor.name,
+	            type: processor.displayName,
 	            definition: processor._definition,
 	            inputs: getInputIDs(processor, vc),
 	            properties: {}
@@ -2586,22 +2588,22 @@ module.exports =
 	            var pos = calculateNodePos(node, nodeDepths, xStep, nodeHeight);
 	            var color = "#AA9639";
 	            var text = "";
-	            if (node.constructor.name === "CompositingNode") {
+	            if (node.displayName === "CompositingNode") {
 	                color = "#000000";
 	            }
-	            if (node.constructor.name === "DestinationNode") {
+	            if (node.displayName === "DestinationNode") {
 	                color = "#7D9F35";
 	                text = "Output";
 	            }
-	            if (node.constructor.name === "VideoNode") {
+	            if (node.displayName === "VideoNode") {
 	                color = "#572A72";
 	                text = "Video";
 	            }
-	            if (node.constructor.name === "CanvasNode") {
+	            if (node.displayName === "CanvasNode") {
 	                color = "#572A72";
 	                text = "Canvas";
 	            }
-	            if (node.constructor.name === "ImageNode") {
+	            if (node.displayName === "ImageNode") {
 	                color = "#572A72";
 	                text = "Image";
 	            }
@@ -2638,10 +2640,10 @@ module.exports =
 	
 	    function idForNode(node) {
 	        if (videoContext._sourceNodes.indexOf(node) !== -1) {
-	            var _id = "source " + node.constructor.name + " " + videoContext._sourceNodes.indexOf(node);
+	            var _id = "source " + node.displayName + " " + videoContext._sourceNodes.indexOf(node);
 	            return _id;
 	        }
-	        var id = "processor " + node.constructor.name + " " + videoContext._processingNodes.indexOf(node);
+	        var id = "processor " + node.displayName + " " + videoContext._processingNodes.indexOf(node);
 	        return id;
 	    }
 	
@@ -2777,7 +2779,7 @@ module.exports =
 	        for (var _iterator6 = videoContext._processingNodes[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
 	            var node = _step6.value;
 	
-	            if (node.constructor.name !== "TransitionNode") continue;
+	            if (node.displayName !== "TransitionNode") continue;
 	            for (var propertyName in node._transitions) {
 	                var _iteratorNormalCompletion7 = true;
 	                var _didIteratorError7 = false;
@@ -4082,12 +4084,13 @@ module.exports =
 	        this._gl = gl;
 	        this._renderGraph = renderGraph;
 	        this._rendered = false;
+	        this._displayName = "GraphNode";
 	    }
 	
 	    /**
-	    * Get the names of the inputs to this node.
+	    * Get a string representation of the class name.
 	    *
-	    * @return {String[]} An array of the names of the inputs ot the node.
+	    * @return String A string of the class name.
 	    */
 	
 	    _createClass(GraphNode, [{
@@ -4160,6 +4163,17 @@ module.exports =
 	
 	            this._destroyed = true;
 	        }
+	    }, {
+	        key: "displayName",
+	        get: function get() {
+	            return this._displayName;
+	        }
+	
+	        /**
+	        * Get the names of the inputs to this node.
+	        *
+	        * @return {String[]} An array of the names of the inputs ot the node.
+	        */
 	    }, {
 	        key: "inputNames",
 	        get: function get() {
@@ -4265,6 +4279,7 @@ module.exports =
 	        this._preloadTime = preloadTime;
 	        this._attributes = attributes;
 	        this._textureUploaded = false;
+	        this._displayName = "ImageNode";
 	    }
 	
 	    _createClass(ImageNode, [{
@@ -4401,6 +4416,7 @@ module.exports =
 	
 	        _get(Object.getPrototypeOf(CanvasNode.prototype), "constructor", this).call(this, canvas, gl, renderGraph, currentTime);
 	        this._preloadTime = preloadTime;
+	        this._displayName = "CanvasNode";
 	    }
 	
 	    _createClass(CanvasNode, [{
@@ -4493,6 +4509,7 @@ module.exports =
 	        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 0]));
 	        _get(Object.getPrototypeOf(CompositingNode.prototype), "constructor", this).call(this, gl, renderGraph, definition, definition.inputs, false);
 	        this._placeholderTexture = placeholderTexture;
+	        this._displayName = "CompositingNode";
 	    }
 	
 	    _createClass(CompositingNode, [{
@@ -4714,6 +4731,7 @@ module.exports =
 	        var texCoordLocation = gl.getAttribLocation(this._program, "a_texCoord");
 	        gl.enableVertexAttribArray(texCoordLocation);
 	        gl.vertexAttribPointer(texCoordLocation, 2, gl.FLOAT, false, 0, 0);
+	        this._displayName = "ProcessingNode";
 	    }
 	
 	    /**
@@ -4901,6 +4919,7 @@ module.exports =
 	        var deffinition = { fragmentShader: fragmentShader, vertexShader: vertexShader, properties: {}, inputs: ["u_image"] };
 	
 	        _get(Object.getPrototypeOf(DestinationNode.prototype), "constructor", this).call(this, gl, renderGraph, deffinition, deffinition.inputs, false);
+	        this._displayName = "DestinationNode";
 	    }
 	
 	    _createClass(DestinationNode, [{
@@ -5005,6 +5024,7 @@ module.exports =
 	        _get(Object.getPrototypeOf(EffectNode.prototype), "constructor", this).call(this, gl, renderGraph, definition, definition.inputs, true);
 	
 	        this._placeholderTexture = placeholderTexture;
+	        this._displayName = "EffectNode";
 	    }
 	
 	    _createClass(EffectNode, [{
@@ -5089,6 +5109,7 @@ module.exports =
 	        for (var propertyName in this._properties) {
 	            this._initialPropertyValues[propertyName] = this._properties[propertyName].value;
 	        }
+	        this._displayName = "TransitionNode";
 	    }
 	
 	    _createClass(TransitionNode, [{

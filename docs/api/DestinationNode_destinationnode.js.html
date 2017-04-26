@@ -60,6 +60,7 @@ export default class DestinationNode extends ProcessingNode {
         let deffinition = {fragmentShader:fragmentShader, vertexShader:vertexShader, properties:{}, inputs:["u_image"]};
 
         super(gl, renderGraph, deffinition, deffinition.inputs, false);
+        this._displayName = "DestinationNode";
     }
 
     _render(){
