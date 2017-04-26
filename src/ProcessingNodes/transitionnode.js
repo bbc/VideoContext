@@ -14,6 +14,7 @@ export default class TransitionNode extends EffectNode{
         for (let propertyName in this._properties){
             this._initialPropertyValues[propertyName] = this._properties[propertyName].value;
         }
+        this._displayName = "TransitionNode";
     }
 
     _doesTransitionFitOnTimeline(testTransition){

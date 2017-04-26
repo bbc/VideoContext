@@ -117,7 +117,7 @@ export function exportToJSON(vc){
             node_url = qualifyURL(source._elementURL);
         }
         let node = {
-            type: source.constructor.name,
+            type: source.displayName,
             url: node_url,
             start: source.startTime,
             stop: source.stopTime
@@ -132,7 +132,7 @@ export function exportToJSON(vc){
         let processor = vc._processingNodes[index];
         let id = "processor" + index;
         let node = {
-            type: processor.constructor.name,
+            type: processor.displayName,
             definition: processor._definition,
             inputs: getInputIDs(processor, vc),
             properties:{}
@@ -353,22 +353,22 @@ export function visualiseVideoContextGraph(videoContext, canvas){
         let pos = calculateNodePos(node, nodeDepths, xStep, nodeHeight);
         let color = "#AA9639";
         let text = "";
-        if (node.constructor.name === "CompositingNode"){
+        if (node.displayName === "CompositingNode"){
             color = "#000000";
         }
-        if (node.constructor.name === "DestinationNode"){
+        if (node.displayName === "DestinationNode"){
             color = "#7D9F35";
             text="Output";
         }
-        if (node.constructor.name === "VideoNode"){
+        if (node.displayName === "VideoNode"){
             color = "#572A72";
             text = "Video";
         }
-        if (node.constructor.name === "CanvasNode"){
+        if (node.displayName === "CanvasNode"){
             color = "#572A72";
             text = "Canvas"; 
         }
-        if (node.constructor.name === "ImageNode"){
+        if (node.displayName === "ImageNode"){
             color = "#572A72";
             text = "Image";
         }
@@ -395,10 +395,10 @@ export function createSigmaGraphDataFromRenderGraph(videoContext){
 
     function idForNode(node){
         if (videoContext._sourceNodes.indexOf(node) !== -1){
-            let id = "source " + node.constructor.name+ " "+videoContext._sourceNodes.indexOf(node);
+            let id = "source " + node.displayName+ " "+videoContext._sourceNodes.indexOf(node);
             return id;    
         }
-        let id = "processor " + node.constructor.name + " "+videoContext._processingNodes.indexOf(node);
+        let id = "processor " + node.displayName + " "+videoContext._processingNodes.indexOf(node);
         return id;
     }
 
@@ -510,7 +510,7 @@ export function visualiseVideoContextTimeline(videoContext, canvas, currentTime)
     ctx.fillStyle = "#999";
     
     for(let node of videoContext._processingNodes){
-        if (node.constructor.name !== "TransitionNode") continue;
+        if (node.displayName !== "TransitionNode") continue;
         for(let propertyName in node._transitions){
             for(let transition of node._transitions[propertyName]){
                 let tW = (transition.end - transition.start) * pixelsPerSecond;

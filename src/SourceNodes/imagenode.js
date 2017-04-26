@@ -11,6 +11,7 @@ export default class ImageNode extends SourceNode {
         this._preloadTime = preloadTime;
         this._attributes = attributes;
         this._textureUploaded = false;
+        this._displayName = "ImageNode";
     }
 
     get elementURL(){

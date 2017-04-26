@@ -13,6 +13,7 @@ export default class EffectNode extends ProcessingNode{
         super(gl, renderGraph, definition, definition.inputs, true);
         
         this._placeholderTexture = placeholderTexture;
+        this._displayName = "EffectNode";
     }
     
     _render(){

@@ -13,6 +13,16 @@ export default class GraphNode {
         this._gl = gl;
         this._renderGraph = renderGraph;
         this._rendered =false;
+        this._displayName = "GraphNode";
+    }
+
+    /**
+    * Get a string representation of the class name.
+    *
+    * @return String A string of the class name.
+    */  
+    get displayName(){
+        return this._displayName;
     }
 
     /**
