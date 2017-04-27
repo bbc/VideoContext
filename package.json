@@ -1,6 +1,6 @@
 {
   "name": "videocontext",
-  "version": "0.41.0",
+  "version": "0.42.0",
   "description": "A WebGL & HTML5 graph based video composition library",
   "keywords":["video", "context", "composition", "timeline", "html5", "webgl"],
   "contributors": [
@@ -10,7 +10,6 @@
     }
   ],
   "scripts": {
-    "build_all": "./node_modules/webpack/bin/webpack.js --config webpack.config.js && ./node_modules/webpack/bin/webpack.js --config webpack.commonjs2.config.js && node ./node_modules/esdoc/out/src/ESDocCLI.js -c esdoc.json",
     "doc": "node ./node_modules/jsdoc/jsdoc.js -c jsdoc.json && cp dist/videocontext.* docs/dist/",
     "build": "node ./node_modules/mocha/bin/mocha --compilers js:babel-core/register && ./node_modules/webpack/bin/webpack.js --config webpack.config.js && ./node_modules/webpack/bin/webpack.js --config webpack.commonjs2.config.js && npm run doc",
     "dev": "./node_modules/webpack/bin/webpack.js --watch --config webpack.config.js & ./node_modules/reload/bin/reload -b"

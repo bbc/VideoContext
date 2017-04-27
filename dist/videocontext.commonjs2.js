@@ -43,7 +43,7 @@ module.exports =
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	//Matthew Shotton, R&D User Experience,© BBC 2015
 	
@@ -63,37 +63,37 @@ module.exports =
 	
 	var _SourceNodesVideonodeJs2 = _interopRequireDefault(_SourceNodesVideonodeJs);
 	
-	var _SourceNodesImagenodeJs = __webpack_require__(25);
+	var _SourceNodesImagenodeJs = __webpack_require__(26);
 	
 	var _SourceNodesImagenodeJs2 = _interopRequireDefault(_SourceNodesImagenodeJs);
 	
-	var _SourceNodesCanvasnodeJs = __webpack_require__(26);
+	var _SourceNodesCanvasnodeJs = __webpack_require__(27);
 	
 	var _SourceNodesCanvasnodeJs2 = _interopRequireDefault(_SourceNodesCanvasnodeJs);
 	
 	var _SourceNodesSourcenodeJs = __webpack_require__(2);
 	
-	var _ProcessingNodesCompositingnodeJs = __webpack_require__(27);
+	var _ProcessingNodesCompositingnodeJs = __webpack_require__(28);
 	
 	var _ProcessingNodesCompositingnodeJs2 = _interopRequireDefault(_ProcessingNodesCompositingnodeJs);
 	
-	var _DestinationNodeDestinationnodeJs = __webpack_require__(30);
+	var _DestinationNodeDestinationnodeJs = __webpack_require__(31);
 	
 	var _DestinationNodeDestinationnodeJs2 = _interopRequireDefault(_DestinationNodeDestinationnodeJs);
 	
-	var _ProcessingNodesEffectnodeJs = __webpack_require__(31);
+	var _ProcessingNodesEffectnodeJs = __webpack_require__(32);
 	
 	var _ProcessingNodesEffectnodeJs2 = _interopRequireDefault(_ProcessingNodesEffectnodeJs);
 	
-	var _ProcessingNodesTransitionnodeJs = __webpack_require__(32);
+	var _ProcessingNodesTransitionnodeJs = __webpack_require__(33);
 	
 	var _ProcessingNodesTransitionnodeJs2 = _interopRequireDefault(_ProcessingNodesTransitionnodeJs);
 	
-	var _rendergraphJs = __webpack_require__(33);
+	var _rendergraphJs = __webpack_require__(34);
 	
 	var _rendergraphJs2 = _interopRequireDefault(_rendergraphJs);
 	
-	var _videoelementcacheJs = __webpack_require__(34);
+	var _videoelementcacheJs = __webpack_require__(35);
 	
 	var _videoelementcacheJs2 = _interopRequireDefault(_videoelementcacheJs);
 	
@@ -1329,9 +1329,9 @@ module.exports =
 	VideoContext.importSimpleEDL = _utilsJs.importSimpleEDL;
 	module.exports = exports["default"];
 
-/***/ },
+/***/ }),
 /* 1 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	//Matthew Shotton, R&D User Experience,© BBC 2015
 	"use strict";
@@ -1579,9 +1579,9 @@ module.exports =
 	exports["default"] = VideoNode;
 	module.exports = exports["default"];
 
-/***/ },
+/***/ }),
 /* 2 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	//Matthew Shotton, R&D User Experience,© BBC 2015
 	"use strict";
@@ -1602,7 +1602,7 @@ module.exports =
 	
 	var _utilsJs = __webpack_require__(3);
 	
-	var _graphnode = __webpack_require__(24);
+	var _graphnode = __webpack_require__(25);
 	
 	var _graphnode2 = _interopRequireDefault(_graphnode);
 	
@@ -2112,9 +2112,9 @@ module.exports =
 	exports["default"] = SourceNode;
 	exports.SOURCENODESTATE = STATE;
 
-/***/ },
+/***/ }),
 /* 3 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	//Matthew Shotton, R&D User Experience,© BBC 2015
 	"use strict";
@@ -2281,7 +2281,7 @@ module.exports =
 	        var node_url = "";
 	
 	        if (!source._isResponsibleForElementLifeCycle) {
-	            console.log("Warning - Trying to export source created from an element not a URL. URL of export will be set to the elements src attribute and may be incorrect", source);
+	            console.debug("Warning - Trying to export source created from an element not a URL. URL of export will be set to the elements src attribute and may be incorrect", source);
 	            node_url = source.element.src;
 	        } else {
 	            node_url = qualifyURL(source._elementURL);
@@ -2973,9 +2973,9 @@ module.exports =
 
 	exports.UpdateablesManager = UpdateablesManager;
 
-/***/ },
+/***/ }),
 /* 4 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 	
@@ -3061,6 +3061,10 @@ module.exports =
 	
 	var _dreamfadeJs2 = _interopRequireDefault(_dreamfadeJs);
 	
+	var _opacityJs = __webpack_require__(24);
+	
+	var _opacityJs2 = _interopRequireDefault(_opacityJs);
+	
 	var DEFINITIONS = {
 	    AAF_VIDEO_SCALE: _aaf_video_scaleJs2["default"],
 	    CROSSFADE: _crossfadeJs2["default"],
@@ -3080,15 +3084,16 @@ module.exports =
 	    AAF_VIDEO_CROP: _aaf_video_cropJs2["default"],
 	    AAF_VIDEO_POSITION: _aaf_video_positionJs2["default"],
 	    AAF_VIDEO_FLIP: _aaf_video_flipJs2["default"],
-	    AAF_VIDEO_FLOP: _aaf_video_flopJs2["default"]
+	    AAF_VIDEO_FLOP: _aaf_video_flopJs2["default"],
+	    OPACITY: _opacityJs2["default"]
 	};
 	
 	exports["default"] = DEFINITIONS;
 	module.exports = exports["default"];
 
-/***/ },
+/***/ }),
 /* 5 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	"use strict";
 	
@@ -3131,9 +3136,9 @@ module.exports =
 	exports["default"] = aaf_video_scale;
 	module.exports = exports["default"];
 
-/***/ },
+/***/ }),
 /* 6 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	"use strict";
 	
@@ -3180,9 +3185,9 @@ module.exports =
 	exports["default"] = crossfade;
 	module.exports = exports["default"];
 
-/***/ },
+/***/ }),
 /* 7 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	"use strict";
 	
@@ -3225,9 +3230,9 @@ module.exports =
 	exports["default"] = horizontal_wipe;
 	module.exports = exports["default"];
 
-/***/ },
+/***/ }),
 /* 8 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	"use strict";
 	
@@ -3270,9 +3275,9 @@ module.exports =
 	exports["default"] = verticalWipe;
 	module.exports = exports["default"];
 
-/***/ },
+/***/ }),
 /* 9 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	"use strict";
 	
@@ -3318,9 +3323,9 @@ module.exports =
 	exports["default"] = randomDissolve;
 	module.exports = exports["default"];
 
-/***/ },
+/***/ }),
 /* 10 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	"use strict";
 	
@@ -3365,9 +3370,9 @@ module.exports =
 	exports["default"] = toColorAndBackFade;
 	module.exports = exports["default"];
 
-/***/ },
+/***/ }),
 /* 11 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	"use strict";
 	
@@ -3474,9 +3479,9 @@ module.exports =
 	exports["default"] = starWipe;
 	module.exports = exports["default"];
 
-/***/ },
+/***/ }),
 /* 12 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	"use strict";
 	
@@ -3513,9 +3518,9 @@ module.exports =
 	exports["default"] = combine;
 	module.exports = exports["default"];
 
-/***/ },
+/***/ }),
 /* 13 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	"use strict";
 	
@@ -3557,9 +3562,9 @@ module.exports =
 	exports["default"] = colorThreshold;
 	module.exports = exports["default"];
 
-/***/ },
+/***/ }),
 /* 14 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	"use strict";
 	
@@ -3602,9 +3607,9 @@ module.exports =
 	exports["default"] = monochrome;
 	module.exports = exports["default"];
 
-/***/ },
+/***/ }),
 /* 15 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	"use strict";
 	
@@ -3670,9 +3675,9 @@ module.exports =
 	exports["default"] = horizontal_blur;
 	module.exports = exports["default"];
 
-/***/ },
+/***/ }),
 /* 16 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	"use strict";
 	
@@ -3738,9 +3743,9 @@ module.exports =
 	exports["default"] = verticalBlur;
 	module.exports = exports["default"];
 
-/***/ },
+/***/ }),
 /* 17 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	"use strict";
 	
@@ -3774,9 +3779,9 @@ module.exports =
 	exports["default"] = aaf_video_flop;
 	module.exports = exports["default"];
 
-/***/ },
+/***/ }),
 /* 18 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	"use strict";
 	
@@ -3810,9 +3815,9 @@ module.exports =
 	exports["default"] = aaf_video_flip;
 	module.exports = exports["default"];
 
-/***/ },
+/***/ }),
 /* 19 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	"use strict";
 	
@@ -3855,9 +3860,9 @@ module.exports =
 	exports["default"] = aaf_video_position;
 	module.exports = exports["default"];
 
-/***/ },
+/***/ }),
 /* 20 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	"use strict";
 	
@@ -3903,9 +3908,9 @@ module.exports =
 	exports["default"] = aaf_video_crop;
 	module.exports = exports["default"];
 
-/***/ },
+/***/ }),
 /* 21 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	"use strict";
 	
@@ -3952,9 +3957,9 @@ module.exports =
 	exports["default"] = staticDissolve;
 	module.exports = exports["default"];
 
-/***/ },
+/***/ }),
 /* 22 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	"use strict";
 	
@@ -3999,9 +4004,9 @@ module.exports =
 	exports["default"] = staticEffect;
 	module.exports = exports["default"];
 
-/***/ },
+/***/ }),
 /* 23 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	"use strict";
 	
@@ -4050,9 +4055,32 @@ module.exports =
 	exports["default"] = dreamfade;
 	module.exports = exports["default"];
 
-/***/ },
+/***/ }),
 /* 24 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var opacity = {
+	    "title": "Opacity",
+	    "description": "Sets the opacity of an input.",
+	    "vertexShader": "\n    attribute vec2 a_position;\n    attribute vec2 a_texCoord;\n    varying vec2 v_texCoord;\n    void main() {\n        gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\n        v_texCoord = a_texCoord;\n    }",
+	    "fragmentShader": "\n    precision mediump float;\n    uniform sampler2D u_image;\n    uniform float opacity;\n    varying vec2 v_texCoord;\n    varying float v_opacity;\n    void main(){\n        vec4 color = texture2D(u_image, v_texCoord);\n        color[3] *= opacity;\n        gl_FragColor = color;\n    }",
+	    "properties": {
+	        "opacity": { "type": "uniform", "value": 0.7 }
+	    },
+	    "inputs": ["u_image"]
+	};
+	
+	exports["default"] = opacity;
+	module.exports = exports["default"];
+
+/***/ }),
+/* 25 */
+/***/ (function(module, exports) {
 
 	//Matthew Shotton, R&D User Experience,© BBC 2015
 	"use strict";
@@ -4236,9 +4264,9 @@ module.exports =
 	exports["default"] = GraphNode;
 	module.exports = exports["default"];
 
-/***/ },
-/* 25 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ }),
+/* 26 */
+/***/ (function(module, exports, __webpack_require__) {
 
 	//Matthew Shotton, R&D User Experience,© BBC 2015
 	"use strict";
@@ -4376,9 +4404,9 @@ module.exports =
 	exports["default"] = ImageNode;
 	module.exports = exports["default"];
 
-/***/ },
-/* 26 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ }),
+/* 27 */
+/***/ (function(module, exports, __webpack_require__) {
 
 	//Matthew Shotton, R&D User Experience,© BBC 2015
 	"use strict";
@@ -4468,9 +4496,9 @@ module.exports =
 	exports["default"] = CanvasNode;
 	module.exports = exports["default"];
 
-/***/ },
-/* 27 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ }),
+/* 28 */
+/***/ (function(module, exports, __webpack_require__) {
 
 	//Matthew Shotton, R&D User Experience,© BBC 2015
 	"use strict";
@@ -4489,7 +4517,7 @@ module.exports =
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var _processingnode = __webpack_require__(28);
+	var _processingnode = __webpack_require__(29);
 	
 	var _processingnode2 = _interopRequireDefault(_processingnode);
 	
@@ -4574,9 +4602,9 @@ module.exports =
 	exports["default"] = CompositingNode;
 	module.exports = exports["default"];
 
-/***/ },
-/* 28 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ }),
+/* 29 */
+/***/ (function(module, exports, __webpack_require__) {
 
 	//Matthew Shotton, R&D User Experience,© BBC 2015
 	"use strict";
@@ -4595,13 +4623,13 @@ module.exports =
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var _graphnode = __webpack_require__(24);
+	var _graphnode = __webpack_require__(25);
 	
 	var _graphnode2 = _interopRequireDefault(_graphnode);
 	
 	var _utilsJs = __webpack_require__(3);
 	
-	var _exceptionsJs = __webpack_require__(29);
+	var _exceptionsJs = __webpack_require__(30);
 	
 	var ProcessingNode = (function (_GraphNode) {
 	    _inherits(ProcessingNode, _GraphNode);
@@ -4836,9 +4864,9 @@ module.exports =
 	exports["default"] = ProcessingNode;
 	module.exports = exports["default"];
 
-/***/ },
-/* 29 */
-/***/ function(module, exports) {
+/***/ }),
+/* 30 */
+/***/ (function(module, exports) {
 
 	//Matthew Shotton, R&D User Experience,© BBC 2015
 	"use strict";
@@ -4859,9 +4887,9 @@ module.exports =
 	    this.name = "RenderException";
 	}
 
-/***/ },
-/* 30 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ }),
+/* 31 */
+/***/ (function(module, exports, __webpack_require__) {
 
 	//Matthew Shotton, R&D User Experience,© BBC 2015
 	"use strict";
@@ -4880,7 +4908,7 @@ module.exports =
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var _ProcessingNodesProcessingnode = __webpack_require__(28);
+	var _ProcessingNodesProcessingnode = __webpack_require__(29);
 	
 	var _ProcessingNodesProcessingnode2 = _interopRequireDefault(_ProcessingNodesProcessingnode);
 	
@@ -4981,9 +5009,9 @@ module.exports =
 	exports["default"] = DestinationNode;
 	module.exports = exports["default"];
 
-/***/ },
-/* 31 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ }),
+/* 32 */
+/***/ (function(module, exports, __webpack_require__) {
 
 	//Matthew Shotton, R&D User Experience,© BBC 2015
 	"use strict";
@@ -5002,7 +5030,7 @@ module.exports =
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var _processingnode = __webpack_require__(28);
+	var _processingnode = __webpack_require__(29);
 	
 	var _processingnode2 = _interopRequireDefault(_processingnode);
 	
@@ -5066,9 +5094,9 @@ module.exports =
 	exports["default"] = EffectNode;
 	module.exports = exports["default"];
 
-/***/ },
-/* 32 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ }),
+/* 33 */
+/***/ (function(module, exports, __webpack_require__) {
 
 	//Matthew Shotton, R&D User Experience,© BBC 2015
 	"use strict";
@@ -5087,7 +5115,7 @@ module.exports =
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var _effectnode = __webpack_require__(31);
+	var _effectnode = __webpack_require__(32);
 	
 	var _effectnode2 = _interopRequireDefault(_effectnode);
 	
@@ -5278,9 +5306,9 @@ module.exports =
 	exports["default"] = TransitionNode;
 	module.exports = exports["default"];
 
-/***/ },
-/* 33 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ }),
+/* 34 */
+/***/ (function(module, exports, __webpack_require__) {
 
 	//Matthew Shotton, R&D User Experience,© BBC 2015
 	"use strict";
@@ -5293,7 +5321,7 @@ module.exports =
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
-	var _exceptionsJs = __webpack_require__(29);
+	var _exceptionsJs = __webpack_require__(30);
 	
 	var RenderGraph = (function () {
 	    /**
@@ -5708,9 +5736,9 @@ module.exports =
 	exports["default"] = RenderGraph;
 	module.exports = exports["default"];
 
-/***/ },
-/* 34 */
-/***/ function(module, exports) {
+/***/ }),
+/* 35 */
+/***/ (function(module, exports) {
 
 	"use strict";
 	
@@ -5870,6 +5898,6 @@ module.exports =
 	exports["default"] = VideoElementCache;
 	module.exports = exports["default"];
 
-/***/ }
+/***/ })
 /******/ ]);
 //# sourceMappingURL=videocontext.commonjs2.js.map
