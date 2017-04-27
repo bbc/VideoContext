@@ -17,6 +17,7 @@ import aaf_video_crop from "./aaf_video_crop.js";
 import staticDissolve from "./staticDissolve.js";
 import staticEffect from "./staticEffect.js";
 import dreamfade from "./dreamfade.js";
+import opacity from "./opacity.js";
 
 
 let DEFINITIONS = {
@@ -38,7 +39,8 @@ let DEFINITIONS = {
     AAF_VIDEO_CROP: aaf_video_crop,
     AAF_VIDEO_POSITION: aaf_video_position,
     AAF_VIDEO_FLIP: aaf_video_flip,
-    AAF_VIDEO_FLOP: aaf_video_flop
+    AAF_VIDEO_FLOP: aaf_video_flop,
+    OPACITY: opacity,
 };
 
 export default DEFINITIONS;
