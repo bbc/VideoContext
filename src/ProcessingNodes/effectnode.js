@@ -2,7 +2,7 @@
 import ProcessingNode from "./processingnode";
 import { createElementTexutre } from "../utils.js";
 
-export default class EffectNode extends ProcessingNode{
+class EffectNode extends ProcessingNode{
     /**
     * Initialise an instance of an EffectNode. You should not instantiate this directly, but use VideoContest.createEffectNode().
     */
@@ -46,3 +46,5 @@ export default class EffectNode extends ProcessingNode{
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     }
 }
+
+export default EffectNode;

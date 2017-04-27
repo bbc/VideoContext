@@ -2,7 +2,7 @@
 import { ConnectException } from "./exceptions.js";
 
 
-export default class RenderGraph {
+class RenderGraph {
     /**
     * Manages the rendering graph.
     */
@@ -211,3 +211,5 @@ export default class RenderGraph {
         return inputLess;
     }
 }
+
+export default RenderGraph;

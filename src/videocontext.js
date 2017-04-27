@@ -1,5 +1,4 @@
 //Matthew Shotton, R&D User Experience,© BBC 2015
-
 import VideoNode from "./SourceNodes/videonode.js";
 import ImageNode from "./SourceNodes/imagenode.js";
 import CanvasNode from "./SourceNodes/canvasnode.js";
@@ -15,6 +14,10 @@ import DEFINITIONS from "./Definitions/definitions.js";
 
 let updateablesManager = new UpdateablesManager();
 
+/**
+ * VideoContext.
+ * @module VideoContext
+ */
 export default class VideoContext{
     /**
     * Initialise the VideoContext and render to the specific canvas. A 2nd parameter can be passed to the constructor which is a function that get's called if the VideoContext fails to initialise.

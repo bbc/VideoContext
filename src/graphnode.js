@@ -1,5 +1,5 @@
 //Matthew Shotton, R&D User Experience,© BBC 2015
-export default class GraphNode {
+class GraphNode {
     /**
     * Base class from which all processing and source nodes are derrived.
     */
@@ -112,3 +112,5 @@ export default class GraphNode {
         this._destroyed = true;
     }
 }
+
+export default GraphNode;

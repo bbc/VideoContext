@@ -1,7 +1,7 @@
 //Matthew Shotton, R&D User Experience,© BBC 2015
 import ProcessingNode from "../ProcessingNodes/processingnode";
 
-export default class DestinationNode extends ProcessingNode {
+class DestinationNode extends ProcessingNode {
     /**
     * Initialise an instance of a DestinationNode. 
     *
@@ -62,3 +62,5 @@ export default class DestinationNode extends ProcessingNode {
         });
     }
 }
+
+export default DestinationNode;

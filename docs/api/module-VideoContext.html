@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: VideoContext</title>
+    <title>JSDoc: Class: module:VideoContext</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: VideoContext</h1>
+    <h1 class="page-title">Class: module:VideoContext</h1>
 
     
 
@@ -28,7 +28,7 @@
 
 <header>
     
-        <h2>VideoContext</h2>
+        <h2>module:VideoContext</h2>
         
     
 </header>
@@ -40,7 +40,7 @@
 
     
 
-    <h4 class="name" id="VideoContext"><span class="type-signature"></span>new VideoContext<span class="signature">(canvas, initErrorCallback, options)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="module:VideoContext"><span class="type-signature"></span>new module:VideoContext<span class="signature">(canvas, initErrorCallback, options)</span><span class="type-signature"></span></h4>
 
     
 
@@ -186,7 +186,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line36">line 36</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line39">line 39</a>
     </li></ul></dd>
     
 
@@ -247,81 +247,6 @@ ctx.play();</code></pre>
 
 
 <div class="description">
-    <p>Set the progress through the internal timeline.
-Setting this can be used as a way to implement a scrubaable timeline.</p>
-</div>
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line223">line 223</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>var canvasElement = document.getElementById("canvas");
-var ctx = new VideoContext(canvasElement);
-var videoNode = ctx.video("video.mp4");
-videoNode.connect(ctx.destination);
-videoNode.start(0);
-videoNode.stop(20);
-ctx.currentTime = 10; // seek 10 seconds in
-ctx.play();</code></pre>
-
-
-
-        
-            
-<h4 class="name" id="currentTime"><span class="type-signature"></span>currentTime<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
     <p>Get how far through the internal timeline has been played.</p>
 <p>Getting this value will give the current playhead position. Can be used for updating timelines.</p>
 </div>
@@ -361,7 +286,7 @@ ctx.play();</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line257">line 257</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line260">line 260</a>
     </li></ul></dd>
     
 
@@ -386,6 +311,81 @@ videoNode.start(0);
 videoNode.stop(10);
 ctx.play();
 setTimeout(function(){console.log(ctx.currentTime);},1000); //should print roughly 1.0</code></pre>
+
+
+
+        
+            
+<h4 class="name" id="currentTime"><span class="type-signature"></span>currentTime<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>Set the progress through the internal timeline.
+Setting this can be used as a way to implement a scrubaable timeline.</p>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line226">line 226</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>var canvasElement = document.getElementById("canvas");
+var ctx = new VideoContext(canvasElement);
+var videoNode = ctx.video("video.mp4");
+videoNode.connect(ctx.destination);
+videoNode.start(0);
+videoNode.stop(20);
+ctx.currentTime = 10; // seek 10 seconds in
+ctx.play();</code></pre>
 
 
 
@@ -436,7 +436,7 @@ setTimeout(function(){console.log(ctx.currentTime);},1000); //should print rough
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line306">line 306</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line309">line 309</a>
     </li></ul></dd>
     
 
@@ -508,7 +508,7 @@ videoNode.connect(ctx.destination);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line280">line 280</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line283">line 283</a>
     </li></ul></dd>
     
 
@@ -586,7 +586,7 @@ ctx.play();</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line186">line 186</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line189">line 189</a>
     </li></ul></dd>
     
 
@@ -648,7 +648,7 @@ ctx.play();</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line344">line 344</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line347">line 347</a>
     </li></ul></dd>
     
 
@@ -711,7 +711,7 @@ This will alter the playback speed of all media elements played through the Vide
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line326">line 326</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line329">line 329</a>
     </li></ul></dd>
     
 
@@ -793,7 +793,7 @@ ctx.play(); // Double playback rate means this will finish playing in 5 seconds.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line202">line 202</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line205">line 205</a>
     </li></ul></dd>
     
 
@@ -920,7 +920,7 @@ ctx.play(); // Double playback rate means this will finish playing in 5 seconds.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line462">line 462</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line465">line 465</a>
     </li></ul></dd>
     
 
@@ -1076,7 +1076,7 @@ The shader in the definition is run for each input in turn, drawing them to the 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line558">line 558</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line561">line 561</a>
     </li></ul></dd>
     
 
@@ -1226,7 +1226,7 @@ trackNode.connect(ctx.destination);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line471">line 471</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line474">line 474</a>
     </li></ul></dd>
     
 
@@ -1304,7 +1304,7 @@ trackNode.connect(ctx.destination);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line567">line 567</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line570">line 570</a>
     </li></ul></dd>
     
 
@@ -1382,7 +1382,7 @@ trackNode.connect(ctx.destination);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line491">line 491</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line494">line 494</a>
     </li></ul></dd>
     
 
@@ -1460,7 +1460,7 @@ trackNode.connect(ctx.destination);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line451">line 451</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line454">line 454</a>
     </li></ul></dd>
     
 
@@ -1538,7 +1538,7 @@ trackNode.connect(ctx.destination);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line661">line 661</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line664">line 664</a>
     </li></ul></dd>
     
 
@@ -1616,7 +1616,7 @@ trackNode.connect(ctx.destination);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line418">line 418</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line421">line 421</a>
     </li></ul></dd>
     
 
@@ -1747,7 +1747,7 @@ trackNode.connect(ctx.destination);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line482">line 482</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line485">line 485</a>
     </li></ul></dd>
     
 
@@ -1835,6 +1835,8 @@ trackNode.connect(ctx.destination);</code></pre>
         
 
         
+        <th>Default</th>
+        
 
         <th class="last">Description</th>
     </tr>
@@ -1871,6 +1873,10 @@ trackNode.connect(ctx.destination);</code></pre>
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
             <td class="description last"><p>The url or image element to create the image node from.</p></td>
         </tr>
@@ -1904,6 +1910,12 @@ trackNode.connect(ctx.destination);</code></pre>
             
 
             
+                <td class="default">
+                
+                    4
+                
+                </td>
+            
 
             <td class="description last"><p>How long before a node is to be displayed to attmept to load it.</p></td>
         </tr>
@@ -1936,6 +1948,10 @@ trackNode.connect(ctx.destination);</code></pre>
                 </td>
             
 
+            
+                <td class="default">
+                
+                </td>
             
 
             <td class="description last"><p>Any attributes to be given to the underlying image element.</p></td>
@@ -1979,7 +1995,7 @@ trackNode.connect(ctx.destination);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line442">line 442</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line445">line 445</a>
     </li></ul></dd>
     
 
@@ -2095,7 +2111,7 @@ var imageNode = ctx.image(imageElement);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line382">line 382</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line385">line 385</a>
     </li></ul></dd>
     
 
@@ -2190,7 +2206,7 @@ setTimeout(function(){ctx.pause();}, 1000); //pause playback after roughly one s
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line360">line 360</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line363">line 363</a>
     </li></ul></dd>
     
 
@@ -2360,7 +2376,7 @@ VideoContext is still playing, but there are currently no activly playing sourec
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line139">line 139</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line142">line 142</a>
     </li></ul></dd>
     
 
@@ -2433,6 +2449,8 @@ ctx.registerCallback("ended", function(){console.log("Playback ended");});</code
         
 
         
+        <th>Default</th>
+        
 
         <th class="last">Description</th>
     </tr>
@@ -2458,6 +2476,10 @@ ctx.registerCallback("ended", function(){console.log("Playback ended");});</code
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
             <td class="description last"><p>the time at which to trigger the callback.</p></td>
         </tr>
@@ -2481,6 +2503,10 @@ ctx.registerCallback("ended", function(){console.log("Playback ended");});</code
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
             <td class="description last"><p>the callback to register.</p></td>
         </tr>
@@ -2503,6 +2529,12 @@ ctx.registerCallback("ended", function(){console.log("Playback ended");});</code
 
             
 
+            
+                <td class="default">
+                
+                    0
+                
+                </td>
             
 
             <td class="description last"><p>the order in which to call the callback if more than one is registered for the same time.</p></td>
@@ -2546,7 +2578,7 @@ ctx.registerCallback("ended", function(){console.log("Playback ended");});</code
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line98">line 98</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line101">line 101</a>
     </li></ul></dd>
     
 
@@ -2628,7 +2660,7 @@ ctx.registerCallback("ended", function(){console.log("Playback ended");});</code
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line840">line 840</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line843">line 843</a>
     </li></ul></dd>
     
 
@@ -2765,7 +2797,7 @@ tragetValue between the startTime and stopTime.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line652">line 652</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line655">line 655</a>
     </li></ul></dd>
     
 
@@ -2984,7 +3016,7 @@ ctx.play();</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line162">line 162</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line165">line 165</a>
     </li></ul></dd>
     
 
@@ -3129,7 +3161,7 @@ ctx.unregisterCallback(updateCallback);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line107">line 107</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line110">line 110</a>
     </li></ul></dd>
     
 
@@ -3260,7 +3292,7 @@ ctx.unregisterCallback(updateCallback);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line700">line 700</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line703">line 703</a>
     </li></ul></dd>
     
 
@@ -3410,7 +3442,7 @@ update();</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line409">line 409</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line412">line 412</a>
     </li></ul></dd>
     
 
@@ -3486,13 +3518,13 @@ var videoNode = ctx.video(videoElement);</code></pre>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="CanvasNode.html">CanvasNode</a></li><li><a href="CompositingNode.html">CompositingNode</a></li><li><a href="DestinationNode.html">DestinationNode</a></li><li><a href="EffectNode.html">EffectNode</a></li><li><a href="GraphNode.html">GraphNode</a></li><li><a href="ImageNode.html">ImageNode</a></li><li><a href="ProcessingNode.html">ProcessingNode</a></li><li><a href="RenderGraph.html">RenderGraph</a></li><li><a href="SourceNode.html">SourceNode</a></li><li><a href="TransitionNode.html">TransitionNode</a></li><li><a href="VideoContext.html">VideoContext</a></li><li><a href="VideoNode.html">VideoNode</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-VideoContext.html">VideoContext</a></li></ul><h3>Classes</h3><ul><li><a href="CanvasNode.html">CanvasNode</a></li><li><a href="CompositingNode.html">CompositingNode</a></li><li><a href="DestinationNode.html">DestinationNode</a></li><li><a href="EffectNode.html">EffectNode</a></li><li><a href="GraphNode.html">GraphNode</a></li><li><a href="ImageNode.html">ImageNode</a></li><li><a href="module-VideoContext.html">VideoContext</a></li><li><a href="ProcessingNode.html">ProcessingNode</a></li><li><a href="RenderGraph.html">RenderGraph</a></li><li><a href="SourceNode.html">SourceNode</a></li><li><a href="TransitionNode.html">TransitionNode</a></li><li><a href="VideoNode.html">VideoNode</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
 </footer>
 
 <script> prettyPrint(); </script>

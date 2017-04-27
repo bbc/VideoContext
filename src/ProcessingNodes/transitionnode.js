@@ -1,7 +1,7 @@
 //Matthew Shotton, R&D User Experience,© BBC 2015
 import EffectNode from "./effectnode";
 
-export default class TransitionNode extends EffectNode{
+class TransitionNode extends EffectNode{
     /**
     * Initialise an instance of a TransitionNode. You should not instantiate this directly, but use VideoContest.createTransitonNode().
     */
@@ -139,3 +139,5 @@ export default class TransitionNode extends EffectNode{
         }
     }
 }
+
+export default TransitionNode;

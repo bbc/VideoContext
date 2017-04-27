@@ -1,7 +1,7 @@
 //Matthew Shotton, R&D User Experience,© BBC 2015
 import SourceNode, { SOURCENODESTATE } from "./sourcenode";
 
-export default class CanvasNode extends SourceNode {
+class CanvasNode extends SourceNode {
     /**
     * Initialise an instance of a CanvasNode.
     * This should not be called directly, but created through a call to videoContext.createCanvasNode();
@@ -52,3 +52,5 @@ export default class CanvasNode extends SourceNode {
     }
 
 }
+
+export default CanvasNode;

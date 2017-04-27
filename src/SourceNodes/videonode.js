@@ -1,7 +1,7 @@
 //Matthew Shotton, R&D User Experience,© BBC 2015
 import SourceNode, { SOURCENODESTATE } from "./sourcenode";
 
-export default class VideoNode extends SourceNode {
+class VideoNode extends SourceNode {
     /**
     * Initialise an instance of a VideoNode.
     * This should not be called directly, but created through a call to videoContext.createVideoNode();
@@ -201,3 +201,5 @@ export default class VideoNode extends SourceNode {
     }
 
 }
+
+export default VideoNode;

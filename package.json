@@ -22,7 +22,7 @@
     "eslint": "^3.9.1",
     "eslint-loader": "^1.4.0",
     "http-server": "^0.8.5",
-    "jsdoc": "^3.4.0",
+    "jsdoc": "^3.4.3",
     "mocha": "2.3.4",
     "node-libs-browser": "^0.5.2",
     "reload": "^1.0.1",

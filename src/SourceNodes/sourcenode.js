@@ -4,7 +4,7 @@ import GraphNode from "../graphnode";
 
 let STATE = {"waiting":0, "sequenced":1, "playing":2, "paused":3, "ended":4, "error":5};
 
-export default class SourceNode extends GraphNode{
+class SourceNode extends GraphNode{
     /**
     * Initialise an instance of a SourceNode.
     * This is the base class for other Nodes which generate media to be passed into the processing pipeline.
@@ -407,3 +407,5 @@ export default class SourceNode extends GraphNode{
 }
 
 export {STATE as SOURCENODESTATE};
+
+export default SourceNode;

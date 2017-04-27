@@ -46,7 +46,6 @@ module.exports =
 /***/ (function(module, exports, __webpack_require__) {
 
 	//Matthew Shotton, R&D User Experience,© BBC 2015
-	
 	"use strict";
 	
 	Object.defineProperty(exports, "__esModule", {
@@ -104,6 +103,11 @@ module.exports =
 	var _DefinitionsDefinitionsJs2 = _interopRequireDefault(_DefinitionsDefinitionsJs);
 	
 	var updateablesManager = new _utilsJs.UpdateablesManager();
+	
+	/**
+	 * VideoContext.
+	 * @module VideoContext
+	 */
 	
 	var VideoContext = (function () {
 	    /**
@@ -2109,8 +2113,8 @@ module.exports =
 	    return SourceNode;
 	})(_graphnode2["default"]);
 	
-	exports["default"] = SourceNode;
 	exports.SOURCENODESTATE = STATE;
+	exports["default"] = SourceNode;
 
 /***/ }),
 /* 3 */
