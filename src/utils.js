@@ -1,5 +1,6 @@
 //Matthew Shotton, R&D User Experience,© BBC 2015
 import DEFINITIONS from "./Definitions/definitions.js";
+import { SOURCENODESTATE } from "./SourceNodes/sourcenode.js";
 
 /*
 * Utility function to compile a WebGL Vertex or Fragment shader.
@@ -105,6 +106,12 @@ export function exportToJSON(vc){
 
     let result = {};
 
+
+    let sourceNodeStateMapping = [];
+    for (let state in SOURCENODESTATE){
+        sourceNodeStateMapping[SOURCENODESTATE[state]] = state;
+    }
+
     for(let index in vc._sourceNodes){
         let source = vc._sourceNodes[index];
         let id = "source" + index;
@@ -116,11 +123,13 @@ export function exportToJSON(vc){
         } else {
             node_url = qualifyURL(source._elementURL);
         }
+
         let node = {
             type: source.displayName,
             url: node_url,
             start: source.startTime,
-            stop: source.stopTime
+            stop: source.stopTime,
+            state: sourceNodeStateMapping[source.state]
         };
         if (source._sourceOffset){
             node.sourceOffset = source._sourceOffset;
