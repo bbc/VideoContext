@@ -2149,6 +2149,8 @@ var VideoContext =
 	
 	var _DefinitionsDefinitionsJs2 = _interopRequireDefault(_DefinitionsDefinitionsJs);
 	
+	var _SourceNodesSourcenodeJs = __webpack_require__(2);
+	
 	/*
 	* Utility function to compile a WebGL Vertex or Fragment shader.
 	* 
@@ -2279,6 +2281,11 @@ var VideoContext =
 	
 	    var result = {};
 	
+	    var sourceNodeStateMapping = [];
+	    for (var state in _SourceNodesSourcenodeJs.SOURCENODESTATE) {
+	        sourceNodeStateMapping[_SourceNodesSourcenodeJs.SOURCENODESTATE[state]] = state;
+	    }
+	
 	    for (var index in vc._sourceNodes) {
 	        var source = vc._sourceNodes[index];
 	        var id = "source" + index;
@@ -2290,11 +2297,13 @@ var VideoContext =
 	        } else {
 	            node_url = qualifyURL(source._elementURL);
 	        }
+	
 	        var node = {
 	            type: source.displayName,
 	            url: node_url,
 	            start: source.startTime,
-	            stop: source.stopTime
+	            stop: source.stopTime,
+	            state: sourceNodeStateMapping[source.state]
 	        };
 	        if (source._sourceOffset) {
 	            node.sourceOffset = source._sourceOffset;
