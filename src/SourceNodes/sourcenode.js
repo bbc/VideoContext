@@ -15,7 +15,7 @@ class SourceNode extends GraphNode{
         this._elementURL = undefined;
         this._isResponsibleForElementLifeCycle = true;
         if (typeof src === "string" || src instanceof MediaStream){
-            //create the node from the passed url
+            //create the node from the passed URL or MediaStream
             this._elementURL = src;
         }else{
             //use the passed element to create the SourceNode
