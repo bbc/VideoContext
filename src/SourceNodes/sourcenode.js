@@ -41,7 +41,7 @@ class SourceNode extends GraphNode{
     /**
     * Returns the state of the node.
     * 0 - Waiting, start() has not been called on it yet.
-    * 1 - Sequenced, start() has been called but it is not playing yet. 
+    * 1 - Sequenced, start() has been called but it is not playing yet.
     * 2 - Playing, the node is playing.
     * 3 - Paused, the node is paused.
     * 4 - Ended, playback of the node has finished.
@@ -58,7 +58,7 @@ class SourceNode extends GraphNode{
     * ctx.paused();
     * console.log(videoNode.state); //will output 3 (for paused)
     */
-    get state(){        
+    get state(){
         return this._state;
     }
 
@@ -69,7 +69,7 @@ class SourceNode extends GraphNode{
     *
     * @return {Element} The underlying DOM element representing the media for the node. If the lifecycle of the video is owned UNSIGNED_BYTE the node itself, this can return undefined if the element hasn't been loaded yet.
     *
-    * @example 
+    * @example
     * //Accessing the Element on a VideoNode created via a URL
     * var ctx = new VideoContext();
     * var videoNode = ctx.createVideoSourceNode('video.mp4');
@@ -79,7 +79,7 @@ class SourceNode extends GraphNode{
     * videoNode.regsiterCallback("play", function(){videoNode.element.volume = 0;});
     *
     *
-    * @example 
+    * @example
     * //Accessing the Element on a VideoNode created via an already existing element
     * var ctx = new VideoContext();
     * var videoElement = document.createElement("video");
@@ -100,7 +100,7 @@ class SourceNode extends GraphNode{
     *
     * @return {number} The duration of the node in seconds.
     *
-    * @example 
+    * @example
     * var ctx = new VideoContext();
     * var videoNode = ctx.createVideoSourceNode('video.mp4');
     * videoNode.start(5);
@@ -130,16 +130,16 @@ class SourceNode extends GraphNode{
 
     _destroy(){
         this._triggerCallbacks("destroy");
-        this._loadCalled = false;    
+        this._loadCalled = false;
     }
-    
+
     /**
     * Register callbacks against one of these events: "load", "destory", "seek", "pause", "play", "ended", "durationchange", "loaded", "error"
     *
     * @param {String} type - the type of event to register the callback against.
     * @param {function} func - the function to call.
-    * 
-    * @example 
+    *
+    * @example
     * var ctx = new VideoContext();
     * var videoNode = ctx.createVideoSourceNode('video.mp4');
     *
@@ -157,7 +157,7 @@ class SourceNode extends GraphNode{
     *
     * @param {function} [func] - the callback to remove, if undefined will remove all callbacks for this node.
     *
-    * @example 
+    * @example
     * var ctx = new VideoContext();
     * var videoNode = ctx.createVideoSourceNode('video.mp4');
     *
@@ -193,7 +193,7 @@ class SourceNode extends GraphNode{
             }
         }
     }
-    
+
     /**
     * Start playback at VideoContext.currentTime plus passed time. If passed time is negative, will play as soon as possible.
     *
@@ -210,7 +210,7 @@ class SourceNode extends GraphNode{
         this._state = STATE.sequenced;
         return true;
     }
-    
+
     /**
     * Start playback at an absolute time ont the VideoContext's timeline.
     *
@@ -226,7 +226,7 @@ class SourceNode extends GraphNode{
         this._state = STATE.sequenced;
         return true;
     }
-    
+
 
     get startTime(){
         return this._startTime;
@@ -256,7 +256,7 @@ class SourceNode extends GraphNode{
         this._triggerCallbacks("durationchange", this.duration);
         return true;
     }
-    
+
     /**
     * Stop playback at an absolute time ont the VideoContext's timeline.
     *
@@ -333,7 +333,7 @@ class SourceNode extends GraphNode{
 
     _update(currentTime, triggerTextureUpdate=true){
         this._rendered = true;
-        let timeDelta = currentTime - this._currentTime; 
+        let timeDelta = currentTime - this._currentTime;
 
         //update the current time
         this._currentTime = currentTime;
@@ -362,8 +362,8 @@ class SourceNode extends GraphNode{
         }
 
         //update this source nodes texture
-        if (this._element === undefined || this._ready === false) return true;      
-        
+        if (this._element === undefined || this._ready === false) return true;
+
         if (!this._renderPaused && this._state === STATE.paused) {
             if(triggerTextureUpdate)updateTexture(this._gl, this._texture, this._element);
             this._renderPaused = true;
