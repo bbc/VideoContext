@@ -37,7 +37,7 @@ class VideoNode extends SourceNode {
                 if(this._state === SOURCENODESTATE.playing){
                     this._element.play();
                 }
-            }    
+            }
         }
     }
 
@@ -66,7 +66,7 @@ class VideoNode extends SourceNode {
                     if (this._stopTime === Infinity || this._stopTime == undefined){
                         this._stopTime = this._startTime + this._element.duration;
                         this._triggerCallbacks("durationchange", this.duration);
-                    }                
+                    }
                 }
                 if(this._ready !== true){
                     this._triggerCallbacks("loaded");
@@ -92,7 +92,11 @@ class VideoNode extends SourceNode {
                 this._element.setAttribute("webkit-playsinline", "");
                 this._playbackRateUpdated = true;
             }
-            this._element.src = this._elementURL;
+            if (this._elementURL instanceof MediaStream){
+                this._element.srcObject = this._elementURL;
+            }else{
+                this._element.src = this._elementURL;
+            }
 
             for (let key in this._attributes) {
                 this._element[key] = this._attributes[key];
@@ -112,7 +116,7 @@ class VideoNode extends SourceNode {
             //If the element doesn't exist for whatever reason enter the error state.
             this._state = SOURCENODESTATE.error;
             this._ready = true;
-            this._triggerCallbacks("error");    
+            this._triggerCallbacks("error");
         }
     }
 
@@ -162,7 +166,7 @@ class VideoNode extends SourceNode {
                 this._element.playbackRate = this._globalPlaybackRate * this._playbackRate;
                 this._playbackRateUpdated = false;
             }
-            if (!this._isElementPlaying){ 
+            if (!this._isElementPlaying){
                 this._element.play();
                 if (this._stretchPaused){
                     this._element.pause();
@@ -178,7 +182,7 @@ class VideoNode extends SourceNode {
         else if (this._state === SOURCENODESTATE.ended && this._element !== undefined){
             this._element.pause();
             if (this._isElementPlaying){
-                this._destroy();    
+                this._destroy();
             }
             return false;
         }
@@ -195,7 +199,7 @@ class VideoNode extends SourceNode {
 
     destroy(){
         if (this._element) this._element.pause();
-        this._isElementPlaying = false;    
+        this._isElementPlaying = false;
         super.destroy();
         this._destroy();
     }
