@@ -1434,7 +1434,11 @@ module.exports =
 	                    this._element.setAttribute("webkit-playsinline", "");
 	                    this._playbackRateUpdated = true;
 	                }
-	                this._element.src = this._elementURL;
+	                if (this._elementURL instanceof MediaStream) {
+	                    this._element.srcObject = this._elementURL;
+	                } else {
+	                    this._element.src = this._elementURL;
+	                }
 	
 	                for (var _key in this._attributes) {
 	                    this._element[_key] = this._attributes[_key];
@@ -1627,8 +1631,8 @@ module.exports =
 	        this._element = undefined;
 	        this._elementURL = undefined;
 	        this._isResponsibleForElementLifeCycle = true;
-	        if (typeof src === "string") {
-	            //create the node from the passed url
+	        if (typeof src === "string" || src instanceof MediaStream) {
+	            //create the node from the passed URL or MediaStream
 	            this._elementURL = src;
 	        } else {
 	            //use the passed element to create the SourceNode
@@ -1653,7 +1657,7 @@ module.exports =
 	    /**
 	    * Returns the state of the node.
 	    * 0 - Waiting, start() has not been called on it yet.
-	    * 1 - Sequenced, start() has been called but it is not playing yet. 
+	    * 1 - Sequenced, start() has been called but it is not playing yet.
 	    * 2 - Playing, the node is playing.
 	    * 3 - Paused, the node is paused.
 	    * 4 - Ended, playback of the node has finished.
@@ -1691,8 +1695,8 @@ module.exports =
 	        *
 	        * @param {String} type - the type of event to register the callback against.
 	        * @param {function} func - the function to call.
-	        * 
-	        * @example 
+	        *
+	        * @example
 	        * var ctx = new VideoContext();
 	        * var videoNode = ctx.createVideoSourceNode('video.mp4');
 	        *
@@ -1712,7 +1716,7 @@ module.exports =
 	        *
 	        * @param {function} [func] - the callback to remove, if undefined will remove all callbacks for this node.
 	        *
-	        * @example 
+	        * @example
 	        * var ctx = new VideoContext();
 	        * var videoNode = ctx.createVideoSourceNode('video.mp4');
 	        *
@@ -2044,7 +2048,7 @@ module.exports =
 	        *
 	        * @return {Element} The underlying DOM element representing the media for the node. If the lifecycle of the video is owned UNSIGNED_BYTE the node itself, this can return undefined if the element hasn't been loaded yet.
 	        *
-	        * @example 
+	        * @example
 	        * //Accessing the Element on a VideoNode created via a URL
 	        * var ctx = new VideoContext();
 	        * var videoNode = ctx.createVideoSourceNode('video.mp4');
@@ -2054,7 +2058,7 @@ module.exports =
 	        * videoNode.regsiterCallback("play", function(){videoNode.element.volume = 0;});
 	        *
 	        *
-	        * @example 
+	        * @example
 	        * //Accessing the Element on a VideoNode created via an already existing element
 	        * var ctx = new VideoContext();
 	        * var videoElement = document.createElement("video");
@@ -2076,7 +2080,7 @@ module.exports =
 	        *
 	        * @return {number} The duration of the node in seconds.
 	        *
-	        * @example 
+	        * @example
 	        * var ctx = new VideoContext();
 	        * var videoNode = ctx.createVideoSourceNode('video.mp4');
 	        * videoNode.start(5);
