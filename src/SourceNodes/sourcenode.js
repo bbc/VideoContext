@@ -128,13 +128,13 @@ class SourceNode extends GraphNode{
         }
     }
 
-    _destroy(){
+    _unload (){
         this._triggerCallbacks("destroy");
         this._loadCalled = false;
     }
 
     /**
-    * Register callbacks against one of these events: "load", "destory", "seek", "pause", "play", "ended", "durationchange", "loaded", "error"
+    * Register callbacks against one of these events: "load", "destroy", "seek", "pause", "play", "ended", "durationchange", "loaded", "error"
     *
     * @param {String} type - the type of event to register the callback against.
     * @param {function} func - the function to call.

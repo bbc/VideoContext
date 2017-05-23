@@ -18,8 +18,8 @@ class CanvasNode extends SourceNode {
         this._triggerCallbacks("loaded");        
     }
 
-    _destroy(){
-        super._destroy();
+    _unload(){
+        super._unload();
         this._ready = false;
     }
 
@@ -30,7 +30,7 @@ class CanvasNode extends SourceNode {
             this._ready = false;
         }
         if((this._state === SOURCENODESTATE.sequenced || this._state === SOURCENODESTATE.ended) && this._element !== undefined){
-            this._destroy();
+            this._unload();
         }
     }
     
@@ -45,7 +45,7 @@ class CanvasNode extends SourceNode {
             return true;
         }
         else if (this._state === SOURCENODESTATE.ended && this._element !== undefined){
-            this._destroy();
+            this._unload();
             return false;
         }
 

@@ -120,8 +120,8 @@ class VideoNode extends SourceNode {
         }
     }
 
-    _destroy(){
-        super._destroy();
+    _unload(){
+        super._unload();
         if (this._isResponsibleForElementLifeCycle && this._element !== undefined){
             this._element.src = "";
             for (let key in this._attributes){
@@ -143,7 +143,7 @@ class VideoNode extends SourceNode {
             this._ready = false;
         }
         if((this._state === SOURCENODESTATE.sequenced || this._state === SOURCENODESTATE.ended) && this._element !== undefined){
-            this._destroy();
+            this._unload();
         }
     }
 
@@ -182,7 +182,7 @@ class VideoNode extends SourceNode {
         else if (this._state === SOURCENODESTATE.ended && this._element !== undefined){
             this._element.pause();
             if (this._isElementPlaying){
-                this._destroy();
+                this._unload();
             }
             return false;
         }
@@ -194,14 +194,14 @@ class VideoNode extends SourceNode {
             this._element.pause();
             this._isElementPlaying = false;
         }
-        this._destroy();
+        this._unload();
     }
 
     destroy(){
         if (this._element) this._element.pause();
         this._isElementPlaying = false;
         super.destroy();
-        this._destroy();
+        this._unload();
     }
 
 }
