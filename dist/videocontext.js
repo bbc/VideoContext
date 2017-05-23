@@ -1467,6 +1467,7 @@ var VideoContext =
 	            _get(Object.getPrototypeOf(VideoNode.prototype), "_unload", this).call(this);
 	            if (this._isResponsibleForElementLifeCycle && this._element !== undefined) {
 	                this._element.src = "";
+	                this._element.srcObject = undefined;
 	                for (var key in this._attributes) {
 	                    this._element.removeAttribute(key);
 	                }
@@ -5844,7 +5845,7 @@ var VideoContext =
 	                    var _element = _step2.value;
 	
 	                    // For some reason an uninitialised videoElement has its sr attribute set to the windows href. Hence the below check.
-	                    if (_element.src === "" || _element.src === undefined || _element.src === window.location.href) return _element;
+	                    if ((_element.src === "" || _element.src === undefined || _element.src === window.location.href) && _element.srcObject == null) return _element;
 	                }
 	                //Fallback to creating a new element if non exists.
 	            } catch (err) {
@@ -5886,7 +5887,7 @@ var VideoContext =
 	                    var element = _step3.value;
 	
 	                    // For some reason an uninitialised videoElement has its sr attribute set to the windows href. Hence the below check.
-	                    if (element.src === "" || element.src === undefined || element.src === window.location.href) count += 1;
+	                    if ((element.src === "" || element.src === undefined || element.src === window.location.href) && element.srcObject == null) count += 1;
 	                }
 	            } catch (err) {
 	                _didIteratorError3 = true;
