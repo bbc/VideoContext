@@ -1,3 +1,5 @@
+const stripHash = url => `${url.protocol}//${url.hostname}:${url.port}${url.pathname}`;
+
 class VideoElementCache {
 
     constructor(cache_size = 3) {
@@ -39,7 +41,7 @@ class VideoElementCache {
         //Try and get an already intialised element.
         for (let element of this._elements) {
             // For some reason an uninitialised videoElement has its sr attribute set to the windows href. Hence the below check.
-            if ((element.src === "" || element.src === undefined || element.src === window.location.href) && element.srcObject == null )return element;
+            if ((element.src === "" || element.src === undefined || element.src === stripHash(window.location)) && element.srcObject == null )return element;
         }
         //Fallback to creating a new element if non exists.
         console.debug("No available video element in the cache, creating a new one. This may break mobile, make your initial cache larger.");
@@ -57,7 +59,7 @@ class VideoElementCache {
         let count = 0;
         for (let element of this._elements) {
             // For some reason an uninitialised videoElement has its sr attribute set to the windows href. Hence the below check.
-            if ((element.src === "" || element.src === undefined || element.src === window.location.href)  && element.srcObject == null )count += 1;
+            if ((element.src === "" || element.src === undefined || element.src === stripHash(window.location))  && element.srcObject == null )count += 1;
         }
         return count;
     }
