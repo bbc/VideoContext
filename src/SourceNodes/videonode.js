@@ -124,6 +124,7 @@ class VideoNode extends SourceNode {
         super._unload();
         if (this._isResponsibleForElementLifeCycle && this._element !== undefined){
             this._element.src = "";
+            this._element.srcObject = undefined;
             for (let key in this._attributes){
                 this._element.removeAttribute(key);
             }
