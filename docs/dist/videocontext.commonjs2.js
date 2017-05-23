@@ -1462,11 +1462,12 @@ module.exports =
 	            }
 	        }
 	    }, {
-	        key: "_destroy",
-	        value: function _destroy() {
-	            _get(Object.getPrototypeOf(VideoNode.prototype), "_destroy", this).call(this);
+	        key: "_unload",
+	        value: function _unload() {
+	            _get(Object.getPrototypeOf(VideoNode.prototype), "_unload", this).call(this);
 	            if (this._isResponsibleForElementLifeCycle && this._element !== undefined) {
 	                this._element.src = "";
+	                this._element.srcObject = undefined;
 	                for (var key in this._attributes) {
 	                    this._element.removeAttribute(key);
 	                }
@@ -1487,7 +1488,7 @@ module.exports =
 	                this._ready = false;
 	            }
 	            if ((this._state === _sourcenode.SOURCENODESTATE.sequenced || this._state === _sourcenode.SOURCENODESTATE.ended) && this._element !== undefined) {
-	                this._destroy();
+	                this._unload();
 	            }
 	        }
 	    }, {
@@ -1525,7 +1526,7 @@ module.exports =
 	            } else if (this._state === _sourcenode.SOURCENODESTATE.ended && this._element !== undefined) {
 	                this._element.pause();
 	                if (this._isElementPlaying) {
-	                    this._destroy();
+	                    this._unload();
 	                }
 	                return false;
 	            }
@@ -1538,15 +1539,13 @@ module.exports =
 	                this._element.pause();
 	                this._isElementPlaying = false;
 	            }
-	            this._destroy();
+	            this._unload();
 	        }
 	    }, {
 	        key: "destroy",
 	        value: function destroy() {
 	            if (this._element) this._element.pause();
-	            this._isElementPlaying = false;
 	            _get(Object.getPrototypeOf(VideoNode.prototype), "destroy", this).call(this);
-	            this._destroy();
 	        }
 	    }, {
 	        key: "playbackRate",
@@ -1684,14 +1683,14 @@ module.exports =
 	            }
 	        }
 	    }, {
-	        key: "_destroy",
-	        value: function _destroy() {
+	        key: "_unload",
+	        value: function _unload() {
 	            this._triggerCallbacks("destroy");
 	            this._loadCalled = false;
 	        }
 	
 	        /**
-	        * Register callbacks against one of these events: "load", "destory", "seek", "pause", "play", "ended", "durationchange", "loaded", "error"
+	        * Register callbacks against one of these events: "load", "destroy", "seek", "pause", "play", "ended", "durationchange", "loaded", "error"
 	        *
 	        * @param {String} type - the type of event to register the callback against.
 	        * @param {function} func - the function to call.
@@ -2023,8 +2022,8 @@ module.exports =
 	    }, {
 	        key: "destroy",
 	        value: function destroy() {
+	            this._unload();
 	            _get(Object.getPrototypeOf(SourceNode.prototype), "destroy", this).call(this);
-	            this._triggerCallbacks("destroy");
 	            this.unregisterCallback();
 	            delete this._element;
 	            this._elementURL = undefined;
@@ -4365,9 +4364,9 @@ module.exports =
 	            };
 	        }
 	    }, {
-	        key: "_destroy",
-	        value: function _destroy() {
-	            _get(Object.getPrototypeOf(ImageNode.prototype), "_destroy", this).call(this);
+	        key: "_unload",
+	        value: function _unload() {
+	            _get(Object.getPrototypeOf(ImageNode.prototype), "_unload", this).call(this);
 	            if (this._isResponsibleForElementLifeCycle) {
 	                this._element.src = "";
 	                this._element.onerror = undefined;
@@ -4384,7 +4383,7 @@ module.exports =
 	                if (this._element === undefined) this._load();
 	            }
 	            if ((this._state === _sourcenode.SOURCENODESTATE.sequenced || this._state === _sourcenode.SOURCENODESTATE.ended) && this._element !== undefined) {
-	                this._destroy();
+	                this._unload();
 	            }
 	        }
 	    }, {
@@ -4404,7 +4403,7 @@ module.exports =
 	            } else if (this._state === _sourcenode.SOURCENODESTATE.paused) {
 	                return true;
 	            } else if (this._state === _sourcenode.SOURCENODESTATE.ended && this._element !== undefined) {
-	                this._destroy();
+	                this._unload();
 	                return false;
 	            }
 	        }
@@ -4472,9 +4471,9 @@ module.exports =
 	            this._triggerCallbacks("loaded");
 	        }
 	    }, {
-	        key: "_destroy",
-	        value: function _destroy() {
-	            _get(Object.getPrototypeOf(CanvasNode.prototype), "_destroy", this).call(this);
+	        key: "_unload",
+	        value: function _unload() {
+	            _get(Object.getPrototypeOf(CanvasNode.prototype), "_unload", this).call(this);
 	            this._ready = false;
 	        }
 	    }, {
@@ -4486,7 +4485,7 @@ module.exports =
 	                this._ready = false;
 	            }
 	            if ((this._state === _sourcenode.SOURCENODESTATE.sequenced || this._state === _sourcenode.SOURCENODESTATE.ended) && this._element !== undefined) {
-	                this._destroy();
+	                this._unload();
 	            }
 	        }
 	    }, {
@@ -4501,7 +4500,7 @@ module.exports =
 	            } else if (this._state === _sourcenode.SOURCENODESTATE.paused) {
 	                return true;
 	            } else if (this._state === _sourcenode.SOURCENODESTATE.ended && this._element !== undefined) {
-	                this._destroy();
+	                this._unload();
 	                return false;
 	            }
 	        }
@@ -5767,6 +5766,10 @@ module.exports =
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
+	var stripHash = function stripHash(url) {
+	    return url.protocol + "//" + url.hostname + ":" + url.port + url.pathname;
+	};
+	
 	var VideoElementCache = (function () {
 	    function VideoElementCache() {
 	        var cache_size = arguments.length <= 0 || arguments[0] === undefined ? 3 : arguments[0];
@@ -5846,7 +5849,7 @@ module.exports =
 	                    var _element = _step2.value;
 	
 	                    // For some reason an uninitialised videoElement has its sr attribute set to the windows href. Hence the below check.
-	                    if (_element.src === "" || _element.src === undefined || _element.src === window.location.href) return _element;
+	                    if ((_element.src === "" || _element.src === undefined || _element.src === stripHash(window.location)) && _element.srcObject == null) return _element;
 	                }
 	                //Fallback to creating a new element if non exists.
 	            } catch (err) {
@@ -5888,7 +5891,7 @@ module.exports =
 	                    var element = _step3.value;
 	
 	                    // For some reason an uninitialised videoElement has its sr attribute set to the windows href. Hence the below check.
-	                    if (element.src === "" || element.src === undefined || element.src === window.location.href) count += 1;
+	                    if ((element.src === "" || element.src === undefined || element.src === stripHash(window.location)) && element.srcObject == null) count += 1;
 	                }
 	            } catch (err) {
 	                _didIteratorError3 = true;

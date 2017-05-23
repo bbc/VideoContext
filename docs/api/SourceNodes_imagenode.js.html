@@ -81,8 +81,8 @@ class ImageNode extends SourceNode {
         };
     }
 
-    _destroy(){
-        super._destroy();
+    _unload(){
+        super._unload();
         if (this._isResponsibleForElementLifeCycle){
             this._element.src = "";
             this._element.onerror = undefined;
@@ -98,7 +98,7 @@ class ImageNode extends SourceNode {
             if (this._element === undefined) this._load();
         }
         if((this._state === SOURCENODESTATE.sequenced || this._state === SOURCENODESTATE.ended) &amp;&amp; this._element !== undefined){
-            this._destroy();
+            this._unload();
         }
     }
 
@@ -118,7 +118,7 @@ class ImageNode extends SourceNode {
             return true;
         }
         else if (this._state === SOURCENODESTATE.ended &amp;&amp; this._element !== undefined){
-            this._destroy();
+            this._unload();
             return false;
         }
 

@@ -5766,6 +5766,10 @@ var VideoContext =
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
+	var stripHash = function stripHash(url) {
+	    return url.protocol + "//" + url.hostname + ":" + url.port + url.pathname;
+	};
+	
 	var VideoElementCache = (function () {
 	    function VideoElementCache() {
 	        var cache_size = arguments.length <= 0 || arguments[0] === undefined ? 3 : arguments[0];
@@ -5845,7 +5849,7 @@ var VideoContext =
 	                    var _element = _step2.value;
 	
 	                    // For some reason an uninitialised videoElement has its sr attribute set to the windows href. Hence the below check.
-	                    if ((_element.src === "" || _element.src === undefined || _element.src === window.location.href) && _element.srcObject == null) return _element;
+	                    if ((_element.src === "" || _element.src === undefined || _element.src === stripHash(window.location)) && _element.srcObject == null) return _element;
 	                }
 	                //Fallback to creating a new element if non exists.
 	            } catch (err) {
@@ -5887,7 +5891,7 @@ var VideoContext =
 	                    var element = _step3.value;
 	
 	                    // For some reason an uninitialised videoElement has its sr attribute set to the windows href. Hence the below check.
-	                    if ((element.src === "" || element.src === undefined || element.src === window.location.href) && element.srcObject == null) count += 1;
+	                    if ((element.src === "" || element.src === undefined || element.src === stripHash(window.location)) && element.srcObject == null) count += 1;
 	                }
 	            } catch (err) {
 	                _didIteratorError3 = true;
