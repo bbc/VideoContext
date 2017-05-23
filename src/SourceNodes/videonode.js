@@ -199,9 +199,7 @@ class VideoNode extends SourceNode {
 
     destroy(){
         if (this._element) this._element.pause();
-        this._isElementPlaying = false;
         super.destroy();
-        this._unload();
     }
 
 }

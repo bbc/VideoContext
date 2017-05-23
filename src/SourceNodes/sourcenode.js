@@ -391,8 +391,8 @@ class SourceNode extends GraphNode{
     * Destroy and clean-up the node.
     */
     destroy(){
+        this._unload();
         super.destroy();
-        this._triggerCallbacks("destroy");
         this.unregisterCallback();
         delete this._element;
         this._elementURL = undefined;
