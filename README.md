@@ -31,13 +31,15 @@ The design is heavily inspired by the WebAudioAPI so should feel familiar to use
             var videoNode1 = videoCtx.video("./video1.mp4");
             videoNode1.start(0);
             videoNode1.stop(4);
+            videoNode1.connect(videoCtx.destination);
 
             var videoNode2 = videoCtx.video("./video2.mp4");
             videoNode2.start(2);
             videoNode2.stop(6);
+            videoNode2.connect(videoCtx.destination);
 
             var crossFade = videoCtx.transition(VideoContext.DEFINITIONS.CROSSFADE);
-            crossFade.transition(2,4,0.0,1.0, "mix");
+            crossFade.transition(2,4,1.0,0.0, "mix");
 
             videoNode1.connect(crossFade);
             videoNode2.connect(crossFade);
