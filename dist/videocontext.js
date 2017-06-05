@@ -4825,6 +4825,9 @@ var VideoContext =
 	                    this._texture = undefined;
 	                }
 	            }
+	            //Destroy main
+	            this._gl.deleteTexture(this._texture);
+	            this._texture = undefined;
 	            //Detach shaders
 	            this._gl.detachShader(this._program, this._vertexShader);
 	            this._gl.detachShader(this._program, this._fragmentShader);
