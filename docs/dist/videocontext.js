@@ -2033,6 +2033,7 @@ var VideoContext =
 	            this._stopTime = Infinity;
 	            this._ready = false;
 	            this._loadCalled = false;
+	            this._gl.deleteTexture(this._texture);
 	            this._texture = undefined;
 	        }
 	    }, {
@@ -2186,9 +2187,7 @@ var VideoContext =
 	* @return {WebGLProgram} A compiled & linkde shader program.
 	*/
 	
-	function createShaderProgram(gl, vertexShaderSource, fragmentShaderSource) {
-	    var vertexShader = compileShader(gl, vertexShaderSource, gl.VERTEX_SHADER);
-	    var fragmentShader = compileShader(gl, fragmentShaderSource, gl.FRAGMENT_SHADER);
+	function createShaderProgram(gl, vertexShader, fragmentShader) {
 	    var program = gl.createProgram();
 	
 	    gl.attachShader(program, vertexShader);
@@ -4662,8 +4661,8 @@ var VideoContext =
 	        _classCallCheck(this, ProcessingNode);
 	
 	        _get(Object.getPrototypeOf(ProcessingNode.prototype), "constructor", this).call(this, gl, renderGraph, inputNames, limitConnections);
-	        this._vertexShader = definition.vertexShader;
-	        this._fragmentShader = definition.fragmentShader;
+	        this._vertexShader = (0, _utilsJs.compileShader)(gl, definition.vertexShader, gl.VERTEX_SHADER);
+	        this._fragmentShader = (0, _utilsJs.compileShader)(gl, definition.fragmentShader, gl.FRAGMENT_SHADER);
 	        this._definition = definition;
 	        this._properties = {}; //definition.properties;
 	        //copy definition properties
@@ -4809,6 +4808,33 @@ var VideoContext =
 	        key: "getProperty",
 	        value: function getProperty(name) {
 	            return this._properties[name].value;
+	        }
+	
+	        /**
+	        * Destroy and clean-up the node.
+	        */
+	    }, {
+	        key: "destroy",
+	        value: function destroy() {
+	            _get(Object.getPrototypeOf(ProcessingNode.prototype), "destroy", this).call(this);
+	            //destrpy texutres for any texture properties
+	            for (var propertyName in this._properties) {
+	                var propertyValue = this._properties[propertyName].value;
+	                if (propertyValue instanceof Image) {
+	                    this._gl.deleteTexture(this._properties[propertyName].texture);
+	                    this._texture = undefined;
+	                }
+	            }
+	            //Detach shaders
+	            this._gl.detachShader(this._program, this._vertexShader);
+	            this._gl.detachShader(this._program, this._fragmentShader);
+	            //Delete shaders
+	            this._gl.deleteShader(this._vertexShader);
+	            this._gl.deleteShader(this._fragmentShader);
+	            //Delete program
+	            this._gl.deleteProgram(this._program);
+	            //Delete Framebuffer
+	            this._gl.deleteFramebuffer(this._framebuffer);
 	        }
 	    }, {
 	        key: "_update",
