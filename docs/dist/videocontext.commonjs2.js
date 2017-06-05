@@ -1445,7 +1445,9 @@ module.exports =
 	                }
 	            }
 	            if (this._element) {
-	                this._element.currentTime = this._sourceOffset;
+	                var currentTimeOffset = 0;
+	                if (this._currentTime > this._startTime) currentTimeOffset = this._currentTime - this._startTime;
+	                this._element.currentTime = this._sourceOffset + currentTimeOffset;
 	                this._element.onerror = function () {
 	                    if (_this._element === undefined) return;
 	                    console.debug("Error with element", _this._element);
