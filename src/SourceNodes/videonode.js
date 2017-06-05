@@ -103,7 +103,9 @@ class VideoNode extends SourceNode {
             }
         }
         if (this._element){
-            this._element.currentTime = this._sourceOffset;
+            let currentTimeOffset = 0;
+            if (this._currentTime > this._startTime) currentTimeOffset = this._currentTime - this._startTime;
+            this._element.currentTime = this._sourceOffset + currentTimeOffset;
             this._element.onerror = () => {
                 if (this._element === undefined) return;
                 console.debug("Error with element", this._element);
