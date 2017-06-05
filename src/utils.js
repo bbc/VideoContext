@@ -32,9 +32,7 @@ export function compileShader(gl, shaderSource, shaderType) {
 *
 * @return {WebGLProgram} A compiled & linkde shader program.
 */
-export function createShaderProgram(gl, vertexShaderSource, fragmentShaderSource){
-    let vertexShader = compileShader(gl, vertexShaderSource, gl.VERTEX_SHADER);
-    let fragmentShader = compileShader(gl, fragmentShaderSource, gl.FRAGMENT_SHADER);
+export function createShaderProgram(gl, vertexShader, fragmentShader){
     let program = gl.createProgram();
 
     gl.attachShader(program, vertexShader);

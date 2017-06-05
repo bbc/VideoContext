@@ -1,6 +1,6 @@
 //Matthew Shotton, R&D User Experience,© BBC 2015
 import GraphNode from "../graphnode";
-import { createShaderProgram, createElementTexutre, updateTexture } from "../utils.js";
+import { compileShader, createShaderProgram, createElementTexutre, updateTexture } from "../utils.js";
 import { RenderException } from "../exceptions.js";
 
 class ProcessingNode extends GraphNode{
@@ -11,8 +11,8 @@ class ProcessingNode extends GraphNode{
     */
     constructor(gl, renderGraph, definition, inputNames, limitConnections){
         super(gl, renderGraph, inputNames, limitConnections);
-        this._vertexShader = definition.vertexShader;
-        this._fragmentShader = definition.fragmentShader;
+        this._vertexShader = compileShader(gl, definition.vertexShader, gl.VERTEX_SHADER);
+        this._fragmentShader = compileShader(gl, definition.fragmentShader, gl.FRAGMENT_SHADER);
         this._definition = definition;
         this._properties = {};//definition.properties;
         //copy definition properties
@@ -134,6 +134,31 @@ class ProcessingNode extends GraphNode{
     */
     getProperty(name){
         return this._properties[name].value;
+    }
+
+    /**
+    * Destroy and clean-up the node.
+    */
+    destroy(){
+        super.destroy();
+        //destrpy texutres for any texture properties
+        for (let propertyName in this._properties){
+            let propertyValue = this._properties[propertyName].value;
+            if (propertyValue instanceof Image){
+                this._gl.deleteTexture(this._properties[propertyName].texture);
+                this._texture = undefined;
+            }
+        }
+        //Detach shaders
+        this._gl.detachShader(this._program, this._vertexShader);
+        this._gl.detachShader(this._program, this._fragmentShader);
+        //Delete shaders
+        this._gl.deleteShader(this._vertexShader);
+        this._gl.deleteShader(this._fragmentShader);
+        //Delete program
+        this._gl.deleteProgram(this._program);
+        //Delete Framebuffer
+        this._gl.deleteFramebuffer(this._framebuffer);
     }
 
     _update(currentTime){

@@ -402,6 +402,7 @@ class SourceNode extends GraphNode{
         this._stopTime = Infinity;
         this._ready = false;
         this._loadCalled = false;
+        this._gl.deleteTexture(this._texture);
         this._texture = undefined;
     }
 }
