@@ -1,0 +1,54 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>360 Video</title>
+    <meta name="description" content="360 Video — A-Frame">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aframe/0.5.0/aframe.js"></script>
+    <script type="text/javascript" src="../dist/videocontext.js"></script>
+    <script type="text/javascript" src="../js/utils.js"></script>
+  </head>
+  <body>
+    <script type="text/javascript">
+      window.onload = function(){
+        var canvas = document.getElementById("canvas");
+        var vc = new VideoContext(canvas);
+
+        var videoNode1 = vc.video("https://ucarecdn.com/bcece0a8-86ce-460e-856b-40dac4875f15/", undefined, undefined, {volume:0.2, loop:true});
+        var videoNode2 = vc.video("https://ucarecdn.com/bcece0a8-86ce-460e-856b-40dac4875f15/", undefined, undefined, {volume:0.2, loop:true});
+        
+        var effect1 = vc.effect(VideoContext.DEFINITIONS.MONOCHROME);
+        var effect2 = vc.effect(VideoContext.DEFINITIONS.STATIC_EFFECT);
+
+        var transition = vc.transition(VideoContext.DEFINITIONS.CROSSFADE);
+
+        effect2.amount = 0.1;
+        videoNode1.startAt(0);
+        videoNode1.stopAt(8);
+        videoNode2.startAt(6);
+        videoNode2.stopAt(14);
+
+
+        videoNode1.connect(effect1);
+        effect1.connect(transition);
+
+        videoNode2.connect(effect2);
+        effect2.connect(transition);
+
+        transition.transition(6, 8, 0, 1);
+        transition.connect(vc.destination);
+        vc.play();
+      }
+    </script>
+
+    <a-scene>
+      <a-assets>
+        <canvas id="canvas" width="1920" height="1080
+        "></canvas>
+      </a-assets>
+
+      <a-videosphere src="#canvas" rotation="0 180 0"></a-videosphere>
+    </a-scene>
+  </body>
+</html>
