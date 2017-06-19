@@ -274,8 +274,8 @@ var VideoContext =
 	        *
 	        * "stalled" happend anytime playback is stopped due to unavailbale data for playing assets (i.e video still loading)
 	        * . "update" is called any time a frame is rendered to the screen. "ended" is called once plackback has finished
-	        * (i.e ctx.currentTime == ctx.duration). "content" is called a the start of a time region where there is content 
-	        * playing out of one or more sourceNodes. "nocontent" is called at the start of any time region where the 
+	        * (i.e ctx.currentTime == ctx.duration). "content" is called a the start of a time region where there is content
+	        * playing out of one or more sourceNodes. "nocontent" is called at the start of any time region where the
 	        * VideoContext is still playing, but there are currently no activly playing soureces.
 	        *
 	        * @param {String} type - the event to register against ("stalled", "update", or "ended").
@@ -1329,6 +1329,7 @@ var VideoContext =
 	VideoContext.createControlFormForNode = _utilsJs.createControlFormForNode;
 	VideoContext.createSigmaGraphDataFromRenderGraph = _utilsJs.createSigmaGraphDataFromRenderGraph;
 	VideoContext.exportToJSON = _utilsJs.exportToJSON;
+	VideoContext.snapshot = _utilsJs.snapshot;
 	VideoContext.updateablesManager = updateablesManager;
 	VideoContext.importSimpleEDL = _utilsJs.importSimpleEDL;
 	module.exports = exports["default"];
@@ -2141,6 +2142,7 @@ var VideoContext =
 	exports.updateTexture = updateTexture;
 	exports.clearTexture = clearTexture;
 	exports.exportToJSON = exportToJSON;
+	exports.snapshot = snapshot;
 	exports.createControlFormForNode = createControlFormForNode;
 	exports.visualiseVideoContextGraph = visualiseVideoContextGraph;
 	exports.createSigmaGraphDataFromRenderGraph = createSigmaGraphDataFromRenderGraph;
@@ -2159,7 +2161,7 @@ var VideoContext =
 	
 	/*
 	* Utility function to compile a WebGL Vertex or Fragment shader.
-	* 
+	*
 	* @param {WebGLRenderingContext} gl - the webgl context fo which to build the shader.
 	* @param {String} shaderSource - A string of shader code to compile.
 	* @param {number} shaderType - Shader type, either WebGLRenderingContext.VERTEX_SHADER or WebGLRenderingContext.FRAGMENT_SHADER.
@@ -2181,7 +2183,7 @@ var VideoContext =
 	
 	/*
 	* Create a shader program from a passed vertex and fragment shader source string.
-	* 
+	*
 	* @param {WebGLRenderingContext} gl - the webgl context fo which to build the shader.
 	* @param {String} vertexShaderSource - A string of vertex shader code to compile.
 	* @param {String} fragmentShaderSource - A string of fragment shader code to compile.
@@ -2232,6 +2234,27 @@ var VideoContext =
 	}
 	
 	function exportToJSON(vc) {
+	    console.warn("VideoContext.exportToJSON has been deprecated. Please use VideoContext.snapshot instead.");
+	    return JSON.stringify(snapshotNodes(vc));
+	}
+	
+	function snapshot(vc) {
+	    return {
+	        nodes: snapshotNodes(vc),
+	        videoContext: snapshotVideoContext(vc)
+	    };
+	}
+	
+	function snapshotVideoContext(vc) {
+	    return {
+	        currentTime: vc.currentTime,
+	        duration: vc.duration,
+	        state: vc.state,
+	        playbackRate: vc.playbackRate
+	    };
+	}
+	
+	function snapshotNodes(vc) {
 	
 	    function qualifyURL(url) {
 	        var a = document.createElement("a");
@@ -2309,6 +2332,13 @@ var VideoContext =
 	            stop: source.stopTime,
 	            state: sourceNodeStateMapping[source.state]
 	        };
+	        if (node.type === "VideoNode") {
+	            node.currentTime = null;
+	            if (source.element && source.element.currentTime) {
+	                node.currentTime = source.element.currentTime;
+	            }
+	        }
+	
 	        if (source._sourceOffset) {
 	            node.sourceOffset = source._sourceOffset;
 	        }
@@ -2341,7 +2371,7 @@ var VideoContext =
 	        inputs: getInputIDs(vc.destination, vc)
 	    };
 	
-	    return JSON.stringify(result);
+	    return result;
 	}
 	
 	function createControlFormForNode(node, nodeName) {
