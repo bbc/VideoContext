@@ -4,7 +4,7 @@ module.exports = {
     output: {
         path: __dirname+'/dist',
         filename: "videocontext.js", 
-        libraryTarget: "var",
+        libraryTarget: "umd",
         library: "VideoContext"
     },
     module: {
