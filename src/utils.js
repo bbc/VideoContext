@@ -4,7 +4,7 @@ import { SOURCENODESTATE } from "./SourceNodes/sourcenode.js";
 
 /*
 * Utility function to compile a WebGL Vertex or Fragment shader.
-* 
+*
 * @param {WebGLRenderingContext} gl - the webgl context fo which to build the shader.
 * @param {String} shaderSource - A string of shader code to compile.
 * @param {number} shaderType - Shader type, either WebGLRenderingContext.VERTEX_SHADER or WebGLRenderingContext.FRAGMENT_SHADER.
@@ -25,7 +25,7 @@ export function compileShader(gl, shaderSource, shaderType) {
 
 /*
 * Create a shader program from a passed vertex and fragment shader source string.
-* 
+*
 * @param {WebGLRenderingContext} gl - the webgl context fo which to build the shader.
 * @param {String} vertexShaderSource - A string of vertex shader code to compile.
 * @param {String} fragmentShaderSource - A string of fragment shader code to compile.
@@ -38,7 +38,7 @@ export function createShaderProgram(gl, vertexShader, fragmentShader){
     gl.attachShader(program, vertexShader);
     gl.attachShader(program, fragmentShader);
     gl.linkProgram(program);
-   
+
     if (!gl.getProgramParameter(program, gl.LINK_STATUS)){
         throw {"error":4,"msg":"Can't link shader program for track", toString:function(){return this.msg;}};
     }
@@ -72,7 +72,28 @@ export function clearTexture(gl, texture){
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0,0,0,0]));
 }
 
-export function exportToJSON(vc){
+export function exportToJSON(vc) {
+    console.warn("VideoContext.exportToJSON has been deprecated. Please use VideoContext.snapshot instead.");
+    return JSON.stringify(snapshotNodes(vc));
+}
+
+export function snapshot(vc) {
+    return {
+        nodes: snapshotNodes(vc),
+        videoContext: snapshotVideoContext(vc)
+    };
+}
+
+function snapshotVideoContext(vc) {
+    return {
+        currentTime: vc.currentTime,
+        duration: vc.duration,
+        state: vc.state,
+        playbackRate: vc.playbackRate,
+    };
+}
+
+function snapshotNodes(vc){
 
     function qualifyURL(url) {
         var a = document.createElement("a");
@@ -127,8 +148,15 @@ export function exportToJSON(vc){
             url: node_url,
             start: source.startTime,
             stop: source.stopTime,
-            state: sourceNodeStateMapping[source.state]
+            state: sourceNodeStateMapping[source.state],
         };
+        if (node.type === "VideoNode") {
+            node.currentTime = null;
+            if(source.element && source.element.currentTime) {
+                node.currentTime = source.element.currentTime;
+            }
+        }
+
         if (source._sourceOffset){
             node.sourceOffset = source._sourceOffset;
         }
@@ -161,12 +189,12 @@ export function exportToJSON(vc){
         inputs: getInputIDs(vc.destination, vc)
     };
 
-    return JSON.stringify(result);
+    return result;
 }
 
 export function createControlFormForNode(node, nodeName){
     let rootDiv = document.createElement("div");
-    
+
     if (nodeName !== undefined){
         var title = document.createElement("h2");
         title.innerHTML = nodeName;
@@ -187,7 +215,7 @@ export function createControlFormForNode(node, nodeName){
             range.setAttribute("max", "1");
             range.setAttribute("step", "0.01");
             range.setAttribute("value", propertyValue,toString());
-            
+
             let number = document.createElement("input");
             number.setAttribute("type", "number");
             number.setAttribute("min", "0");
@@ -205,11 +233,11 @@ export function createControlFormForNode(node, nodeName){
                 }
             };
             range.onchange = function(){
-                node[propertyName] = parseFloat(range.value); 
-                number.value = range.value;     
+                node[propertyName] = parseFloat(range.value);
+                number.value = range.value;
             };
             number.onchange =function(){
-                node[propertyName] = parseFloat(number.value); 
+                node[propertyName] = parseFloat(number.value);
                 range.value = number.value;
             };
             propertyParagraph.appendChild(range);
@@ -247,7 +275,7 @@ export function createControlFormForNode(node, nodeName){
                 };
 
                 number.onchange = function(){
-                    node[propertyName][index] = parseFloat(number.value); 
+                    node[propertyName][index] = parseFloat(number.value);
                     range.value = number.value;
                 };
                 propertyParagraph.appendChild(range);
@@ -307,7 +335,7 @@ export function visualiseVideoContextGraph(videoContext, canvas){
     function calculateNodePos(node, nodeDepths, xStep, nodeHeight){
         let depth = nodeDepths.get(node);
         nodeDepths.values();
-  
+
         let count = 0;
         for(let nodeDepth of nodeDepths){
             if (nodeDepth[0] === node) break;
@@ -335,7 +363,7 @@ export function visualiseVideoContextGraph(videoContext, canvas){
             let dx = x2 - x1;
             let dy = y2 - y1;
 
-            let angle = Math.PI/2 - Math.atan2(dx,dy); 
+            let angle = Math.PI/2 - Math.atan2(dx,dy);
 
             let distance = Math.sqrt(Math.pow(x1-x2,2) + Math.pow(y1-y2,2));
 
@@ -373,7 +401,7 @@ export function visualiseVideoContextGraph(videoContext, canvas){
         }
         if (node.displayName === "CanvasNode"){
             color = "#572A72";
-            text = "Canvas"; 
+            text = "Canvas";
         }
         if (node.displayName === "ImageNode"){
             color = "#572A72";
@@ -403,7 +431,7 @@ export function createSigmaGraphDataFromRenderGraph(videoContext){
     function idForNode(node){
         if (videoContext._sourceNodes.indexOf(node) !== -1){
             let id = "source " + node.displayName+ " "+videoContext._sourceNodes.indexOf(node);
-            return id;    
+            return id;
         }
         let id = "processor " + node.displayName + " "+videoContext._processingNodes.indexOf(node);
         return id;
@@ -462,9 +490,9 @@ export function createSigmaGraphDataFromRenderGraph(videoContext){
 
 
 export function importSimpleEDL(ctx, playlist){
-    // Create a "track" node to connect all the clips to. 
+    // Create a "track" node to connect all the clips to.
     let trackNode = ctx.compositor(DEFINITIONS.COMBINE);
-    
+
     // Create a source node for each of the clips.
     for (let clip of playlist){
         let node;
@@ -498,7 +526,7 @@ export function visualiseVideoContextTimeline(videoContext, canvas, currentTime)
             let sourceNode = videoContext._sourceNodes[i];
             if(sourceNode._stopTime !== Infinity) total += sourceNode._stopTime;
         }
-        
+
         if (total > videoContext.currentTime){
             playlistDuration = total+5;
         }else{
@@ -515,7 +543,7 @@ export function visualiseVideoContextTimeline(videoContext, canvas, currentTime)
 
     ctx.clearRect(0,0,w,h);
     ctx.fillStyle = "#999";
-    
+
     for(let node of videoContext._processingNodes){
         if (node.displayName !== "TransitionNode") continue;
         for(let propertyName in node._transitions){
@@ -549,7 +577,7 @@ export function visualiseVideoContextTimeline(videoContext, canvas, currentTime)
         ctx.fill();
     }
 
-    
+
 
     if (currentTime !== undefined){
         ctx.fillStyle = "#000";
