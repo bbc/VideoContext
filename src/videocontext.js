@@ -9,7 +9,7 @@ import EffectNode from "./ProcessingNodes/effectnode.js";
 import TransitionNode from "./ProcessingNodes/transitionnode.js";
 import RenderGraph from "./rendergraph.js";
 import VideoElementCache from "./videoelementcache.js";
-import { createSigmaGraphDataFromRenderGraph, visualiseVideoContextTimeline, visualiseVideoContextGraph, createControlFormForNode, UpdateablesManager, exportToJSON, importSimpleEDL} from "./utils.js";
+import { createSigmaGraphDataFromRenderGraph, visualiseVideoContextTimeline, visualiseVideoContextGraph, createControlFormForNode, UpdateablesManager, exportToJSON, importSimpleEDL, snapshot } from "./utils.js";
 import DEFINITIONS from "./Definitions/definitions.js";
 
 let updateablesManager = new UpdateablesManager();
@@ -125,8 +125,8 @@ export default class VideoContext{
     *
     * "stalled" happend anytime playback is stopped due to unavailbale data for playing assets (i.e video still loading)
     * . "update" is called any time a frame is rendered to the screen. "ended" is called once plackback has finished
-    * (i.e ctx.currentTime == ctx.duration). "content" is called a the start of a time region where there is content 
-    * playing out of one or more sourceNodes. "nocontent" is called at the start of any time region where the 
+    * (i.e ctx.currentTime == ctx.duration). "content" is called a the start of a time region where there is content
+    * playing out of one or more sourceNodes. "nocontent" is called at the start of any time region where the
     * VideoContext is still playing, but there are currently no activly playing soureces.
     *
     * @param {String} type - the event to register against ("stalled", "update", or "ended").
@@ -466,8 +466,8 @@ export default class VideoContext{
         let canvasNode = new CanvasNode(canvas, this._gl, this._renderGraph, this._currentTime);
         this._sourceNodes.push(canvasNode);
         return canvasNode;
-    }    
-    
+    }
+
     /**
     * @depricated
     */
@@ -487,7 +487,7 @@ export default class VideoContext{
         this._processingNodes.push(effectNode);
         return effectNode;
     }
-    
+
     /**
     * @depricated
     */
@@ -561,7 +561,7 @@ export default class VideoContext{
     compositor(definition){
         let compositingNode = new CompositingNode(this._gl, this._renderGraph, definition);
         this._processingNodes.push(compositingNode);
-        return compositingNode;    
+        return compositingNode;
     }
 
     /**
@@ -657,7 +657,7 @@ export default class VideoContext{
         this._processingNodes.push(transitionNode);
         return transitionNode;
     }
-    
+
     /**
     * @depricated
     */
@@ -711,11 +711,11 @@ export default class VideoContext{
         this._sourceNodes = this._sourceNodes.filter(sourceNode=>{
             if (!sourceNode.destroyed) return sourceNode;
         });
-        
+
         this._processingNodes = this._processingNodes.filter(processingNode=>{
             if (!processingNode.destroyed) return processingNode;
         });
-        
+
 
         if (this._state === VideoContext.STATE.PLAYING || this._state === VideoContext.STATE.STALLED || this._state === VideoContext.STATE.PAUSED) {
             this._callCallbacks("update");
@@ -892,5 +892,6 @@ VideoContext.visualiseVideoContextGraph = visualiseVideoContextGraph;
 VideoContext.createControlFormForNode = createControlFormForNode;
 VideoContext.createSigmaGraphDataFromRenderGraph = createSigmaGraphDataFromRenderGraph;
 VideoContext.exportToJSON = exportToJSON;
+VideoContext.snapshot = snapshot;
 VideoContext.updateablesManager = updateablesManager;
 VideoContext.importSimpleEDL = importSimpleEDL;
