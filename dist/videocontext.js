@@ -71,37 +71,37 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _SourceNodesVideonodeJs2 = _interopRequireDefault(_SourceNodesVideonodeJs);
 	
-	var _SourceNodesImagenodeJs = __webpack_require__(26);
+	var _SourceNodesImagenodeJs = __webpack_require__(27);
 	
 	var _SourceNodesImagenodeJs2 = _interopRequireDefault(_SourceNodesImagenodeJs);
 	
-	var _SourceNodesCanvasnodeJs = __webpack_require__(27);
+	var _SourceNodesCanvasnodeJs = __webpack_require__(28);
 	
 	var _SourceNodesCanvasnodeJs2 = _interopRequireDefault(_SourceNodesCanvasnodeJs);
 	
 	var _SourceNodesSourcenodeJs = __webpack_require__(2);
 	
-	var _ProcessingNodesCompositingnodeJs = __webpack_require__(28);
+	var _ProcessingNodesCompositingnodeJs = __webpack_require__(29);
 	
 	var _ProcessingNodesCompositingnodeJs2 = _interopRequireDefault(_ProcessingNodesCompositingnodeJs);
 	
-	var _DestinationNodeDestinationnodeJs = __webpack_require__(31);
+	var _DestinationNodeDestinationnodeJs = __webpack_require__(32);
 	
 	var _DestinationNodeDestinationnodeJs2 = _interopRequireDefault(_DestinationNodeDestinationnodeJs);
 	
-	var _ProcessingNodesEffectnodeJs = __webpack_require__(32);
+	var _ProcessingNodesEffectnodeJs = __webpack_require__(33);
 	
 	var _ProcessingNodesEffectnodeJs2 = _interopRequireDefault(_ProcessingNodesEffectnodeJs);
 	
-	var _ProcessingNodesTransitionnodeJs = __webpack_require__(33);
+	var _ProcessingNodesTransitionnodeJs = __webpack_require__(34);
 	
 	var _ProcessingNodesTransitionnodeJs2 = _interopRequireDefault(_ProcessingNodesTransitionnodeJs);
 	
-	var _rendergraphJs = __webpack_require__(34);
+	var _rendergraphJs = __webpack_require__(35);
 	
 	var _rendergraphJs2 = _interopRequireDefault(_rendergraphJs);
 	
-	var _videoelementcacheJs = __webpack_require__(35);
+	var _videoelementcacheJs = __webpack_require__(36);
 	
 	var _videoelementcacheJs2 = _interopRequireDefault(_videoelementcacheJs);
 	
@@ -1621,7 +1621,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _utilsJs = __webpack_require__(3);
 	
-	var _graphnode = __webpack_require__(25);
+	var _graphnode = __webpack_require__(26);
 	
 	var _graphnode2 = _interopRequireDefault(_graphnode);
 	
@@ -3121,6 +3121,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _opacityJs2 = _interopRequireDefault(_opacityJs);
 	
+	var _cropJs = __webpack_require__(25);
+	
+	var _cropJs2 = _interopRequireDefault(_cropJs);
+	
 	var DEFINITIONS = {
 	    AAF_VIDEO_SCALE: _aaf_video_scaleJs2["default"],
 	    CROSSFADE: _crossfadeJs2["default"],
@@ -3141,7 +3145,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    AAF_VIDEO_POSITION: _aaf_video_positionJs2["default"],
 	    AAF_VIDEO_FLIP: _aaf_video_flipJs2["default"],
 	    AAF_VIDEO_FLOP: _aaf_video_flopJs2["default"],
-	    OPACITY: _opacityJs2["default"]
+	    OPACITY: _opacityJs2["default"],
+	    CROP: _cropJs2["default"]
 	};
 	
 	exports["default"] = DEFINITIONS;
@@ -4138,6 +4143,55 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 25 */
 /***/ (function(module, exports) {
 
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var crop = {
+	    "title": "Primer Simple Crop",
+	    "description": "A simple crop processors for primer",
+	    "vertexShader": "\
+	        attribute vec2 a_position;\
+	        attribute vec2 a_texCoord;\
+	        varying vec2 v_texCoord;\
+	        void main() {\
+	            gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+	            v_texCoord = a_texCoord;\
+	        }",
+	    "fragmentShader": "\
+	        precision mediump float;\
+	        uniform sampler2D u_image;\
+	        uniform float x;\
+	        uniform float y;\
+	        uniform float width;\
+	        uniform float height;\
+	        varying vec2 v_texCoord;\
+	        varying float v_progress;\
+	        void main(){\
+	            vec2 pos = (((v_texCoord)*vec2(width, height)) + vec2(0, 1.0-height)) +vec2(x,-y);\
+	            vec4 color = texture2D(u_image, pos);\
+	            if (pos[0] < 0.0 || pos[0] > 1.0 || pos[1] < 0.0 || pos[1] > 1.0){\
+	                color = vec4(0.0,0.0,0.0,0.0);\
+	            }\
+	            gl_FragColor = color;\
+	        }",
+	    "properties": {
+	        "x": { type: "uniform", value: 0.0 },
+	        "y": { type: "uniform", value: 0.0 },
+	        "width": { type: "uniform", value: 1.0 },
+	        "height": { type: "uniform", value: 1.0 }
+	    },
+	    "inputs": ["u_image"]
+	};
+	
+	exports["default"] = crop;
+	module.exports = exports["default"];
+
+/***/ }),
+/* 26 */
+/***/ (function(module, exports) {
+
 	//Matthew Shotton, R&D User Experience,© BBC 2015
 	"use strict";
 	
@@ -4321,7 +4375,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports["default"];
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	//Matthew Shotton, R&D User Experience,© BBC 2015
@@ -4461,7 +4515,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports["default"];
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	//Matthew Shotton, R&D User Experience,© BBC 2015
@@ -4553,7 +4607,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports["default"];
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	//Matthew Shotton, R&D User Experience,© BBC 2015
@@ -4573,7 +4627,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var _processingnode = __webpack_require__(29);
+	var _processingnode = __webpack_require__(30);
 	
 	var _processingnode2 = _interopRequireDefault(_processingnode);
 	
@@ -4659,7 +4713,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports["default"];
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	//Matthew Shotton, R&D User Experience,© BBC 2015
@@ -4679,13 +4733,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var _graphnode = __webpack_require__(25);
+	var _graphnode = __webpack_require__(26);
 	
 	var _graphnode2 = _interopRequireDefault(_graphnode);
 	
 	var _utilsJs = __webpack_require__(3);
 	
-	var _exceptionsJs = __webpack_require__(30);
+	var _exceptionsJs = __webpack_require__(31);
 	
 	var ProcessingNode = (function (_GraphNode) {
 	    _inherits(ProcessingNode, _GraphNode);
@@ -4951,7 +5005,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports["default"];
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports) {
 
 	//Matthew Shotton, R&D User Experience,© BBC 2015
@@ -4974,7 +5028,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	//Matthew Shotton, R&D User Experience,© BBC 2015
@@ -4994,7 +5048,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var _ProcessingNodesProcessingnode = __webpack_require__(29);
+	var _ProcessingNodesProcessingnode = __webpack_require__(30);
 	
 	var _ProcessingNodesProcessingnode2 = _interopRequireDefault(_ProcessingNodesProcessingnode);
 	
@@ -5096,7 +5150,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports["default"];
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	//Matthew Shotton, R&D User Experience,© BBC 2015
@@ -5116,7 +5170,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var _processingnode = __webpack_require__(29);
+	var _processingnode = __webpack_require__(30);
 	
 	var _processingnode2 = _interopRequireDefault(_processingnode);
 	
@@ -5181,7 +5235,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports["default"];
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	//Matthew Shotton, R&D User Experience,© BBC 2015
@@ -5201,7 +5255,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var _effectnode = __webpack_require__(32);
+	var _effectnode = __webpack_require__(33);
 	
 	var _effectnode2 = _interopRequireDefault(_effectnode);
 	
@@ -5393,7 +5447,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports["default"];
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	//Matthew Shotton, R&D User Experience,© BBC 2015
@@ -5407,7 +5461,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
-	var _exceptionsJs = __webpack_require__(30);
+	var _exceptionsJs = __webpack_require__(31);
 	
 	var RenderGraph = (function () {
 	    /**
@@ -5823,7 +5877,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports["default"];
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, exports) {
 
 	"use strict";
