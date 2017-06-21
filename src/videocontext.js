@@ -873,6 +873,13 @@ export default class VideoContext{
     static get DEFINITIONS() {
         return DEFINITIONS;
     }
+
+    /**
+     * Get a JS Object containing the state of the VideoContext instance and all the created nodes.
+     */
+    snapshot () {
+        return snapshot(this);
+    }
 }
 
 //playing - all sources are active
@@ -892,6 +899,5 @@ VideoContext.visualiseVideoContextGraph = visualiseVideoContextGraph;
 VideoContext.createControlFormForNode = createControlFormForNode;
 VideoContext.createSigmaGraphDataFromRenderGraph = createSigmaGraphDataFromRenderGraph;
 VideoContext.exportToJSON = exportToJSON;
-VideoContext.snapshot = snapshot;
 VideoContext.updateablesManager = updateablesManager;
 VideoContext.importSimpleEDL = importSimpleEDL;
