@@ -143,7 +143,7 @@ export default class VideoContext{
      */
     set id(newID){
         delete window.__VIDEOCONTEXT_REFS__[this._id];
-        if (window.__VIDEOCONTEXT_REFS__[newID] !== undefined) console.debug("Warning; setting id to that of an existing VideoContext instance.");
+        if (window.__VIDEOCONTEXT_REFS__[newID] !== undefined) console.warn("Warning; setting id to that of an existing VideoContext instance.");
         window.__VIDEOCONTEXT_REFS__[newID] = this;
         this._id = newID;
     }
