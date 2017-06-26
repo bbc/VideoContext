@@ -171,6 +171,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this._videoElementCache = new _videoelementcacheJs2["default"](options.videoElementCacheSize);
 	        }
 	
+	        // Create a unique ID for this VideoContext which can be used in the debugger.
+	        if (this._canvas.id) {
+	            if (typeof this._canvas.id === "string" || this._canvas.id instanceof String) {
+	                this._id = canvas.id;
+	            }
+	        }
+	        if (this._id === undefined) this._id = (0, _utilsJs.generateRandomId)();
+	        if (window.__VIDEOCONTEXT_REFS__ === undefined) window.__VIDEOCONTEXT_REFS__ = {};
+	        window.__VIDEOCONTEXT_REFS__[this._id] = this;
+	
 	        this._renderGraph = new _rendergraphJs2["default"]();
 	        this._sourceNodes = [];
 	        this._processingNodes = [];
@@ -202,14 +212,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	    //broken - the render graph is in a broken state
 	
 	    /**
-	    * Register a callback to happen at a specific point in time.
-	    * @param {number} time - the time at which to trigger the callback.
-	    * @param {Function} func - the callback to register.
-	    * @param {number} ordering - the order in which to call the callback if more than one is registered for the same time.
-	    */
+	     * Reurns an ID assigned to the VideoContext instance. This will either be the same id as the underlying canvas element,
+	     * or a uniquley generated one.
+	     */
 	
 	    _createClass(VideoContext, [{
 	        key: "registerTimelineCallback",
+	
+	        /**
+	        * Register a callback to happen at a specific point in time.
+	        * @param {number} time - the time at which to trigger the callback.
+	        * @param {Function} func - the callback to register.
+	        * @param {number} ordering - the order in which to call the callback if more than one is registered for the same time.
+	        */
 	        value: function registerTimelineCallback(time, func) {
 	            var ordering = arguments.length <= 2 || arguments[2] === undefined ? 0 : arguments[2];
 	
@@ -1130,6 +1145,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	         */
 	        value: function snapshot() {
 	            return (0, _utilsJs.snapshot)(this);
+	        }
+	    }, {
+	        key: "id",
+	        get: function get() {
+	            return this._id;
+	        },
+	
+	        /**
+	         * Set the ID of the VideoContext instance. This should be unique.
+	         */
+	        set: function set(newID) {
+	            delete window.__VIDEOCONTEXT_REFS__[this._id];
+	            if (window.__VIDEOCONTEXT_REFS__[newID] !== undefined) console.debug("Warning; setting id to that of an existing VideoContext instance.");
+	            window.__VIDEOCONTEXT_REFS__[newID] = this;
+	            this._id = newID;
 	        }
 	    }, {
 	        key: "element",
@@ -2158,6 +2188,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.createElementTexutre = createElementTexutre;
 	exports.updateTexture = updateTexture;
 	exports.clearTexture = clearTexture;
+	exports.generateRandomId = generateRandomId;
 	exports.exportToJSON = exportToJSON;
 	exports.snapshot = snapshot;
 	exports.createControlFormForNode = createControlFormForNode;
@@ -2248,6 +2279,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	    gl.bindTexture(gl.TEXTURE_2D, texture);
 	    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 	    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 0]));
+	}
+	
+	function generateRandomId() {
+	    var appearanceAdjective = ["adorable", "alert", "average", "beautiful", "blonde", "bloody", "blushing", "bright", "clean", "clear", "cloudy", "colourful", "concerned", "crowded", "curious", "cute", "dark", "dirty", "drab", "distinct", "dull", "elegant", "fancy", "filthy", "glamorous", "gleaming", "graceful", "grotesque", "homely", "light", "misty", "motionless", "muddy", "plain", "poised", "quaint", "scary", "shiny", "smoggy", "sparkling", "spotless", "stormy", "strange", "ugly", "unsightly", "unusual"];
+	    var conditionAdjective = ["alive", "brainy", "broken", "busy", "careful", "cautious", "clever", "crazy", "damaged", "dead", "difficult", "easy", "fake", "false", "famous", "forward", "fragile", "guilty", "helpful", "helpless", "important", "impossible", "infamous", "innocent", "inquisitive", "mad", "modern", "open", "outgoing", "outstanding", "poor", "powerful", "puzzled", "real", "rich", "right", "robust", "sane", "scary", "shy", "sleepy", "stupid", "super", "tame", "thick", "tired", "wild", "wrong"];
+	    var nounAnimal = ["manatee", "gila monster", "nematode", "seahorse", "slug", "koala bear", "giant tortoise", "garden snail", "starfish", "sloth", "american woodcock", "coral", "swallowtail butterfly", "house sparrow", "sea anemone"];
+	
+	    function randomChoice(array) {
+	        return array[Math.floor(Math.random() * array.length)];
+	    }
+	
+	    function capitalize(word) {
+	        word = word.replace(/\b\w/g, function (l) {
+	            return l.toUpperCase();
+	        });
+	        return word;
+	    }
+	
+	    var name = randomChoice(appearanceAdjective) + " " + randomChoice(conditionAdjective) + " " + randomChoice(nounAnimal);
+	    name = capitalize(name);
+	    name = name.replace(/ /g, "-");
+	    return name;
 	}
 	
 	function exportToJSON(vc) {

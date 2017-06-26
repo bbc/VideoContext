@@ -37,7 +37,7 @@ import EffectNode from "./ProcessingNodes/effectnode.js";
 import TransitionNode from "./ProcessingNodes/transitionnode.js";
 import RenderGraph from "./rendergraph.js";
 import VideoElementCache from "./videoelementcache.js";
-import { createSigmaGraphDataFromRenderGraph, visualiseVideoContextTimeline, visualiseVideoContextGraph, createControlFormForNode, UpdateablesManager, exportToJSON, importSimpleEDL, snapshot } from "./utils.js";
+import { createSigmaGraphDataFromRenderGraph, visualiseVideoContextTimeline, visualiseVideoContextGraph, createControlFormForNode, UpdateablesManager, exportToJSON, importSimpleEDL, snapshot, generateRandomId } from "./utils.js";
 import DEFINITIONS from "./Definitions/definitions.js";
 
 let updateablesManager = new UpdateablesManager();
@@ -95,6 +95,16 @@ export default class VideoContext{
             this._videoElementCache = new VideoElementCache(options.videoElementCacheSize);
         }
 
+        // Create a unique ID for this VideoContext which can be used in the debugger.
+        if(this._canvas.id) {
+            if (typeof this._canvas.id === "string" || this._canvas.id instanceof String){
+                this._id = canvas.id;
+            }
+        }
+        if(this._id === undefined) this._id = generateRandomId();
+        if (window.__VIDEOCONTEXT_REFS__ === undefined) window.__VIDEOCONTEXT_REFS__ = {};
+        window.__VIDEOCONTEXT_REFS__[this._id] = this;
+
 
         this._renderGraph = new RenderGraph();
         this._sourceNodes = [];
@@ -118,6 +128,24 @@ export default class VideoContext{
         if(!manualUpdate){
             updateablesManager.register(this);
         }
+    }
+
+    /**
+     * Reurns an ID assigned to the VideoContext instance. This will either be the same id as the underlying canvas element,
+     * or a uniquley generated one.
+     */
+    get id(){
+        return this._id;
+    }
+
+    /**
+     * Set the ID of the VideoContext instance. This should be unique.
+     */
+    set id(newID){
+        delete window.__VIDEOCONTEXT_REFS__[this._id];
+        if (window.__VIDEOCONTEXT_REFS__[newID] !== undefined) console.debug("Warning; setting id to that of an existing VideoContext instance.");
+        window.__VIDEOCONTEXT_REFS__[newID] = this;
+        this._id = newID;
     }
 
     /**
