@@ -1123,6 +1123,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	            console.log(msg);
 	        }
 	    }, {
+	        key: "snapshot",
+	
+	        /**
+	         * Get a JS Object containing the state of the VideoContext instance and all the created nodes.
+	         */
+	        value: function snapshot() {
+	            return (0, _utilsJs.snapshot)(this);
+	        }
+	    }, {
 	        key: "element",
 	        get: function get() {
 	            return this._canvas;
@@ -1338,7 +1347,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	VideoContext.createControlFormForNode = _utilsJs.createControlFormForNode;
 	VideoContext.createSigmaGraphDataFromRenderGraph = _utilsJs.createSigmaGraphDataFromRenderGraph;
 	VideoContext.exportToJSON = _utilsJs.exportToJSON;
-	VideoContext.snapshot = _utilsJs.snapshot;
 	VideoContext.updateablesManager = updateablesManager;
 	VideoContext.importSimpleEDL = _utilsJs.importSimpleEDL;
 	module.exports = exports["default"];
