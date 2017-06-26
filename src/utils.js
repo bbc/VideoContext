@@ -72,6 +72,28 @@ export function clearTexture(gl, texture){
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0,0,0,0]));
 }
 
+
+export function generateRandomId(){
+    const appearanceAdjective = ["adorable", "alert", "average", "beautiful", "blonde", "bloody", "blushing", "bright", "clean", "clear", "cloudy", "colourful", "concerned","crowded", "curious", "cute", "dark", "dirty", "drab", "distinct", "dull", "elegant", "fancy", "filthy", "glamorous", "gleaming", "graceful", "grotesque", "homely", "light", "misty", "motionless", "muddy", "plain", "poised", "quaint", "scary", "shiny", "smoggy", "sparkling", "spotless", "stormy", "strange", "ugly", "unsightly", "unusual"];
+    const conditionAdjective = ["alive", "brainy", "broken", "busy", "careful","cautious", "clever", "crazy", "damaged", "dead", "difficult","easy","fake", "false","famous", "forward", "fragile","guilty", "helpful","helpless","important", "impossible","infamous","innocent", "inquisitive", "mad", "modern", "open", "outgoing", "outstanding","poor", "powerful","puzzled", "real", "rich", "right", "robust","sane", "scary", "shy", "sleepy","stupid", "super", "tame", "thick","tired","wild", "wrong"];
+    const nounAnimal = ["manatee", "gila monster", "nematode", "seahorse", "slug", "koala bear", "giant tortoise","garden snail", "starfish", "sloth", "american woodcock", "coral", "swallowtail butterfly", "house sparrow", "sea anemone"];
+
+    function randomChoice(array){
+        return array[Math.floor(Math.random() * array.length)];
+    }
+
+    function capitalize(word){
+        word = word.replace(/\b\w/g, l => l.toUpperCase());
+        return word;
+    }
+
+    let name = randomChoice(appearanceAdjective) + " " + randomChoice(conditionAdjective) + " " + randomChoice(nounAnimal);
+    name = capitalize(name);
+    name = name.replace(/ /g, "-");
+    return name;
+}
+
+
 export function exportToJSON(vc) {
     console.warn("VideoContext.exportToJSON has been deprecated. Please use VideoContext.snapshot instead.");
     return JSON.stringify(snapshotNodes(vc));
