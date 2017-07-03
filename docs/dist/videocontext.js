@@ -5951,9 +5951,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
-	var stripHash = function stripHash(url) {
-	    return url.protocol + "//" + url.hostname + ":" + url.port + url.pathname;
-	};
+	function stripHash(url) {
+	    if (url.port === "" || url.port === undefined) {
+	        return url.protocol + "//" + url.hostname + url.pathname;
+	    } else {
+	        return url.protocol + "//" + url.hostname + ":" + url.port + url.pathname;
+	    }
+	}
 	
 	var VideoElementCache = (function () {
 	    function VideoElementCache() {
