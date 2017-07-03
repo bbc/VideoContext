@@ -88,13 +88,13 @@ export default class VideoContext{
         }
 
         // Initialise the video element cache
-        if(!options.useVideoElementCache) options.useVideoElementCache = true;
+        if(options.useVideoElementCache === undefined) options.useVideoElementCache = true;
         this._useVideoElementCache = options.useVideoElementCache;
         if (this._useVideoElementCache){
             if (!options.videoElementCacheSize) options.videoElementCacheSize = 5;
             this._videoElementCache = new VideoElementCache(options.videoElementCacheSize);
         }
-
+        
         // Create a unique ID for this VideoContext which can be used in the debugger.
         if(this._canvas.id) {
             if (typeof this._canvas.id === "string" || this._canvas.id instanceof String){

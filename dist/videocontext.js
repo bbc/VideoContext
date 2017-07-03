@@ -164,7 +164,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        // Initialise the video element cache
-	        if (!options.useVideoElementCache) options.useVideoElementCache = true;
+	        if (options.useVideoElementCache === undefined) options.useVideoElementCache = true;
 	        this._useVideoElementCache = options.useVideoElementCache;
 	        if (this._useVideoElementCache) {
 	            if (!options.videoElementCacheSize) options.videoElementCacheSize = 5;
