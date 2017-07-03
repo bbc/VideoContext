@@ -1,4 +1,10 @@
-const stripHash = url => `${url.protocol}//${url.hostname}:${url.port}${url.pathname}`;
+function stripHash (url){
+    if (url.port === "" || url.port === undefined){
+        return `${url.protocol}//${url.hostname}${url.pathname}`;
+    } else {
+        return `${url.protocol}//${url.hostname}:${url.port}${url.pathname}`;
+    }
+}
 
 class VideoElementCache {
 
