@@ -1480,6 +1480,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    this._element = document.createElement("video");
 	                    this._element.setAttribute("crossorigin", "anonymous");
 	                    this._element.setAttribute("webkit-playsinline", "");
+	                    this._element.setAttribute("playsinline", "");
 	                    this._playbackRateUpdated = true;
 	                }
 	
@@ -2235,8 +2236,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	* Create a shader program from a passed vertex and fragment shader source string.
 	*
 	* @param {WebGLRenderingContext} gl - the webgl context fo which to build the shader.
-	* @param {String} vertexShaderSource - A string of vertex shader code to compile.
-	* @param {String} fragmentShaderSource - A string of fragment shader code to compile.
+	* @param {WebGLShader} vertexShader - A compiled vertex shader.
+	* @param {WebGLShader} fragmentShader - A compiled fragment shader.
 	*
 	* @return {WebGLProgram} A compiled & linkde shader program.
 	*/
@@ -5981,6 +5982,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var videoElement = document.createElement("video");
 	            videoElement.setAttribute("crossorigin", "anonymous");
 	            videoElement.setAttribute("webkit-playsinline", "");
+	            videoElement.setAttribute("playsinline", "");
 	            videoElement.src = "";
 	            return videoElement;
 	        }
