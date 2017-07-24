@@ -90,6 +90,7 @@ class VideoNode extends SourceNode {
                 this._element = document.createElement("video");
                 this._element.setAttribute("crossorigin", "anonymous");
                 this._element.setAttribute("webkit-playsinline", "");
+                this._element.setAttribute("playsinline", "");
                 this._playbackRateUpdated = true;
             }
  
