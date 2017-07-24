@@ -1482,7 +1482,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    this._element.setAttribute("webkit-playsinline", "");
 	                    this._playbackRateUpdated = true;
 	                }
-	                if (this._elementURL instanceof MediaStream) {
+	
+	                if (window.MediaStream !== undefined && this._elementURL instanceof MediaStream) {
 	                    this._element.srcObject = this._elementURL;
 	                } else {
 	                    this._element.src = this._elementURL;
@@ -1680,7 +1681,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._element = undefined;
 	        this._elementURL = undefined;
 	        this._isResponsibleForElementLifeCycle = true;
-	        if (typeof src === "string" || src instanceof MediaStream) {
+	
+	        if (typeof src === "string" || window.MediaStream !== undefined && src instanceof MediaStream) {
 	            //create the node from the passed URL or MediaStream
 	            this._elementURL = src;
 	        } else {

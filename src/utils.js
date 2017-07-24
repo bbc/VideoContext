@@ -27,8 +27,8 @@ export function compileShader(gl, shaderSource, shaderType) {
 * Create a shader program from a passed vertex and fragment shader source string.
 *
 * @param {WebGLRenderingContext} gl - the webgl context fo which to build the shader.
-* @param {String} vertexShaderSource - A string of vertex shader code to compile.
-* @param {String} fragmentShaderSource - A string of fragment shader code to compile.
+* @param {WebGLShader} vertexShader - A compiled vertex shader.
+* @param {WebGLShader} fragmentShader - A compiled fragment shader.
 *
 * @return {WebGLProgram} A compiled & linkde shader program.
 */

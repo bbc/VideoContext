@@ -92,12 +92,13 @@ class VideoNode extends SourceNode {
                 this._element.setAttribute("webkit-playsinline", "");
                 this._playbackRateUpdated = true;
             }
-            if (this._elementURL instanceof MediaStream){
+ 
+            if (window.MediaStream !== undefined && this._elementURL instanceof MediaStream){
                 this._element.srcObject = this._elementURL;
-            }else{
+            } else {
                 this._element.src = this._elementURL;
             }
-
+ 
             for (let key in this._attributes) {
                 this._element[key] = this._attributes[key];
             }

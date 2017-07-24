@@ -14,7 +14,8 @@ class SourceNode extends GraphNode{
         this._element = undefined;
         this._elementURL = undefined;
         this._isResponsibleForElementLifeCycle = true;
-        if (typeof src === "string" || src instanceof MediaStream){
+
+        if (typeof src === "string" || (window.MediaStream !== undefined && src instanceof MediaStream)){
             //create the node from the passed URL or MediaStream
             this._elementURL = src;
         }else{
@@ -22,6 +23,8 @@ class SourceNode extends GraphNode{
             this._element = src;
             this._isResponsibleForElementLifeCycle = false;
         }
+        
+  
 
         this._state = STATE.waiting;
         this._currentTime = currentTime;
