@@ -32,7 +32,6 @@ class VideoElementCache {
             for(let element of this._elements){
                 try {
                     element.play().then(()=>{
-                        element.pause();
                     }, (e)=>{
                         if (e.name !== "NotSupportedError")throw(e);
                     });
