@@ -5995,22 +5995,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	                var _iteratorError = undefined;
 	
 	                try {
-	                    var _loop = function () {
+	                    for (var _iterator = this._elements[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
 	                        var element = _step.value;
 	
 	                        try {
-	                            element.play().then(function () {
-	                                element.pause();
-	                            }, function (e) {
+	                            element.play().then(function () {}, function (e) {
 	                                if (e.name !== "NotSupportedError") throw e;
 	                            });
 	                        } catch (e) {
 	                            //console.log(e.name);
 	                        }
-	                    };
-	
-	                    for (var _iterator = this._elements[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	                        _loop();
 	                    }
 	                } catch (err) {
 	                    _didIteratorError = true;
