@@ -13,6 +13,7 @@ class VideoNode extends SourceNode {
         this._globalPlaybackRate = globalPlaybackRate;
         this._videoElementCache = videoElementCache;
         this._playbackRate = 1.0;
+        this._volume = 1.0;
         this._playbackRateUpdated = true;
         this._attributes = attributes;
         this._loopElement = false;
@@ -51,6 +52,11 @@ class VideoNode extends SourceNode {
 
     get elementURL(){
         return this._elementURL;
+    }
+
+    set volume(volume){
+        this._volume = volume;
+        if(this._element !== undefined) this._element.volume = this._volume;
     }
 
     _load(){
@@ -93,7 +99,7 @@ class VideoNode extends SourceNode {
                 this._element.setAttribute("playsinline", "");
                 this._playbackRateUpdated = true;
             }
- 
+            this._element.volume = this._volume;
             if (window.MediaStream !== undefined && this._elementURL instanceof MediaStream){
                 this._element.srcObject = this._elementURL;
             } else {

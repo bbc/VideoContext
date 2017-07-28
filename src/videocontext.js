@@ -85,6 +85,7 @@ export default class VideoContext{
         this._currentTime = 0;
         this._state = VideoContext.STATE.PAUSED;
         this._playbackRate = 1.0;
+        this._volume = 1.0;
         this._sourcesPlaying = undefined;
         this._destinationNode = new DestinationNode(this._gl, this._renderGraph);
 
@@ -376,6 +377,27 @@ export default class VideoContext{
         return this._playbackRate;
     }
 
+
+    /**
+     * Set the volume of all VideoNode's created in the VideoContext.
+     * @param {number} volume - the volume to apply to the video nodes.
+     */
+    set volume(vol){
+        for (let node of this._sourceNodes){
+            if(node instanceof VideoNode){
+                node.volume = vol;
+            }
+        }
+        this._volume = vol;
+    }
+
+    /**
+    *  Return the current volume of the video context.
+    * @return {number} A value representing the volume. 1.0 by default.
+    */
+    get volume(){
+        return this._volume;
+    }
 
     /**
     * Start the VideoContext playing
