@@ -188,6 +188,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._currentTime = 0;
 	        this._state = VideoContext.STATE.PAUSED;
 	        this._playbackRate = 1.0;
+	        this._volume = 1.0;
 	        this._sourcesPlaying = undefined;
 	        this._destinationNode = new _DestinationNodeDestinationnodeJs2["default"](this._gl, this._renderGraph);
 	
@@ -1354,6 +1355,51 @@ return /******/ (function(modules) { // webpackBootstrap
 	        get: function get() {
 	            return this._playbackRate;
 	        }
+	
+	        /**
+	         * Set the volume of all VideoNode's created in the VideoContext.
+	         * @param {number} volume - the volume to apply to the video nodes.
+	         */
+	    }, {
+	        key: "volume",
+	        set: function set(vol) {
+	            var _iteratorNormalCompletion14 = true;
+	            var _didIteratorError14 = false;
+	            var _iteratorError14 = undefined;
+	
+	            try {
+	                for (var _iterator14 = this._sourceNodes[Symbol.iterator](), _step14; !(_iteratorNormalCompletion14 = (_step14 = _iterator14.next()).done); _iteratorNormalCompletion14 = true) {
+	                    var node = _step14.value;
+	
+	                    if (node instanceof _SourceNodesVideonodeJs2["default"]) {
+	                        node.volume = vol;
+	                    }
+	                }
+	            } catch (err) {
+	                _didIteratorError14 = true;
+	                _iteratorError14 = err;
+	            } finally {
+	                try {
+	                    if (!_iteratorNormalCompletion14 && _iterator14["return"]) {
+	                        _iterator14["return"]();
+	                    }
+	                } finally {
+	                    if (_didIteratorError14) {
+	                        throw _iteratorError14;
+	                    }
+	                }
+	            }
+	
+	            this._volume = vol;
+	        },
+	
+	        /**
+	        *  Return the current volume of the video context.
+	        * @return {number} A value representing the volume. 1.0 by default.
+	        */
+	        get: function get() {
+	            return this._volume;
+	        }
 	    }], [{
 	        key: "DEFINITIONS",
 	        get: function get() {
@@ -1431,6 +1477,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._globalPlaybackRate = globalPlaybackRate;
 	        this._videoElementCache = videoElementCache;
 	        this._playbackRate = 1.0;
+	        this._volume = 1.0;
 	        this._playbackRateUpdated = true;
 	        this._attributes = attributes;
 	        this._loopElement = false;
@@ -1483,7 +1530,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    this._element.setAttribute("playsinline", "");
 	                    this._playbackRateUpdated = true;
 	                }
-	
+	                this._element.volume = this._volume;
 	                if (window.MediaStream !== undefined && this._elementURL instanceof MediaStream) {
 	                    this._element.srcObject = this._elementURL;
 	                } else {
@@ -1629,6 +1676,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        key: "elementURL",
 	        get: function get() {
 	            return this._elementURL;
+	        }
+	    }, {
+	        key: "volume",
+	        set: function set(volume) {
+	            this._volume = volume;
+	            if (this._element !== undefined) this._element.volume = this._volume;
 	        }
 	    }]);
 	
