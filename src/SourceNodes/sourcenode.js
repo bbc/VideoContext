@@ -365,7 +365,7 @@ class SourceNode extends GraphNode{
         }
 
         //update this source nodes texture
-        if (this._element === undefined || this._ready === false) return true;
+        if (this._element === undefined) return true;
 
         if (!this._renderPaused && this._state === STATE.paused) {
             if(triggerTextureUpdate)updateTexture(this._gl, this._texture, this._element);

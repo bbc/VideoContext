@@ -253,7 +253,6 @@ export default class VideoContext{
     *
     */
     set currentTime(currentTime){
-        console.debug("VideoContext - seeking to", currentTime);
         if (currentTime < this._duration && this._state === VideoContext.STATE.ENDED) this._state = VideoContext.STATE.PAUSED;
 
         if (typeof currentTime === "string" || currentTime instanceof String){
@@ -757,7 +756,6 @@ export default class VideoContext{
 
     _update(dt){
         //Remove any destroyed nodes
-
         this._sourceNodes = this._sourceNodes.filter(sourceNode=>{
             if (!sourceNode.destroyed) return sourceNode;
         });
