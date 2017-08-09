@@ -806,7 +806,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        key: "_update",
 	        value: function _update(dt) {
 	            //Remove any destroyed nodes
-	
 	            this._sourceNodes = this._sourceNodes.filter(function (sourceNode) {
 	                if (!sourceNode.destroyed) return sourceNode;
 	            });
@@ -1206,7 +1205,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: "currentTime",
 	        set: function set(currentTime) {
-	            console.debug("VideoContext - seeking to", currentTime);
 	            if (currentTime < this._duration && this._state === VideoContext.STATE.ENDED) this._state = VideoContext.STATE.PAUSED;
 	
 	            if (typeof currentTime === "string" || currentTime instanceof String) {
@@ -2095,7 +2093,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	
 	            //update this source nodes texture
-	            if (this._element === undefined || this._ready === false) return true;
+	            if (this._element === undefined) return true;
 	
 	            if (!this._renderPaused && this._state === STATE.paused) {
 	                if (triggerTextureUpdate) (0, _utilsJs.updateTexture)(this._gl, this._texture, this._element);
