@@ -253,7 +253,7 @@ export default class VideoContext{
     *
     */
     set currentTime(currentTime){
-        if (currentTime < this._duration && this._state === VideoContext.STATE.ENDED) this._state = VideoContext.STATE.PAUSED;
+        if (currentTime < this.duration && this._state === VideoContext.STATE.ENDED) this._state = VideoContext.STATE.PAUSED;
 
         if (typeof currentTime === "string" || currentTime instanceof String){
             currentTime = parseFloat(currentTime);
