@@ -5813,7 +5813,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	            if (destinationNode._limitConnections === false) {
 	                //check if connection is already made, if so raise a warning
 	                var inputs = this.getInputsForNode(destinationNode);
-	                if (inputs.includes(sourceNode)) console.log("WARNING - node connected mutliple times", sourceNode, destinationNode);
+	                if (inputs.includes(sourceNode)) {
+	                    console.debug("WARNING - node connected mutliple times, removing previous connection");
+	                    this.unregisterConnection(sourceNode, destinationNode);
+	                }
 	            }
 	
 	            if (typeof target === "number") {
