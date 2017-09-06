@@ -5809,6 +5809,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	            if (destinationNode.inputs.length >= destinationNode.inputNames.length && destinationNode._limitConnections === true) {
 	                throw new _exceptionsJs.ConnectException("Node has reached max number of inputs, can't connect");
 	            }
+	
+	            if (destinationNode._limitConnections === false) {
+	                //check if connection is already made, if so raise a warning
+	                var inputs = this.getInputsForNode(destinationNode);
+	                if (inputs.includes(sourceNode)) console.log("WARNING - node connected mutliple times", sourceNode, destinationNode);
+	            }
+	
 	            if (typeof target === "number") {
 	                //target is a specific
 	                this.connections.push({ "source": sourceNode, "type": "zIndex", "zIndex": target, "destination": destinationNode });
