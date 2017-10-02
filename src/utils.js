@@ -116,6 +116,7 @@ function snapshotVideoContext(vc) {
     };
 }
 
+let warningExportSourceLogged = false;
 function snapshotNodes(vc){
 
     function qualifyURL(url) {
@@ -160,7 +161,10 @@ function snapshotNodes(vc){
         let node_url = "";
 
         if(!source._isResponsibleForElementLifeCycle){
-            console.debug("Warning - Trying to export source created from an element not a URL. URL of export will be set to the elements src attribute and may be incorrect", source);
+            if (!warningExportSourceLogged){
+                console.debug("Warning - Trying to export source created from an element not a URL. URL of export will be set to the elements src attribute and may be incorrect", source);
+                warningExportSourceLogged = true;
+            }
             node_url = source.element.src;
         } else {
             node_url = qualifyURL(source._elementURL);
