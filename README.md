@@ -54,63 +54,9 @@ The design is heavily inspired by the WebAudioAPI so should feel familiar to use
 ![Graph and timeline view](../master/readme-diagram.png?raw=true)
 
 ## Debugging
-There's two built in tools that help with debugging VideoContext graphs and timelines. The following JavaScript and HTML snippets show how to set these up.
+If you need to debug video context graphs or get a better insight into what is happening under the hood there's a new browser extension for chrome, [videocontext-devtools](https://github.com/bbc/videocontext-devtools)
 
-First two canvases for rendering to must be created.
-``` HTML
-<p>
-    <canvas id="visualisation-canvas" width="390", height="20"></canvas>
-</p>
-<p>
-    <canvas id="graph-canvas" width="480", height="150"></canvas>
-</p>
-```
-
-Then setup the drawing to the canvases using JavaScript.
-``` JavaScript
-/****************************
-* GUI setup
-*****************************/
-/*
-* Create an interactive visualization canvas.
-*/
-
-//Render a graph view
-var graphCanvas = document.getElementById("graph-canvas");
-VideoContext.visualiseVideoContextGraph(videoCtx, graphCanvas);
-
-
-var visualisationCanvas = document.getElementById("visualisation-canvas");
-
-//Setup up a render function so we can update the playhead position.
-function render () {
-    //VideoCompositor.renderPlaylist(playlist, visualisationCanvas, videoCompositor.currentTime); 
-    VideoContext.visualiseVideoContextTimeline(videoCtx, visualisationCanvas, videoCtx.currentTime);
-    requestAnimationFrame(render);
-}
-requestAnimationFrame(render);
-//catch mouse events to we can scrub through the timeline.
-visualisationCanvas.addEventListener("mousedown", function(evt){
-    var x;
-    if (evt.x!== undefined){
-        x = evt.x - visualisationCanvas.offsetLeft;
-    }else{
-        //Fix for firefox
-        x = evt.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;          
-    }
-    var secondsPerPixel = videoCtx.duration / visualisationCanvas.width;
-    videoCtx.currentTime = secondsPerPixel*x;
-}, false);
-
-var playButton = document.getElementById("play-button");
-var pauseButton = document.getElementById("pause-button");
-playButton.onclick = function(){ videoCtx.play(); };
-pauseButton.onclick = function(){ videoCtx.pause(); };
-```
-
-The above snippets, when rendered, will produce something similar to the following visualization (depending on your render graph).
-
-![Debugging view](../master/readme-debugging.png?raw=true)
+![Debugging view](../master/readme-debugging.jpg?raw=true)
 
 ## Documentation
 API Documentation can be built using [ESDoc](https://esdoc.org/) by running the following commands:
