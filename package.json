@@ -11,7 +11,8 @@
   ],
   "scripts": {
     "doc": "node ./node_modules/jsdoc/jsdoc.js -c jsdoc.json && cp dist/videocontext.* docs/dist/",
-    "build": "node ./node_modules/mocha/bin/mocha --compilers js:babel-core/register && ./node_modules/webpack/bin/webpack.js --config webpack.config.js && npm run doc",
+    "build": "npm run test && ./node_modules/webpack/bin/webpack.js --config webpack.config.js && npm run doc",
+    "test": "node ./node_modules/mocha/bin/mocha --compilers js:babel-core/register",
     "dev": "./node_modules/webpack/bin/webpack.js --watch --config webpack.config.js & ./node_modules/reload/bin/reload -b"
   },
   "dependencies": {},
