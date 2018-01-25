@@ -4557,7 +4557,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	                this._element.setAttribute("crossorigin", "anonymous");
 	                this._element.src = this._elementURL;
 	                this._element.onload = function () {
-	                    console.log("image loaded!!");
 	                    _this._ready = true;
 	                    _this._triggerCallbacks("loaded");
 	                };
