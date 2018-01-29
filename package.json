@@ -2,7 +2,14 @@
   "name": "videocontext",
   "version": "0.51.5",
   "description": "A WebGL & HTML5 graph based video composition library",
-  "keywords":["video", "context", "composition", "timeline", "html5", "webgl"],
+  "keywords": [
+    "video",
+    "context",
+    "composition",
+    "timeline",
+    "html5",
+    "webgl"
+  ],
   "contributors": [
     {
       "name": "Matthew Shotton",
@@ -28,6 +35,8 @@
     "mocha": "2.3.4",
     "node-libs-browser": "^0.5.2",
     "reload": "^1.0.1",
+    "sinon": "^4.2.1",
+    "webgl-mock": "^0.1.6",
     "webpack": "^1.9.11"
   },
   "main": "dist/videocontext.js",
