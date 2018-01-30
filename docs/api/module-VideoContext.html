@@ -28,7 +28,7 @@
 
 <header>
     
-        <h2>module:VideoContext</h2>
+        <h2><span class="attribs"><span class="type-signature"></span></span>module:VideoContext<span class="signature">(canvas, initErrorCallback, options)</span><span class="type-signature"></span></h2>
         
     
 </header>
@@ -40,7 +40,9 @@
 
     
 
+    
     <h4 class="name" id="module:VideoContext"><span class="type-signature"></span>new module:VideoContext<span class="signature">(canvas, initErrorCallback, options)</span><span class="type-signature"></span></h4>
+    
 
     
 
@@ -211,6 +213,8 @@
 
 
 
+
+
     <h5>Example</h5>
     
     <pre class="prettyprint"><code>var canvasElement = document.getElementById("canvas");
@@ -232,7 +236,9 @@ ctx.play();</code></pre>
 
     
 
-     
+    
+
+    
 
     
 
@@ -1069,7 +1075,9 @@ ctx.play(); // Double playback rate means this will finish playing in 5 seconds.
 
     
 
+    
     <h4 class="name" id="canvas"><span class="type-signature"></span>canvas<span class="signature">(src)</span><span class="type-signature"> &rarr; {<a href="CanvasNode.html">CanvasNode</a>}</span></h4>
+    
 
     
 
@@ -1217,12 +1225,16 @@ ctx.play(); // Double playback rate means this will finish playing in 5 seconds.
 
 
 
+
+
         
             
 
     
 
+    
     <h4 class="name" id="compositor"><span class="type-signature"></span>compositor<span class="signature">(definition)</span><span class="type-signature"> &rarr; {<a href="CompositingNode.html">CompositingNode</a>}</span></h4>
+    
 
     
 
@@ -1372,6 +1384,8 @@ The shader in the definition is run for each input in turn, drawing them to the 
     
 
 
+
+
     <h5>Example</h5>
     
     <pre class="prettyprint"><code>var canvasElement = document.getElementById("canvas");
@@ -1428,7 +1442,9 @@ trackNode.connect(ctx.destination);</code></pre>
 
     
 
+    
     <h4 class="name" id="createCanvasSourceNode"><span class="type-signature"></span>createCanvasSourceNode<span class="signature">()</span><span class="type-signature"></span></h4>
+    
 
     
 
@@ -1501,12 +1517,16 @@ trackNode.connect(ctx.destination);</code></pre>
 
 
 
+
+
         
             
 
     
 
+    
     <h4 class="name" id="createCompositingNode"><span class="type-signature"></span>createCompositingNode<span class="signature">()</span><span class="type-signature"></span></h4>
+    
 
     
 
@@ -1579,12 +1599,16 @@ trackNode.connect(ctx.destination);</code></pre>
 
 
 
+
+
         
             
 
     
 
+    
     <h4 class="name" id="createEffectNode"><span class="type-signature"></span>createEffectNode<span class="signature">()</span><span class="type-signature"></span></h4>
+    
 
     
 
@@ -1657,12 +1681,16 @@ trackNode.connect(ctx.destination);</code></pre>
 
 
 
+
+
         
             
 
     
 
+    
     <h4 class="name" id="createImageSourceNode"><span class="type-signature"></span>createImageSourceNode<span class="signature">()</span><span class="type-signature"></span></h4>
+    
 
     
 
@@ -1735,12 +1763,16 @@ trackNode.connect(ctx.destination);</code></pre>
 
 
 
+
+
         
             
 
     
 
+    
     <h4 class="name" id="createTransitionNode"><span class="type-signature"></span>createTransitionNode<span class="signature">()</span><span class="type-signature"></span></h4>
+    
 
     
 
@@ -1813,12 +1845,16 @@ trackNode.connect(ctx.destination);</code></pre>
 
 
 
+
+
         
             
 
     
 
+    
     <h4 class="name" id="createVideoSourceNode"><span class="type-signature"></span>createVideoSourceNode<span class="signature">()</span><span class="type-signature"></span></h4>
+    
 
     
 
@@ -1891,12 +1927,16 @@ trackNode.connect(ctx.destination);</code></pre>
 
 
 
+
+
         
             
 
     
 
+    
     <h4 class="name" id="effect"><span class="type-signature"></span>effect<span class="signature">(definition)</span><span class="type-signature"> &rarr; {<a href="EffectNode.html">EffectNode</a>}</span></h4>
+    
 
     
 
@@ -2044,12 +2084,16 @@ trackNode.connect(ctx.destination);</code></pre>
 
 
 
+
+
         
             
 
     
 
+    
     <h4 class="name" id="image"><span class="type-signature"></span>image<span class="signature">(src, preloadTime<span class="signature-attributes">opt</span>, imageElementAttributes<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="ImageNode.html">ImageNode</a>}</span></h4>
+    
 
     
 
@@ -2291,6 +2335,8 @@ trackNode.connect(ctx.destination);</code></pre>
     
 
 
+
+
     <h5>Examples</h5>
     
     <pre class="prettyprint"><code>var canvasElement = document.getElementById("canvas");
@@ -2309,7 +2355,9 @@ var imageNode = ctx.image(imageElement);</code></pre>
 
     
 
+    
     <h4 class="name" id="pause"><span class="type-signature"></span>pause<span class="signature">()</span><span class="type-signature"></span></h4>
+    
 
     
 
@@ -2385,6 +2433,8 @@ var imageNode = ctx.image(imageElement);</code></pre>
 
 
 
+
+
     <h5>Example</h5>
     
     <pre class="prettyprint"><code>var canvasElement = document.getElementById("canvas");
@@ -2404,7 +2454,9 @@ setTimeout(function(){ctx.pause();}, 1000); //pause playback after roughly one s
 
     
 
+    
     <h4 class="name" id="play"><span class="type-signature"></span>play<span class="signature">()</span><span class="type-signature"></span></h4>
+    
 
     
 
@@ -2480,6 +2532,8 @@ setTimeout(function(){ctx.pause();}, 1000); //pause playback after roughly one s
 
 
 
+
+
     <h5>Example</h5>
     
     <pre class="prettyprint"><code>var canvasElement = document.getElementById("canvas");
@@ -2497,7 +2551,9 @@ ctx.play();</code></pre>
 
     
 
+    
     <h4 class="name" id="registerCallback"><span class="type-signature"></span>registerCallback<span class="signature">(type, func)</span><span class="type-signature"></span></h4>
+    
 
     
 
@@ -2650,6 +2706,8 @@ VideoContext is still playing, but there are currently no activly playing sourec
 
 
 
+
+
     <h5>Example</h5>
     
     <pre class="prettyprint"><code>var canvasElement = document.getElementById("canvas");
@@ -2665,7 +2723,9 @@ ctx.registerCallback("ended", function(){console.log("Playback ended");});</code
 
     
 
+    
     <h4 class="name" id="registerTimelineCallback"><span class="type-signature"></span>registerTimelineCallback<span class="signature">(time, func, ordering)</span><span class="type-signature"></span></h4>
+    
 
     
 
@@ -2853,12 +2913,16 @@ ctx.registerCallback("ended", function(){console.log("Playback ended");});</code
 
 
 
+
+
         
             
 
     
 
+    
     <h4 class="name" id="reset"><span class="type-signature"></span>reset<span class="signature">()</span><span class="type-signature"></span></h4>
+    
 
     
 
@@ -2935,12 +2999,16 @@ ctx.registerCallback("ended", function(){console.log("Playback ended");});</code
 
 
 
+
+
         
             
 
     
 
+    
     <h4 class="name" id="snapshot"><span class="type-signature"></span>snapshot<span class="signature">()</span><span class="type-signature"></span></h4>
+    
 
     
 
@@ -3017,12 +3085,16 @@ ctx.registerCallback("ended", function(){console.log("Playback ended");});</code
 
 
 
+
+
         
             
 
     
 
+    
     <h4 class="name" id="transition"><span class="type-signature"></span>transition<span class="signature">(definition)</span><span class="type-signature"> &rarr; {<a href="TransitionNode.html">TransitionNode</a>}</span></h4>
+    
 
     
 
@@ -3175,6 +3247,8 @@ tragetValue between the startTime and stopTime.</p>
     
 
 
+
+
     <h5>Example</h5>
     
     <pre class="prettyprint"><code>var canvasElement = document.getElementById("canvas");
@@ -3247,7 +3321,9 @@ ctx.play();</code></pre>
 
     
 
+    
     <h4 class="name" id="unregisterCallback"><span class="type-signature"></span>unregisterCallback<span class="signature">(func)</span><span class="type-signature"></span></h4>
+    
 
     
 
@@ -3372,6 +3448,8 @@ ctx.play();</code></pre>
 
 
 
+
+
     <h5>Example</h5>
     
     <pre class="prettyprint"><code>var canvasElement = document.getElementById("canvas");
@@ -3392,7 +3470,9 @@ ctx.unregisterCallback(updateCallback);</code></pre>
 
     
 
+    
     <h4 class="name" id="unregisterTimelineCallback"><span class="type-signature"></span>unregisterTimelineCallback<span class="signature">(func)</span><span class="type-signature"></span></h4>
+    
 
     
 
@@ -3518,12 +3598,16 @@ ctx.unregisterCallback(updateCallback);</code></pre>
 
 
 
+
+
         
             
 
     
 
+    
     <h4 class="name" id="update"><span class="type-signature"></span>update<span class="signature">(dt)</span><span class="type-signature"></span></h4>
+    
 
     
 
@@ -3648,6 +3732,8 @@ ctx.unregisterCallback(updateCallback);</code></pre>
 
 
 
+
+
     <h5>Example</h5>
     
     <pre class="prettyprint"><code>var canvasElement = document.getElementById("canvas");
@@ -3670,7 +3756,9 @@ update();</code></pre>
 
     
 
+    
     <h4 class="name" id="video"><span class="type-signature"></span>video<span class="signature">(src)</span><span class="type-signature"> &rarr; {<a href="VideoNode.html">VideoNode</a>}</span></h4>
+    
 
     
 
@@ -3820,6 +3908,8 @@ update();</code></pre>
     
 
 
+
+
     <h5>Examples</h5>
     
     <pre class="prettyprint"><code>var canvasElement = document.getElementById("canvas");
@@ -3855,7 +3945,7 @@ var videoNode = ctx.video(videoElement);</code></pre>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
 </footer>
 
 <script> prettyPrint(); </script>

@@ -2093,7 +2093,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	
 	            //update this source nodes texture
-	            if (this._element === undefined) return true;
+	            if (this._element === undefined || this._ready === false) return true;
 	
 	            if (!this._renderPaused && this._state === STATE.paused) {
 	                if (triggerTextureUpdate) (0, _utilsJs.updateTexture)(this._gl, this._texture, this._element);
@@ -4557,7 +4557,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	                this._element.setAttribute("crossorigin", "anonymous");
 	                this._element.src = this._elementURL;
 	                this._element.onload = function () {
-	                    console.log("image loaded!!");
 	                    _this._ready = true;
 	                    _this._triggerCallbacks("loaded");
 	                };

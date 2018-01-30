@@ -2,7 +2,14 @@
   "name": "videocontext",
   "version": "0.51.5",
   "description": "A WebGL & HTML5 graph based video composition library",
-  "keywords":["video", "context", "composition", "timeline", "html5", "webgl"],
+  "keywords": [
+    "video",
+    "context",
+    "composition",
+    "timeline",
+    "html5",
+    "webgl"
+  ],
   "contributors": [
     {
       "name": "Matthew Shotton",
@@ -11,7 +18,9 @@
   ],
   "scripts": {
     "doc": "node ./node_modules/jsdoc/jsdoc.js -c jsdoc.json && cp dist/videocontext.* docs/dist/",
-    "build": "node ./node_modules/mocha/bin/mocha --compilers js:babel-core/register && ./node_modules/webpack/bin/webpack.js --config webpack.config.js && npm run doc",
+    "build": "npm run test && ./node_modules/webpack/bin/webpack.js --config webpack.config.js && npm run doc",
+    "test": "node ./node_modules/mocha/bin/mocha --compilers js:babel-core/register",
+    "test-watch": "node ./node_modules/mocha/bin/mocha --compilers js:babel-core/register --watch",
     "dev": "./node_modules/webpack/bin/webpack.js --watch --config webpack.config.js & ./node_modules/reload/bin/reload -b"
   },
   "dependencies": {},
@@ -26,6 +35,8 @@
     "mocha": "2.3.4",
     "node-libs-browser": "^0.5.2",
     "reload": "^1.0.1",
+    "sinon": "^4.2.1",
+    "webgl-mock": "^0.1.6",
     "webpack": "^1.9.11"
   },
   "main": "dist/videocontext.js",
