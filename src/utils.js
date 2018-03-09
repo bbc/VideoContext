@@ -45,7 +45,7 @@ export function createShaderProgram(gl, vertexShader, fragmentShader){
     return program;
 }
 
-export function createElementTexutre(gl){
+export function createElementTexture(gl){
     let texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);

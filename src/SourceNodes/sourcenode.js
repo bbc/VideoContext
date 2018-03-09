@@ -1,5 +1,5 @@
 //Matthew Shotton, R&D User Experience,© BBC 2015
-import { updateTexture, clearTexture, createElementTexutre } from "../utils.js";
+import { updateTexture, clearTexture, createElementTexture } from "../utils.js";
 import GraphNode from "../graphnode";
 
 let STATE = {"waiting":0, "sequenced":1, "playing":2, "paused":3, "ended":4, "error":5};
@@ -31,7 +31,7 @@ class SourceNode extends GraphNode{
         this._ready = false;
         this._loadCalled = false;
         this._stretchPaused = false;
-        this._texture = createElementTexutre(gl);
+        this._texture = createElementTexture(gl);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0,0,0,0]));
         this._callbacks = [];
         this._renderPaused = false;
