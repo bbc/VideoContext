@@ -4609,7 +4609,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                _get(Object.getPrototypeOf(ImageNode.prototype), "_update", this).call(this, currentTime);
 	            }
 	
-	            if (this._startTime - this._currentTime < this._preloadTime && this._state !== _sourcenode.SOURCENODESTATE.waiting && this._state !== _sourcenode.SOURCENODESTATE.ended) this._load();
+	            if (this._startTime - this._currentTime <= this._preloadTime && this._state !== _sourcenode.SOURCENODESTATE.waiting && this._state !== _sourcenode.SOURCENODESTATE.ended) this._load();
 	
 	            if (this._state === _sourcenode.SOURCENODESTATE.playing) {
 	                return true;
@@ -4706,7 +4706,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        value: function _update(currentTime) {
 	            //if (!super._update(currentTime)) return false;
 	            _get(Object.getPrototypeOf(CanvasNode.prototype), "_update", this).call(this, currentTime);
-	            if (this._startTime - this._currentTime < this._preloadTime && this._state !== _sourcenode.SOURCENODESTATE.waiting && this._state !== _sourcenode.SOURCENODESTATE.ended) this._load();
+	            if (this._startTime - this._currentTime <= this._preloadTime && this._state !== _sourcenode.SOURCENODESTATE.waiting && this._state !== _sourcenode.SOURCENODESTATE.ended) this._load();
 	
 	            if (this._state === _sourcenode.SOURCENODESTATE.playing) {
 	                return true;
