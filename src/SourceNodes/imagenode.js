@@ -80,8 +80,8 @@ class ImageNode extends SourceNode {
         }else{
             super._update(currentTime);
         }
-        
-        if (this._startTime - this._currentTime < this._preloadTime && this._state !== SOURCENODESTATE.waiting && this._state !== SOURCENODESTATE.ended)this._load();
+
+        if (this._startTime - this._currentTime <= this._preloadTime && this._state !== SOURCENODESTATE.waiting && this._state !== SOURCENODESTATE.ended)this._load();
 
         if (this._state === SOURCENODESTATE.playing){
             return true;
