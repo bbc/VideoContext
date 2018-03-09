@@ -1,6 +1,6 @@
 //Matthew Shotton, R&D User Experience,© BBC 2015
 import GraphNode from "../graphnode";
-import { compileShader, createShaderProgram, createElementTexutre, updateTexture } from "../utils.js";
+import { compileShader, createShaderProgram, createElementTexture, updateTexture } from "../utils.js";
 import { RenderException } from "../exceptions.js";
 
 class ProcessingNode extends GraphNode{
@@ -31,7 +31,7 @@ class ProcessingNode extends GraphNode{
         this._boundTextureUnits = 0;
         this._parameterTextureCount = 0;
         this._inputTextureCount = 0;
-        this._texture = createElementTexutre(gl);
+        this._texture = createElementTexture(gl);
         gl.texImage2D( gl.TEXTURE_2D, 0, gl.RGBA, gl.canvas.width, gl.canvas.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
         //compile the shader
         this._program = createShaderProgram(gl, this._vertexShader, this._fragmentShader);
@@ -54,7 +54,7 @@ class ProcessingNode extends GraphNode{
         for (let propertyName in this._properties){
             let propertyValue = this._properties[propertyName].value;
             if (propertyValue instanceof Image){
-                this._properties[propertyName].texture = createElementTexutre(gl);
+                this._properties[propertyName].texture = createElementTexture(gl);
                 this._properties[propertyName].texutreUnit = gl.TEXTURE0 + this._boundTextureUnits;
                 this._boundTextureUnits += 1;
                 this._parameterTextureCount +=1;
