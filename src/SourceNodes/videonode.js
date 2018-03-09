@@ -105,7 +105,7 @@ class VideoNode extends SourceNode {
             } else {
                 this._element.src = this._elementURL;
             }
- 
+
             for (let key in this._attributes) {
                 this._element[key] = this._attributes[key];
             }
@@ -169,7 +169,7 @@ class VideoNode extends SourceNode {
             }
         }
 
-        if (this._startTime - this._currentTime < this._preloadTime && this._state !== SOURCENODESTATE.waiting && this._state !== SOURCENODESTATE.ended)this._load();
+        if (this._startTime - this._currentTime <= this._preloadTime && this._state !== SOURCENODESTATE.waiting && this._state !== SOURCENODESTATE.ended)this._load();
 
         if (this._state === SOURCENODESTATE.playing){
             if (this._playbackRateUpdated)
