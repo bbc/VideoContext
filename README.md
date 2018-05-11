@@ -70,6 +70,7 @@ The documentation will be generated in the "./doc" folder of the repository.
 There are a number of different types of nodes which can be used in the VideoContexts processing graph. Here's a quick list of each one, following that is a more in-depth discussion of each type.
 
 * VideoNode - Plays video.
+* AudioNode - Plays audio.
 * ImageNode - Displays images for specified time.
 * CanvasNode - Displays output of canvas for specified time.
 * EffectNode - Applies shader to limited number of inputs.
