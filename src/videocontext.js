@@ -1,5 +1,6 @@
 //Matthew Shotton, R&D User Experience,© BBC 2015
 import VideoNode from "./SourceNodes/videonode.js";
+import AudioNode from "./SourceNodes/audionode.js";
 import ImageNode from "./SourceNodes/imagenode.js";
 import CanvasNode from "./SourceNodes/canvasnode.js";
 import { SOURCENODESTATE } from "./SourceNodes/sourcenode.js";
@@ -462,6 +463,12 @@ export default class VideoContext{
         let videoNode = new VideoNode(src, this._gl, this._renderGraph, this._currentTime, this._playbackRate, sourceOffset, preloadTime, this._videoElementCache, videoElementAttributes);
         this._sourceNodes.push(videoNode);
         return videoNode;
+    }
+
+    audio(src, sourceOffset=0, preloadTime=4, audioElementAttributes={}){
+        let audioNode = new AudioNode(src, this._gl, this._renderGraph, this._currentTime, this._playbackRate, sourceOffset, preloadTime, this._audioElementCache, audioElementAttributes);
+        this._sourceNodes.push(audioNode);
+        return audioNode;
     }
 
     /**
