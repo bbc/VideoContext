@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: SourceNodes/audionode.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,32 +17,38 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: SourceNodes/audionode.js</h1>
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>//Matthew Shotton, R&amp;D User Experience,© BBC 2015
+import MediaNode from "./medianode";
 
+class AudioNode extends MediaNode {
+    /**
+    * Initialise an instance of an AudioNode.
+    * This should not be called directly, but created through a call to videoContext.audio();
+    */
+    constructor() {
+        super(...arguments);
+        this._displayName = "AudioNode";
+        this._elementType = "audio";
+    }
 
-    <h3> </h3>
+    _update(currentTime) {
+        super._update(currentTime, false);
+    }
+}
 
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
+export default AudioNode;
+</code></pre>
+        </article>
+    </section>
 
 
 
