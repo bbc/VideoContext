@@ -3,8 +3,8 @@ import SourceNode, { SOURCENODESTATE } from "./sourcenode";
 
 class MediaNode extends SourceNode {
     /**
-    * Initialise an instance of a VideoNode.
-    * This should not be called directly, but created through a call to videoContext.createVideoNode();
+    * Initialise an instance of a MediaNode.
+    * This should not be called directly, but extended by other Node Types which use a `HTMLMediaElement`.
     */
     constructor(src, gl, renderGraph, currentTime, globalPlaybackRate=1.0, sourceOffset=0, preloadTime = 4, mediaElementCache=undefined, attributes = {}){
         super(src, gl, renderGraph, currentTime);
@@ -160,7 +160,7 @@ class MediaNode extends SourceNode {
     _update(currentTime, triggerTextureUpdate=true){
         //if (!super._update(currentTime)) return false;
         super._update(currentTime, triggerTextureUpdate);
-        //check if the video has ended
+        //check if the media has ended
         if(this._element !== undefined){
             if (this._element.ended){
                 this._state = SOURCENODESTATE.ended;
