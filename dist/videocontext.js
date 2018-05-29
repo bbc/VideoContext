@@ -1516,8 +1516,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _inherits(MediaNode, _SourceNode);
 	
 	    /**
-	    * Initialise an instance of a VideoNode.
-	    * This should not be called directly, but created through a call to videoContext.createVideoNode();
+	    * Initialise an instance of a MediaNode.
+	    * This should not be called directly, but extended by other Node Types which use a `HTMLMediaElement`.
 	    */
 	
 	    function MediaNode(src, gl, renderGraph, currentTime) {
@@ -1654,7 +1654,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	            //if (!super._update(currentTime)) return false;
 	            _get(Object.getPrototypeOf(MediaNode.prototype), "_update", this).call(this, currentTime, triggerTextureUpdate);
-	            //check if the video has ended
+	            //check if the media has ended
 	            if (this._element !== undefined) {
 	                if (this._element.ended) {
 	                    this._state = _sourcenode.SOURCENODESTATE.ended;

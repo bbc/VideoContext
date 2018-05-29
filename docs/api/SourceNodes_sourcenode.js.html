@@ -27,7 +27,7 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>//Matthew Shotton, R&amp;D User Experience,© BBC 2015
-import { updateTexture, clearTexture, createElementTexutre } from "../utils.js";
+import { updateTexture, clearTexture, createElementTexture } from "../utils.js";
 import GraphNode from "../graphnode";
 
 let STATE = {"waiting":0, "sequenced":1, "playing":2, "paused":3, "ended":4, "error":5};
@@ -59,7 +59,7 @@ class SourceNode extends GraphNode{
         this._ready = false;
         this._loadCalled = false;
         this._stretchPaused = false;
-        this._texture = createElementTexutre(gl);
+        this._texture = createElementTexture(gl);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0,0,0,0]));
         this._callbacks = [];
         this._renderPaused = false;
@@ -449,7 +449,7 @@ export default SourceNode;
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-VideoContext.html">VideoContext</a></li></ul><h3>Classes</h3><ul><li><a href="CanvasNode.html">CanvasNode</a></li><li><a href="CompositingNode.html">CompositingNode</a></li><li><a href="DestinationNode.html">DestinationNode</a></li><li><a href="EffectNode.html">EffectNode</a></li><li><a href="GraphNode.html">GraphNode</a></li><li><a href="ImageNode.html">ImageNode</a></li><li><a href="module-VideoContext.html">VideoContext</a></li><li><a href="ProcessingNode.html">ProcessingNode</a></li><li><a href="RenderGraph.html">RenderGraph</a></li><li><a href="SourceNode.html">SourceNode</a></li><li><a href="TransitionNode.html">TransitionNode</a></li><li><a href="VideoNode.html">VideoNode</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-VideoContext.html">VideoContext</a></li></ul><h3>Classes</h3><ul><li><a href="AudioNode.html">AudioNode</a></li><li><a href="CanvasNode.html">CanvasNode</a></li><li><a href="CompositingNode.html">CompositingNode</a></li><li><a href="DestinationNode.html">DestinationNode</a></li><li><a href="EffectNode.html">EffectNode</a></li><li><a href="GraphNode.html">GraphNode</a></li><li><a href="ImageNode.html">ImageNode</a></li><li><a href="MediaNode.html">MediaNode</a></li><li><a href="module-VideoContext.html">VideoContext</a></li><li><a href="ProcessingNode.html">ProcessingNode</a></li><li><a href="RenderGraph.html">RenderGraph</a></li><li><a href="SourceNode.html">SourceNode</a></li><li><a href="TransitionNode.html">TransitionNode</a></li><li><a href="VideoNode.html">VideoNode</a></li></ul>
 </nav>
 
 <br class="clear">
