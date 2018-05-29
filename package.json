@@ -1,55 +1,60 @@
 {
-  "name": "videocontext",
-  "version": "0.52.0",
-  "description": "A WebGL & HTML5 graph based video composition library",
-  "keywords": [
-    "video",
-    "context",
-    "composition",
-    "timeline",
-    "html5",
-    "webgl"
-  ],
-  "contributors": [
-    {
-      "name": "Matthew Shotton",
-      "email": "matthew.shotton@bbc.co.uk"
-    }
-  ],
-  "scripts": {
-    "doc": "node ./node_modules/jsdoc/jsdoc.js -c jsdoc.json && cp dist/videocontext.* docs/dist/",
-    "build": "npm run test && ./node_modules/webpack/bin/webpack.js --config webpack.config.js && npm run doc",
-    "test": "node ./node_modules/mocha/bin/mocha --compilers js:babel-core/register",
-    "test-watch": "node ./node_modules/mocha/bin/mocha --compilers js:babel-core/register --watch",
-    "dev": "./node_modules/webpack/bin/webpack.js --watch --config webpack.config.js & ./node_modules/reload/bin/reload -b"
-  },
-  "dependencies": {},
-  "devDependencies": {
-    "babel-core": "^5.6.5",
-    "babel-loader": "^5.1.4",
-    "chai": "3.4.1",
-    "eslint": "^3.9.1",
-    "eslint-loader": "^1.4.0",
-    "http-server": "^0.8.5",
-    "jsdoc": "^3.4.3",
-    "mocha": "2.3.4",
-    "node-libs-browser": "^0.5.2",
-    "reload": "^1.0.1",
-    "sinon": "^4.2.1",
-    "webgl-mock": "^0.1.6",
-    "webpack": "^1.9.11"
-  },
-  "main": "dist/videocontext.js",
-  "browserify": {
-    "transform": [
-      [
-        "babelify",
+    "name": "videocontext",
+    "version": "0.52.0",
+    "description": "A WebGL & HTML5 graph based video composition library",
+    "keywords": [
+        "video",
+        "context",
+        "composition",
+        "timeline",
+        "html5",
+        "webgl"
+    ],
+    "contributors": [
         {
-          "presets": [
-            "es2015"
-          ]
+            "name": "Matthew Shotton",
+            "email": "matthew.shotton@bbc.co.uk"
         }
-      ]
-    ]
-  }
+    ],
+    "scripts": {
+        "dev": "./node_modules/webpack/bin/webpack.js --watch --config webpack.config.js & ./node_modules/reload/bin/reload -b",
+        "build": "npm run test && ./node_modules/webpack/bin/webpack.js --config webpack.config.js && npm run doc",
+        "test": "node ./node_modules/mocha/bin/mocha --compilers js:babel-core/register",
+        "test-watch": "node ./node_modules/mocha/bin/mocha --compilers js:babel-core/register --watch",
+        "doc": "node ./node_modules/jsdoc/jsdoc.js -c jsdoc.json && cp dist/videocontext.* docs/dist/",
+        "format": "prettier --write '{src,test}/**/*.js'",
+        "lint": "eslint 'src/**/*.js' 'test/**/*.js'",
+        "precommit": "npm run lint && npm run format && npm run test"
+    },
+    "dependencies": {},
+    "devDependencies": {
+        "babel-core": "^5.6.5",
+        "babel-loader": "^5.1.4",
+        "chai": "3.4.1",
+        "eslint": "^3.9.1",
+        "eslint-loader": "^1.4.0",
+        "http-server": "^0.8.5",
+        "husky": "^0.14.3",
+        "jsdoc": "^3.4.3",
+        "mocha": "2.3.4",
+        "node-libs-browser": "^0.5.2",
+        "prettier": "^1.13.2",
+        "reload": "^1.0.1",
+        "sinon": "^4.2.1",
+        "webgl-mock": "^0.1.6",
+        "webpack": "^1.9.11"
+    },
+    "main": "dist/videocontext.js",
+    "browserify": {
+        "transform": [
+            [
+                "babelify",
+                {
+                    "presets": [
+                        "es2015"
+                    ]
+                }
+            ]
+        ]
+    }
 }

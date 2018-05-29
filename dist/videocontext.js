@@ -124,32 +124,45 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var VideoContext = (function () {
 	    /**
-	    * Initialise the VideoContext and render to the specific canvas. A 2nd parameter can be passed to the constructor which is a function that get's called if the VideoContext fails to initialise.
-	    *
-	    * @param {Canvas} canvas - the canvas element to render the output to.
-	    * @param {function} initErrorCallback - a callback for if initialising the canvas failed.
-	    * @param {Object} options - a nuber of custom options which can be set on the VideoContext, generally best left as default.
-	    *
-	    * @example
-	    * var canvasElement = document.getElementById("canvas");
-	    * var ctx = new VideoContext(canvasElement, function(){console.error("Sorry, your browser dosen\'t support WebGL");});
-	    * var videoNode = ctx.video("video.mp4");
-	    * videoNode.connect(ctx.destination);
-	    * videoNode.start(0);
-	    * videoNode.stop(10);
-	    * ctx.play();
-	    *
-	    */
+	     * Initialise the VideoContext and render to the specific canvas. A 2nd parameter can be passed to the constructor which is a function that get's called if the VideoContext fails to initialise.
+	     *
+	     * @param {Canvas} canvas - the canvas element to render the output to.
+	     * @param {function} initErrorCallback - a callback for if initialising the canvas failed.
+	     * @param {Object} options - a nuber of custom options which can be set on the VideoContext, generally best left as default.
+	     *
+	     * @example
+	     * var canvasElement = document.getElementById("canvas");
+	     * var ctx = new VideoContext(canvasElement, function(){console.error("Sorry, your browser dosen\'t support WebGL");});
+	     * var videoNode = ctx.video("video.mp4");
+	     * videoNode.connect(ctx.destination);
+	     * videoNode.start(0);
+	     * videoNode.stop(10);
+	     * ctx.play();
+	     *
+	     */
 	
 	    function VideoContext(canvas, initErrorCallback) {
-	        var options = arguments.length <= 2 || arguments[2] === undefined ? { "preserveDrawingBuffer": true, "manualUpdate": false, "endOnLastSourceEnd": true, useVideoElementCache: true, videoElementCacheSize: 6, webglContextAttributes: { preserveDrawingBuffer: true, alpha: false } } : arguments[2];
+	        var options = arguments.length <= 2 || arguments[2] === undefined ? {
+	            preserveDrawingBuffer: true,
+	            manualUpdate: false,
+	            endOnLastSourceEnd: true,
+	            useVideoElementCache: true,
+	            videoElementCacheSize: 6,
+	            webglContextAttributes: {
+	                preserveDrawingBuffer: true,
+	                alpha: false
+	            }
+	        } : arguments[2];
 	
 	        _classCallCheck(this, VideoContext);
 	
 	        this._canvas = canvas;
 	        var manualUpdate = false;
 	        this.endOnLastSourceEnd = true;
-	        var webglContextAttributes = { preserveDrawingBuffer: true, alpha: false };
+	        var webglContextAttributes = {
+	            preserveDrawingBuffer: true,
+	            alpha: false
+	        };
 	
 	        if ("manualUpdate" in options) manualUpdate = options.manualUpdate;
 	        if ("endOnLastSourceEnd" in options) this._endOnLastSourceEnd = options.endOnLastSourceEnd;
@@ -225,21 +238,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	        key: "registerTimelineCallback",
 	
 	        /**
-	        * Register a callback to happen at a specific point in time.
-	        * @param {number} time - the time at which to trigger the callback.
-	        * @param {Function} func - the callback to register.
-	        * @param {number} ordering - the order in which to call the callback if more than one is registered for the same time.
-	        */
+	         * Register a callback to happen at a specific point in time.
+	         * @param {number} time - the time at which to trigger the callback.
+	         * @param {Function} func - the callback to register.
+	         * @param {number} ordering - the order in which to call the callback if more than one is registered for the same time.
+	         */
 	        value: function registerTimelineCallback(time, func) {
 	            var ordering = arguments.length <= 2 || arguments[2] === undefined ? 0 : arguments[2];
 	
-	            this._timelineCallbacks.push({ "time": time, "func": func, "ordering": ordering });
+	            this._timelineCallbacks.push({
+	                time: time,
+	                func: func,
+	                ordering: ordering
+	            });
 	        }
 	
 	        /**
-	        * Unregister a callback which happens at a specific point in time.
-	        * @param {Function} func - the callback to unregister.
-	        */
+	         * Unregister a callback which happens at a specific point in time.
+	         * @param {Function} func - the callback to unregister.
+	         */
 	    }, {
 	        key: "unregisterTimelineCallback",
 	        value: function unregisterTimelineCallback(func) {
@@ -299,24 +316,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * Regsiter a callback to listen to one of the following events: "stalled", "update", "ended", "content", "nocontent"
-	        *
-	        * "stalled" happend anytime playback is stopped due to unavailbale data for playing assets (i.e video still loading)
-	        * . "update" is called any time a frame is rendered to the screen. "ended" is called once plackback has finished
-	        * (i.e ctx.currentTime == ctx.duration). "content" is called a the start of a time region where there is content
-	        * playing out of one or more sourceNodes. "nocontent" is called at the start of any time region where the
-	        * VideoContext is still playing, but there are currently no activly playing soureces.
-	        *
-	        * @param {String} type - the event to register against ("stalled", "update", or "ended").
-	        * @param {Function} func - the callback to register.
-	        *
-	        * @example
-	        * var canvasElement = document.getElementById("canvas");
-	        * var ctx = new VideoContext(canvasElement);
-	        * ctx.registerCallback("stalled", function(){console.log("Playback stalled");});
-	        * ctx.registerCallback("update", function(){console.log("new frame");});
-	        * ctx.registerCallback("ended", function(){console.log("Playback ended");});
-	        */
+	         * Regsiter a callback to listen to one of the following events: "stalled", "update", "ended", "content", "nocontent"
+	         *
+	         * "stalled" happend anytime playback is stopped due to unavailbale data for playing assets (i.e video still loading)
+	         * . "update" is called any time a frame is rendered to the screen. "ended" is called once plackback has finished
+	         * (i.e ctx.currentTime == ctx.duration). "content" is called a the start of a time region where there is content
+	         * playing out of one or more sourceNodes. "nocontent" is called at the start of any time region where the
+	         * VideoContext is still playing, but there are currently no activly playing soureces.
+	         *
+	         * @param {String} type - the event to register against ("stalled", "update", or "ended").
+	         * @param {Function} func - the callback to register.
+	         *
+	         * @example
+	         * var canvasElement = document.getElementById("canvas");
+	         * var ctx = new VideoContext(canvasElement);
+	         * ctx.registerCallback("stalled", function(){console.log("Playback stalled");});
+	         * ctx.registerCallback("update", function(){console.log("new frame");});
+	         * ctx.registerCallback("ended", function(){console.log("Playback ended");});
+	         */
 	    }, {
 	        key: "registerCallback",
 	        value: function registerCallback(type, func) {
@@ -325,23 +342,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * Remove a previously registed callback
-	        *
-	        * @param {Function} func - the callback to remove.
-	        *
-	        * @example
-	        * var canvasElement = document.getElementById("canvas");
-	        * var ctx = new VideoContext(canvasElement);
-	        *
-	        * //the callback
-	        * var updateCallback = function(){console.log("new frame")};
-	        *
-	        * //register the callback
-	        * ctx.registerCallback("update", updateCallback);
-	        * //then unregister it
-	        * ctx.unregisterCallback(updateCallback);
-	        *
-	        */
+	         * Remove a previously registed callback
+	         *
+	         * @param {Function} func - the callback to remove.
+	         *
+	         * @example
+	         * var canvasElement = document.getElementById("canvas");
+	         * var ctx = new VideoContext(canvasElement);
+	         *
+	         * //the callback
+	         * var updateCallback = function(){console.log("new frame")};
+	         *
+	         * //register the callback
+	         * ctx.registerCallback("update", updateCallback);
+	         * //then unregister it
+	         * ctx.unregisterCallback(updateCallback);
+	         *
+	         */
 	    }, {
 	        key: "unregisterCallback",
 	        value: function unregisterCallback(func) {
@@ -407,25 +424,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * Get the canvas that the VideoContext is using.
-	        *
-	        * @return {HTMLElement} The canvas that the VideoContext is using.
-	        *
-	        */
+	         * Get the canvas that the VideoContext is using.
+	         *
+	         * @return {HTMLElement} The canvas that the VideoContext is using.
+	         *
+	         */
 	    }, {
 	        key: "play",
 	
 	        /**
-	        * Start the VideoContext playing
-	        * @example
-	        * var canvasElement = document.getElementById("canvas");
-	        * var ctx = new VideoContext(canvasElement);
-	        * var videoNode = ctx.video("video.mp4");
-	        * videoNode.connect(ctx.destination);
-	        * videoNode.start(0);
-	        * videoNode.stop(10);
-	        * ctx.play();
-	        */
+	         * Start the VideoContext playing
+	         * @example
+	         * var canvasElement = document.getElementById("canvas");
+	         * var ctx = new VideoContext(canvasElement);
+	         * var videoNode = ctx.video("video.mp4");
+	         * videoNode.connect(ctx.destination);
+	         * videoNode.start(0);
+	         * videoNode.stop(10);
+	         * ctx.play();
+	         */
 	        value: function play() {
 	            console.debug("VideoContext - playing");
 	            //Initialise the video elemnt cache
@@ -436,18 +453,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * Pause playback of the VideoContext
-	        * @example
-	        * var canvasElement = document.getElementById("canvas");
-	        * var ctx = new VideoContext(canvasElement);
-	        * var videoNode = ctx.video("video.mp4");
-	        * videoNode.connect(ctx.destination);
-	        * videoNode.start(0);
-	        * videoNode.stop(20);
-	        * ctx.currentTime = 10; // seek 10 seconds in
-	        * ctx.play();
-	        * setTimeout(function(){ctx.pause();}, 1000); //pause playback after roughly one second.
-	        */
+	         * Pause playback of the VideoContext
+	         * @example
+	         * var canvasElement = document.getElementById("canvas");
+	         * var ctx = new VideoContext(canvasElement);
+	         * var videoNode = ctx.video("video.mp4");
+	         * videoNode.connect(ctx.destination);
+	         * videoNode.start(0);
+	         * videoNode.stop(20);
+	         * ctx.currentTime = 10; // seek 10 seconds in
+	         * ctx.play();
+	         * setTimeout(function(){ctx.pause();}, 1000); //pause playback after roughly one second.
+	         */
 	    }, {
 	        key: "pause",
 	        value: function pause() {
@@ -457,25 +474,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * Create a new node representing a video source
-	        *
-	        * @param {string|Video} - The URL or video element to create the video from.
-	        * @sourceOffset {number} - Offset into the start of the source video to start playing from.
-	        * @preloadTime {number} - How many seconds before the video is to be played to start loading it.
-	        * @videoElementAttributes {Object} - A dictionary of attributes to map onto the underlying video element.
-	        * @return {VideoNode} A new video node.
-	        *
-	        * @example
-	        * var canvasElement = document.getElementById("canvas");
-	        * var ctx = new VideoContext(canvasElement);
-	        * var videoNode = ctx.video("video.mp4");
-	        *
-	        * @example
-	        * var canvasElement = document.getElementById("canvas");
-	        * var videoElement = document.getElementById("video");
-	        * var ctx = new VideoContext(canvasElement);
-	        * var videoNode = ctx.video(videoElement);
-	        */
+	         * Create a new node representing a video source
+	         *
+	         * @param {string|Video} - The URL or video element to create the video from.
+	         * @sourceOffset {number} - Offset into the start of the source video to start playing from.
+	         * @preloadTime {number} - How many seconds before the video is to be played to start loading it.
+	         * @videoElementAttributes {Object} - A dictionary of attributes to map onto the underlying video element.
+	         * @return {VideoNode} A new video node.
+	         *
+	         * @example
+	         * var canvasElement = document.getElementById("canvas");
+	         * var ctx = new VideoContext(canvasElement);
+	         * var videoNode = ctx.video("video.mp4");
+	         *
+	         * @example
+	         * var canvasElement = document.getElementById("canvas");
+	         * var videoElement = document.getElementById("video");
+	         * var ctx = new VideoContext(canvasElement);
+	         * var videoNode = ctx.video(videoElement);
+	         */
 	    }, {
 	        key: "video",
 	        value: function video(src) {
@@ -500,8 +517,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * @depricated
-	        */
+	         * @depricated
+	         */
 	    }, {
 	        key: "createVideoSourceNode",
 	        value: function createVideoSourceNode(src) {
@@ -514,23 +531,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * Create a new node representing an image source
-	        * @param {string|Image} src - The url or image element to create the image node from.
-	        * @param {number} [preloadTime] - How long before a node is to be displayed to attmept to load it.
-	        * @param {Object} [imageElementAttributes] - Any attributes to be given to the underlying image element.
-	        * @return {ImageNode} A new image node.
-	        *
-	        * @example
-	        * var canvasElement = document.getElementById("canvas");
-	        * var ctx = new VideoContext(canvasElement);
-	        * var imageNode = ctx.image("image.png");
-	        *
-	        * @example
-	        * var canvasElement = document.getElementById("canvas");
-	        * var imageElement = document.getElementById("image");
-	        * var ctx = new VideoContext(canvasElement);
-	        * var imageNode = ctx.image(imageElement);
-	        */
+	         * Create a new node representing an image source
+	         * @param {string|Image} src - The url or image element to create the image node from.
+	         * @param {number} [preloadTime] - How long before a node is to be displayed to attmept to load it.
+	         * @param {Object} [imageElementAttributes] - Any attributes to be given to the underlying image element.
+	         * @return {ImageNode} A new image node.
+	         *
+	         * @example
+	         * var canvasElement = document.getElementById("canvas");
+	         * var ctx = new VideoContext(canvasElement);
+	         * var imageNode = ctx.image("image.png");
+	         *
+	         * @example
+	         * var canvasElement = document.getElementById("canvas");
+	         * var imageElement = document.getElementById("image");
+	         * var ctx = new VideoContext(canvasElement);
+	         * var imageNode = ctx.image(imageElement);
+	         */
 	    }, {
 	        key: "image",
 	        value: function image(src) {
@@ -543,8 +560,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * @depricated
-	        */
+	         * @depricated
+	         */
 	    }, {
 	        key: "createImageSourceNode",
 	        value: function createImageSourceNode(src) {
@@ -557,10 +574,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * Create a new node representing a canvas source
-	        * @param {Canvas} src - The canvas element to create the canvas node from.
-	        * @return {CanvasNode} A new canvas node.
-	        */
+	         * Create a new node representing a canvas source
+	         * @param {Canvas} src - The canvas element to create the canvas node from.
+	         * @return {CanvasNode} A new canvas node.
+	         */
 	    }, {
 	        key: "canvas",
 	        value: function canvas(_canvas) {
@@ -570,8 +587,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * @depricated
-	        */
+	         * @depricated
+	         */
 	    }, {
 	        key: "createCanvasSourceNode",
 	        value: function createCanvasSourceNode(canvas) {
@@ -583,10 +600,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * Create a new effect node.
-	        * @param {Object} definition - this is an object defining the shaders, inputs, and properties of the compositing node to create. Builtin definitions can be found by accessing VideoContext.DEFINITIONS.
-	        * @return {EffectNode} A new effect node created from the passed definition
-	        */
+	         * Create a new effect node.
+	         * @param {Object} definition - this is an object defining the shaders, inputs, and properties of the compositing node to create. Builtin definitions can be found by accessing VideoContext.DEFINITIONS.
+	         * @return {EffectNode} A new effect node created from the passed definition
+	         */
 	    }, {
 	        key: "effect",
 	        value: function effect(definition) {
@@ -596,8 +613,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * @depricated
-	        */
+	         * @depricated
+	         */
 	    }, {
 	        key: "createEffectNode",
 	        value: function createEffectNode(definition) {
@@ -606,67 +623,67 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * Create a new compositiing node.
-	        *
-	        * Compositing nodes are used for operations such as combining multiple video sources into a single track/connection for further processing in the graph.
-	        *
-	        * A compositing node is slightly different to other processing nodes in that it only has one input in it's definition but can have unlimited connections made to it.
-	        * The shader in the definition is run for each input in turn, drawing them to the output buffer. This means there can be no interaction between the spearte inputs to a compositing node, as they are individually processed in seperate shader passes.
-	        *
-	        * @param {Object} definition - this is an object defining the shaders, inputs, and properties of the compositing node to create. Builtin definitions can be found by accessing VideoContext.DEFINITIONS
-	        *
-	        * @return {CompositingNode} A new compositing node created from the passed definition.
-	        *
-	        * @example
-	        *
-	        * var canvasElement = document.getElementById("canvas");
-	        * var ctx = new VideoContext(canvasElement);
-	        *
-	        * //A simple compositing node definition which just renders all the inputs to the output buffer.
-	        * var combineDefinition = {
-	        *     vertexShader : "\
-	        *         attribute vec2 a_position;\
-	        *         attribute vec2 a_texCoord;\
-	        *         varying vec2 v_texCoord;\
-	        *         void main() {\
-	        *             gl_Position = vec4(vec2(2.0,2.0)*vec2(1.0, 1.0), 0.0, 1.0);\
-	        *             v_texCoord = a_texCoord;\
-	        *         }",
-	        *     fragmentShader : "\
-	        *         precision mediump float;\
-	        *         uniform sampler2D u_image;\
-	        *         uniform float a;\
-	        *         varying vec2 v_texCoord;\
-	        *         varying float v_progress;\
-	        *         void main(){\
-	        *             vec4 color = texture2D(u_image, v_texCoord);\
-	        *             gl_FragColor = color;\
-	        *         }",
-	        *     properties:{
-	        *         "a":{type:"uniform", value:0.0},
-	        *     },
-	        *     inputs:["u_image"]
-	        * };
-	        * //Create the node, passing in the definition.
-	        * var trackNode = videoCtx.compositor(combineDefinition);
-	        *
-	        * //create two videos which will play at back to back
-	        * var videoNode1 = ctx.video("video1.mp4");
-	        * videoNode1.play(0);
-	        * videoNode1.stop(10);
-	        * var videoNode2 = ctx.video("video2.mp4");
-	        * videoNode2.play(10);
-	        * videoNode2.stop(20);
-	        *
-	        * //Connect the nodes to the combine node. This will give a single connection representing the two videos which can
-	        * //be connected to other effects such as LUTs, chromakeyers, etc.
-	        * videoNode1.connect(trackNode);
-	        * videoNode2.connect(trackNode);
-	        *
-	        * //Don't do anything exciting, just connect it to the output.
-	        * trackNode.connect(ctx.destination);
-	        *
-	        */
+	         * Create a new compositiing node.
+	         *
+	         * Compositing nodes are used for operations such as combining multiple video sources into a single track/connection for further processing in the graph.
+	         *
+	         * A compositing node is slightly different to other processing nodes in that it only has one input in it's definition but can have unlimited connections made to it.
+	         * The shader in the definition is run for each input in turn, drawing them to the output buffer. This means there can be no interaction between the spearte inputs to a compositing node, as they are individually processed in seperate shader passes.
+	         *
+	         * @param {Object} definition - this is an object defining the shaders, inputs, and properties of the compositing node to create. Builtin definitions can be found by accessing VideoContext.DEFINITIONS
+	         *
+	         * @return {CompositingNode} A new compositing node created from the passed definition.
+	         *
+	         * @example
+	         *
+	         * var canvasElement = document.getElementById("canvas");
+	         * var ctx = new VideoContext(canvasElement);
+	         *
+	         * //A simple compositing node definition which just renders all the inputs to the output buffer.
+	         * var combineDefinition = {
+	         *     vertexShader : "\
+	         *         attribute vec2 a_position;\
+	         *         attribute vec2 a_texCoord;\
+	         *         varying vec2 v_texCoord;\
+	         *         void main() {\
+	         *             gl_Position = vec4(vec2(2.0,2.0)*vec2(1.0, 1.0), 0.0, 1.0);\
+	         *             v_texCoord = a_texCoord;\
+	         *         }",
+	         *     fragmentShader : "\
+	         *         precision mediump float;\
+	         *         uniform sampler2D u_image;\
+	         *         uniform float a;\
+	         *         varying vec2 v_texCoord;\
+	         *         varying float v_progress;\
+	         *         void main(){\
+	         *             vec4 color = texture2D(u_image, v_texCoord);\
+	         *             gl_FragColor = color;\
+	         *         }",
+	         *     properties:{
+	         *         "a":{type:"uniform", value:0.0},
+	         *     },
+	         *     inputs:["u_image"]
+	         * };
+	         * //Create the node, passing in the definition.
+	         * var trackNode = videoCtx.compositor(combineDefinition);
+	         *
+	         * //create two videos which will play at back to back
+	         * var videoNode1 = ctx.video("video1.mp4");
+	         * videoNode1.play(0);
+	         * videoNode1.stop(10);
+	         * var videoNode2 = ctx.video("video2.mp4");
+	         * videoNode2.play(10);
+	         * videoNode2.stop(20);
+	         *
+	         * //Connect the nodes to the combine node. This will give a single connection representing the two videos which can
+	         * //be connected to other effects such as LUTs, chromakeyers, etc.
+	         * videoNode1.connect(trackNode);
+	         * videoNode2.connect(trackNode);
+	         *
+	         * //Don't do anything exciting, just connect it to the output.
+	         * trackNode.connect(ctx.destination);
+	         *
+	         */
 	    }, {
 	        key: "compositor",
 	        value: function compositor(definition) {
@@ -676,8 +693,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * @depricated
-	        */
+	         * @depricated
+	         */
 	    }, {
 	        key: "createCompositingNode",
 	        value: function createCompositingNode(definition) {
@@ -686,83 +703,83 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * Create a new transition node.
-	        *
-	        * Transistion nodes are a type of effect node which have parameters which can be changed as events on the timeline.
-	        *
-	        * For example a transition node which cross-fades between two videos could have a "mix" property which sets the
-	        * progress through the transistion. Rather than having to write your own code to adjust this property at specfic
-	        * points in time a transition node has a "transition" function which takes a startTime, stopTime, targetValue, and a
-	        * propertyName (which will be "mix"). This will linearly interpolate the property from the curernt value to
-	        * tragetValue between the startTime and stopTime.
-	        *
-	        * @param {Object} definition - this is an object defining the shaders, inputs, and properties of the transition node to create.
-	        * @return {TransitionNode} A new transition node created from the passed definition.
-	        * @example
-	        *
-	        * var canvasElement = document.getElementById("canvas");
-	        * var ctx = new VideoContext(canvasElement);
-	        *
-	        * //A simple cross-fade node definition which cross-fades between two videos based on the mix property.
-	        * var crossfadeDefinition = {
-	        *     vertexShader : "\
-	        *        attribute vec2 a_position;\
-	        *        attribute vec2 a_texCoord;\
-	        *        varying vec2 v_texCoord;\
-	        *        void main() {\
-	        *            gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
-	        *            v_texCoord = a_texCoord;\
-	        *         }",
-	        *     fragmentShader : "\
-	        *         precision mediump float;\
-	        *         uniform sampler2D u_image_a;\
-	        *         uniform sampler2D u_image_b;\
-	        *         uniform float mix;\
-	        *         varying vec2 v_texCoord;\
-	        *         varying float v_mix;\
-	        *         void main(){\
-	        *             vec4 color_a = texture2D(u_image_a, v_texCoord);\
-	        *             vec4 color_b = texture2D(u_image_b, v_texCoord);\
-	        *             color_a[0] *= mix;\
-	        *             color_a[1] *= mix;\
-	        *             color_a[2] *= mix;\
-	        *             color_a[3] *= mix;\
-	        *             color_b[0] *= (1.0 - mix);\
-	        *             color_b[1] *= (1.0 - mix);\
-	        *             color_b[2] *= (1.0 - mix);\
-	        *             color_b[3] *= (1.0 - mix);\
-	        *             gl_FragColor = color_a + color_b;\
-	        *         }",
-	        *     properties:{
-	        *         "mix":{type:"uniform", value:0.0},
-	        *     },
-	        *     inputs:["u_image_a","u_image_b"]
-	        * };
-	        *
-	        * //Create the node, passing in the definition.
-	        * var transitionNode = videoCtx.transition(crossfadeDefinition);
-	        *
-	        * //create two videos which will overlap by two seconds
-	        * var videoNode1 = ctx.video("video1.mp4");
-	        * videoNode1.play(0);
-	        * videoNode1.stop(10);
-	        * var videoNode2 = ctx.video("video2.mp4");
-	        * videoNode2.play(8);
-	        * videoNode2.stop(18);
-	        *
-	        * //Connect the nodes to the transistion node.
-	        * videoNode1.connect(transitionNode);
-	        * videoNode2.connect(transitionNode);
-	        *
-	        * //Set-up a transition which happens at the crossover point of the playback of the two videos
-	        * transitionNode.transition(8,10,1.0,"mix");
-	        *
-	        * //Connect the transition node to the output
-	        * transitionNode.connect(ctx.destination);
-	        *
-	        * //start playback
-	        * ctx.play();
-	        */
+	         * Create a new transition node.
+	         *
+	         * Transistion nodes are a type of effect node which have parameters which can be changed as events on the timeline.
+	         *
+	         * For example a transition node which cross-fades between two videos could have a "mix" property which sets the
+	         * progress through the transistion. Rather than having to write your own code to adjust this property at specfic
+	         * points in time a transition node has a "transition" function which takes a startTime, stopTime, targetValue, and a
+	         * propertyName (which will be "mix"). This will linearly interpolate the property from the curernt value to
+	         * tragetValue between the startTime and stopTime.
+	         *
+	         * @param {Object} definition - this is an object defining the shaders, inputs, and properties of the transition node to create.
+	         * @return {TransitionNode} A new transition node created from the passed definition.
+	         * @example
+	         *
+	         * var canvasElement = document.getElementById("canvas");
+	         * var ctx = new VideoContext(canvasElement);
+	         *
+	         * //A simple cross-fade node definition which cross-fades between two videos based on the mix property.
+	         * var crossfadeDefinition = {
+	         *     vertexShader : "\
+	         *        attribute vec2 a_position;\
+	         *        attribute vec2 a_texCoord;\
+	         *        varying vec2 v_texCoord;\
+	         *        void main() {\
+	         *            gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+	         *            v_texCoord = a_texCoord;\
+	         *         }",
+	         *     fragmentShader : "\
+	         *         precision mediump float;\
+	         *         uniform sampler2D u_image_a;\
+	         *         uniform sampler2D u_image_b;\
+	         *         uniform float mix;\
+	         *         varying vec2 v_texCoord;\
+	         *         varying float v_mix;\
+	         *         void main(){\
+	         *             vec4 color_a = texture2D(u_image_a, v_texCoord);\
+	         *             vec4 color_b = texture2D(u_image_b, v_texCoord);\
+	         *             color_a[0] *= mix;\
+	         *             color_a[1] *= mix;\
+	         *             color_a[2] *= mix;\
+	         *             color_a[3] *= mix;\
+	         *             color_b[0] *= (1.0 - mix);\
+	         *             color_b[1] *= (1.0 - mix);\
+	         *             color_b[2] *= (1.0 - mix);\
+	         *             color_b[3] *= (1.0 - mix);\
+	         *             gl_FragColor = color_a + color_b;\
+	         *         }",
+	         *     properties:{
+	         *         "mix":{type:"uniform", value:0.0},
+	         *     },
+	         *     inputs:["u_image_a","u_image_b"]
+	         * };
+	         *
+	         * //Create the node, passing in the definition.
+	         * var transitionNode = videoCtx.transition(crossfadeDefinition);
+	         *
+	         * //create two videos which will overlap by two seconds
+	         * var videoNode1 = ctx.video("video1.mp4");
+	         * videoNode1.play(0);
+	         * videoNode1.stop(10);
+	         * var videoNode2 = ctx.video("video2.mp4");
+	         * videoNode2.play(8);
+	         * videoNode2.stop(18);
+	         *
+	         * //Connect the nodes to the transistion node.
+	         * videoNode1.connect(transitionNode);
+	         * videoNode2.connect(transitionNode);
+	         *
+	         * //Set-up a transition which happens at the crossover point of the playback of the two videos
+	         * transitionNode.transition(8,10,1.0,"mix");
+	         *
+	         * //Connect the transition node to the output
+	         * transitionNode.connect(ctx.destination);
+	         *
+	         * //start playback
+	         * ctx.play();
+	         */
 	    }, {
 	        key: "transition",
 	        value: function transition(definition) {
@@ -772,8 +789,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * @depricated
-	        */
+	         * @depricated
+	         */
 	    }, {
 	        key: "createTransitionNode",
 	        value: function createTransitionNode(definition) {
@@ -793,25 +810,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * This allows manual calling of the update loop of the videoContext.
-	        *
-	        * @param {Number} dt - The difference in seconds between this and the previous calling of update.
-	        * @example
-	        *
-	        * var canvasElement = document.getElementById("canvas");
-	        * var ctx = new VideoContext(canvasElement, undefined, {"manualUpdate" : true});
-	        *
-	        * var previousTime;
-	        * function update(time){
-	        *     if (previousTime === undefined) previousTime = time;
-	        *     var dt = (time - previousTime)/1000;
-	        *     ctx.update(dt);
-	        *     previousTime = time;
-	        *     requestAnimationFrame(update);
-	        * }
-	        * update();
-	        *
-	        */
+	         * This allows manual calling of the update loop of the videoContext.
+	         *
+	         * @param {Number} dt - The difference in seconds between this and the previous calling of update.
+	         * @example
+	         *
+	         * var canvasElement = document.getElementById("canvas");
+	         * var ctx = new VideoContext(canvasElement, undefined, {"manualUpdate" : true});
+	         *
+	         * var previousTime;
+	         * function update(time){
+	         *     if (previousTime === undefined) previousTime = time;
+	         *     var dt = (time - previousTime)/1000;
+	         *     ctx.update(dt);
+	         *     previousTime = time;
+	         *     requestAnimationFrame(update);
+	         * }
+	         * update();
+	         *
+	         */
 	    }, {
 	        key: "update",
 	        value: function update(dt) {
@@ -1052,8 +1069,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * Destroy all nodes in the graph and reset the timeline. After calling this any created nodes will be unusable.
-	        */
+	         * Destroy all nodes in the graph and reset the timeline. After calling this any created nodes will be unusable.
+	         */
 	    }, {
 	        key: "reset",
 	        value: function reset() {
@@ -1183,17 +1200,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * Get the current state.
-	        *
-	        * This will be either
-	        *  - VideoContext.STATE.PLAYING: current sources on timeline are active
-	        *  - VideoContext.STATE.PAUSED: all sources are paused
-	        *  - VideoContext.STATE.STALLED: one or more sources is unable to play
-	        *  - VideoContext.STATE.ENDED: all sources have finished playing
-	        *  - VideoContext.STATE.BROKEN: the render graph is in a broken state
-	        * @return {number} The number representing the state.
-	        *
-	        */
+	         * Get the current state.
+	         *
+	         * This will be either
+	         *  - VideoContext.STATE.PLAYING: current sources on timeline are active
+	         *  - VideoContext.STATE.PAUSED: all sources are paused
+	         *  - VideoContext.STATE.STALLED: one or more sources is unable to play
+	         *  - VideoContext.STATE.ENDED: all sources have finished playing
+	         *  - VideoContext.STATE.BROKEN: the render graph is in a broken state
+	         * @return {number} The number representing the state.
+	         *
+	         */
 	    }, {
 	        key: "state",
 	        get: function get() {
@@ -1201,22 +1218,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * Set the progress through the internal timeline.
-	        * Setting this can be used as a way to implement a scrubaable timeline.
-	        *
-	        * @param {number} currentTime - this is the currentTime to set the context to.
-	        *
-	        * @example
-	        * var canvasElement = document.getElementById("canvas");
-	        * var ctx = new VideoContext(canvasElement);
-	        * var videoNode = ctx.video("video.mp4");
-	        * videoNode.connect(ctx.destination);
-	        * videoNode.start(0);
-	        * videoNode.stop(20);
-	        * ctx.currentTime = 10; // seek 10 seconds in
-	        * ctx.play();
-	        *
-	        */
+	         * Set the progress through the internal timeline.
+	         * Setting this can be used as a way to implement a scrubaable timeline.
+	         *
+	         * @param {number} currentTime - this is the currentTime to set the context to.
+	         *
+	         * @example
+	         * var canvasElement = document.getElementById("canvas");
+	         * var ctx = new VideoContext(canvasElement);
+	         * var videoNode = ctx.video("video.mp4");
+	         * videoNode.connect(ctx.destination);
+	         * videoNode.start(0);
+	         * videoNode.stop(20);
+	         * ctx.currentTime = 10; // seek 10 seconds in
+	         * ctx.play();
+	         *
+	         */
 	    }, {
 	        key: "currentTime",
 	        set: function set(currentTime) {
@@ -1236,45 +1253,45 @@ return /******/ (function(modules) { // webpackBootstrap
 	        },
 	
 	        /**
-	        * Get how far through the internal timeline has been played.
-	        *
-	        * Getting this value will give the current playhead position. Can be used for updating timelines.
-	        * @return {number} The time in seconds through the current playlist.
-	        *
-	        * @example
-	        * var canvasElement = document.getElementById("canvas");
-	        * var ctx = new VideoContext(canvasElement);
-	        * var videoNode = ctx.video("video.mp4");
-	        * videoNode.connect(ctx.destination);
-	        * videoNode.start(0);
-	        * videoNode.stop(10);
-	        * ctx.play();
-	        * setTimeout(function(){console.log(ctx.currentTime);},1000); //should print roughly 1.0
-	        *
-	        */
+	         * Get how far through the internal timeline has been played.
+	         *
+	         * Getting this value will give the current playhead position. Can be used for updating timelines.
+	         * @return {number} The time in seconds through the current playlist.
+	         *
+	         * @example
+	         * var canvasElement = document.getElementById("canvas");
+	         * var ctx = new VideoContext(canvasElement);
+	         * var videoNode = ctx.video("video.mp4");
+	         * videoNode.connect(ctx.destination);
+	         * videoNode.start(0);
+	         * videoNode.stop(10);
+	         * ctx.play();
+	         * setTimeout(function(){console.log(ctx.currentTime);},1000); //should print roughly 1.0
+	         *
+	         */
 	        get: function get() {
 	            return this._currentTime;
 	        }
 	
 	        /**
-	        * Get the time at which the last node in the current internal timeline finishes playing.
-	        *
-	        * @return {number} The end time in seconds of the last video node to finish playing.
-	        *
-	        * @example
-	        * var canvasElement = document.getElementById("canvas");
-	        * var ctx = new VideoContext(canvasElement);
-	        * console.log(ctx.duration); //prints 0
-	        *
-	        * var videoNode = ctx.video("video.mp4");
-	        * videoNode.connect(ctx.destination);
-	        * videoNode.start(0);
-	        * videoNode.stop(10);
-	        *
-	        * console.log(ctx.duration); //prints 10
-	        *
-	        * ctx.play();
-	        */
+	         * Get the time at which the last node in the current internal timeline finishes playing.
+	         *
+	         * @return {number} The end time in seconds of the last video node to finish playing.
+	         *
+	         * @example
+	         * var canvasElement = document.getElementById("canvas");
+	         * var ctx = new VideoContext(canvasElement);
+	         * console.log(ctx.duration); //prints 0
+	         *
+	         * var videoNode = ctx.video("video.mp4");
+	         * videoNode.connect(ctx.destination);
+	         * videoNode.start(0);
+	         * videoNode.stop(10);
+	         *
+	         * console.log(ctx.duration); //prints 10
+	         *
+	         * ctx.play();
+	         */
 	    }, {
 	        key: "duration",
 	        get: function get() {
@@ -1288,20 +1305,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * Get the final node in the render graph which represents the canvas to display content on to.
-	        *
-	        * This proprety is read-only and there can only ever be one destination node. Other nodes can connect to this but you cannot connect this node to anything.
-	        *
-	        * @return {DestinationNode} A graph node represnting the canvas to display the content on.
-	        * @example
-	        * var canvasElement = document.getElementById("canvas");
-	        * var ctx = new VideoContext(canvasElement);
-	        * var videoNode = ctx.video("video.mp4");
-	        * videoNode.start(0);
-	        * videoNode.stop(10);
-	        * videoNode.connect(ctx.destination);
-	        *
-	        */
+	         * Get the final node in the render graph which represents the canvas to display content on to.
+	         *
+	         * This proprety is read-only and there can only ever be one destination node. Other nodes can connect to this but you cannot connect this node to anything.
+	         *
+	         * @return {DestinationNode} A graph node represnting the canvas to display the content on.
+	         * @example
+	         * var canvasElement = document.getElementById("canvas");
+	         * var ctx = new VideoContext(canvasElement);
+	         * var videoNode = ctx.video("video.mp4");
+	         * videoNode.start(0);
+	         * videoNode.stop(10);
+	         * videoNode.connect(ctx.destination);
+	         *
+	         */
 	    }, {
 	        key: "destination",
 	        get: function get() {
@@ -1309,21 +1326,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * Set the playback rate of the VideoContext instance.
-	        * This will alter the playback speed of all media elements played through the VideoContext.
-	        *
-	        * @param {number} rate - this is the playback rate.
-	        *
-	        * @example
-	        * var canvasElement = document.getElementById("canvas");
-	        * var ctx = new VideoContext(canvasElement);
-	        * var videoNode = ctx.video("video.mp4");
-	        * videoNode.start(0);
-	        * videoNode.stop(10);
-	        * videoNode.connect(ctx.destination);
-	        * ctx.playbackRate = 2;
-	        * ctx.play(); // Double playback rate means this will finish playing in 5 seconds.
-	        */
+	         * Set the playback rate of the VideoContext instance.
+	         * This will alter the playback speed of all media elements played through the VideoContext.
+	         *
+	         * @param {number} rate - this is the playback rate.
+	         *
+	         * @example
+	         * var canvasElement = document.getElementById("canvas");
+	         * var ctx = new VideoContext(canvasElement);
+	         * var videoNode = ctx.video("video.mp4");
+	         * videoNode.start(0);
+	         * videoNode.stop(10);
+	         * videoNode.connect(ctx.destination);
+	         * ctx.playbackRate = 2;
+	         * ctx.play(); // Double playback rate means this will finish playing in 5 seconds.
+	         */
 	    }, {
 	        key: "playbackRate",
 	        set: function set(rate) {
@@ -1362,9 +1379,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        },
 	
 	        /**
-	        *  Return the current playbackRate of the video context.
-	        * @return {number} A value representing the playbackRate. 1.0 by default.
-	        */
+	         *  Return the current playbackRate of the video context.
+	         * @return {number} A value representing the playbackRate. 1.0 by default.
+	         */
 	        get: function get() {
 	            return this._playbackRate;
 	        }
@@ -1407,9 +1424,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        },
 	
 	        /**
-	        *  Return the current volume of the video context.
-	        * @return {number} A value representing the volume. 1.0 by default.
-	        */
+	         *  Return the current volume of the video context.
+	         * @return {number} A value representing the volume. 1.0 by default.
+	         */
 	        get: function get() {
 	            return this._volume;
 	        }
@@ -1467,9 +1484,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _inherits(VideoNode, _MediaNode);
 	
 	    /**
-	    * Initialise an instance of a VideoNode.
-	    * This should not be called directly, but created through a call to videoContext.createVideoNode();
-	    */
+	     * Initialise an instance of a VideoNode.
+	     * This should not be called directly, but created through a call to videoContext.createVideoNode();
+	     */
 	
 	    function VideoNode() {
 	        _classCallCheck(this, VideoNode);
@@ -1516,9 +1533,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _inherits(MediaNode, _SourceNode);
 	
 	    /**
-	    * Initialise an instance of a MediaNode.
-	    * This should not be called directly, but extended by other Node Types which use a `HTMLMediaElement`.
-	    */
+	     * Initialise an instance of a MediaNode.
+	     * This should not be called directly, but extended by other Node Types which use a `HTMLMediaElement`.
+	     */
 	
 	    function MediaNode(src, gl, renderGraph, currentTime) {
 	        var globalPlaybackRate = arguments.length <= 4 || arguments[4] === undefined ? 1.0 : arguments[4];
@@ -1552,7 +1569,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	            _get(Object.getPrototypeOf(MediaNode.prototype), "_load", this).call(this);
 	            if (this._element !== undefined) {
-	
 	                for (var key in this._attributes) {
 	                    this._element[key] = this._attributes[key];
 	                }
@@ -1777,15 +1793,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _graphnode2 = _interopRequireDefault(_graphnode);
 	
-	var STATE = { "waiting": 0, "sequenced": 1, "playing": 2, "paused": 3, "ended": 4, "error": 5 };
+	var STATE = {
+	    waiting: 0,
+	    sequenced: 1,
+	    playing: 2,
+	    paused: 3,
+	    ended: 4,
+	    error: 5
+	};
 	
 	var SourceNode = (function (_GraphNode) {
 	    _inherits(SourceNode, _GraphNode);
 	
 	    /**
-	    * Initialise an instance of a SourceNode.
-	    * This is the base class for other Nodes which generate media to be passed into the processing pipeline.
-	    */
+	     * Initialise an instance of a SourceNode.
+	     * This is the base class for other Nodes which generate media to be passed into the processing pipeline.
+	     */
 	
 	    function SourceNode(src, gl, renderGraph, currentTime) {
 	        _classCallCheck(this, SourceNode);
@@ -1819,25 +1842,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	
 	    /**
-	    * Returns the state of the node.
-	    * 0 - Waiting, start() has not been called on it yet.
-	    * 1 - Sequenced, start() has been called but it is not playing yet.
-	    * 2 - Playing, the node is playing.
-	    * 3 - Paused, the node is paused.
-	    * 4 - Ended, playback of the node has finished.
-	    *
-	    * @example
-	    * var ctx = new VideoContext();
-	    * var videoNode = ctx.createVideoSourceNode('video.mp4');
-	    * console.log(videoNode.state); //will output 0 (for waiting)
-	    * videoNode.start(5);
-	    * console.log(videoNode.state); //will output 1 (for sequenced)
-	    * videoNode.stop(10);
-	    * ctx.play();
-	    * console.log(videoNode.state); //will output 2 (for playing)
-	    * ctx.paused();
-	    * console.log(videoNode.state); //will output 3 (for paused)
-	    */
+	     * Returns the state of the node.
+	     * 0 - Waiting, start() has not been called on it yet.
+	     * 1 - Sequenced, start() has been called but it is not playing yet.
+	     * 2 - Playing, the node is playing.
+	     * 3 - Paused, the node is paused.
+	     * 4 - Ended, playback of the node has finished.
+	     *
+	     * @example
+	     * var ctx = new VideoContext();
+	     * var videoNode = ctx.createVideoSourceNode('video.mp4');
+	     * console.log(videoNode.state); //will output 0 (for waiting)
+	     * videoNode.start(5);
+	     * console.log(videoNode.state); //will output 1 (for sequenced)
+	     * videoNode.stop(10);
+	     * ctx.play();
+	     * console.log(videoNode.state); //will output 2 (for playing)
+	     * ctx.paused();
+	     * console.log(videoNode.state); //will output 3 (for paused)
+	     */
 	
 	    _createClass(SourceNode, [{
 	        key: "_load",
@@ -1855,20 +1878,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * Register callbacks against one of these events: "load", "destroy", "seek", "pause", "play", "ended", "durationchange", "loaded", "error"
-	        *
-	        * @param {String} type - the type of event to register the callback against.
-	        * @param {function} func - the function to call.
-	        *
-	        * @example
-	        * var ctx = new VideoContext();
-	        * var videoNode = ctx.createVideoSourceNode('video.mp4');
-	        *
-	        * videoNode.registerCallback("load", function(){"video is loading"});
-	        * videoNode.registerCallback("play", function(){"video is playing"});
-	        * videoNode.registerCallback("ended", function(){"video has eneded"});
-	        *
-	        */
+	         * Register callbacks against one of these events: "load", "destroy", "seek", "pause", "play", "ended", "durationchange", "loaded", "error"
+	         *
+	         * @param {String} type - the type of event to register the callback against.
+	         * @param {function} func - the function to call.
+	         *
+	         * @example
+	         * var ctx = new VideoContext();
+	         * var videoNode = ctx.createVideoSourceNode('video.mp4');
+	         *
+	         * videoNode.registerCallback("load", function(){"video is loading"});
+	         * videoNode.registerCallback("play", function(){"video is playing"});
+	         * videoNode.registerCallback("ended", function(){"video has eneded"});
+	         *
+	         */
 	    }, {
 	        key: "registerCallback",
 	        value: function registerCallback(type, func) {
@@ -1876,20 +1899,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * Remove callback.
-	        *
-	        * @param {function} [func] - the callback to remove, if undefined will remove all callbacks for this node.
-	        *
-	        * @example
-	        * var ctx = new VideoContext();
-	        * var videoNode = ctx.createVideoSourceNode('video.mp4');
-	        *
-	        * videoNode.registerCallback("load", function(){"video is loading"});
-	        * videoNode.registerCallback("play", function(){"video is playing"});
-	        * videoNode.registerCallback("ended", function(){"video has eneded"});
-	        * videoNode.unregisterCallback(); //remove all of the three callbacks.
-	        *
-	        */
+	         * Remove callback.
+	         *
+	         * @param {function} [func] - the callback to remove, if undefined will remove all callbacks for this node.
+	         *
+	         * @example
+	         * var ctx = new VideoContext();
+	         * var videoNode = ctx.createVideoSourceNode('video.mp4');
+	         *
+	         * videoNode.registerCallback("load", function(){"video is loading"});
+	         * videoNode.registerCallback("play", function(){"video is playing"});
+	         * videoNode.registerCallback("ended", function(){"video has eneded"});
+	         * videoNode.unregisterCallback(); //remove all of the three callbacks.
+	         *
+	         */
 	    }, {
 	        key: "unregisterCallback",
 	        value: function unregisterCallback(func) {
@@ -1985,11 +2008,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * Start playback at VideoContext.currentTime plus passed time. If passed time is negative, will play as soon as possible.
-	        *
-	        * @param {number} time - the time from the currentTime of the VideoContext which to start playing, if negative will play as soon as possible.
-	        * @return {boolean} Will return true is seqeuncing has succeded, or false if it is already sequenced.
-	        */
+	         * Start playback at VideoContext.currentTime plus passed time. If passed time is negative, will play as soon as possible.
+	         *
+	         * @param {number} time - the time from the currentTime of the VideoContext which to start playing, if negative will play as soon as possible.
+	         * @return {boolean} Will return true is seqeuncing has succeded, or false if it is already sequenced.
+	         */
 	    }, {
 	        key: "start",
 	        value: function start(time) {
@@ -2004,11 +2027,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * Start playback at an absolute time ont the VideoContext's timeline.
-	        *
-	        * @param {number} time - the time on the VideoContexts timeline to start playing.
-	        * @return {boolean} Will return true is seqeuncing has succeded, or false if it is already sequenced.
-	        */
+	         * Start playback at an absolute time ont the VideoContext's timeline.
+	         *
+	         * @param {number} time - the time on the VideoContexts timeline to start playing.
+	         * @return {boolean} Will return true is seqeuncing has succeded, or false if it is already sequenced.
+	         */
 	    }, {
 	        key: "startAt",
 	        value: function startAt(time) {
@@ -2024,11 +2047,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        key: "stop",
 	
 	        /**
-	        * Stop playback at VideoContext.currentTime plus passed time. If passed time is negative, will play as soon as possible.
-	        *
-	        * @param {number} time - the time from the currentTime of the video context which to stop playback.
-	        * @return {boolean} Will return true is seqeuncing has succeded, or false if the playback has already ended or if start hasn't been called yet, or if time is less than the start time.
-	        */
+	         * Stop playback at VideoContext.currentTime plus passed time. If passed time is negative, will play as soon as possible.
+	         *
+	         * @param {number} time - the time from the currentTime of the video context which to stop playback.
+	         * @return {boolean} Will return true is seqeuncing has succeded, or false if the playback has already ended or if start hasn't been called yet, or if time is less than the start time.
+	         */
 	        value: function stop(time) {
 	            if (this._state === STATE.ended) {
 	                console.debug("SourceNode has already ended. Cannot call stop.");
@@ -2048,11 +2071,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * Stop playback at an absolute time ont the VideoContext's timeline.
-	        *
-	        * @param {number} time - the time on the VideoContexts timeline to stop playing.
-	        * @return {boolean} Will return true is seqeuncing has succeded, or false if the playback has already ended or if start hasn't been called yet, or if time is less than the start time.
-	        */
+	         * Stop playback at an absolute time ont the VideoContext's timeline.
+	         *
+	         * @param {number} time - the time on the VideoContexts timeline to stop playing.
+	         * @return {boolean} Will return true is seqeuncing has succeded, or false if the playback has already ended or if start hasn't been called yet, or if time is less than the start time.
+	         */
 	    }, {
 	        key: "stopAt",
 	        value: function stopAt(time) {
@@ -2107,7 +2130,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: "_play",
 	        value: function _play() {
-	
 	            if (this._state === STATE.paused) {
 	                this._triggerCallbacks("play");
 	                this._state = STATE.playing;
@@ -2171,8 +2193,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * Clear any timeline state the node currently has, this puts the node in the "waiting" state, as if neither start nor stop had been called.
-	        */
+	         * Clear any timeline state the node currently has, this puts the node in the "waiting" state, as if neither start nor stop had been called.
+	         */
 	    }, {
 	        key: "clearTimelineState",
 	        value: function clearTimelineState() {
@@ -2182,8 +2204,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * Destroy and clean-up the node.
-	        */
+	         * Destroy and clean-up the node.
+	         */
 	    }, {
 	        key: "destroy",
 	        value: function destroy() {
@@ -2208,32 +2230,32 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * Returns the underlying DOM element which represents this source node.
-	        * Note: If a source node is created with a url rather than passing in an existing element then this will return undefined until the source node preloads the element.
-	        *
-	        * @return {Element} The underlying DOM element representing the media for the node. If the lifecycle of the video is owned UNSIGNED_BYTE the node itself, this can return undefined if the element hasn't been loaded yet.
-	        *
-	        * @example
-	        * //Accessing the Element on a VideoNode created via a URL
-	        * var ctx = new VideoContext();
-	        * var videoNode = ctx.createVideoSourceNode('video.mp4');
-	        * videoNode.start(0);
-	        * videoNode.stop(5);
-	        * //When the node starts playing the element should exist so set it's volume to 0
-	        * videoNode.regsiterCallback("play", function(){videoNode.element.volume = 0;});
-	        *
-	        *
-	        * @example
-	        * //Accessing the Element on a VideoNode created via an already existing element
-	        * var ctx = new VideoContext();
-	        * var videoElement = document.createElement("video");
-	        * var videoNode = ctx.createVideoSourceNode(videoElement);
-	        * videoNode.start(0);
-	        * videoNode.stop(5);
-	        * //The elemnt can be accessed any time because it's lifecycle is managed outside of the VideoContext
-	        * videoNode.element.volume = 0;
-	        *
-	        */
+	         * Returns the underlying DOM element which represents this source node.
+	         * Note: If a source node is created with a url rather than passing in an existing element then this will return undefined until the source node preloads the element.
+	         *
+	         * @return {Element} The underlying DOM element representing the media for the node. If the lifecycle of the video is owned UNSIGNED_BYTE the node itself, this can return undefined if the element hasn't been loaded yet.
+	         *
+	         * @example
+	         * //Accessing the Element on a VideoNode created via a URL
+	         * var ctx = new VideoContext();
+	         * var videoNode = ctx.createVideoSourceNode('video.mp4');
+	         * videoNode.start(0);
+	         * videoNode.stop(5);
+	         * //When the node starts playing the element should exist so set it's volume to 0
+	         * videoNode.regsiterCallback("play", function(){videoNode.element.volume = 0;});
+	         *
+	         *
+	         * @example
+	         * //Accessing the Element on a VideoNode created via an already existing element
+	         * var ctx = new VideoContext();
+	         * var videoElement = document.createElement("video");
+	         * var videoNode = ctx.createVideoSourceNode(videoElement);
+	         * videoNode.start(0);
+	         * videoNode.stop(5);
+	         * //The elemnt can be accessed any time because it's lifecycle is managed outside of the VideoContext
+	         * videoNode.element.volume = 0;
+	         *
+	         */
 	    }, {
 	        key: "element",
 	        get: function get() {
@@ -2241,17 +2263,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * Returns the duration of the node on a timeline. If no start time is set will return undefiend, if no stop time is set will return Infinity.
-	        *
-	        * @return {number} The duration of the node in seconds.
-	        *
-	        * @example
-	        * var ctx = new VideoContext();
-	        * var videoNode = ctx.createVideoSourceNode('video.mp4');
-	        * videoNode.start(5);
-	        * videoNode.stop(10);
-	        * console.log(videoNode.duration); //will output 10
-	        */
+	         * Returns the duration of the node on a timeline. If no start time is set will return undefiend, if no stop time is set will return Infinity.
+	         *
+	         * @return {number} The duration of the node in seconds.
+	         *
+	         * @example
+	         * var ctx = new VideoContext();
+	         * var videoNode = ctx.createVideoSourceNode('video.mp4');
+	         * videoNode.start(5);
+	         * videoNode.stop(10);
+	         * console.log(videoNode.duration); //will output 10
+	         */
 	    }, {
 	        key: "duration",
 	        get: function get() {
@@ -2362,9 +2384,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    gl.linkProgram(program);
 	
 	    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-	        throw { "error": 4, "msg": "Can't link shader program for track", toString: function toString() {
+	        throw {
+	            error: 4,
+	            msg: "Can't link shader program for track",
+	            toString: function toString() {
 	                return this.msg;
-	            } };
+	            }
+	        };
 	    }
 	    return program;
 	}
@@ -2442,7 +2468,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var warningExportSourceLogged = false;
 	function snapshotNodes(vc) {
-	
 	    function qualifyURL(url) {
 	        var a = document.createElement("a");
 	        a.href = url;
@@ -2773,7 +2798,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	        }
 	
-	        return { x: xStep * nodeDepths.get(node), y: nodeHeight * 1.5 * count + 50 };
+	        return {
+	            x: xStep * nodeDepths.get(node),
+	            y: nodeHeight * 1.5 * count + 50
+	        };
 	    }
 	
 	    // "video":["#572A72", "#3C1255"],
@@ -2874,7 +2902,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 	
 	function createSigmaGraphDataFromRenderGraph(videoContext) {
-	
 	    function idForNode(node) {
 	        if (videoContext._sourceNodes.indexOf(node) !== -1) {
 	            var _id = "source " + node.displayName + " " + videoContext._sourceNodes.indexOf(node);
@@ -2923,9 +2950,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    for (var i = 0; i < videoContext._renderGraph.connections.length; i++) {
 	        var conn = videoContext._renderGraph.connections[i];
 	        graph.edges.push({
-	            "id": "e" + i.toString(),
-	            "source": idForNode(conn.source),
-	            "target": idForNode(conn.destination)
+	            id: "e" + i.toString(),
+	            source: idForNode(conn.source),
+	            target: idForNode(conn.destination)
 	        });
 	    }
 	
@@ -2951,7 +2978,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            } else if (clip.type === "image") {
 	                node = ctx.image(clip.src, clip.sourceStart);
 	            } else {
-	                console.debug("Clip type \"" + clip.type + "\" not recognised, skipping.");
+	                console.debug("Clip type " + clip.type + " not recognised, skipping.");
 	                continue;
 	            }
 	            node.startAt(clip.start);
@@ -3000,9 +3027,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	    var pixelsPerSecond = w / playlistDuration;
 	    var mediaSourceStyle = {
-	        "video": ["#572A72", "#3C1255"],
-	        "image": ["#7D9F35", "#577714"],
-	        "canvas": ["#AA9639", "#806D15"]
+	        video: ["#572A72", "#3C1255"],
+	        image: ["#7D9F35", "#577714"],
+	        canvas: ["#AA9639", "#806D15"]
 	    };
 	
 	    ctx.clearRect(0, 0, w, h);
@@ -3122,7 +3149,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var _this = this;
 	
 	            window.URL = window.URL || window.webkitURL;
-	            var blob = new Blob([this._webWorkerString], { type: "application/javascript" });
+	            var blob = new Blob([this._webWorkerString], {
+	                type: "application/javascript"
+	            });
 	            this._webWorker = new Worker(URL.createObjectURL(blob));
 	            this._webWorker.onmessage = function (msg) {
 	                var time = msg.data;
@@ -3343,9 +3372,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: true
 	});
 	var aaf_video_scale = {
-	    "title": "AAF Video Scale Effect",
-	    "description": "A scale effect based on the AAF spec.",
-	    "vertexShader": "\
+	    title: "AAF Video Scale Effect",
+	    description: "A scale effect based on the AAF spec.",
+	    vertexShader: "\
 	        attribute vec2 a_position;\
 	        attribute vec2 a_texCoord;\
 	        varying vec2 v_texCoord;\
@@ -3353,7 +3382,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
 	            v_texCoord = a_texCoord;\
 	        }",
-	    "fragmentShader": "\
+	    fragmentShader: "\
 	        precision mediump float;\
 	        uniform sampler2D u_image;\
 	        uniform float scaleX;\
@@ -3368,11 +3397,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }\
 	                gl_FragColor = color;\
 	            }",
-	    "properties": {
-	        "scaleX": { "type": "uniform", "value": 1.0 },
-	        "scaleY": { "type": "uniform", "value": 1.0 }
+	    properties: {
+	        scaleX: { type: "uniform", value: 1.0 },
+	        scaleY: { type: "uniform", value: 1.0 }
 	    },
-	    "inputs": ["u_image"]
+	    inputs: ["u_image"]
 	};
 	
 	exports["default"] = aaf_video_scale;
@@ -3388,9 +3417,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: true
 	});
 	var crossfade = {
-	    "title": "Cross-Fade",
-	    "description": "A cross-fade effect. Typically used as a transistion.",
-	    "vertexShader": "\
+	    title: "Cross-Fade",
+	    description: "A cross-fade effect. Typically used as a transistion.",
+	    vertexShader: "\
 	    attribute vec2 a_position;\
 	    attribute vec2 a_texCoord;\
 	    varying vec2 v_texCoord;\
@@ -3398,7 +3427,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
 	        v_texCoord = a_texCoord;\
 	    }",
-	    "fragmentShader": "\
+	    fragmentShader: "\
 	    precision mediump float;\
 	    uniform sampler2D u_image_a;\
 	    uniform sampler2D u_image_b;\
@@ -3418,10 +3447,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        color_b[3] *= mix;\
 	        gl_FragColor = color_a + color_b;\
 	    }",
-	    "properties": {
-	        "mix": { "type": "uniform", "value": 0.0 }
+	    properties: {
+	        mix: { type: "uniform", value: 0.0 }
 	    },
-	    "inputs": ["u_image_a", "u_image_b"]
+	    inputs: ["u_image_a", "u_image_b"]
 	};
 	
 	exports["default"] = crossfade;
@@ -3437,9 +3466,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: true
 	});
 	var horizontal_wipe = {
-	    "title": "Horizontal Wipe",
-	    "description": "A horizontal wipe effect. Typically used as a transistion.",
-	    "vertexShader": "\
+	    title: "Horizontal Wipe",
+	    description: "A horizontal wipe effect. Typically used as a transistion.",
+	    vertexShader: "\
 	            attribute vec2 a_position;\
 	            attribute vec2 a_texCoord;\
 	            varying vec2 v_texCoord;\
@@ -3447,7 +3476,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
 	                v_texCoord = a_texCoord;\
 	            }",
-	    "fragmentShader": "\
+	    fragmentShader: "\
 	            precision mediump float;\
 	            uniform sampler2D u_image_a;\
 	            uniform sampler2D u_image_b;\
@@ -3463,10 +3492,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    gl_FragColor = color_b;\
 	                }\
 	            }",
-	    "properties": {
-	        "mix": { "type": "uniform", "value": 0.0 }
+	    properties: {
+	        mix: { type: "uniform", value: 0.0 }
 	    },
-	    "inputs": ["u_image_a", "u_image_b"]
+	    inputs: ["u_image_a", "u_image_b"]
 	};
 	
 	exports["default"] = horizontal_wipe;
@@ -3482,9 +3511,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: true
 	});
 	var verticalWipe = {
-	    "title": "vertical Wipe",
-	    "description": "A vertical wipe effect. Typically used as a transistion.",
-	    "vertexShader": "\
+	    title: "vertical Wipe",
+	    description: "A vertical wipe effect. Typically used as a transistion.",
+	    vertexShader: "\
 	            attribute vec2 a_position;\
 	            attribute vec2 a_texCoord;\
 	            varying vec2 v_texCoord;\
@@ -3492,7 +3521,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
 	                v_texCoord = a_texCoord;\
 	            }",
-	    "fragmentShader": "\
+	    fragmentShader: "\
 	            precision mediump float;\
 	            uniform sampler2D u_image_a;\
 	            uniform sampler2D u_image_b;\
@@ -3508,10 +3537,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    gl_FragColor = color_b;\
 	                }\
 	            }",
-	    "properties": {
-	        "mix": { "type": "uniform", "value": 0.0 }
+	    properties: {
+	        mix: { type: "uniform", value: 0.0 }
 	    },
-	    "inputs": ["u_image_a", "u_image_b"]
+	    inputs: ["u_image_a", "u_image_b"]
 	};
 	
 	exports["default"] = verticalWipe;
@@ -3527,9 +3556,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: true
 	});
 	var randomDissolve = {
-	    "title": "Random Dissolve",
-	    "description": "A random dissolve effect. Typically used as a transistion.",
-	    "vertexShader": "\
+	    title: "Random Dissolve",
+	    description: "A random dissolve effect. Typically used as a transistion.",
+	    vertexShader: "\
 	            attribute vec2 a_position;\
 	            attribute vec2 a_texCoord;\
 	            varying vec2 v_texCoord;\
@@ -3537,7 +3566,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
 	                v_texCoord = a_texCoord;\
 	            }",
-	    "fragmentShader": "\
+	    fragmentShader: "\
 	            precision mediump float;\
 	            uniform sampler2D u_image_a;\
 	            uniform sampler2D u_image_b;\
@@ -3556,10 +3585,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    gl_FragColor = color_b;\
 	                }\
 	            }",
-	    "properties": {
-	        "mix": { "type": "uniform", "value": 0.0 }
+	    properties: {
+	        mix: { type: "uniform", value: 0.0 }
 	    },
-	    "inputs": ["u_image_a", "u_image_b"]
+	    inputs: ["u_image_a", "u_image_b"]
 	};
 	
 	exports["default"] = randomDissolve;
@@ -3575,9 +3604,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: true
 	});
 	var toColorAndBackFade = {
-	    "title": "To Color And Back Fade",
-	    "description": "A fade to black and back effect. Setting mix to 0.5 is a fully solid color frame. Typically used as a transistion.",
-	    "vertexShader": "\
+	    title: "To Color And Back Fade",
+	    description: "A fade to black and back effect. Setting mix to 0.5 is a fully solid color frame. Typically used as a transistion.",
+	    vertexShader: "\
 	            attribute vec2 a_position;\
 	            attribute vec2 a_texCoord;\
 	            varying vec2 v_texCoord;\
@@ -3585,7 +3614,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
 	                v_texCoord = a_texCoord;\
 	            }",
-	    "fragmentShader": "\
+	    fragmentShader: "\
 	            precision mediump float;\
 	            uniform sampler2D u_image_a;\
 	            uniform sampler2D u_image_b;\
@@ -3603,11 +3632,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    gl_FragColor = mix_amount * color_b + (1.0 - mix_amount) * color;\
 	                }\
 	            }",
-	    "properties": {
-	        "mix": { "type": "uniform", "value": 0.0 },
-	        "color": { "type": "uniform", "value": [0.0, 0.0, 0.0, 0.0] }
+	    properties: {
+	        mix: { type: "uniform", value: 0.0 },
+	        color: { type: "uniform", value: [0.0, 0.0, 0.0, 0.0] }
 	    },
-	    "inputs": ["u_image_a", "u_image_b"]
+	    inputs: ["u_image_a", "u_image_b"]
 	};
 	exports["default"] = toColorAndBackFade;
 	module.exports = exports["default"];
@@ -3622,9 +3651,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: true
 	});
 	var starWipe = {
-	    "title": "Star Wipe Fade",
-	    "description": "A classic star wipe transistion. Typically used as a transistion.",
-	    "vertexShader": "\
+	    title: "Star Wipe Fade",
+	    description: "A classic star wipe transistion. Typically used as a transistion.",
+	    vertexShader: "\
 	            attribute vec2 a_position;\
 	            attribute vec2 a_texCoord;\
 	            varying vec2 v_texCoord;\
@@ -3632,7 +3661,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
 	                v_texCoord = a_texCoord;\
 	            }",
-	    "fragmentShader": "\
+	    fragmentShader: "\
 	            precision mediump float;\
 	            uniform sampler2D u_image_a;\
 	            uniform sampler2D u_image_b;\
@@ -3712,10 +3741,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    gl_FragColor = color_b;\
 	                }\
 	            }",
-	    "properties": {
-	        "mix": { "type": "uniform", "value": 1.0 }
+	    properties: {
+	        mix: { type: "uniform", value: 1.0 }
 	    },
-	    "inputs": ["u_image_a", "u_image_b"]
+	    inputs: ["u_image_a", "u_image_b"]
 	};
 	
 	exports["default"] = starWipe;
@@ -3731,9 +3760,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: true
 	});
 	var combine = {
-	    "title": "Combine",
-	    "description": "A basic effect which renders the input to the output, Typically used as a combine node for layering up media with alpha transparency.",
-	    "vertexShader": "\
+	    title: "Combine",
+	    description: "A basic effect which renders the input to the output, Typically used as a combine node for layering up media with alpha transparency.",
+	    vertexShader: "\
 	            attribute vec2 a_position;\
 	            attribute vec2 a_texCoord;\
 	            varying vec2 v_texCoord;\
@@ -3741,7 +3770,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
 	                v_texCoord = a_texCoord;\
 	            }",
-	    "fragmentShader": "\
+	    fragmentShader: "\
 	            precision mediump float;\
 	            uniform sampler2D u_image;\
 	            uniform float a;\
@@ -3751,10 +3780,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	                vec4 color = texture2D(u_image, v_texCoord);\
 	                gl_FragColor = color;\
 	            }",
-	    "properties": {
-	        "a": { "type": "uniform", "value": 0.0 }
+	    properties: {
+	        a: { type: "uniform", value: 0.0 }
 	    },
-	    "inputs": ["u_image"]
+	    inputs: ["u_image"]
 	};
 	
 	exports["default"] = combine;
@@ -3770,9 +3799,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: true
 	});
 	var colorThreshold = {
-	    "title": "Color Threshold",
-	    "description": "Turns all pixels with a greater value than the specified threshold transparent.",
-	    "vertexShader": "\
+	    title: "Color Threshold",
+	    description: "Turns all pixels with a greater value than the specified threshold transparent.",
+	    vertexShader: "\
 	            attribute vec2 a_position;\
 	            attribute vec2 a_texCoord;\
 	            varying vec2 v_texCoord;\
@@ -3780,7 +3809,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
 	                v_texCoord = a_texCoord;\
 	            }",
-	    "fragmentShader": "\
+	    fragmentShader: "\
 	            precision mediump float;\
 	            uniform sampler2D u_image;\
 	            uniform float a;\
@@ -3794,11 +3823,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }\
 	                gl_FragColor = color;\
 	            }",
-	    "properties": {
-	        "a": { "type": "uniform", "value": 0.0 },
-	        "colorAlphaThreshold": { "type": "uniform", "value": [0.0, 0.55, 0.0] }
+	    properties: {
+	        a: { type: "uniform", value: 0.0 },
+	        colorAlphaThreshold: { type: "uniform", value: [0.0, 0.55, 0.0] }
 	    },
-	    "inputs": ["u_image"]
+	    inputs: ["u_image"]
 	};
 	
 	exports["default"] = colorThreshold;
@@ -3814,9 +3843,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: true
 	});
 	var monochrome = {
-	    "title": "Monochrome",
-	    "description": "Change images to a single chroma (e.g can be used to make a black & white filter). Input color mix and output color mix can be adjusted.",
-	    "vertexShader": "\
+	    title: "Monochrome",
+	    description: "Change images to a single chroma (e.g can be used to make a black & white filter). Input color mix and output color mix can be adjusted.",
+	    vertexShader: "\
 	            attribute vec2 a_position;\
 	            attribute vec2 a_texCoord;\
 	            varying vec2 v_texCoord;\
@@ -3824,7 +3853,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
 	                v_texCoord = a_texCoord;\
 	            }",
-	    "fragmentShader": "\
+	    fragmentShader: "\
 	            precision mediump float;\
 	            uniform sampler2D u_image;\
 	            uniform vec3 inputMix;\
@@ -3839,11 +3868,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	                color[2] = mono * outputMix[2];\
 	                gl_FragColor = color;\
 	            }",
-	    "properties": {
-	        "inputMix": { "type": "uniform", "value": [0.4, 0.6, 0.2] },
-	        "outputMix": { "type": "uniform", "value": [1.0, 1.0, 1.0] }
+	    properties: {
+	        inputMix: { type: "uniform", value: [0.4, 0.6, 0.2] },
+	        outputMix: { type: "uniform", value: [1.0, 1.0, 1.0] }
 	    },
-	    "inputs": ["u_image"]
+	    inputs: ["u_image"]
 	};
 	
 	exports["default"] = monochrome;
@@ -3859,9 +3888,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: true
 	});
 	var horizontal_blur = {
-	    "title": "Horizontal Blur",
-	    "description": "A horizontal blur effect. Adpated from http://xissburg.com/faster-gaussian-blur-in-glsl/",
-	    "vertexShader": "\
+	    title: "Horizontal Blur",
+	    description: "A horizontal blur effect. Adpated from http://xissburg.com/faster-gaussian-blur-in-glsl/",
+	    vertexShader: "\
 	        attribute vec2 a_position;\
 	        attribute vec2 a_texCoord;\
 	        uniform float blurAmount;\
@@ -3885,7 +3914,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            v_blurTexCoords[12] = v_texCoord + vec2( 0.024 * blurAmount, 0.0);\
 	            v_blurTexCoords[13] = v_texCoord + vec2( 0.028 * blurAmount, 0.0);\
 	        }",
-	    "fragmentShader": "\
+	    fragmentShader: "\
 	        precision mediump float;\
 	        uniform sampler2D u_image;\
 	        varying vec2 v_texCoord;\
@@ -3908,10 +3937,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	            gl_FragColor += texture2D(u_image, v_blurTexCoords[12])*0.00895781211794;\
 	            gl_FragColor += texture2D(u_image, v_blurTexCoords[13])*0.0044299121055113265;\
 	        }",
-	    "properties": {
-	        "blurAmount": { "type": "uniform", "value": 1.0 }
+	    properties: {
+	        blurAmount: { type: "uniform", value: 1.0 }
 	    },
-	    "inputs": ["u_image"]
+	    inputs: ["u_image"]
 	};
 	
 	exports["default"] = horizontal_blur;
@@ -3927,9 +3956,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: true
 	});
 	var verticalBlur = {
-	    "title": "Vertical Blur",
-	    "description": "A vertical blur effect. Adpated from http://xissburg.com/faster-gaussian-blur-in-glsl/",
-	    "vertexShader": "\
+	    title: "Vertical Blur",
+	    description: "A vertical blur effect. Adpated from http://xissburg.com/faster-gaussian-blur-in-glsl/",
+	    vertexShader: "\
 	        attribute vec2 a_position;\
 	        attribute vec2 a_texCoord;\
 	        varying vec2 v_texCoord;\
@@ -3953,7 +3982,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            v_blurTexCoords[12] = v_texCoord + vec2(0.0, 0.024 * blurAmount);\
 	            v_blurTexCoords[13] = v_texCoord + vec2(0.0, 0.028 * blurAmount);\
 	        }",
-	    "fragmentShader": "\
+	    fragmentShader: "\
 	        precision mediump float;\
 	        uniform sampler2D u_image;\
 	        varying vec2 v_texCoord;\
@@ -3976,10 +4005,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	            gl_FragColor += texture2D(u_image, v_blurTexCoords[12])*0.00895781211794;\
 	            gl_FragColor += texture2D(u_image, v_blurTexCoords[13])*0.0044299121055113265;\
 	        }",
-	    "properties": {
-	        "blurAmount": { "type": "uniform", "value": 1.0 }
+	    properties: {
+	        blurAmount: { type: "uniform", value: 1.0 }
 	    },
-	    "inputs": ["u_image"]
+	    inputs: ["u_image"]
 	};
 	
 	exports["default"] = verticalBlur;
@@ -3995,9 +4024,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: true
 	});
 	var aaf_video_flop = {
-	    "title": "AAF Video Flop Effect",
-	    "description": "A flop effect based on the AAF spec. Mirrors the image in the y-axis",
-	    "vertexShader": "\
+	    title: "AAF Video Flop Effect",
+	    description: "A flop effect based on the AAF spec. Mirrors the image in the y-axis",
+	    vertexShader: "\
 	            attribute vec2 a_position;\
 	            attribute vec2 a_texCoord;\
 	            varying vec2 v_texCoord;\
@@ -4005,7 +4034,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
 	                v_texCoord = a_texCoord;\
 	            }",
-	    "fragmentShader": "\
+	    fragmentShader: "\
 	            precision mediump float;\
 	            uniform sampler2D u_image;\
 	            varying vec2 v_texCoord;\
@@ -4014,8 +4043,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	                vec4 color = texture2D(u_image, coord);\
 	                gl_FragColor = color;\
 	            }",
-	    "properties": {},
-	    "inputs": ["u_image"]
+	    properties: {},
+	    inputs: ["u_image"]
 	};
 	
 	exports["default"] = aaf_video_flop;
@@ -4031,9 +4060,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: true
 	});
 	var aaf_video_flip = {
-	    "title": "AAF Video Scale Effect",
-	    "description": "A flip effect based on the AAF spec. Mirrors the image in the x-axis",
-	    "vertexShader": "\
+	    title: "AAF Video Scale Effect",
+	    description: "A flip effect based on the AAF spec. Mirrors the image in the x-axis",
+	    vertexShader: "\
 	            attribute vec2 a_position;\
 	            attribute vec2 a_texCoord;\
 	            varying vec2 v_texCoord;\
@@ -4041,7 +4070,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
 	                v_texCoord = a_texCoord;\
 	            }",
-	    "fragmentShader": "\
+	    fragmentShader: "\
 	            precision mediump float;\
 	            uniform sampler2D u_image;\
 	            varying vec2 v_texCoord;\
@@ -4050,8 +4079,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	                vec4 color = texture2D(u_image, coord);\
 	                gl_FragColor = color;\
 	            }",
-	    "properties": {},
-	    "inputs": ["u_image"]
+	    properties: {},
+	    inputs: ["u_image"]
 	};
 	
 	exports["default"] = aaf_video_flip;
@@ -4067,9 +4096,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: true
 	});
 	var aaf_video_position = {
-	    "title": "AAF Video Position Effect",
-	    "description": "A position effect based on the AAF spec.",
-	    "vertexShader": "\
+	    title: "AAF Video Position Effect",
+	    description: "A position effect based on the AAF spec.",
+	    vertexShader: "\
 	        attribute vec2 a_position;\
 	        attribute vec2 a_texCoord;\
 	        varying vec2 v_texCoord;\
@@ -4077,7 +4106,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
 	            v_texCoord = a_texCoord;\
 	        }",
-	    "fragmentShader": "\
+	    fragmentShader: "\
 	        precision mediump float;\
 	        uniform sampler2D u_image;\
 	        uniform float positionOffsetX;\
@@ -4092,11 +4121,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }\
 	            gl_FragColor = color;\
 	        }",
-	    "properties": {
-	        "positionOffsetX": { "type": "uniform", "value": 0.0 },
-	        "positionOffsetY": { "type": "uniform", "value": 0.0 }
+	    properties: {
+	        positionOffsetX: { type: "uniform", value: 0.0 },
+	        positionOffsetY: { type: "uniform", value: 0.0 }
 	    },
-	    "inputs": ["u_image"]
+	    inputs: ["u_image"]
 	};
 	
 	exports["default"] = aaf_video_position;
@@ -4112,9 +4141,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: true
 	});
 	var aaf_video_crop = {
-	    "title": "AAF Video Crop Effect",
-	    "description": "A crop effect based on the AAF spec.",
-	    "vertexShader": "\
+	    title: "AAF Video Crop Effect",
+	    description: "A crop effect based on the AAF spec.",
+	    vertexShader: "\
 	            attribute vec2 a_position;\
 	            attribute vec2 a_texCoord;\
 	            varying vec2 v_texCoord;\
@@ -4122,7 +4151,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
 	                v_texCoord = a_texCoord;\
 	            }",
-	    "fragmentShader": "\
+	    fragmentShader: "\
 	            precision mediump float;\
 	            uniform sampler2D u_image;\
 	            uniform float cropLeft;\
@@ -4138,13 +4167,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	                if (v_texCoord[1] > (-cropTop+1.0)/2.0) color = vec4(0.0,0.0,0.0,0.0);\
 	                gl_FragColor = color;\
 	            }",
-	    "properties": {
-	        "cropLeft": { "type": "uniform", "value": -1.0 },
-	        "cropRight": { "type": "uniform", "value": 1.0 },
-	        "cropTop": { "type": "uniform", "value": -1.0 },
-	        "cropBottom": { "type": "uniform", "value": 1.0 }
+	    properties: {
+	        cropLeft: { type: "uniform", value: -1.0 },
+	        cropRight: { type: "uniform", value: 1.0 },
+	        cropTop: { type: "uniform", value: -1.0 },
+	        cropBottom: { type: "uniform", value: 1.0 }
 	    },
-	    "inputs": ["u_image"]
+	    inputs: ["u_image"]
 	};
 	
 	exports["default"] = aaf_video_crop;
@@ -4160,9 +4189,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: true
 	});
 	var staticDissolve = {
-	    "title": "Static Dissolve",
-	    "description": "A static dissolve effect. Typically used as a transistion.",
-	    "vertexShader": "\
+	    title: "Static Dissolve",
+	    description: "A static dissolve effect. Typically used as a transistion.",
+	    vertexShader: "\
 	            attribute vec2 a_position;\
 	            attribute vec2 a_texCoord;\
 	            varying vec2 v_texCoord;\
@@ -4170,7 +4199,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
 	                v_texCoord = a_texCoord;\
 	            }",
-	    "fragmentShader": "\
+	    fragmentShader: "\
 	            precision mediump float;\
 	            uniform sampler2D u_image_a;\
 	            uniform sampler2D u_image_b;\
@@ -4190,10 +4219,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    gl_FragColor = color_b;\
 	                }\
 	            }",
-	    "properties": {
-	        "mix": { "type": "uniform", "value": 0.0 }
+	    properties: {
+	        mix: { type: "uniform", value: 0.0 }
 	    },
-	    "inputs": ["u_image_a", "u_image_b"]
+	    inputs: ["u_image_a", "u_image_b"]
 	};
 	
 	exports["default"] = staticDissolve;
@@ -4209,9 +4238,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: true
 	});
 	var staticEffect = {
-	    "title": "Static",
-	    "description": "A static effect to add pseudo random noise to a video",
-	    "vertexShader": "\
+	    title: "Static",
+	    description: "A static effect to add pseudo random noise to a video",
+	    vertexShader: "\
 	            attribute vec2 a_position;\
 	            attribute vec2 a_texCoord;\
 	            varying vec2 v_texCoord;\
@@ -4219,7 +4248,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
 	                v_texCoord = a_texCoord;\
 	            }",
-	    "fragmentShader": "\
+	    fragmentShader: "\
 	            precision mediump float;\
 	            uniform sampler2D u_image;\
 	            uniform float currentTime;\
@@ -4236,11 +4265,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	                color[2] = color[2] + (2.0*(clamp(rand(v_texCoord, currentTime),  0.01, 1.001)-0.5)) * weight[2] *amount;\
 	                gl_FragColor = color;\
 	            }",
-	    "properties": {
-	        "weight": { "type": "uniform", "value": [1.0, 1.0, 1.0] },
-	        "amount": { "type": "uniform", "value": 1.0 }
+	    properties: {
+	        weight: { type: "uniform", value: [1.0, 1.0, 1.0] },
+	        amount: { type: "uniform", value: 1.0 }
 	    },
-	    "inputs": ["u_image"]
+	    inputs: ["u_image"]
 	};
 	
 	exports["default"] = staticEffect;
@@ -4256,9 +4285,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: true
 	});
 	var dreamfade = {
-	    "title": "Dream-Fade",
-	    "description": "A wobbly dream effect. Typically used as a transistion.",
-	    "vertexShader": "\
+	    title: "Dream-Fade",
+	    description: "A wobbly dream effect. Typically used as a transistion.",
+	    vertexShader: "\
 	    attribute vec2 a_position;\
 	    attribute vec2 a_texCoord;\
 	    varying vec2 v_texCoord;\
@@ -4266,7 +4295,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
 	        v_texCoord = a_texCoord;\
 	    }",
-	    "fragmentShader": "\
+	    fragmentShader: "\
 	    precision mediump float;\
 	    uniform sampler2D u_image_a;\
 	    uniform sampler2D u_image_b;\
@@ -4288,10 +4317,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        color_b[3] *= mix;\
 	        gl_FragColor = color_a + color_b;\
 	    }",
-	    "properties": {
-	        "mix": { "type": "uniform", "value": 0.0 }
+	    properties: {
+	        mix: { type: "uniform", value: 0.0 }
 	    },
-	    "inputs": ["u_image_a", "u_image_b"]
+	    inputs: ["u_image_a", "u_image_b"]
 	};
 	
 	exports["default"] = dreamfade;
@@ -4307,14 +4336,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: true
 	});
 	var opacity = {
-	    "title": "Opacity",
-	    "description": "Sets the opacity of an input.",
-	    "vertexShader": "\n    attribute vec2 a_position;\n    attribute vec2 a_texCoord;\n    varying vec2 v_texCoord;\n    void main() {\n        gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\n        v_texCoord = a_texCoord;\n    }",
-	    "fragmentShader": "\n    precision mediump float;\n    uniform sampler2D u_image;\n    uniform float opacity;\n    varying vec2 v_texCoord;\n    varying float v_opacity;\n    void main(){\n        vec4 color = texture2D(u_image, v_texCoord);\n        color[3] *= opacity;\n        gl_FragColor = color;\n    }",
-	    "properties": {
-	        "opacity": { "type": "uniform", "value": 0.7 }
+	    title: "Opacity",
+	    description: "Sets the opacity of an input.",
+	    vertexShader: "\n    attribute vec2 a_position;\n    attribute vec2 a_texCoord;\n    varying vec2 v_texCoord;\n    void main() {\n        gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\n        v_texCoord = a_texCoord;\n    }",
+	    fragmentShader: "\n    precision mediump float;\n    uniform sampler2D u_image;\n    uniform float opacity;\n    varying vec2 v_texCoord;\n    varying float v_opacity;\n    void main(){\n        vec4 color = texture2D(u_image, v_texCoord);\n        color[3] *= opacity;\n        gl_FragColor = color;\n    }",
+	    properties: {
+	        opacity: { type: "uniform", value: 0.7 }
 	    },
-	    "inputs": ["u_image"]
+	    inputs: ["u_image"]
 	};
 	
 	exports["default"] = opacity;
@@ -4330,9 +4359,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: true
 	});
 	var crop = {
-	    "title": "Primer Simple Crop",
-	    "description": "A simple crop processors for primer",
-	    "vertexShader": "\
+	    title: "Primer Simple Crop",
+	    description: "A simple crop processors for primer",
+	    vertexShader: "\
 	        attribute vec2 a_position;\
 	        attribute vec2 a_texCoord;\
 	        varying vec2 v_texCoord;\
@@ -4340,7 +4369,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
 	            v_texCoord = a_texCoord;\
 	        }",
-	    "fragmentShader": "\
+	    fragmentShader: "\
 	        precision mediump float;\
 	        uniform sampler2D u_image;\
 	        uniform float x;\
@@ -4357,13 +4386,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }\
 	            gl_FragColor = color;\
 	        }",
-	    "properties": {
-	        "x": { type: "uniform", value: 0.0 },
-	        "y": { type: "uniform", value: 0.0 },
-	        "width": { type: "uniform", value: 1.0 },
-	        "height": { type: "uniform", value: 1.0 }
+	    properties: {
+	        x: { type: "uniform", value: 0.0 },
+	        y: { type: "uniform", value: 0.0 },
+	        width: { type: "uniform", value: 1.0 },
+	        height: { type: "uniform", value: 1.0 }
 	    },
-	    "inputs": ["u_image"]
+	    inputs: ["u_image"]
 	};
 	
 	exports["default"] = crop;
@@ -4386,8 +4415,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var GraphNode = (function () {
 	    /**
-	    * Base class from which all processing and source nodes are derrived.
-	    */
+	     * Base class from which all processing and source nodes are derrived.
+	     */
 	
 	    function GraphNode(gl, renderGraph, inputNames) {
 	        var limitConnections = arguments.length <= 3 || arguments[3] === undefined ? false : arguments[3];
@@ -4407,31 +4436,31 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	
 	    /**
-	    * Get a string representation of the class name.
-	    *
-	    * @return String A string of the class name.
-	    */
+	     * Get a string representation of the class name.
+	     *
+	     * @return String A string of the class name.
+	     */
 	
 	    _createClass(GraphNode, [{
 	        key: "connect",
 	
 	        /**
-	        * Connect this node to the targetNode
-	        * 
-	        * @param {GraphNode} targetNode - the node to connect.
-	        * @param {(number| String)} [targetPort] - the port on the targetNode to connect to, this can be an index, a string identifier, or undefined (in which case the next available port will be connected to).
-	        * 
-	        */
+	         * Connect this node to the targetNode
+	         *
+	         * @param {GraphNode} targetNode - the node to connect.
+	         * @param {(number| String)} [targetPort] - the port on the targetNode to connect to, this can be an index, a string identifier, or undefined (in which case the next available port will be connected to).
+	         *
+	         */
 	        value: function connect(targetNode, targetPort) {
 	            return this._renderGraph.registerConnection(this, targetNode, targetPort);
 	        }
 	
 	        /**
-	        * Disconnect this node from the targetNode. If targetNode is undefind remove all out-bound connections.
-	        *
-	        * @param {GraphNode} [targetNode] - the node to disconnect from. If undefined, disconnect from all nodes.
-	        *
-	        */
+	         * Disconnect this node from the targetNode. If targetNode is undefind remove all out-bound connections.
+	         *
+	         * @param {GraphNode} [targetNode] - the node to disconnect from. If undefined, disconnect from all nodes.
+	         *
+	         */
 	    }, {
 	        key: "disconnect",
 	        value: function disconnect(targetNode) {
@@ -4449,8 +4478,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * Destory this node, removing it from the graph.
-	        */
+	         * Destory this node, removing it from the graph.
+	         */
 	    }, {
 	        key: "destroy",
 	        value: function destroy() {
@@ -4489,10 +4518,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * Get the names of the inputs to this node.
-	        *
-	        * @return {String[]} An array of the names of the inputs ot the node.
-	        */
+	         * Get the names of the inputs to this node.
+	         *
+	         * @return {String[]} An array of the names of the inputs ot the node.
+	         */
+	
 	    }, {
 	        key: "inputNames",
 	        get: function get() {
@@ -4500,10 +4530,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * The maximum number of connections that can be made to this node. If there is not limit this will return Infinity.
-	        *
-	        * @return {number} The number of connections which can be made to this node.
-	        */
+	         * The maximum number of connections that can be made to this node. If there is not limit this will return Infinity.
+	         *
+	         * @return {number} The number of connections which can be made to this node.
+	         */
 	    }, {
 	        key: "maximumConnections",
 	        get: function get() {
@@ -4512,10 +4542,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * Get an array of all the nodes which connect to this node.
-	        *
-	        * @return {GraphNode[]} An array of nodes which connect to this node.
-	        */
+	         * Get an array of all the nodes which connect to this node.
+	         *
+	         * @return {GraphNode[]} An array of nodes which connect to this node.
+	         */
 	    }, {
 	        key: "inputs",
 	        get: function get() {
@@ -4527,10 +4557,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * Get an array of all the nodes which this node outputs to.
-	        *
-	        * @return {GraphNode[]} An array of nodes which this node connects to.
-	        */
+	         * Get an array of all the nodes which this node outputs to.
+	         *
+	         * @return {GraphNode[]} An array of nodes which this node connects to.
+	         */
 	    }, {
 	        key: "outputs",
 	        get: function get() {
@@ -4538,10 +4568,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * Get whether the node has been destroyed or not.
-	        *
-	        * @return {boolean} A true/false value of whather the node has been destoryed or not.
-	        */
+	         * Get whether the node has been destroyed or not.
+	         *
+	         * @return {boolean} A true/false value of whather the node has been destoryed or not.
+	         */
 	    }, {
 	        key: "destroyed",
 	        get: function get() {
@@ -4584,9 +4614,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _inherits(AudioNode, _MediaNode);
 	
 	    /**
-	    * Initialise an instance of an AudioNode.
-	    * This should not be called directly, but created through a call to videoContext.audio();
-	    */
+	     * Initialise an instance of an AudioNode.
+	     * This should not be called directly, but created through a call to videoContext.audio();
+	     */
 	
 	    function AudioNode() {
 	        _classCallCheck(this, AudioNode);
@@ -4638,9 +4668,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _inherits(ImageNode, _SourceNode);
 	
 	    /**
-	    * Initialise an instance of an ImageNode.
-	    * This should not be called directly, but created through a call to videoContext.createImageNode();
-	    */
+	     * Initialise an instance of an ImageNode.
+	     * This should not be called directly, but created through a call to videoContext.createImageNode();
+	     */
 	
 	    function ImageNode(src, gl, renderGraph, currentTime) {
 	        var preloadTime = arguments.length <= 4 || arguments[4] === undefined ? 4 : arguments[4];
@@ -4777,9 +4807,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _inherits(CanvasNode, _SourceNode);
 	
 	    /**
-	    * Initialise an instance of a CanvasNode.
-	    * This should not be called directly, but created through a call to videoContext.createCanvasNode();
-	    */
+	     * Initialise an instance of a CanvasNode.
+	     * This should not be called directly, but created through a call to videoContext.createCanvasNode();
+	     */
 	
 	    function CanvasNode(canvas, gl, renderGraph, currentTime) {
 	        var preloadTime = arguments.length <= 4 || arguments[4] === undefined ? 4 : arguments[4];
@@ -4871,8 +4901,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _inherits(CompositingNode, _ProcessingNode);
 	
 	    /**
-	    * Initialise an instance of a Compositing Node. You should not instantiate this directly, but use VideoContest.createCompositingNode().
-	    */
+	     * Initialise an instance of a Compositing Node. You should not instantiate this directly, but use VideoContest.createCompositingNode().
+	     */
 	
 	    function CompositingNode(gl, renderGraph, definition) {
 	        _classCallCheck(this, CompositingNode);
@@ -4979,10 +5009,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _inherits(ProcessingNode, _GraphNode);
 	
 	    /**
-	    * Initialise an instance of a ProcessingNode.
-	    *
-	    * This class is not used directly, but is extended to create CompositingNodes, TransitionNodes, and EffectNodes.
-	    */
+	     * Initialise an instance of a ProcessingNode.
+	     *
+	     * This class is not used directly, but is extended to create CompositingNodes, TransitionNodes, and EffectNodes.
+	     */
 	
 	    function ProcessingNode(gl, renderGraph, definition, inputNames, limitConnections) {
 	        var _this = this;
@@ -5002,7 +5032,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	                propertyValue = definition.properties[propertyName].value.slice();
 	            }
 	            var propertyType = definition.properties[propertyName].type;
-	            this._properties[propertyName] = { type: propertyType, value: propertyValue };
+	            this._properties[propertyName] = {
+	                type: propertyType,
+	                value: propertyValue
+	            };
 	        }
 	
 	        this._inputTextureUnitMapping = [];
@@ -5061,7 +5094,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	            for (var _iterator = definition.inputs[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
 	                var inputName = _step.value;
 	
-	                this._inputTextureUnitMapping.push({ name: inputName, textureUnit: gl.TEXTURE0 + this._boundTextureUnits });
+	                this._inputTextureUnitMapping.push({
+	                    name: inputName,
+	                    textureUnit: gl.TEXTURE0 + this._boundTextureUnits
+	                });
 	                this._boundTextureUnits += 1;
 	                this._inputTextureCount += 1;
 	                if (this._boundTextureUnits > this._maxTextureUnits) {
@@ -5107,15 +5143,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	
 	    /**
-	    * Sets the passed processing node property to the passed value.
-	    * @param {string} name - The name of the processing node parameter to modify.
-	    * @param {Object} value - The value to set it to.
-	    *
-	    * @example 
-	    * var ctx = new VideoContext();
-	    * var monoNode = ctx.effect(VideoContext.DEFINITIONS.MONOCHROME);
-	    * monoNode.setProperty("inputMix", [1.0,0.0,0.0]); //Just use red channel
-	    */
+	     * Sets the passed processing node property to the passed value.
+	     * @param {string} name - The name of the processing node parameter to modify.
+	     * @param {Object} value - The value to set it to.
+	     *
+	     * @example
+	     * var ctx = new VideoContext();
+	     * var monoNode = ctx.effect(VideoContext.DEFINITIONS.MONOCHROME);
+	     * monoNode.setProperty("inputMix", [1.0,0.0,0.0]); //Just use red channel
+	     */
 	
 	    _createClass(ProcessingNode, [{
 	        key: "setProperty",
@@ -5124,15 +5160,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * Sets the passed processing node property to the passed value.
-	        * @param {string} name - The name of the processing node parameter to get.
-	        *
-	        * @example 
-	        * var ctx = new VideoContext();
-	        * var monoNode = ctx.effect(VideoContext.DEFINITIONS.MONOCHROME);
-	        * console.log(monoNode.getProperty("inputMix")); //Will output [0.4,0.6,0.2], the default value from the effect definition.
-	        * 
-	        */
+	         * Sets the passed processing node property to the passed value.
+	         * @param {string} name - The name of the processing node parameter to get.
+	         *
+	         * @example
+	         * var ctx = new VideoContext();
+	         * var monoNode = ctx.effect(VideoContext.DEFINITIONS.MONOCHROME);
+	         * console.log(monoNode.getProperty("inputMix")); //Will output [0.4,0.6,0.2], the default value from the effect definition.
+	         *
+	         */
 	    }, {
 	        key: "getProperty",
 	        value: function getProperty(name) {
@@ -5140,8 +5176,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * Destroy and clean-up the node.
-	        */
+	         * Destroy and clean-up the node.
+	         */
 	    }, {
 	        key: "destroy",
 	        value: function destroy() {
@@ -5290,12 +5326,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _inherits(DestinationNode, _ProcessingNode);
 	
 	    /**
-	    * Initialise an instance of a DestinationNode. 
-	    *
-	    * There should only be a single instance of a DestinationNode per VideoContext instance. An VideoContext's destination can be accessed like so: videoContext.desitnation.
-	    * 
-	    * You should not instantiate this directly.
-	    */
+	     * Initialise an instance of a DestinationNode.
+	     *
+	     * There should only be a single instance of a DestinationNode per VideoContext instance. An VideoContext's destination can be accessed like so: videoContext.desitnation.
+	     *
+	     * You should not instantiate this directly.
+	     */
 	
 	    function DestinationNode(gl, renderGraph) {
 	        _classCallCheck(this, DestinationNode);
@@ -5318,7 +5354,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	                gl_FragColor = texture2D(u_image, v_texCoord);\
 	            }";
 	
-	        var deffinition = { fragmentShader: fragmentShader, vertexShader: vertexShader, properties: {}, inputs: ["u_image"] };
+	        var deffinition = {
+	            fragmentShader: fragmentShader,
+	            vertexShader: vertexShader,
+	            properties: {},
+	            inputs: ["u_image"]
+	        };
 	
 	        _get(Object.getPrototypeOf(DestinationNode.prototype), "constructor", this).call(this, gl, renderGraph, deffinition, deffinition.inputs, false);
 	        this._displayName = "DestinationNode";
@@ -5414,8 +5455,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _inherits(EffectNode, _ProcessingNode);
 	
 	    /**
-	    * Initialise an instance of an EffectNode. You should not instantiate this directly, but use VideoContest.createEffectNode().
-	    */
+	     * Initialise an instance of an EffectNode. You should not instantiate this directly, but use VideoContest.createEffectNode().
+	     */
 	
 	    function EffectNode(gl, renderGraph, definition) {
 	        _classCallCheck(this, EffectNode);
@@ -5497,8 +5538,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _inherits(TransitionNode, _EffectNode);
 	
 	    /**
-	    * Initialise an instance of a TransitionNode. You should not instantiate this directly, but use VideoContest.createTransitonNode().
-	    */
+	     * Initialise an instance of a TransitionNode. You should not instantiate this directly, but use VideoContest.createTransitonNode().
+	     */
 	
 	    function TransitionNode(gl, renderGraph, definition) {
 	        _classCallCheck(this, TransitionNode);
@@ -5560,54 +5601,66 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * Create a transition on the timeline.
-	        * 
-	        * @param {number} startTime - The time at which the transition should start (relative to currentTime of video context).
-	        * @param {number} endTime - The time at which the transition should be completed by (relative to currentTime of video context).
-	        * @param {number} currentValue - The value to start the transition at.
-	        * @param {number} targetValue - The value to transition to by endTime.
-	        * @param {String} propertyName - The name of the property to clear transitions on, if undefined default to "mix".
-	        * 
-	        * @return {Boolean} returns True if a transition is successfully added, false otherwise.
-	        */
+	         * Create a transition on the timeline.
+	         *
+	         * @param {number} startTime - The time at which the transition should start (relative to currentTime of video context).
+	         * @param {number} endTime - The time at which the transition should be completed by (relative to currentTime of video context).
+	         * @param {number} currentValue - The value to start the transition at.
+	         * @param {number} targetValue - The value to transition to by endTime.
+	         * @param {String} propertyName - The name of the property to clear transitions on, if undefined default to "mix".
+	         *
+	         * @return {Boolean} returns True if a transition is successfully added, false otherwise.
+	         */
 	    }, {
 	        key: "transition",
 	        value: function transition(startTime, endTime, currentValue, targetValue) {
 	            var propertyName = arguments.length <= 4 || arguments[4] === undefined ? "mix" : arguments[4];
 	
-	            var transition = { start: startTime + this._currentTime, end: endTime + this._currentTime, current: currentValue, target: targetValue, property: propertyName };
+	            var transition = {
+	                start: startTime + this._currentTime,
+	                end: endTime + this._currentTime,
+	                current: currentValue,
+	                target: targetValue,
+	                property: propertyName
+	            };
 	            if (!this._doesTransitionFitOnTimeline(transition)) return false;
 	            this._insertTransitionInTimeline(transition);
 	            return true;
 	        }
 	
 	        /**
-	        * Create a transition on the timeline at an absolute time.
-	        * 
-	        * @param {number} startTime - The time at which the transition should start (relative to time 0).
-	        * @param {number} endTime - The time at which the transition should be completed by (relative to time 0).
-	        * @param {number} currentValue - The value to start the transition at.
-	        * @param {number} targetValue - The value to transition to by endTime.
-	        * @param {String} propertyName - The name of the property to clear transitions on, if undefined default to "mix".
-	        * 
-	        * @return {Boolean} returns True if a transition is successfully added, false otherwise.
-	        */
+	         * Create a transition on the timeline at an absolute time.
+	         *
+	         * @param {number} startTime - The time at which the transition should start (relative to time 0).
+	         * @param {number} endTime - The time at which the transition should be completed by (relative to time 0).
+	         * @param {number} currentValue - The value to start the transition at.
+	         * @param {number} targetValue - The value to transition to by endTime.
+	         * @param {String} propertyName - The name of the property to clear transitions on, if undefined default to "mix".
+	         *
+	         * @return {Boolean} returns True if a transition is successfully added, false otherwise.
+	         */
 	    }, {
 	        key: "transitionAt",
 	        value: function transitionAt(startTime, endTime, currentValue, targetValue) {
 	            var propertyName = arguments.length <= 4 || arguments[4] === undefined ? "mix" : arguments[4];
 	
-	            var transition = { start: startTime, end: endTime, current: currentValue, target: targetValue, property: propertyName };
+	            var transition = {
+	                start: startTime,
+	                end: endTime,
+	                current: currentValue,
+	                target: targetValue,
+	                property: propertyName
+	            };
 	            if (!this._doesTransitionFitOnTimeline(transition)) return false;
 	            this._insertTransitionInTimeline(transition);
 	            return true;
 	        }
 	
 	        /**
-	        * Clear all transistions on the passed property. If no property is defined clear all transitions on the node.
-	        * 
-	        * @param {String} propertyName - The name of the property to clear transitions on, if undefined clear all transitions on the node.
-	        */
+	         * Clear all transistions on the passed property. If no property is defined clear all transitions on the node.
+	         *
+	         * @param {String} propertyName - The name of the property to clear transitions on, if undefined clear all transitions on the node.
+	         */
 	    }, {
 	        key: "clearTransitions",
 	        value: function clearTransitions(propertyName) {
@@ -5619,13 +5672,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * Clear a transistion on the passed property that the specified time lies within.
-	        * 
-	        * @param {String} propertyName - The name of the property to clear a transition on.
-	        * @param {number} time - A time which lies within the property you're trying to clear.
-	        *
-	        * @return {Boolean} returns True if a transition is removed, false otherwise.
-	        */
+	         * Clear a transistion on the passed property that the specified time lies within.
+	         *
+	         * @param {String} propertyName - The name of the property to clear a transition on.
+	         * @param {number} time - A time which lies within the property you're trying to clear.
+	         *
+	         * @return {Boolean} returns True if a transition is removed, false otherwise.
+	         */
 	    }, {
 	        key: "clearTransition",
 	        value: function clearTransition(propertyName, time) {
@@ -5699,8 +5752,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var RenderGraph = (function () {
 	    /**
-	    * Manages the rendering graph.
-	    */
+	     * Manages the rendering graph.
+	     */
 	
 	    function RenderGraph() {
 	        _classCallCheck(this, RenderGraph);
@@ -5709,11 +5762,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	
 	    /**
-	    * Get a list of nodes which are connected to the output of the passed node.
-	    * 
-	    * @param {GraphNode} node - the node to get the outputs for.
-	    * @return {GraphNode[]} An array of the nodes which are connected to the output.
-	    */
+	     * Get a list of nodes which are connected to the output of the passed node.
+	     *
+	     * @param {GraphNode} node - the node to get the outputs for.
+	     * @return {GraphNode[]} An array of the nodes which are connected to the output.
+	     */
 	
 	    _createClass(RenderGraph, [{
 	        key: "getOutputsForNode",
@@ -5728,11 +5781,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * Get a list of nodes which are connected, by input name, to the given node. Array contains objects of the form: {"source":sourceNode, "type":"name", "name":inputName, "destination":destinationNode}.
-	        *
-	        * @param {GraphNode} node - the node to get the named inputs for.
-	        * @return {Object[]} An array of objects representing the nodes and connection type, which are connected to the named inputs for the node.
-	        */
+	         * Get a list of nodes which are connected, by input name, to the given node. Array contains objects of the form: {"source":sourceNode, "type":"name", "name":inputName, "destination":destinationNode}.
+	         *
+	         * @param {GraphNode} node - the node to get the named inputs for.
+	         * @return {Object[]} An array of objects representing the nodes and connection type, which are connected to the named inputs for the node.
+	         */
 	    }, {
 	        key: "getNamedInputsForNode",
 	        value: function getNamedInputsForNode(node) {
@@ -5746,11 +5799,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * Get a list of nodes which are connected, by z-index name, to the given node. Array contains objects of the form: {"source":sourceNode, "type":"zIndex", "zIndex":0, "destination":destinationNode}.
-	        * 
-	        * @param {GraphNode} node - the node to get the z-index refernced inputs for.
-	        * @return {Object[]} An array of objects representing the nodes and connection type, which are connected by z-Index for the node.
-	        */
+	         * Get a list of nodes which are connected, by z-index name, to the given node. Array contains objects of the form: {"source":sourceNode, "type":"zIndex", "zIndex":0, "destination":destinationNode}.
+	         *
+	         * @param {GraphNode} node - the node to get the z-index refernced inputs for.
+	         * @return {Object[]} An array of objects representing the nodes and connection type, which are connected by z-Index for the node.
+	         */
 	    }, {
 	        key: "getZIndexInputsForNode",
 	        value: function getZIndexInputsForNode(node) {
@@ -5767,11 +5820,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * Get a list of nodes which are connected as inputs to the given node. The length of the return array is always equal to the number of inputs for the node, with undefined taking the place of any inputs not connected.
-	        * 
-	        * @param {GraphNode} node - the node to get the inputs for.
-	        * @return {GraphNode[]} An array of GraphNodes which are connected to the node.
-	        */
+	         * Get a list of nodes which are connected as inputs to the given node. The length of the return array is always equal to the number of inputs for the node, with undefined taking the place of any inputs not connected.
+	         *
+	         * @param {GraphNode} node - the node to get the inputs for.
+	         * @return {GraphNode[]} An array of GraphNodes which are connected to the node.
+	         */
 	    }, {
 	        key: "getInputsForNode",
 	        value: function getInputsForNode(node) {
@@ -5873,10 +5926,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * Check if a named input on a node is available to connect too.
-	        * @param {GraphNode} node - the node to check.
-	        * @param {String} inputName - the named input to check.
-	        */
+	         * Check if a named input on a node is available to connect too.
+	         * @param {GraphNode} node - the node to check.
+	         * @param {String} inputName - the named input to check.
+	         */
 	    }, {
 	        key: "isInputAvailable",
 	        value: function isInputAvailable(node, inputName) {
@@ -5914,13 +5967,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        /**
-	        * Register a connection between two nodes.
-	        * 
-	        * @param {GraphNode} sourceNode - the node to connect from.
-	        * @param {GraphNode} destinationNode - the node to connect to.
-	        * @param {(String | number)} [target] - the target port of the conenction, this could be a string to specfiy a specific named port, a number to specify a port by index, or undefined, in which case the next available port will be connected to.
-	        * @return {boolean} Will return true if connection succeeds otherwise will throw a ConnectException.
-	        */
+	         * Register a connection between two nodes.
+	         *
+	         * @param {GraphNode} sourceNode - the node to connect from.
+	         * @param {GraphNode} destinationNode - the node to connect to.
+	         * @param {(String | number)} [target] - the target port of the conenction, this could be a string to specfiy a specific named port, a number to specify a port by index, or undefined, in which case the next available port will be connected to.
+	         * @return {boolean} Will return true if connection succeeds otherwise will throw a ConnectException.
+	         */
 	    }, {
 	        key: "registerConnection",
 	        value: function registerConnection(sourceNode, destinationNode, target) {
@@ -5939,13 +5992,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	            if (typeof target === "number") {
 	                //target is a specific
-	                this.connections.push({ "source": sourceNode, "type": "zIndex", "zIndex": target, "destination": destinationNode });
+	                this.connections.push({
+	                    source: sourceNode,
+	                    type: "zIndex",
+	                    zIndex: target,
+	                    destination: destinationNode
+	                });
 	            } else if (typeof target === "string" && destinationNode._limitConnections) {
 	                //target is a named port
 	
 	                //make sure named port is free
 	                if (this.isInputAvailable(destinationNode, target)) {
-	                    this.connections.push({ "source": sourceNode, "type": "name", "name": target, "destination": destinationNode });
+	                    this.connections.push({
+	                        source: sourceNode,
+	                        type: "name",
+	                        name: target,
+	                        destination: destinationNode
+	                    });
 	                } else {
 	                    throw new _exceptionsJs.ConnectException("Port " + target + " is already connected to");
 	                }
@@ -5954,17 +6017,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	                var indexedConns = this.getZIndexInputsForNode(destinationNode);
 	                var index = 0;
 	                if (indexedConns.length > 0) index = indexedConns[indexedConns.length - 1].zIndex + 1;
-	                this.connections.push({ "source": sourceNode, "type": "zIndex", "zIndex": index, "destination": destinationNode });
+	                this.connections.push({
+	                    source: sourceNode,
+	                    type: "zIndex",
+	                    zIndex: index,
+	                    destination: destinationNode
+	                });
 	            }
 	            return true;
 	        }
 	
 	        /**
-	        * Remove a connection between two nodes.
-	        * @param {GraphNode} sourceNode - the node to unregsiter connection from.
-	        * @param {GraphNode} destinationNode - the node to register connection to.
-	        * @return {boolean} Will return true if removing connection succeeds, or false if there was no connectionsction to remove.
-	        */
+	         * Remove a connection between two nodes.
+	         * @param {GraphNode} sourceNode - the node to unregsiter connection from.
+	         * @param {GraphNode} destinationNode - the node to register connection to.
+	         * @return {boolean} Will return true if removing connection succeeds, or false if there was no connectionsction to remove.
+	         */
 	    }, {
 	        key: "unregisterConnection",
 	        value: function unregisterConnection(sourceNode, destinationNode) {
