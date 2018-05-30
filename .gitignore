@@ -12,3 +12,4 @@ Thumbs.db
 
 # Project dependencies
 node_modules
+.nyc_output
