@@ -25,9 +25,9 @@
     "scripts": {
         "dev": "./node_modules/webpack/bin/webpack.js --watch --config webpack.config.js & ./node_modules/reload/bin/reload -b",
         "build": "npm run test && ./node_modules/webpack/bin/webpack.js --config webpack.config.js && npm run doc",
-        "test": "cross-env NODE_ENV=test node ./node_modules/mocha/bin/mocha --compilers js:babel-core/register",
-        "test-watch": "cross-env NODE_ENV=test node ./node_modules/mocha/bin/mocha --compilers js:babel-core/register --watch",
-        "test-coverage": "cross-env NODE_ENV=test nyc npm run test",
+        "test": "cross-env NODE_ENV=test node ./node_modules/mocha/bin/mocha --compilers js:babel-core/register ./test/unit/*.spec.js",
+        "test-watch": "cross-env NODE_ENV=test node ./node_modules/mocha/bin/mocha --compilers js:babel-core/register --watch ./test/unit/*.spec.js",
+        "test-coverage": "nyc report npm run test",
         "doc": "node ./node_modules/jsdoc/jsdoc.js -c jsdoc.json && cp dist/videocontext.* docs/dist/",
         "format": "prettier --write '{src,test}/**/*.js'",
         "lint": "eslint '{src,test}/**/*.js'",
@@ -78,7 +78,9 @@
         ]
     },
     "nyc": {
-        "sourceMap": false,
-        "instrument": false
+        "include": [
+            "src/**/*.js"
+        ],
+        "sourceMap": false
     }
 }

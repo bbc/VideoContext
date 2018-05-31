@@ -1,7 +1,7 @@
 import chai from "chai";
-import Rendergraph from "../src/rendergraph.js";
-import GraphNode from "../src/graphnode.js";
-import { ConnectException } from "../src/exceptions.js";
+import Rendergraph from "../../src/rendergraph.js";
+import GraphNode from "../../src/graphnode.js";
+import { ConnectException } from "../../src/exceptions.js";
 
 describe("Rendergraph", function() {
     describe("#registerConnection()", function() {
