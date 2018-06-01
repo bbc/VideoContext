@@ -6,6 +6,7 @@ import { ConnectException } from "../../src/exceptions.js";
 describe("GraphNode", function() {
     describe("#inputNames", function() {
         var node_a, node_b;
+
         beforeEach(function() {
             node_a = new GraphNode(undefined, undefined, ["input_a", "input_b"], true);
             node_b = new GraphNode(undefined, undefined, [], true);
@@ -19,6 +20,7 @@ describe("GraphNode", function() {
 
     describe("#maximumConnections", function() {
         var node_a, node_b, node_c;
+
         beforeEach(function() {
             node_a = new GraphNode(undefined, undefined, ["input_a", "input_b"], false);
             node_b = new GraphNode(undefined, undefined, [], true);
@@ -34,6 +36,7 @@ describe("GraphNode", function() {
 
     describe("#inputs", function() {
         var rendergraph, node_a, node_b, node_c;
+
         beforeEach(function() {
             rendergraph = new Rendergraph();
             node_a = new GraphNode(undefined, rendergraph, ["input_a", "input_b"], true);
@@ -52,6 +55,7 @@ describe("GraphNode", function() {
 
     describe("#outputs", function() {
         var rendergraph, node_a, node_b, node_c;
+
         beforeEach(function() {
             rendergraph = new Rendergraph();
             node_a = new GraphNode(undefined, rendergraph, ["input_a", "input_b"], true);
@@ -91,6 +95,7 @@ describe("GraphNode", function() {
                     "input_b"
                 )
             );
+
             var expected_result = [
                 {
                     destination: node_b,
@@ -99,6 +104,7 @@ describe("GraphNode", function() {
                     name: "input_b"
                 }
             ];
+
             chai.assert.deepEqual(expected_result, rendergraph.getNamedInputsForNode(node_b));
         });
 
@@ -107,6 +113,7 @@ describe("GraphNode", function() {
                 node_b,
                 "input_a"
             );
+
             chai.expect(node_a.connect.bind(node_a, node_b, "input_a")).to.throw(ConnectException);
         });
 

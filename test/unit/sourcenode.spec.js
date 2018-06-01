@@ -20,7 +20,6 @@ beforeEach(() => {
 describe("_update", () => {
     it("updatesTexture if currentTime is changed and ctx is PAUSED and node is ready", () => {
         const updateTextureSpy = sinon.spy(utils, "updateTexture");
-
         const currentTime = 0;
         const node = new SourceNode(ELEMENT, mockGLContext, mockRenderGraph, currentTime);
 

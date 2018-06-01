@@ -6,6 +6,7 @@ import { ConnectException } from "../../src/exceptions.js";
 describe("Rendergraph", function() {
     describe("#registerConnection()", function() {
         var rendergraph, node_a, node_b, node_c, node_d;
+
         beforeEach(function() {
             rendergraph = new Rendergraph();
             node_a = new GraphNode(undefined, rendergraph, ["input_a", "input_b"], true);
@@ -21,6 +22,7 @@ describe("Rendergraph", function() {
         it("should throw a ConnectionException if all input ports of connected to node are taken", function() {
             rendergraph.registerConnection(node_a, node_d);
             rendergraph.registerConnection(node_b, node_d);
+
             chai.expect(rendergraph.registerConnection.bind(rendergraph, node_c, node_d)).to.throw(
                 ConnectException
             );
@@ -54,6 +56,7 @@ describe("Rendergraph", function() {
 
     describe("#unregisterConnection()", function() {
         var rendergraph, node_a, node_b, node_c;
+
         beforeEach(function() {
             rendergraph = new Rendergraph();
             node_a = new GraphNode(undefined, rendergraph, ["input_a", "input_b"], true);
@@ -78,6 +81,7 @@ describe("Rendergraph", function() {
 
     describe("#isInputAvailable()", function() {
         var rendergraph, node_a, node_b;
+
         beforeEach(function() {
             rendergraph = new Rendergraph();
             node_a = new GraphNode(undefined, rendergraph, ["input_a", "input_b"], true);
@@ -100,6 +104,7 @@ describe("Rendergraph", function() {
 
     describe("#getInputsForNode()", function() {
         var rendergraph, node_a, node_b, node_c;
+
         beforeEach(function() {
             rendergraph = new Rendergraph();
             node_a = new GraphNode(undefined, rendergraph, ["input_a", "input_b"], true);
@@ -120,6 +125,7 @@ describe("Rendergraph", function() {
 
     describe("#getZIndexInputsForNode()", function() {
         var rendergraph, node_a, node_b, node_c, node_d;
+
         beforeEach(function() {
             rendergraph = new Rendergraph();
             node_a = new GraphNode(undefined, rendergraph, ["input_a", "input_b", "input_c"], true);
@@ -132,6 +138,7 @@ describe("Rendergraph", function() {
             rendergraph.registerConnection(node_b, node_a, "input_a");
             rendergraph.registerConnection(node_c, node_a, 1);
             rendergraph.registerConnection(node_d, node_a);
+
             var expected_result = [
                 {
                     source: node_c,
@@ -146,12 +153,14 @@ describe("Rendergraph", function() {
                     zIndex: 2
                 }
             ];
+
             chai.assert.deepEqual(expected_result, rendergraph.getZIndexInputsForNode(node_a));
         });
     });
 
     describe("#getNamedInputsForNode()", function() {
         var rendergraph, node_a, node_b, node_c, node_d;
+
         beforeEach(function() {
             rendergraph = new Rendergraph();
             node_a = new GraphNode(undefined, rendergraph, ["input_a", "input_b", "input_c"], true);
@@ -164,6 +173,7 @@ describe("Rendergraph", function() {
             rendergraph.registerConnection(node_b, node_a, "input_a");
             rendergraph.registerConnection(node_c, node_a, 1);
             rendergraph.registerConnection(node_d, node_a);
+
             var expected_result = [
                 {
                     source: node_b,
@@ -172,12 +182,14 @@ describe("Rendergraph", function() {
                     name: "input_a"
                 }
             ];
+
             chai.assert.deepEqual(expected_result, rendergraph.getNamedInputsForNode(node_a));
         });
     });
 
     describe("#getOutputsForNode()", function() {
         var rendergraph, node_a, node_b, node_c, node_d;
+
         beforeEach(function() {
             rendergraph = new Rendergraph();
             node_a = new GraphNode(undefined, rendergraph, ["input_a", "input_b", "input_c"], true);
