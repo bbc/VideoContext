@@ -1,11 +1,11 @@
-import SourceNode from "../src/SourceNodes/sourcenode";
+import chai from "chai";
+import SourceNode from "../../src/SourceNodes/sourcenode";
 import sinon from "sinon";
-import * as utils from "../src/utils";
+import * as utils from "../../src/utils";
+import "webgl-mock";
 
-global.window = {}
+global.window = {}; // eslint-disable-line
 
-var chai = require("../node_modules/chai/chai.js");
-require("webgl-mock");
 let mockGLContext;
 
 const PAUSED_STATE = 3;
@@ -22,12 +22,7 @@ describe("_update", () => {
         const updateTextureSpy = sinon.spy(utils, "updateTexture");
 
         const currentTime = 0;
-        const node = new SourceNode(
-            ELEMENT,
-            mockGLContext,
-            mockRenderGraph,
-            currentTime
-        );
+        const node = new SourceNode(ELEMENT, mockGLContext, mockRenderGraph, currentTime);
 
         node.startAt(currentTime);
 

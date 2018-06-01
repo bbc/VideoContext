@@ -1,7 +1,8 @@
 let staticEffect = {
-    "title":"Static",
-    "description": "A static effect to add pseudo random noise to a video",
-    "vertexShader" : "\
+    title: "Static",
+    description: "A static effect to add pseudo random noise to a video",
+    vertexShader:
+        "\
             attribute vec2 a_position;\
             attribute vec2 a_texCoord;\
             varying vec2 v_texCoord;\
@@ -9,7 +10,8 @@ let staticEffect = {
                 gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
                 v_texCoord = a_texCoord;\
             }",
-    "fragmentShader" : "\
+    fragmentShader:
+        "\
             precision mediump float;\
             uniform sampler2D u_image;\
             uniform float currentTime;\
@@ -26,11 +28,11 @@ let staticEffect = {
                 color[2] = color[2] + (2.0*(clamp(rand(v_texCoord, currentTime),  0.01, 1.001)-0.5)) * weight[2] *amount;\
                 gl_FragColor = color;\
             }",
-    "properties":{
-        "weight":{"type":"uniform", "value":[1.0,1.0,1.0]},
-        "amount":{"type":"uniform", "value":1.0}
+    properties: {
+        weight: { type: "uniform", value: [1.0, 1.0, 1.0] },
+        amount: { type: "uniform", value: 1.0 }
     },
-    "inputs":["u_image"]
+    inputs: ["u_image"]
 };
 
 export default staticEffect;

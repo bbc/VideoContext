@@ -1,7 +1,8 @@
 let horizontal_wipe = {
-    "title":"Horizontal Wipe",
-    "description": "A horizontal wipe effect. Typically used as a transistion.",
-    "vertexShader" : "\
+    title: "Horizontal Wipe",
+    description: "A horizontal wipe effect. Typically used as a transistion.",
+    vertexShader:
+        "\
             attribute vec2 a_position;\
             attribute vec2 a_texCoord;\
             varying vec2 v_texCoord;\
@@ -9,7 +10,8 @@ let horizontal_wipe = {
                 gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
                 v_texCoord = a_texCoord;\
             }",
-    "fragmentShader" : "\
+    fragmentShader:
+        "\
             precision mediump float;\
             uniform sampler2D u_image_a;\
             uniform sampler2D u_image_b;\
@@ -25,10 +27,10 @@ let horizontal_wipe = {
                     gl_FragColor = color_b;\
                 }\
             }",
-    "properties":{
-        "mix":{"type":"uniform", "value":0.0}
+    properties: {
+        mix: { type: "uniform", value: 0.0 }
     },
-    "inputs":["u_image_a","u_image_b"]
+    inputs: ["u_image_a", "u_image_b"]
 };
 
 export default horizontal_wipe;

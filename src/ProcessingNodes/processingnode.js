@@ -1,89 +1,125 @@
 //Matthew Shotton, R&D User Experience,© BBC 2015
 import GraphNode from "../graphnode";
-import { compileShader, createShaderProgram, createElementTexture, updateTexture } from "../utils.js";
+import {
+    compileShader,
+    createShaderProgram,
+    createElementTexture,
+    updateTexture
+} from "../utils.js";
 import { RenderException } from "../exceptions.js";
 
-class ProcessingNode extends GraphNode{
+class ProcessingNode extends GraphNode {
     /**
-    * Initialise an instance of a ProcessingNode.
-    *
-    * This class is not used directly, but is extended to create CompositingNodes, TransitionNodes, and EffectNodes.
-    */
-    constructor(gl, renderGraph, definition, inputNames, limitConnections){
+     * Initialise an instance of a ProcessingNode.
+     *
+     * This class is not used directly, but is extended to create CompositingNodes, TransitionNodes, and EffectNodes.
+     */
+    constructor(gl, renderGraph, definition, inputNames, limitConnections) {
         super(gl, renderGraph, inputNames, limitConnections);
         this._vertexShader = compileShader(gl, definition.vertexShader, gl.VERTEX_SHADER);
         this._fragmentShader = compileShader(gl, definition.fragmentShader, gl.FRAGMENT_SHADER);
         this._definition = definition;
-        this._properties = {};//definition.properties;
+        this._properties = {}; //definition.properties;
         //copy definition properties
-        for(let propertyName in definition.properties){
+        for (let propertyName in definition.properties) {
             let propertyValue = definition.properties[propertyName].value;
             //if an array then shallow copy it
-            if(Object.prototype.toString.call(propertyValue) === "[object Array]"){
+            if (Object.prototype.toString.call(propertyValue) === "[object Array]") {
                 propertyValue = definition.properties[propertyName].value.slice();
             }
             let propertyType = definition.properties[propertyName].type;
-            this._properties[propertyName] = {type:propertyType, value:propertyValue};
+            this._properties[propertyName] = {
+                type: propertyType,
+                value: propertyValue
+            };
         }
 
-        this._inputTextureUnitMapping =[];
+        this._inputTextureUnitMapping = [];
         this._maxTextureUnits = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
         this._boundTextureUnits = 0;
         this._parameterTextureCount = 0;
         this._inputTextureCount = 0;
         this._texture = createElementTexture(gl);
-        gl.texImage2D( gl.TEXTURE_2D, 0, gl.RGBA, gl.canvas.width, gl.canvas.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+        gl.texImage2D(
+            gl.TEXTURE_2D,
+            0,
+            gl.RGBA,
+            gl.canvas.width,
+            gl.canvas.height,
+            0,
+            gl.RGBA,
+            gl.UNSIGNED_BYTE,
+            null
+        );
         //compile the shader
         this._program = createShaderProgram(gl, this._vertexShader, this._fragmentShader);
 
         //create and setup the framebuffer
         this._framebuffer = gl.createFramebuffer();
         gl.bindFramebuffer(gl.FRAMEBUFFER, this._framebuffer);
-        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this._texture,0);
+        gl.framebufferTexture2D(
+            gl.FRAMEBUFFER,
+            gl.COLOR_ATTACHMENT0,
+            gl.TEXTURE_2D,
+            this._texture,
+            0
+        );
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
         //create properties on this object for the passed properties
-        for (let propertyName in this._properties){
+        for (let propertyName in this._properties) {
             Object.defineProperty(this, propertyName, {
-                get:function(){return this._properties[propertyName].value;},
-                set:function(passedValue){this._properties[propertyName].value = passedValue;}
+                get: function() {
+                    return this._properties[propertyName].value;
+                },
+                set: function(passedValue) {
+                    this._properties[propertyName].value = passedValue;
+                }
             });
         }
 
         //create texutres for any texture properties
-        for (let propertyName in this._properties){
+        for (let propertyName in this._properties) {
             let propertyValue = this._properties[propertyName].value;
-            if (propertyValue instanceof Image){
+            if (propertyValue instanceof Image) {
                 this._properties[propertyName].texture = createElementTexture(gl);
                 this._properties[propertyName].texutreUnit = gl.TEXTURE0 + this._boundTextureUnits;
                 this._boundTextureUnits += 1;
-                this._parameterTextureCount +=1;
-                if (this._boundTextureUnits > this._maxTextureUnits){
-                    throw new RenderException("Trying to bind more than available textures units to shader");
+                this._parameterTextureCount += 1;
+                if (this._boundTextureUnits > this._maxTextureUnits) {
+                    throw new RenderException(
+                        "Trying to bind more than available textures units to shader"
+                    );
                 }
             }
         }
 
         //calculate texutre units for input textures
-        for(let inputName of definition.inputs){
-            this._inputTextureUnitMapping.push({name:inputName, textureUnit:gl.TEXTURE0 + this._boundTextureUnits});
+        for (let inputName of definition.inputs) {
+            this._inputTextureUnitMapping.push({
+                name: inputName,
+                textureUnit: gl.TEXTURE0 + this._boundTextureUnits
+            });
             this._boundTextureUnits += 1;
             this._inputTextureCount += 1;
-            if (this._boundTextureUnits > this._maxTextureUnits){
-                throw new RenderException("Trying to bind more than available textures units to shader");
+            if (this._boundTextureUnits > this._maxTextureUnits) {
+                throw new RenderException(
+                    "Trying to bind more than available textures units to shader"
+                );
             }
         }
 
-
         //find the locations of the properties in the compiled shader
-        for (let propertyName in this._properties){
-            if (this._properties[propertyName].type === "uniform"){
-                this._properties[propertyName].location = this._gl.getUniformLocation(this._program, propertyName);
+        for (let propertyName in this._properties) {
+            if (this._properties[propertyName].type === "uniform") {
+                this._properties[propertyName].location = this._gl.getUniformLocation(
+                    this._program,
+                    propertyName
+                );
             }
         }
         this._currentTimeLocation = this._gl.getUniformLocation(this._program, "currentTime");
         this._currentTime = 0;
-
 
         //Other setup
         let positionLocation = gl.getAttribLocation(this._program, "a_position");
@@ -93,58 +129,52 @@ class ProcessingNode extends GraphNode{
         gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
         gl.bufferData(
             gl.ARRAY_BUFFER,
-            new Float32Array([
-                1.0, 1.0,
-                0.0, 1.0,
-                1.0, 0.0,
-                1.0, 0.0,
-                0.0, 1.0,
-                0.0, 0.0]),
-            gl.STATIC_DRAW);
+            new Float32Array([1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0]),
+            gl.STATIC_DRAW
+        );
         let texCoordLocation = gl.getAttribLocation(this._program, "a_texCoord");
         gl.enableVertexAttribArray(texCoordLocation);
         gl.vertexAttribPointer(texCoordLocation, 2, gl.FLOAT, false, 0, 0);
         this._displayName = "ProcessingNode";
-
     }
 
     /**
-    * Sets the passed processing node property to the passed value.
-    * @param {string} name - The name of the processing node parameter to modify.
-    * @param {Object} value - The value to set it to.
-    *
-    * @example 
-    * var ctx = new VideoContext();
-    * var monoNode = ctx.effect(VideoContext.DEFINITIONS.MONOCHROME);
-    * monoNode.setProperty("inputMix", [1.0,0.0,0.0]); //Just use red channel
-    */
-    setProperty(name, value){
+     * Sets the passed processing node property to the passed value.
+     * @param {string} name - The name of the processing node parameter to modify.
+     * @param {Object} value - The value to set it to.
+     *
+     * @example
+     * var ctx = new VideoContext();
+     * var monoNode = ctx.effect(VideoContext.DEFINITIONS.MONOCHROME);
+     * monoNode.setProperty("inputMix", [1.0,0.0,0.0]); //Just use red channel
+     */
+    setProperty(name, value) {
         this._properties[name].value = value;
     }
 
     /**
-    * Sets the passed processing node property to the passed value.
-    * @param {string} name - The name of the processing node parameter to get.
-    *
-    * @example 
-    * var ctx = new VideoContext();
-    * var monoNode = ctx.effect(VideoContext.DEFINITIONS.MONOCHROME);
-    * console.log(monoNode.getProperty("inputMix")); //Will output [0.4,0.6,0.2], the default value from the effect definition.
-    * 
-    */
-    getProperty(name){
+     * Sets the passed processing node property to the passed value.
+     * @param {string} name - The name of the processing node parameter to get.
+     *
+     * @example
+     * var ctx = new VideoContext();
+     * var monoNode = ctx.effect(VideoContext.DEFINITIONS.MONOCHROME);
+     * console.log(monoNode.getProperty("inputMix")); //Will output [0.4,0.6,0.2], the default value from the effect definition.
+     *
+     */
+    getProperty(name) {
         return this._properties[name].value;
     }
 
     /**
-    * Destroy and clean-up the node.
-    */
-    destroy(){
+     * Destroy and clean-up the node.
+     */
+    destroy() {
         super.destroy();
         //destrpy texutres for any texture properties
-        for (let propertyName in this._properties){
+        for (let propertyName in this._properties) {
             let propertyValue = this._properties[propertyName].value;
-            if (propertyValue instanceof Image){
+            if (propertyValue instanceof Image) {
                 this._gl.deleteTexture(this._properties[propertyName].texture);
                 this._texture = undefined;
             }
@@ -164,15 +194,15 @@ class ProcessingNode extends GraphNode{
         this._gl.deleteFramebuffer(this._framebuffer);
     }
 
-    _update(currentTime){
+    _update(currentTime) {
         this._currentTime = currentTime;
     }
 
-    _seek(currentTime){
+    _seek(currentTime) {
         this._currentTime = currentTime;
     }
 
-    _render(){
+    _render() {
         this._rendered = true;
         let gl = this._gl;
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
@@ -185,29 +215,33 @@ class ProcessingNode extends GraphNode{
         //upload/update the custom uniforms
         let textureOffset = 0;
 
-        for (let propertyName in this._properties){
+        for (let propertyName in this._properties) {
             let propertyValue = this._properties[propertyName].value;
             let propertyType = this._properties[propertyName].type;
             let propertyLocation = this._properties[propertyName].location;
             if (propertyType !== "uniform") continue;
 
-            if (typeof propertyValue === "number"){
+            if (typeof propertyValue === "number") {
                 gl.uniform1f(propertyLocation, propertyValue);
-            }
-            else if( Object.prototype.toString.call(propertyValue) === "[object Array]"){
-                if(propertyValue.length === 1){
+            } else if (Object.prototype.toString.call(propertyValue) === "[object Array]") {
+                if (propertyValue.length === 1) {
                     gl.uniform1fv(propertyLocation, propertyValue);
-                } else if(propertyValue.length === 2){
+                } else if (propertyValue.length === 2) {
                     gl.uniform2fv(propertyLocation, propertyValue);
-                } else if(propertyValue.length === 3){
+                } else if (propertyValue.length === 3) {
                     gl.uniform3fv(propertyLocation, propertyValue);
-                } else if(propertyValue.length === 4){
+                } else if (propertyValue.length === 4) {
                     gl.uniform4fv(propertyLocation, propertyValue);
-                } else{
-                    console.debug("Shader parameter", propertyName, "is too long an array:", propertyValue);
+                } else {
+                    console.debug(
+                        "Shader parameter",
+                        propertyName,
+                        "is too long an array:",
+                        propertyValue
+                    );
                 }
-            } else if(propertyValue instanceof Image){
-                let texture =  this._properties[propertyName].texture;
+            } else if (propertyValue instanceof Image) {
+                let texture = this._properties[propertyName].texture;
                 let textureUnit = this._properties[propertyName].texutreUnit;
                 updateTexture(gl, texture, propertyValue);
 
@@ -215,15 +249,13 @@ class ProcessingNode extends GraphNode{
                 gl.uniform1i(propertyLocation, textureOffset);
                 textureOffset += 1;
                 gl.bindTexture(gl.TEXTURE_2D, texture);
-            }
-            else{
+            } else {
                 //TODO - add tests for textures
                 /*gl.activeTexture(gl.TEXTURE0 + textureOffset);
                 gl.uniform1i(parameterLoctation, textureOffset);
                 gl.bindTexture(gl.TEXTURE_2D, textures[textureOffset-1]);*/
             }
         }
-
     }
 }
 
