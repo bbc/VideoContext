@@ -1,3 +1,8 @@
+<!--
+    See https://mochajs.org/#running-mocha-in-the-browser for
+    a detailed explanation of the following page setup.
+-->
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -7,24 +12,25 @@
     </head>
 
     <body>
+        <div id="mocha"></div>
         <canvas id="videocontext-canvas" style="display:none;"></canvas>
-        <div id="mocha">
-            <p>
-                <a href=".">videocontext.js</a>
-            </p>
-        </div>
-        <div id="messages"></div>
-        <div id="fixtures"></div>
 
         <script src="../../node_modules/mocha/mocha.js"></script>
         <script src="../../node_modules/chai/chai.js"></script>
+
+        <script>mocha.setup('bdd');</script>
+
         <script src="../../dist/videocontext.js"></script>
 
-        <script>mocha.setup('bdd')</script>
-
+        <!-- Include all integration tests as separate `script` tags -->
         <script src="videocontext.spec.js"></script>
         <script src="sourcenode.spec.js"></script>
 
-        <script>mocha.run();</script>
+        <script>
+            mocha.checkLeaks();
+            // Mocha errors on global variables by default
+            mocha.globals(['__VIDEOCONTEXT_REFS__']);
+            mocha.run();
+        </script>
     </body>
 </html>

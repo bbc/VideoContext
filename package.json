@@ -23,12 +23,12 @@
         }
     ],
     "scripts": {
-        "dev": "./node_modules/webpack/bin/webpack.js --watch --config webpack.config.js & ./node_modules/reload/bin/reload -b",
-        "build": "npm run test && ./node_modules/webpack/bin/webpack.js --config webpack.config.js && npm run doc",
-        "test": "cross-env NODE_ENV=test node ./node_modules/mocha/bin/mocha --compilers js:babel-core/register ./test/unit/*.spec.js",
-        "test-watch": "cross-env NODE_ENV=test node ./node_modules/mocha/bin/mocha --compilers js:babel-core/register --watch ./test/unit/*.spec.js",
-        "test-coverage": "nyc report npm run test",
-        "doc": "node ./node_modules/jsdoc/jsdoc.js -c jsdoc.json && cp dist/videocontext.* docs/dist/",
+        "dev": "webpack-dev-server --config webpack.config.js --watch",
+        "build": "npm run test && webpack --config webpack.config.js && npm run doc",
+        "test": "jest test/unit/*.js",
+        "test-watch": "jest ./test/unit/*.js --watch",
+        "test-coverage": "jest test/unit/*.js --coverage --collectCoverageFrom 'src/**/*.js'",
+        "doc": "jsdoc -c jsdoc.json && cp dist/videocontext.* docs/dist/",
         "format": "prettier --write '{src,test}/**/*.js'",
         "lint": "eslint '{src,test}/**/*.js'",
         "precommit": "npm run lint && npm run format && npm run test",
@@ -36,54 +36,32 @@
         "release:minor": "changelog -m && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version --new-version minor && git push origin && git push origin --tags",
         "release:patch": "changelog -p && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version --new-version patch && git push origin && git push origin --tags"
     },
-    "dependencies": {},
+    "dependencies": {
+        "babel-jest": "^23.0.1",
+        "regenerator-runtime": "^0.11.1",
+        "webpack-dev-server": "^3.1.4"
+    },
     "devDependencies": {
-        "babel-core": "^5.6.5",
-        "babel-loader": "^5.1.4",
-        "babel-plugin-istanbul": "^4.1.6",
-        "chai": "3.4.1",
-        "cross-env": "^5.1.6",
+        "babel-cli": "^6.26.0",
+        "babel-loader": "^7.1.4",
+        "babel-plugin-add-module-exports": "^0.2.1",
+        "babel-plugin-transform-es2015-modules-umd": "^6.24.1",
+        "babel-preset-env": "^1.7.0",
+        "chai": "^4.1.2",
         "eslint": "^3.9.1",
-        "eslint-loader": "^1.4.0",
+        "eslint-loader": "^2.0.0",
         "generate-changelog": "^1.7.1",
-        "http-server": "^0.11.1",
         "husky": "^0.14.3",
         "jest": "^23.1.0",
+        "jest-cli": "^23.1.0",
         "jest-image-snapshot": "^2.4.2",
         "jsdoc": "^3.4.3",
-        "mocha": "2.3.4",
-        "node-libs-browser": "^0.5.2",
-        "nyc": "^11.8.0",
+        "mocha": "^5.2.0",
         "prettier": "^1.13.2",
         "puppeteer": "^1.4.0",
-        "reload": "^1.0.1",
         "sinon": "^4.2.1",
         "webgl-mock": "^0.1.6",
-        "webpack": "^1.9.11"
-    },
-    "browserify": {
-        "transform": [
-            [
-                "babelify",
-                {
-                    "presets": [
-                        "es2015"
-                    ],
-                    "env": {
-                        "test": {
-                            "plugins": [
-                                "istanbul"
-                            ]
-                        }
-                    }
-                }
-            ]
-        ]
-    },
-    "nyc": {
-        "include": [
-            "src/**/*.js"
-        ],
-        "sourceMap": false
+        "webpack": "^4.10.2",
+        "webpack-cli": "^3.0.1"
     }
 }

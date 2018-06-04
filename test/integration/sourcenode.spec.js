@@ -1,5 +1,18 @@
-import chai from "chai";
-import VideoContext from "../../src/videocontext.js";
+/* eslint-disable */
+
+/**
+ * These tests are run in the browser (and are written in ES5 for maximum support).
+ * Mocha & Chai are the tools of choice here, since Jest (our unit-testing framework)
+ * does not support brower-based tests.
+ *
+ * Currently there is no automated workflow in place for integration tests.
+ * To run the tests:
+ *
+ * 1. Start the local server by running: `npm run dev`
+ * 2. Visit: http://localhost:8081/test/integration/
+ *
+ * TODO: configure Karma for automated browser-based test running
+ */
 
 describe("SourceNode", function() {
     describe("#duration", function() {

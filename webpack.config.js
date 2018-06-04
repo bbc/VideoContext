@@ -1,8 +1,14 @@
 /* eslint-disable */
 
 module.exports = {
+    mode: "production",
     entry: __dirname + "/src/videocontext.js",
     devtool: "source-map",
+    devServer: {
+        stats: {
+            warnings: false
+        }
+    },
     output: {
         path: __dirname + "/dist",
         filename: "videocontext.js",
@@ -10,12 +16,15 @@ module.exports = {
         library: "VideoContext"
     },
     module: {
-        loaders: [
-            { test: /\.css$/, loader: "style!css" },
+        rules: [
+            { test: /\.css$/, use: "style!css" },
             {
                 test: /\.js$/,
                 exclude: /node_modules/,
-                loaders: ["babel-loader", "eslint-loader"]
+                use: [
+                    { loader: "babel-loader" },
+                    { loader: "eslint-loader" }
+                ]
             }
         ]
     }

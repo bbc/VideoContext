@@ -1,81 +1,87 @@
-import chai from "chai";
+/* eslint-disable */
+
+import jest from "jest";
 import Rendergraph from "../../src/rendergraph.js";
 import GraphNode from "../../src/graphnode.js";
 import { ConnectException } from "../../src/exceptions.js";
 
-describe("GraphNode", function() {
-    describe("#inputNames", function() {
-        var node_a, node_b;
+describe("GraphNode", () => {
+    describe("#inputNames", () => {
+        let node_a, node_b;
 
-        beforeEach(function() {
+        beforeEach(() => {
             node_a = new GraphNode(undefined, undefined, ["input_a", "input_b"], true);
             node_b = new GraphNode(undefined, undefined, [], true);
         });
 
-        it("should return a list of the input names for the node", function() {
-            chai.assert.deepEqual(["input_a", "input_b"], node_a.inputNames);
-            chai.assert.deepEqual([], node_b.inputNames);
+        test("should return a list of the input names for the node", () => {
+            expect(node_a.inputNames).toEqual(["input_a", "input_b"]);
+            expect(node_b.inputNames).toEqual([]);
         });
     });
 
-    describe("#maximumConnections", function() {
-        var node_a, node_b, node_c;
+    describe("#maximumConnections", () => {
+        let node_a, node_b, node_c;
 
-        beforeEach(function() {
+        beforeEach(() => {
             node_a = new GraphNode(undefined, undefined, ["input_a", "input_b"], false);
             node_b = new GraphNode(undefined, undefined, [], true);
             node_c = new GraphNode(undefined, undefined, ["input_a", "input_b"], true);
         });
 
-        it("should return the maximum number of connections that can be made to the node, (Infinity if number of connections is not limited)", function() {
-            chai.assert.deepEqual(Infinity, node_a.maximumConnections);
-            chai.assert.deepEqual(0, node_b.maximumConnections);
-            chai.assert.deepEqual(2, node_c.maximumConnections);
+        test("should return the maximum number of connections that can be made to the node (Infinity if number of connections is not limited)", () => {
+            expect(node_a.maximumConnections).toBe(Infinity);
+            expect(node_b.maximumConnections).toBe(0);
+            expect(node_c.maximumConnections).toBe(2);
         });
     });
 
-    describe("#inputs", function() {
-        var rendergraph, node_a, node_b, node_c;
+    describe("#inputs", () => {
+        let rendergraph, node_a, node_b, node_c;
 
-        beforeEach(function() {
+        beforeEach(() => {
             rendergraph = new Rendergraph();
             node_a = new GraphNode(undefined, rendergraph, ["input_a", "input_b"], true);
             node_b = new GraphNode(undefined, rendergraph, ["input_a", "input_b"], true);
             node_c = new GraphNode(undefined, rendergraph, ["input_a", "input_b"], true);
         });
 
-        it("should return an array of the nodes connected as inputs", function() {
-            chai.assert.deepEqual([], node_a.inputs);
+        test("should return an array of the nodes connected as inputs", () => {
+            expect(node_a.inputs).toEqual([]);
+
             node_b.connect(node_a);
-            chai.assert.deepEqual([node_b], node_a.inputs);
+            expect(node_a.inputs).toEqual([node_b]);
+
             node_c.connect(node_a);
-            chai.assert.deepEqual([node_b, node_c], node_a.inputs);
+            expect(node_a.inputs).toEqual([node_b, node_c]);
         });
     });
 
-    describe("#outputs", function() {
-        var rendergraph, node_a, node_b, node_c;
+    describe("#outputs", () => {
+        let rendergraph, node_a, node_b, node_c;
 
-        beforeEach(function() {
+        beforeEach(() => {
             rendergraph = new Rendergraph();
             node_a = new GraphNode(undefined, rendergraph, ["input_a", "input_b"], true);
             node_b = new GraphNode(undefined, rendergraph, ["input_a", "input_b"], true);
             node_c = new GraphNode(undefined, rendergraph, ["input_a", "input_b"], true);
         });
 
-        it("should return the nodes this node connects to as outputs", function() {
-            chai.assert.deepEqual([], node_a.outputs);
+        test("should return the nodes this node connects to as outputs", () => {
+            expect(node_a.outputs).toEqual([]);
+
             node_a.connect(node_b);
-            chai.assert.deepEqual([node_b], node_a.outputs);
+            expect(node_a.outputs).toEqual([node_b]);
+
             node_a.connect(node_c);
-            chai.assert.deepEqual([node_b, node_c], node_a.outputs);
+            expect(node_a.outputs).toEqual([node_b, node_c]);
         });
     });
 
-    describe("#connect()", function() {
-        var rendergraph, node_a, node_b, node_c, node_d;
+    describe("#connect()", () => {
+        let rendergraph, node_a, node_b, node_c, node_d;
 
-        beforeEach(function() {
+        beforeEach(() => {
             rendergraph = new Rendergraph();
             node_a = new GraphNode(undefined, rendergraph, ["input_a", "input_b"], true);
             node_b = new GraphNode(undefined, rendergraph, ["input_a", "input_b"], true);
@@ -83,20 +89,19 @@ describe("GraphNode", function() {
             node_d = new GraphNode(undefined, rendergraph, ["input_a", "input_b"], true);
         });
 
-        it("should return true if connection was successful", function() {
-            chai.assert.equal(true, node_a.connect(node_b));
+        test("should return true if connection was successful", () => {
+            expect(node_a.connect(node_b)).toBe(true);
         });
 
-        it("should allow connecting via a specified input port name", function() {
-            chai.assert.equal(
-                true,
+        test("should allow connecting via a specified input port name", () => {
+            expect(
                 node_a.connect(
                     node_b,
                     "input_b"
                 )
-            );
+            ).toBe(true);
 
-            var expected_result = [
+            const expected_result = [
                 {
                     destination: node_b,
                     source: node_a,
@@ -105,35 +110,36 @@ describe("GraphNode", function() {
                 }
             ];
 
-            chai.assert.deepEqual(expected_result, rendergraph.getNamedInputsForNode(node_b));
+            expect(rendergraph.getNamedInputsForNode(node_b)).toEqual(expected_result);
         });
 
-        it("should throw ConnectException if target input is taken", function() {
+        test("should throw ConnectException if target input is taken", () => {
             node_c.connect(
                 node_b,
                 "input_a"
             );
 
-            chai.expect(node_a.connect.bind(node_a, node_b, "input_a")).to.throw(ConnectException);
+            expect(node_a.connect.bind(node_a, node_b, "input_a")).toThrow(ConnectException);
         });
 
-        it("should throw ConnectException if target inputs are all in use", function() {
+        test("should throw ConnectException if target inputs are all in use", () => {
             node_c.connect(node_b);
             node_d.connect(node_b);
-            chai.expect(node_a.connect.bind(node_a, node_b)).to.throw(ConnectException);
+
+            expect(node_a.connect.bind(node_a, node_b)).toThrow(ConnectException);
         });
 
-        it("should throw ConnectException if named input dosen't exist", function() {
-            chai.expect(node_a.connect.bind(node_a, node_b, "non-existant port")).to.throw(
+        test("should throw ConnectException if named input dosen't exist", () => {
+            expect(node_a.connect.bind(node_a, node_b, "non-existant port")).toThrow(
                 ConnectException
             );
         });
     });
 
-    describe("#disconnect()", function() {
-        var rendergraph, node_a, node_b, node_c, node_d;
+    describe("#disconnect()", () => {
+        let rendergraph, node_a, node_b, node_c, node_d;
 
-        beforeEach(function() {
+        beforeEach(() => {
             rendergraph = new Rendergraph();
             node_a = new GraphNode(undefined, rendergraph, ["input_a", "input_b"], true);
             node_b = new GraphNode(undefined, rendergraph, ["input_a", "input_b"], true);
@@ -141,31 +147,34 @@ describe("GraphNode", function() {
             node_d = new GraphNode(undefined, rendergraph, ["input_a", "input_b"], true);
         });
 
-        it("should remove node from input list of target node", function() {
+        test("should remove node from input list of target node", () => {
             node_a.connect(node_b);
-            chai.assert.deepEqual([node_a], node_b.inputs);
+            expect(node_b.inputs).toEqual([node_a]);
+
             node_a.disconnect(node_b);
-            chai.assert.deepEqual([], node_b.inputs);
+            expect(node_b.inputs).toEqual([]);
         });
 
-        it("should remove node from output list of this node", function() {
+        test("should remove node from output list of this node", () => {
             node_a.connect(node_b);
-            chai.assert.deepEqual([node_b], node_a.outputs);
+            expect(node_a.outputs).toEqual([node_b]);
+
             node_a.disconnect(node_b);
-            chai.assert.deepEqual([], node_a.outputs);
+            expect(node_a.outputs).toEqual([]);
         });
 
-        it("should return true if disconnection was successful", function() {
+        test("should return true if disconnection was successful", () => {
             node_a.connect(node_b);
-            chai.assert.equal(true, node_a.disconnect(node_b));
+            expect(node_a.disconnect(node_b)).toBe(true);
         });
 
-        it("should remove all outputs if no connection is specified", function() {
+        test("should remove all outputs if no connection is specified", () => {
             node_a.connect(node_b);
             node_a.connect(node_c);
             node_a.connect(node_d);
             node_a.disconnect();
-            chai.assert.deepEqual([], node_a.outputs);
+
+            expect(node_a.outputs).toEqual([]);
         });
     });
 });
