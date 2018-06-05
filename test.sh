@@ -4,8 +4,7 @@ echo "###############################"
 echo "# Runing Available Unit Tests #"
 echo "###############################"
 
-node ./node_modules/mocha/bin/mocha --compilers js:babel-core/register
-
+npm run test-coverage
 
 echo "######################################"
 echo "# Runing Available Integration Tests #"
@@ -33,9 +32,9 @@ echo "Opening browser to run integration tests..."
 
 # Run integration tests
 if [[ $platform == 'linux' ]]; then
-    xdg-open http://localhost:8080/test/
+    xdg-open http://localhost:8080/test/integration/
 elif [[ $platform == 'unknown' ]]; then
-    open http://localhost:8080/test/
+    open http://localhost:8080/test/integration/
 fi
 
 echo
@@ -43,4 +42,4 @@ echo "Bring webserver process to foreground...(CTRL+C to kill)"
 echo
 # bring the server process to the foreground so it can be killed
 fg %1
-    
+

@@ -4,11 +4,7 @@ module.exports = {
     mode: "production",
     entry: __dirname + "/src/videocontext.js",
     devtool: "source-map",
-    devServer: {
-        stats: {
-            warnings: false
-        }
-    },
+    stats: { warnings: false },
     output: {
         path: __dirname + "/dist",
         filename: "videocontext.commonjs2.js",

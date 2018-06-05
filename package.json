@@ -23,23 +23,23 @@
         }
     ],
     "scripts": {
-        "dev": "webpack-dev-server --config webpack.config.js --watch",
+        "dev": "webpack --config webpack.config.js --watch",
         "build": "npm run test && webpack --config webpack.config.js && npm run doc",
-        "test": "jest test/unit/*.js",
+        "test": "./test.sh",
+        "test-unit": "jest test/unit/*.js",
         "test-watch": "jest ./test/unit/*.js --watch",
         "test-coverage": "jest test/unit/*.js --coverage --collectCoverageFrom 'src/**/*.js'",
         "doc": "jsdoc -c jsdoc.json && cp dist/videocontext.* docs/dist/",
         "format": "prettier --write '{src,test}/**/*.js'",
         "lint": "eslint '{src,test}/**/*.js'",
-        "precommit": "npm run lint && npm run format && npm run test",
+        "precommit": "npm run lint && npm run format && npm run test-unit",
         "release:major": "changelog -M && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version --new-version major && git push origin && git push origin --tags",
         "release:minor": "changelog -m && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version --new-version minor && git push origin && git push origin --tags",
         "release:patch": "changelog -p && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version --new-version patch && git push origin && git push origin --tags"
     },
     "dependencies": {
         "babel-jest": "^23.0.1",
-        "regenerator-runtime": "^0.11.1",
-        "webpack-dev-server": "^3.1.4"
+        "regenerator-runtime": "^0.11.1"
     },
     "devDependencies": {
         "babel-cli": "^6.26.0",
@@ -51,6 +51,7 @@
         "eslint": "^3.9.1",
         "eslint-loader": "^2.0.0",
         "generate-changelog": "^1.7.1",
+        "http-server": "^0.11.1",
         "husky": "^0.14.3",
         "jest": "^23.1.0",
         "jest-cli": "^23.1.0",

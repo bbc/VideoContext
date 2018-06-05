@@ -5,13 +5,8 @@
  * Mocha & Chai are the tools of choice here, since Jest (our unit-testing framework)
  * does not support brower-based tests.
  *
- * Currently there is no automated workflow in place for integration tests.
- * To run the tests:
- *
- * 1. Start the local server by running: `npm run dev`
- * 2. Visit: http://localhost:8081/test/integration/
- *
- * TODO: configure Karma for automated browser-based test running
+ * To run the tests, use `npm run test`. This will execute a the `./test.sh` script
+ * which runs the complete test suite, including unit and regression tests.
  */
 
 describe("VideoContext", function() {
