@@ -1,4 +1,5 @@
 #Run unit tests
+
 set -o monitor
 echo "###############################"
 echo "# Runing Available Unit Tests #"
@@ -6,19 +7,25 @@ echo "###############################"
 
 npm run test-coverage
 
+echo "#####################################"
+echo "# Runing Available Regression Tests #"
+echo "#####################################"
+
+npm run test-regression
+
 echo "######################################"
 echo "# Runing Available Integration Tests #"
 echo "######################################"
 
 echo "Starting webserver..."
-#Start a webserver to view the integration tests
-node ./node_modules/http-server/bin/http-server &
 
+# Start a webserver to view the integration tests
+node ./node_modules/http-server/bin/http-server &
 
 echo "Detecting OS..."
 
-#Detect the OS
-#credit for this - http://stackoverflow.com/questions/394230/detect-the-os-from-a-bash-script
+# Detect the OS
+# Credit for this - http://stackoverflow.com/questions/394230/detect-the-os-from-a-bash-script
 platform='unknown'
 unamestr=`uname`
 if [[ "$unamestr" == 'Linux' ]]; then
@@ -40,6 +47,6 @@ fi
 echo
 echo "Bring webserver process to foreground...(CTRL+C to kill)"
 echo
-# bring the server process to the foreground so it can be killed
-fg %1
 
+# Bring the server process to the foreground so it can be killed
+fg %1
