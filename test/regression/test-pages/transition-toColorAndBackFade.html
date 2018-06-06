@@ -44,8 +44,8 @@
                  * Trigger the playback sequence on click, necessary after Chrome's
                  * autoplay policy changes: https://bit.ly/2rFeCcV
                  */
-                window.addEventListener("click", function onClick() {
-                    window.removeEventListener("click", onClick);
+                canvas.addEventListener("click", function onClick() {
+                    canvas.removeEventListener("click", onClick);
                     videoCtx.play();
                 });
             };

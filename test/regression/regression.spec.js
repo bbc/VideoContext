@@ -34,12 +34,32 @@ const transitionTest = async ({ file, seqLength }) => {
     }
 };
 
-beforeEach(async () => {
+/**
+ * @param {Object} configuration - test configuration parameters.
+ * @param {String} configuration.file - the .html file to be tested.
+ */
+const effectTest = async ({ file }) => {
+    await page.goto(`file:${path.join(__dirname, `test-pages/${file}`)}`, {
+        waitUntil: "networkidle0",
+        timeout: 60000
+    });
+
+    const beforeImage = await page.screenshot(screenshotParams);
+    expect(beforeImage).toMatchImageSnapshot(imageSnapshotParams);
+
+    // Apply effect to the video node
+    await page.click("#canvas");
+
+    const afterImage = await page.screenshot(screenshotParams);
+    expect(afterImage).toMatchImageSnapshot(imageSnapshotParams);
+};
+
+beforeAll(async () => {
     browser = await puppeteer.launch(puppeteerParams);
     page = await browser.newPage();
 });
 
-afterEach(async () => {
+afterAll(async () => {
     await page.close();
     await browser.close();
 });
@@ -129,6 +149,64 @@ describe("Visual regressions: transitions", () => {
                 file: "transition-toColorAndBackFade.html",
                 seqLength: 6
             });
+        },
+        testTimeout
+    );
+});
+
+describe("Visual regressions: effects", () => {
+    test(
+        "Monochrome",
+        async () => {
+            await effectTest({ file: "effect-monochrome.html" });
+        },
+        testTimeout
+    );
+
+    test(
+        "Horizontal Blur",
+        async () => {
+            await effectTest({ file: "effect-horizontalBlur.html" });
+        },
+        testTimeout
+    );
+
+    test(
+        "Vertical Blur",
+        async () => {
+            await effectTest({ file: "effect-verticalBlur.html" });
+        },
+        testTimeout
+    );
+
+    test(
+        "Static",
+        async () => {
+            await effectTest({ file: "effect-static.html" });
+        },
+        testTimeout
+    );
+
+    test(
+        "Opacity",
+        async () => {
+            await effectTest({ file: "effect-opacity.html" });
+        },
+        testTimeout
+    );
+
+    test(
+        "Crop",
+        async () => {
+            await effectTest({ file: "effect-crop.html" });
+        },
+        testTimeout
+    );
+
+    test(
+        "Colour Threshold",
+        async () => {
+            await effectTest({ file: "effect-colorThreshold.html" });
         },
         testTimeout
     );
