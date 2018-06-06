@@ -77,7 +77,7 @@ describe("Visual regressions: transitions", () => {
     );
 
     test(
-        "Star wipe",
+        "Star Wipe",
         async () => {
             await transitionTest({
                 file: "transition-starWipe.html",
@@ -88,7 +88,7 @@ describe("Visual regressions: transitions", () => {
     );
 
     test(
-        "Vertical wipe",
+        "Vertical Wipe",
         async () => {
             await transitionTest({
                 file: "transition-verticalWipe.html",
@@ -99,7 +99,7 @@ describe("Visual regressions: transitions", () => {
     );
 
     test(
-        "Horizontal wipe",
+        "Horizontal Wipe",
         async () => {
             await transitionTest({
                 file: "transition-horizontalWipe.html",
