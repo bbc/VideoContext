@@ -35,9 +35,7 @@ describe("VideoContext", function() {
         });
 
         it("should create a TransitionNode from the passed definition", function() {
-            var transitionNode = videocontext.transition(
-                VideoContext.DEFINITIONS.CROSSFADE
-            );
+            var transitionNode = videocontext.transition(VideoContext.DEFINITIONS.CROSSFADE);
 
             chai.assert.notEqual(transitionNode.maximumConnections, Infinity);
             chai.assert.notEqual(transitionNode.transition, undefined);
@@ -55,9 +53,7 @@ describe("VideoContext", function() {
         });
 
         it("should create a CompositingNode from the passed definition", function() {
-            var compositingNode = videocontext.compositor(
-                VideoContext.DEFINITIONS.MONOCHROME
-            );
+            var compositingNode = videocontext.compositor(VideoContext.DEFINITIONS.MONOCHROME);
 
             chai.assert.equal(compositingNode.maximumConnections, Infinity);
             chai.assert.deepEqual(compositingNode.inputNames, ["u_image"]);

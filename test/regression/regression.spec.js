@@ -72,7 +72,7 @@ describe("Visual regressions: playback", () => {
     test(
         "Play/Pause",
         async () => {
-            console.info('Started test of: playback.html');
+            console.info("Started test of: playback.html");
 
             await page.goto(`file:${path.join(__dirname, `test-pages/playback.html`)}`, {
                 waitUntil: "networkidle0",
