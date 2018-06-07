@@ -18,6 +18,8 @@ let page = null;
  *        specified in the .html file (in seconds).
  */
 const transitionTest = async ({ file, seqLength }) => {
+    console.info(`Started test of: ${file}`);
+
     await page.goto(`file:${path.join(__dirname, `test-pages/${file}`)}`, {
         waitUntil: "networkidle0",
         timeout: 60000
@@ -39,6 +41,8 @@ const transitionTest = async ({ file, seqLength }) => {
  * @param {String} configuration.file - the .html file to be tested.
  */
 const effectTest = async ({ file }) => {
+    console.info(`Started test of: ${file}`);
+
     await page.goto(`file:${path.join(__dirname, `test-pages/${file}`)}`, {
         waitUntil: "networkidle0",
         timeout: 60000
@@ -62,6 +66,35 @@ beforeAll(async () => {
 afterAll(async () => {
     await page.close();
     await browser.close();
+});
+
+describe("Visual regressions: playback", () => {
+    test(
+        "Play/Pause",
+        async () => {
+            console.info('Started test of: playback.html');
+
+            await page.goto(`file:${path.join(__dirname, `test-pages/playback.html`)}`, {
+                waitUntil: "networkidle0",
+                timeout: 60000
+            });
+
+            // Start playback
+            await page.click("#play");
+            await page.waitFor(1000);
+
+            const afterPlayImage = await page.screenshot(screenshotParams);
+            expect(afterPlayImage).toMatchImageSnapshot(imageSnapshotParams);
+
+            // Pause playback
+            await page.waitFor(1000);
+            await page.click("#pause");
+
+            const afterPauseImage = await page.screenshot(screenshotParams);
+            expect(afterPauseImage).toMatchImageSnapshot(imageSnapshotParams);
+        },
+        testTimeout
+    );
 });
 
 describe("Visual regressions: transitions", () => {

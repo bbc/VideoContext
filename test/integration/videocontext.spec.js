@@ -5,12 +5,12 @@
  * Mocha & Chai are the tools of choice here, since Jest (our unit-testing framework)
  * does not support brower-based tests.
  *
- * To run the tests, use `npm run test`. This will execute a the `./test.sh` script
+ * To run the tests, use `npm run test`. This will execute the `./test.sh` script
  * which runs the complete test suite, including unit and regression tests.
  */
 
 describe("VideoContext", function() {
-    describe("#createEffectNode()", function() {
+    describe("#effect()", function() {
         var videocontext;
 
         beforeEach(function() {
@@ -19,14 +19,14 @@ describe("VideoContext", function() {
         });
 
         it("should create an EffectNode from the passed definition", function() {
-            var effectNode = videocontext.createEffectNode(VideoContext.DEFINITIONS.MONOCHROME);
+            var effectNode = videocontext.effect(VideoContext.DEFINITIONS.MONOCHROME);
 
             chai.assert.notEqual(effectNode.maximumConnections, Infinity);
             chai.assert.deepEqual(effectNode.inputNames, ["u_image"]);
         });
     });
 
-    describe("#createTransitionNode()", function() {
+    describe("#transition()", function() {
         var videocontext;
 
         beforeEach(function() {
@@ -35,7 +35,7 @@ describe("VideoContext", function() {
         });
 
         it("should create a TransitionNode from the passed definition", function() {
-            var transitionNode = videocontext.createTransitionNode(
+            var transitionNode = videocontext.transition(
                 VideoContext.DEFINITIONS.CROSSFADE
             );
 
@@ -46,7 +46,7 @@ describe("VideoContext", function() {
         });
     });
 
-    describe("#createCompositingNode()", function() {
+    describe("#compositor()", function() {
         var videocontext;
 
         beforeEach(function() {
@@ -55,7 +55,7 @@ describe("VideoContext", function() {
         });
 
         it("should create a CompositingNode from the passed definition", function() {
-            var compositingNode = videocontext.createCompositingNode(
+            var compositingNode = videocontext.compositor(
                 VideoContext.DEFINITIONS.MONOCHROME
             );
 
@@ -74,8 +74,8 @@ describe("VideoContext", function() {
 
         it("should return the time in seconds between time=0 and the stop time of the last SourceNode", function() {
             var videoElement = document.createElement("video");
-            var videoNode1 = videocontext.createVideoSourceNode(videoElement);
-            var videoNode2 = videocontext.createVideoSourceNode(videoElement);
+            var videoNode1 = videocontext.video(videoElement);
+            var videoNode2 = videocontext.video(videoElement);
 
             videoNode1.start(10);
             videoNode1.stop(20.245);
@@ -94,7 +94,7 @@ describe("VideoContext", function() {
 
         it("should return 0 if all source nodes have had clearTimelineState called on them", function() {
             var videoElement = document.createElement("video");
-            var videoNode = videocontext.createVideoSourceNode(videoElement);
+            var videoNode = videocontext.video(videoElement);
 
             videoNode.start(0);
             videoNode.stop(10);

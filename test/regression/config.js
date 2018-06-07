@@ -1,11 +1,12 @@
 export default {
     testTimeout: 60000,
     /**
-     * Puppeteer configuration that allows us to run webgl,
-     * since "headless" mode has no webgl support.
+     * Puppeteer configuration that allows us to run webgl
+     * in "headless" mode. See https://bit.ly/2xKt1tQ.
      *
      * 1. Improves performance: https://bit.ly/2JyZvf4.
      * 2. Necessary to allow cross-origin requests from local files.
+     * 3. Remove the Chrome UI.
      */
     puppeteerParams: {
         headless: false,
@@ -13,7 +14,9 @@ export default {
             "--proxy-server='direct://'" /* [1] */,
             "--proxy-bypass-list=*" /* [1] */,
             "--hide-scrollbars",
-            "--disable-web-security" /* [2] */
+            "--disable-web-security" /* [2] */,
+            "--disable-default-apps",
+            "--headless" /* [3] */
         ]
     },
     imageSnapshotParams: {
