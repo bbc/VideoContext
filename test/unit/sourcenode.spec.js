@@ -1,12 +1,9 @@
-/* eslint-disable */
-
-import jest from "jest";
 import SourceNode from "../../src/SourceNodes/sourcenode";
 import sinon from "sinon";
 import * as utils from "../../src/utils";
 import "webgl-mock";
 
-global.window = {};
+global.window = {}; // eslint-disable-line
 
 let mockGLContext;
 

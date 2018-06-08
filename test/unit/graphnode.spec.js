@@ -1,6 +1,3 @@
-/* eslint-disable */
-
-import jest from "jest";
 import Rendergraph from "../../src/rendergraph.js";
 import GraphNode from "../../src/graphnode.js";
 import { ConnectException } from "../../src/exceptions.js";

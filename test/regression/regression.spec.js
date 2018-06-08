@@ -1,6 +1,3 @@
-/* eslint-disable */
-
-import jest from "jest";
 import puppeteer from "puppeteer";
 import path from "path";
 import { toMatchImageSnapshot } from "jest-image-snapshot";
@@ -20,6 +17,7 @@ let page = null;
 const transitionTest = async ({ file, seqLength }) => {
     console.info(`Started test of: ${file}`);
 
+    // eslint-disable-next-line
     await page.goto(`file:${path.join(__dirname, `test-pages/${file}`)}`, {
         waitUntil: "networkidle0",
         timeout: 60000
@@ -43,6 +41,7 @@ const transitionTest = async ({ file, seqLength }) => {
 const effectTest = async ({ file }) => {
     console.info(`Started test of: ${file}`);
 
+    // eslint-disable-next-line
     await page.goto(`file:${path.join(__dirname, `test-pages/${file}`)}`, {
         waitUntil: "networkidle0",
         timeout: 60000
@@ -58,12 +57,12 @@ const effectTest = async ({ file }) => {
     expect(afterImage).toMatchImageSnapshot(imageSnapshotParams);
 };
 
-beforeAll(async () => {
+beforeEach(async () => {
     browser = await puppeteer.launch(puppeteerParams);
     page = await browser.newPage();
 });
 
-afterAll(async () => {
+afterEach(async () => {
     await page.close();
     await browser.close();
 });
@@ -74,6 +73,7 @@ describe("Visual regressions: playback", () => {
         async () => {
             console.info("Started test of: playback.html");
 
+            // eslint-disable-next-line
             await page.goto(`file:${path.join(__dirname, `test-pages/playback.html`)}`, {
                 waitUntil: "networkidle0",
                 timeout: 60000
