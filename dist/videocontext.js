@@ -1384,7 +1384,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                for (var _iterator14 = this._sourceNodes[Symbol.iterator](), _step14; !(_iteratorNormalCompletion14 = (_step14 = _iterator14.next()).done); _iteratorNormalCompletion14 = true) {
 	                    var node = _step14.value;
 	
-	                    if (node instanceof _SourceNodesVideonodeJs2["default"]) {
+	                    if (node instanceof _SourceNodesVideonodeJs2["default"] || node instanceof _SourceNodesAudionodeJs2["default"]) {
 	                        node.volume = vol;
 	                    }
 	                }
