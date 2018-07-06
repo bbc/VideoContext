@@ -1,30 +1,22 @@
-/* eslint-disable */
+import VideoContext from "../../src/videocontext";
 
-/**
- * These tests are run in the browser (and are written in ES5 for maximum support).
- * Mocha & Chai are the tools of choice here, since Jest (our unit-testing framework)
- * does not support brower-based tests.
- *
- * To run the tests, use `npm run test`. This will execute the `./test.sh` script
- * which runs the complete test suite, including unit and regression tests.
- */
+let videocontext;
+require("webgl-mock");
+
+beforeEach(function() {
+    const canvas = new HTMLCanvasElement(500, 500);
+    videocontext = new VideoContext(canvas);
+});
 
 describe("SourceNode", function() {
     describe("#duration", function() {
-        var videocontext;
-
-        beforeEach(function() {
-            var canvas = document.getElementById("videocontext-canvas");
-            videocontext = new VideoContext(canvas);
-        });
-
         it("should return the time the node is playing for", function() {
             var imageElement = document.createElement("img");
             var imageNode = videocontext.image(imageElement);
 
             imageNode.start(10);
             imageNode.stop(20);
-            chai.assert.equal(imageNode.duration, 10);
+            expect(imageNode.duration).toBe(10);
         });
 
         it("should return Infinity if no stop time has been specified", function() {
@@ -32,14 +24,14 @@ describe("SourceNode", function() {
             var imageNode = videocontext.image(imageElement);
 
             imageNode.start(10);
-            chai.assert.equal(imageNode.duration, Infinity);
+            expect(imageNode.duration).toBe(Infinity);
         });
 
         it("should return undefined if start hasn't been called", function() {
             var imageElement = document.createElement("img");
             var imageNode = videocontext.image(imageElement);
 
-            chai.assert.equal(imageNode.duration, undefined);
+            expect(imageNode.duration).toBe(undefined);
         });
 
         it("should return undefined if source nodes has had clearTimelineState called on it", function() {
@@ -49,23 +41,16 @@ describe("SourceNode", function() {
             imageNode.start(10);
             imageNode.stop(20);
             imageNode.clearTimelineState();
-            chai.assert.equal(imageNode.duration, undefined);
+            expect(imageNode.duration).toBe(undefined);
         });
     });
 
     describe("#start()", function() {
-        var videocontext;
-
-        beforeEach(function() {
-            var canvas = document.getElementById("videocontext-canvas");
-            videocontext = new VideoContext(canvas);
-        });
-
         it("should return true if setting start time was successful", function() {
             var imageElement = document.createElement("img");
             var imageNode = videocontext.image(imageElement);
 
-            chai.assert.equal(true, imageNode.start(10));
+            expect(imageNode.start(10)).toBe(true);
         });
 
         it("should return false if start hase already been called without first calling clearTimelineState", function() {
@@ -73,7 +58,7 @@ describe("SourceNode", function() {
             var imageNode = videocontext.image(imageElement);
 
             imageNode.start(0);
-            chai.assert.equal(false, imageNode.start(10));
+            expect(imageNode.start(10)).toBe(false);
         });
 
         it("should return true if start has already been called followed be calling clearTimelineState", function() {
@@ -82,7 +67,7 @@ describe("SourceNode", function() {
 
             imageNode.start(0);
             imageNode.clearTimelineState();
-            chai.assert.equal(true, imageNode.start(10));
+            expect(imageNode.start(10)).toBe(true);
         });
 
         it("duration should be Infinity if stop hasn't been called", function() {
@@ -90,7 +75,7 @@ describe("SourceNode", function() {
             var imageNode = videocontext.image(imageElement);
 
             imageNode.start(0);
-            chai.assert.equal(Infinity, imageNode.duration);
+            expect(imageNode.duration).toBe(Infinity);
         });
 
         it("sourceNode state should be set to sequenced", function() {
@@ -98,31 +83,24 @@ describe("SourceNode", function() {
             var imageNode = videocontext.image(imageElement);
 
             imageNode.start(0);
-            chai.assert.equal(1, imageNode.state);
+            expect(imageNode.state).toBe(1);
         });
     });
 
     describe("#stop()", function() {
-        var videocontext;
-
-        beforeEach(function() {
-            var canvas = document.getElementById("videocontext-canvas");
-            videocontext = new VideoContext(canvas);
-        });
-
         it("should return true if setting stop time was successful", function() {
             var imageElement = document.createElement("img");
             var imageNode = videocontext.image(imageElement);
 
             imageNode.start(10);
-            chai.assert.equal(true, imageNode.stop(20));
+            expect(imageNode.stop(20)).toBe(true);
         });
 
         it("should return false if start hasn't been called first", function() {
             var imageElement = document.createElement("img");
             var imageNode = videocontext.image(imageElement);
 
-            chai.assert.equal(false, imageNode.stop(10));
+            expect(imageNode.stop(10)).toBe(false);
         });
 
         it("should return false if time is before startTime ", function() {
@@ -130,7 +108,7 @@ describe("SourceNode", function() {
             var imageNode = videocontext.image(imageElement);
 
             imageNode.start(10);
-            chai.assert.equal(false, imageNode.stop(2));
+            expect(imageNode.stop(2)).toBe(false);
         });
 
         it("duration should be less than Infinity", function() {
@@ -139,18 +117,11 @@ describe("SourceNode", function() {
 
             imageNode.start(0);
             imageNode.stop(10);
-            chai.expect(imageNode.duration).to.be.below(Infinity);
+            expect(imageNode.duration).toBeLessThan(Infinity);
         });
     });
 
     describe("#clearTimelineState()", function() {
-        var videocontext;
-
-        beforeEach(function() {
-            var canvas = document.getElementById("videocontext-canvas");
-            videocontext = new VideoContext(canvas);
-        });
-
         it("should set a SourceNodes state to waiting", function() {
             var imageElement = document.createElement("img");
             var imageNode = videocontext.image(imageElement);
@@ -158,7 +129,7 @@ describe("SourceNode", function() {
             imageNode.start(0);
             imageNode.stop(10);
             imageNode.clearTimelineState();
-            chai.assert.equal(0, imageNode.state);
+            expect(imageNode.state).toBe(0);
         });
 
         it("should set a SourceNodes duration to undefined", function() {
@@ -168,7 +139,7 @@ describe("SourceNode", function() {
             imageNode.start(0);
             imageNode.stop(10);
             imageNode.clearTimelineState();
-            chai.assert.equal(undefined, imageNode.duration);
+            expect(imageNode.duration).toBe(undefined);
         });
     });
 });
