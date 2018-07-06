@@ -27,7 +27,7 @@
     "build": "npm run test && webpack --config webpack.config.js && npm run doc",
     "test": "./test.sh",
     "test-unit": "jest test/unit/*.js",
-    "test-watch": "jest ./test/unit/*.js --watch",
+    "test-watch": "jest ./test/*.test.js --watch",
     "test-coverage": "jest test/unit/*.js --coverage --collectCoverageFrom 'src/**/*.js'",
     "test-regression": "jest test/regression/*.js",
     "doc": "jsdoc -c jsdoc.json && cp dist/videocontext.* docs/dist/",
@@ -64,7 +64,7 @@
     "prettier": "^1.13.2",
     "puppeteer": "^1.4.0",
     "sinon": "^4.2.1",
-    "webgl-mock": "^0.1.6",
+    "webgl-mock": "^0.1.7",
     "webpack": "^4.10.2",
     "webpack-cli": "^3.0.1"
   }
