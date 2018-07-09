@@ -105,12 +105,8 @@ class MediaNode extends SourceNode {
 
             if (this._element.readyState > 3 &amp;&amp; !this._element.seeking) {
                 if (this._loopElement === false) {
-                    if (
-                        this._stopTime === Infinity ||
-                        this._stopTime == undefined
-                    ) {
-                        this._stopTime =
-                            this._startTime + this._element.duration;
+                    if (this._stopTime === Infinity || this._stopTime == undefined) {
+                        this._stopTime = this._startTime + this._element.duration;
                         this._triggerCallbacks("durationchange", this.duration);
                     }
                 }
@@ -138,10 +134,7 @@ class MediaNode extends SourceNode {
                 this._playbackRateUpdated = true;
             }
             this._element.volume = this._volume;
-            if (
-                window.MediaStream !== undefined &amp;&amp;
-                this._elementURL instanceof MediaStream
-            ) {
+            if (window.MediaStream !== undefined &amp;&amp; this._elementURL instanceof MediaStream) {
                 this._element.srcObject = this._elementURL;
             } else {
                 this._element.src = this._elementURL;
@@ -174,10 +167,7 @@ class MediaNode extends SourceNode {
 
     _unload() {
         super._unload();
-        if (
-            this._isResponsibleForElementLifeCycle &amp;&amp;
-            this._element !== undefined
-        ) {
+        if (this._isResponsibleForElementLifeCycle &amp;&amp; this._element !== undefined) {
             this._element.src = "";
             this._element.srcObject = undefined;
             for (let key in this._attributes) {
@@ -192,19 +182,14 @@ class MediaNode extends SourceNode {
 
     _seek(time) {
         super._seek(time);
-        if (
-            this.state === SOURCENODESTATE.playing ||
-            this.state === SOURCENODESTATE.paused
-        ) {
+        if (this.state === SOURCENODESTATE.playing || this.state === SOURCENODESTATE.paused) {
             if (this._element === undefined) this._load();
-            let relativeTime =
-                this._currentTime - this._startTime + this._sourceOffset;
+            let relativeTime = this._currentTime - this._startTime + this._sourceOffset;
             this._element.currentTime = relativeTime;
             this._ready = false;
         }
         if (
-            (this._state === SOURCENODESTATE.sequenced ||
-                this._state === SOURCENODESTATE.ended) &amp;&amp;
+            (this._state === SOURCENODESTATE.sequenced || this._state === SOURCENODESTATE.ended) &amp;&amp;
             this._element !== undefined
         ) {
             this._unload();
@@ -231,8 +216,7 @@ class MediaNode extends SourceNode {
 
         if (this._state === SOURCENODESTATE.playing) {
             if (this._playbackRateUpdated) {
-                this._element.playbackRate =
-                    this._globalPlaybackRate * this._playbackRate;
+                this._element.playbackRate = this._globalPlaybackRate * this._playbackRate;
                 this._playbackRateUpdated = false;
             }
             if (!this._isElementPlaying) {
@@ -247,10 +231,7 @@ class MediaNode extends SourceNode {
             this._element.pause();
             this._isElementPlaying = false;
             return true;
-        } else if (
-            this._state === SOURCENODESTATE.ended &amp;&amp;
-            this._element !== undefined
-        ) {
+        } else if (this._state === SOURCENODESTATE.ended &amp;&amp; this._element !== undefined) {
             this._element.pause();
             if (this._isElementPlaying) {
                 this._unload();

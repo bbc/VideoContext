@@ -99,23 +99,16 @@ export default class VideoContext {
         };
 
         if ("manualUpdate" in options) manualUpdate = options.manualUpdate;
-        if ("endOnLastSourceEnd" in options)
-            this._endOnLastSourceEnd = options.endOnLastSourceEnd;
+        if ("endOnLastSourceEnd" in options) this._endOnLastSourceEnd = options.endOnLastSourceEnd;
         if ("webglContextAttributes" in options)
             webglContextAttributes = options.webglContextAttributes;
 
-        if (webglContextAttributes.alpha === undefined)
-            webglContextAttributes.alpha = false;
+        if (webglContextAttributes.alpha === undefined) webglContextAttributes.alpha = false;
         if (webglContextAttributes.alpha === true) {
-            console.error(
-                "webglContextAttributes.alpha must be false for correct opeation"
-            );
+            console.error("webglContextAttributes.alpha must be false for correct opeation");
         }
 
-        this._gl = canvas.getContext(
-            "experimental-webgl",
-            webglContextAttributes
-        );
+        this._gl = canvas.getContext("experimental-webgl", webglContextAttributes);
         if (this._gl === null) {
             console.error("Failed to intialise WebGL.");
             if (initErrorCallback) initErrorCallback();
@@ -123,29 +116,21 @@ export default class VideoContext {
         }
 
         // Initialise the video element cache
-        if (options.useVideoElementCache === undefined)
-            options.useVideoElementCache = true;
+        if (options.useVideoElementCache === undefined) options.useVideoElementCache = true;
         this._useVideoElementCache = options.useVideoElementCache;
         if (this._useVideoElementCache) {
-            if (!options.videoElementCacheSize)
-                options.videoElementCacheSize = 5;
-            this._videoElementCache = new VideoElementCache(
-                options.videoElementCacheSize
-            );
+            if (!options.videoElementCacheSize) options.videoElementCacheSize = 5;
+            this._videoElementCache = new VideoElementCache(options.videoElementCacheSize);
         }
 
         // Create a unique ID for this VideoContext which can be used in the debugger.
         if (this._canvas.id) {
-            if (
-                typeof this._canvas.id === "string" ||
-                this._canvas.id instanceof String
-            ) {
+            if (typeof this._canvas.id === "string" || this._canvas.id instanceof String) {
                 this._id = canvas.id;
             }
         }
         if (this._id === undefined) this._id = generateRandomId();
-        if (window.__VIDEOCONTEXT_REFS__ === undefined)
-            window.__VIDEOCONTEXT_REFS__ = {};
+        if (window.__VIDEOCONTEXT_REFS__ === undefined) window.__VIDEOCONTEXT_REFS__ = {};
         window.__VIDEOCONTEXT_REFS__[this._id] = this;
 
         this._renderGraph = new RenderGraph();
@@ -157,10 +142,7 @@ export default class VideoContext {
         this._playbackRate = 1.0;
         this._volume = 1.0;
         this._sourcesPlaying = undefined;
-        this._destinationNode = new DestinationNode(
-            this._gl,
-            this._renderGraph
-        );
+        this._destinationNode = new DestinationNode(this._gl, this._renderGraph);
 
         this._callbacks = new Map();
         this._callbacks.set("stalled", []);
@@ -190,9 +172,7 @@ export default class VideoContext {
     set id(newID) {
         delete window.__VIDEOCONTEXT_REFS__[this._id];
         if (window.__VIDEOCONTEXT_REFS__[newID] !== undefined)
-            console.warn(
-                "Warning; setting id to that of an existing VideoContext instance."
-            );
+            console.warn("Warning; setting id to that of an existing VideoContext instance.");
         window.__VIDEOCONTEXT_REFS__[newID] = this;
         this._id = newID;
     }
@@ -332,10 +312,7 @@ export default class VideoContext {
      *
      */
     set currentTime(currentTime) {
-        if (
-            currentTime &lt; this.duration &amp;&amp;
-            this._state === VideoContext.STATE.ENDED
-        )
+        if (currentTime &lt; this.duration &amp;&amp; this._state === VideoContext.STATE.ENDED)
             this._state = VideoContext.STATE.PAUSED;
 
         if (typeof currentTime === "string" || currentTime instanceof String) {
@@ -575,21 +552,11 @@ export default class VideoContext {
     /**
      * @depricated
      */
-    createVideoSourceNode(
-        src,
-        sourceOffset = 0,
-        preloadTime = 4,
-        videoElementAttributes = {}
-    ) {
+    createVideoSourceNode(src, sourceOffset = 0, preloadTime = 4, videoElementAttributes = {}) {
         this._depricate(
             "Warning: createVideoSourceNode will be depricated in v1.0, please switch to using VideoContext.video()"
         );
-        return this.video(
-            src,
-            sourceOffset,
-            preloadTime,
-            videoElementAttributes
-        );
+        return this.video(src, sourceOffset, preloadTime, videoElementAttributes);
     }
 
     /**
@@ -626,21 +593,11 @@ export default class VideoContext {
     /**
      * @depricated
      */
-    createImageSourceNode(
-        src,
-        sourceOffset = 0,
-        preloadTime = 4,
-        imageElementAttributes = {}
-    ) {
+    createImageSourceNode(src, sourceOffset = 0, preloadTime = 4, imageElementAttributes = {}) {
         this._depricate(
             "Warning: createImageSourceNode will be depricated in v1.0, please switch to using VideoContext.image()"
         );
-        return this.image(
-            src,
-            sourceOffset,
-            preloadTime,
-            imageElementAttributes
-        );
+        return this.image(src, sourceOffset, preloadTime, imageElementAttributes);
     }
 
     /**
@@ -649,12 +606,7 @@ export default class VideoContext {
      * @return {CanvasNode} A new canvas node.
      */
     canvas(canvas) {
-        let canvasNode = new CanvasNode(
-            canvas,
-            this._gl,
-            this._renderGraph,
-            this._currentTime
-        );
+        let canvasNode = new CanvasNode(canvas, this._gl, this._renderGraph, this._currentTime);
         this._sourceNodes.push(canvasNode);
         return canvasNode;
     }
@@ -675,11 +627,7 @@ export default class VideoContext {
      * @return {EffectNode} A new effect node created from the passed definition
      */
     effect(definition) {
-        let effectNode = new EffectNode(
-            this._gl,
-            this._renderGraph,
-            definition
-        );
+        let effectNode = new EffectNode(this._gl, this._renderGraph, definition);
         this._processingNodes.push(effectNode);
         return effectNode;
     }
@@ -757,11 +705,7 @@ export default class VideoContext {
      *
      */
     compositor(definition) {
-        let compositingNode = new CompositingNode(
-            this._gl,
-            this._renderGraph,
-            definition
-        );
+        let compositingNode = new CompositingNode(this._gl, this._renderGraph, definition);
         this._processingNodes.push(compositingNode);
         return compositingNode;
     }
@@ -855,11 +799,7 @@ export default class VideoContext {
      * ctx.play();
      */
     transition(definition) {
-        let transitionNode = new TransitionNode(
-            this._gl,
-            this._renderGraph,
-            definition
-        );
+        let transitionNode = new TransitionNode(this._gl, this._renderGraph, definition);
         this._processingNodes.push(transitionNode);
         return transitionNode;
     }
@@ -940,8 +880,7 @@ export default class VideoContext {
                 for (let callback of this._timelineCallbacks) {
                     if (
                         callback.time >= this.currentTime &amp;&amp;
-                        callback.time &lt;
-                            this._currentTime + dt * this._playbackRate
+                        callback.time &lt; this._currentTime + dt * this._playbackRate
                     ) {
                         //group the callbacks by time
                         if (!activeCallbacks.has(callback.time))
@@ -967,10 +906,7 @@ export default class VideoContext {
                 }
 
                 this._currentTime += dt * this._playbackRate;
-                if (
-                    this._currentTime > this.duration &amp;&amp;
-                    this._endOnLastSourceEnd
-                ) {
+                if (this._currentTime > this.duration &amp;&amp; this._endOnLastSourceEnd) {
                     //Do an update od the sourcenodes in case anything in the "ended" callbacks modifes currentTime and sources haven't had a chance to stop.
                     for (let i = 0; i &lt; this._sourceNodes.length; i++) {
                         this._sourceNodes[i]._update(this._currentTime);
@@ -986,10 +922,7 @@ export default class VideoContext {
                 let sourceNode = this._sourceNodes[i];
 
                 if (this._state === VideoContext.STATE.STALLED) {
-                    if (
-                        sourceNode._isReady() &amp;&amp;
-                        sourceNode._state === SOURCENODESTATE.playing
-                    )
+                    if (sourceNode._isReady() &amp;&amp; sourceNode._state === SOURCENODESTATE.playing)
                         sourceNode._pause();
                 }
                 if (this._state === VideoContext.STATE.PAUSED) {
@@ -1038,16 +971,10 @@ export default class VideoContext {
             while (nodes.length > 0) {
                 let node = nodes.pop();
                 sortedNodes.push(node);
-                for (let edge of RenderGraph.outputEdgesFor(
-                    node,
-                    connections
-                )) {
+                for (let edge of RenderGraph.outputEdgesFor(node, connections)) {
                     let index = connections.indexOf(edge);
                     if (index > -1) connections.splice(index, 1);
-                    if (
-                        RenderGraph.inputEdgesFor(edge.destination, connections)
-                            .length === 0
-                    ) {
+                    if (RenderGraph.inputEdgesFor(edge.destination, connections).length === 0) {
                         nodes.push(edge.destination);
                     }
                 }

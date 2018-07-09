@@ -40,36 +40,21 @@ class TransitionNode extends EffectNode {
         //save a version of the original property values
         this._initialPropertyValues = {};
         for (let propertyName in this._properties) {
-            this._initialPropertyValues[propertyName] = this._properties[
-                propertyName
-            ].value;
+            this._initialPropertyValues[propertyName] = this._properties[propertyName].value;
         }
         this._displayName = "TransitionNode";
     }
 
     _doesTransitionFitOnTimeline(testTransition) {
-        if (this._transitions[testTransition.property] === undefined)
-            return true;
+        if (this._transitions[testTransition.property] === undefined) return true;
         for (let transition of this._transitions[testTransition.property]) {
-            if (
-                testTransition.start > transition.start &amp;&amp;
-                testTransition.start &lt; transition.end
-            )
+            if (testTransition.start > transition.start &amp;&amp; testTransition.start &lt; transition.end)
                 return false;
-            if (
-                testTransition.end > transition.start &amp;&amp;
-                testTransition.end &lt; transition.end
-            )
+            if (testTransition.end > transition.start &amp;&amp; testTransition.end &lt; transition.end)
                 return false;
-            if (
-                transition.start > testTransition.start &amp;&amp;
-                transition.start &lt; testTransition.end
-            )
+            if (transition.start > testTransition.start &amp;&amp; transition.start &lt; testTransition.end)
                 return false;
-            if (
-                transition.end > testTransition.start &amp;&amp;
-                transition.end &lt; testTransition.end
-            )
+            if (transition.end > testTransition.start &amp;&amp; transition.end &lt; testTransition.end)
                 return false;
         }
         return true;
@@ -96,13 +81,7 @@ class TransitionNode extends EffectNode {
      *
      * @return {Boolean} returns True if a transition is successfully added, false otherwise.
      */
-    transition(
-        startTime,
-        endTime,
-        currentValue,
-        targetValue,
-        propertyName = "mix"
-    ) {
+    transition(startTime, endTime, currentValue, targetValue, propertyName = "mix") {
         let transition = {
             start: startTime + this._currentTime,
             end: endTime + this._currentTime,
@@ -126,13 +105,7 @@ class TransitionNode extends EffectNode {
      *
      * @return {Boolean} returns True if a transition is successfully added, false otherwise.
      */
-    transitionAt(
-        startTime,
-        endTime,
-        currentValue,
-        targetValue,
-        propertyName = "mix"
-    ) {
+    transitionAt(startTime, endTime, currentValue, targetValue, propertyName = "mix") {
         let transition = {
             start: startTime,
             end: endTime,
@@ -197,17 +170,13 @@ class TransitionNode extends EffectNode {
                     continue;
                 }
 
-                if (
-                    currentTime > transition.start &amp;&amp;
-                    currentTime &lt; transition.end
-                ) {
+                if (currentTime > transition.start &amp;&amp; currentTime &lt; transition.end) {
                     let difference = transition.target - transition.current;
                     let progress =
                         (this._currentTime - transition.start) /
                         (transition.end - transition.start);
                     transitionActive = true;
-                    this[propertyName] =
-                        transition.current + difference * progress;
+                    this[propertyName] = transition.current + difference * progress;
                     break;
                 }
             }

@@ -34,14 +34,7 @@ class ImageNode extends SourceNode {
      * Initialise an instance of an ImageNode.
      * This should not be called directly, but created through a call to videoContext.createImageNode();
      */
-    constructor(
-        src,
-        gl,
-        renderGraph,
-        currentTime,
-        preloadTime = 4,
-        attributes = {}
-    ) {
+    constructor(src, gl, renderGraph, currentTime, preloadTime = 4, attributes = {}) {
         super(src, gl, renderGraph, currentTime);
         this._preloadTime = preloadTime;
         this._attributes = attributes;
@@ -70,10 +63,7 @@ class ImageNode extends SourceNode {
                 this._triggerCallbacks("loaded");
             };
             this._element.onerror = () => {
-                console.error(
-                    "ImageNode failed to load. url:",
-                    this._elementURL
-                );
+                console.error("ImageNode failed to load. url:", this._elementURL);
             };
 
             for (let key in this._attributes) {
@@ -102,15 +92,11 @@ class ImageNode extends SourceNode {
 
     _seek(time) {
         super._seek(time);
-        if (
-            this.state === SOURCENODESTATE.playing ||
-            this.state === SOURCENODESTATE.paused
-        ) {
+        if (this.state === SOURCENODESTATE.playing || this.state === SOURCENODESTATE.paused) {
             if (this._element === undefined) this._load();
         }
         if (
-            (this._state === SOURCENODESTATE.sequenced ||
-                this._state === SOURCENODESTATE.ended) &amp;&amp;
+            (this._state === SOURCENODESTATE.sequenced || this._state === SOURCENODESTATE.ended) &amp;&amp;
             this._element !== undefined
         ) {
             this._unload();
@@ -136,10 +122,7 @@ class ImageNode extends SourceNode {
             return true;
         } else if (this._state === SOURCENODESTATE.paused) {
             return true;
-        } else if (
-            this._state === SOURCENODESTATE.ended &amp;&amp;
-            this._element !== undefined
-        ) {
+        } else if (this._state === SOURCENODESTATE.ended &amp;&amp; this._element !== undefined) {
             this._unload();
             return false;
         }

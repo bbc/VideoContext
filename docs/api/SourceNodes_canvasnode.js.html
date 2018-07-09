@@ -53,16 +53,12 @@ class CanvasNode extends SourceNode {
 
     _seek(time) {
         super._seek(time);
-        if (
-            this.state === SOURCENODESTATE.playing ||
-            this.state === SOURCENODESTATE.paused
-        ) {
+        if (this.state === SOURCENODESTATE.playing || this.state === SOURCENODESTATE.paused) {
             if (this._element === undefined) this._load();
             this._ready = false;
         }
         if (
-            (this._state === SOURCENODESTATE.sequenced ||
-                this._state === SOURCENODESTATE.ended) &amp;&amp;
+            (this._state === SOURCENODESTATE.sequenced || this._state === SOURCENODESTATE.ended) &amp;&amp;
             this._element !== undefined
         ) {
             this._unload();
@@ -83,10 +79,7 @@ class CanvasNode extends SourceNode {
             return true;
         } else if (this._state === SOURCENODESTATE.paused) {
             return true;
-        } else if (
-            this._state === SOURCENODESTATE.ended &amp;&amp;
-            this._element !== undefined
-        ) {
+        } else if (this._state === SOURCENODESTATE.ended &amp;&amp; this._element !== undefined) {
             this._unload();
             return false;
         }

@@ -64,12 +64,7 @@ class CompositingNode extends ProcessingNode {
         );
         gl.clearColor(0, 0, 0, 0); // green;
         gl.clear(gl.COLOR_BUFFER_BIT);
-        gl.blendFuncSeparate(
-            gl.SRC_ALPHA,
-            gl.ONE_MINUS_SRC_ALPHA,
-            gl.ONE,
-            gl.ONE_MINUS_SRC_ALPHA
-        );
+        gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
         this.inputs.forEach(node => {
             if (node === undefined) return;
@@ -81,14 +76,8 @@ class CompositingNode extends ProcessingNode {
 
             for (let mapping of this._inputTextureUnitMapping) {
                 gl.activeTexture(mapping.textureUnit);
-                let textureLocation = gl.getUniformLocation(
-                    this._program,
-                    mapping.name
-                );
-                gl.uniform1i(
-                    textureLocation,
-                    this._parameterTextureCount + textureOffset
-                );
+                let textureLocation = gl.getUniformLocation(this._program, mapping.name);
+                gl.uniform1i(textureLocation, this._parameterTextureCount + textureOffset);
                 textureOffset += 1;
                 gl.bindTexture(gl.TEXTURE_2D, texture);
             }

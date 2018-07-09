@@ -248,9 +248,7 @@ class SourceNode extends GraphNode {
      */
     start(time) {
         if (this._state !== STATE.waiting) {
-            console.debug(
-                "SourceNode is has already been sequenced. Can't sequence twice."
-            );
+            console.debug("SourceNode is has already been sequenced. Can't sequence twice.");
             return false;
         }
 
@@ -267,9 +265,7 @@ class SourceNode extends GraphNode {
      */
     startAt(time) {
         if (this._state !== STATE.waiting) {
-            console.debug(
-                "SourceNode is has already been sequenced. Can't sequence twice."
-            );
+            console.debug("SourceNode is has already been sequenced. Can't sequence twice.");
             return false;
         }
         this._startTime = time;
@@ -292,15 +288,11 @@ class SourceNode extends GraphNode {
             console.debug("SourceNode has already ended. Cannot call stop.");
             return false;
         } else if (this._state === STATE.waiting) {
-            console.debug(
-                "SourceNode must have start called before stop is called"
-            );
+            console.debug("SourceNode must have start called before stop is called");
             return false;
         }
         if (this._currentTime + time &lt;= this._startTime) {
-            console.debug(
-                "SourceNode must have a stop time after it's start time, not before."
-            );
+            console.debug("SourceNode must have a stop time after it's start time, not before.");
             return false;
         }
         this._stopTime = this._currentTime + time;
@@ -320,15 +312,11 @@ class SourceNode extends GraphNode {
             console.debug("SourceNode has already ended. Cannot call stop.");
             return false;
         } else if (this._state === STATE.waiting) {
-            console.debug(
-                "SourceNode must have start called before stop is called"
-            );
+            console.debug("SourceNode must have start called before stop is called");
             return false;
         }
         if (time &lt;= this._startTime) {
-            console.debug(
-                "SourceNode must have a stop time after it's start time, not before."
-            );
+            console.debug("SourceNode must have a stop time after it's start time, not before.");
             return false;
         }
         this._stopTime = time;
@@ -364,10 +352,7 @@ class SourceNode extends GraphNode {
     }
 
     _pause() {
-        if (
-            this._state === STATE.playing ||
-            (this._currentTime === 0 &amp;&amp; this._startTime === 0)
-        ) {
+        if (this._state === STATE.playing || (this._currentTime === 0 &amp;&amp; this._startTime === 0)) {
             this._triggerCallbacks("pause");
             this._state = STATE.paused;
             this._renderPaused = false;
@@ -432,13 +417,11 @@ class SourceNode extends GraphNode {
         if (this._element === undefined || this._ready === false) return true;
 
         if (!this._renderPaused &amp;&amp; this._state === STATE.paused) {
-            if (triggerTextureUpdate)
-                updateTexture(this._gl, this._texture, this._element);
+            if (triggerTextureUpdate) updateTexture(this._gl, this._texture, this._element);
             this._renderPaused = true;
         }
         if (this._state === STATE.playing) {
-            if (triggerTextureUpdate)
-                updateTexture(this._gl, this._texture, this._element);
+            if (triggerTextureUpdate) updateTexture(this._gl, this._texture, this._element);
             if (this._stretchPaused) {
                 this._stopTime += timeDelta;
             }
