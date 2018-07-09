@@ -26,5 +26,6 @@ elif [ "$TEST_SUITE" == "regression" ]
       npm run test-regression
 
 else
-    echo "TEST_SUITE env should be set to unit, integration or regression"
+    echo "exit 1. TEST_SUITE env should be set to unit, integration or regression"
+    exit 1
 fi
