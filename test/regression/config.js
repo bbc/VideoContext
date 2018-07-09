@@ -7,6 +7,7 @@ export default {
      * 1. Improves performance: https://bit.ly/2JyZvf4.
      * 2. Necessary to allow cross-origin requests from local files.
      * 3. Remove the Chrome UI.
+     * 4. Travis can't run Chrome in a sandbox
      */
     puppeteerParams: {
         headless: false,
@@ -16,7 +17,8 @@ export default {
             "--hide-scrollbars",
             "--disable-web-security" /* [2] */,
             "--disable-default-apps",
-            "--headless" /* [3] */
+            "--headless" /* [3] */,
+            "--no-sandbox" /* [4] */
         ]
     },
     imageSnapshotParams: {
