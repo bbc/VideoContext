@@ -25,7 +25,7 @@
   "scripts": {
     "dev": "webpack --config webpack.config.js --watch",
     "build": "webpack --config webpack.config.js && npm run doc",
-    "test": "./test.sh",
+    "test": "bash ./test.sh",
     "test-unit": "jest test/unit/*.js",
     "test-integration": "jest test/unit/*.js",
     "test-watch": "jest --watch",
