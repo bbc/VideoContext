@@ -13,3 +13,7 @@ deploy:
   on:
     tags: true
     repo: bbc/VideoContext
+env:
+  - TEST_SUITE=unit
+  - TEST_SUITE=integration
+  - TEST_SUITE=regression
