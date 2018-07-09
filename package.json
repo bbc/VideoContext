@@ -1,27 +1,27 @@
 {
-    "name": "videocontext",
-    "version": "0.52.1",
-    "description": "A WebGL & HTML5 graph based video composition library",
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/bbc/VideoContext.git"
-    },
-    "license": "Apache-2.0",
-    "main": "dist/videocontext.js",
-    "keywords": [
-        "video",
-        "context",
-        "composition",
-        "timeline",
-        "html5",
-        "webgl"
-    ],
-    "contributors": [
-        {
-            "name": "Matthew Shotton",
-            "email": "matthew.shotton@bbc.co.uk"
-        }
-    ],
+  "name": "videocontext",
+  "version": "0.52.2",
+  "description": "A WebGL & HTML5 graph based video composition library",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bbc/VideoContext.git"
+  },
+  "license": "Apache-2.0",
+  "main": "dist/videocontext.js",
+  "keywords": [
+    "video",
+    "context",
+    "composition",
+    "timeline",
+    "html5",
+    "webgl"
+  ],
+  "contributors": [
+    {
+      "name": "Matthew Shotton",
+      "email": "matthew.shotton@bbc.co.uk"
+    }
+  ],
   "scripts": {
     "dev": "webpack --config webpack.config.js --watch",
     "build": "webpack --config webpack.config.js",
