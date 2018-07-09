@@ -17,3 +17,4 @@ env:
   - TEST_SUITE=unit
   - TEST_SUITE=integration
   - TEST_SUITE=regression
+  - TEST_SUITE=build
