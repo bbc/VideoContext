@@ -471,7 +471,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    set volume(vol) {
 	        for (let node of this._sourceNodes) {
-	            if (node instanceof VideoNode) {
+	            if (node instanceof VideoNode || node instanceof AudioNode) {
 	                node.volume = vol;
 	            }
 	        }
