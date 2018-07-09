@@ -13,6 +13,7 @@ deploy:
   on:
     tags: true
     repo: bbc/VideoContext
+    branch: master
 env:
   - TEST_SUITE=unit
   - TEST_SUITE=integration
