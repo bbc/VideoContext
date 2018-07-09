@@ -113,11 +113,7 @@ class GraphNode {
      *
      */
     connect(targetNode, targetPort) {
-        return this._renderGraph.registerConnection(
-            this,
-            targetNode,
-            targetPort
-        );
+        return this._renderGraph.registerConnection(this, targetNode, targetPort);
     }
 
     /**
@@ -129,9 +125,7 @@ class GraphNode {
     disconnect(targetNode) {
         if (targetNode === undefined) {
             let toRemove = this._renderGraph.getOutputsForNode(this);
-            toRemove.forEach(target =>
-                this._renderGraph.unregisterConnection(this, target)
-            );
+            toRemove.forEach(target => this._renderGraph.unregisterConnection(this, target));
             if (toRemove.length > 0) return true;
             return false;
         }

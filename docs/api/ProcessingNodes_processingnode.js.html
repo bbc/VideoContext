@@ -44,29 +44,16 @@ class ProcessingNode extends GraphNode {
      */
     constructor(gl, renderGraph, definition, inputNames, limitConnections) {
         super(gl, renderGraph, inputNames, limitConnections);
-        this._vertexShader = compileShader(
-            gl,
-            definition.vertexShader,
-            gl.VERTEX_SHADER
-        );
-        this._fragmentShader = compileShader(
-            gl,
-            definition.fragmentShader,
-            gl.FRAGMENT_SHADER
-        );
+        this._vertexShader = compileShader(gl, definition.vertexShader, gl.VERTEX_SHADER);
+        this._fragmentShader = compileShader(gl, definition.fragmentShader, gl.FRAGMENT_SHADER);
         this._definition = definition;
         this._properties = {}; //definition.properties;
         //copy definition properties
         for (let propertyName in definition.properties) {
             let propertyValue = definition.properties[propertyName].value;
             //if an array then shallow copy it
-            if (
-                Object.prototype.toString.call(propertyValue) ===
-                "[object Array]"
-            ) {
-                propertyValue = definition.properties[
-                    propertyName
-                ].value.slice();
+            if (Object.prototype.toString.call(propertyValue) === "[object Array]") {
+                propertyValue = definition.properties[propertyName].value.slice();
             }
             let propertyType = definition.properties[propertyName].type;
             this._properties[propertyName] = {
@@ -93,11 +80,7 @@ class ProcessingNode extends GraphNode {
             null
         );
         //compile the shader
-        this._program = createShaderProgram(
-            gl,
-            this._vertexShader,
-            this._fragmentShader
-        );
+        this._program = createShaderProgram(gl, this._vertexShader, this._fragmentShader);
 
         //create and setup the framebuffer
         this._framebuffer = gl.createFramebuffer();
@@ -127,11 +110,8 @@ class ProcessingNode extends GraphNode {
         for (let propertyName in this._properties) {
             let propertyValue = this._properties[propertyName].value;
             if (propertyValue instanceof Image) {
-                this._properties[propertyName].texture = createElementTexture(
-                    gl
-                );
-                this._properties[propertyName].texutreUnit =
-                    gl.TEXTURE0 + this._boundTextureUnits;
+                this._properties[propertyName].texture = createElementTexture(gl);
+                this._properties[propertyName].texutreUnit = gl.TEXTURE0 + this._boundTextureUnits;
                 this._boundTextureUnits += 1;
                 this._parameterTextureCount += 1;
                 if (this._boundTextureUnits > this._maxTextureUnits) {
@@ -160,51 +140,27 @@ class ProcessingNode extends GraphNode {
         //find the locations of the properties in the compiled shader
         for (let propertyName in this._properties) {
             if (this._properties[propertyName].type === "uniform") {
-                this._properties[
-                    propertyName
-                ].location = this._gl.getUniformLocation(
+                this._properties[propertyName].location = this._gl.getUniformLocation(
                     this._program,
                     propertyName
                 );
             }
         }
-        this._currentTimeLocation = this._gl.getUniformLocation(
-            this._program,
-            "currentTime"
-        );
+        this._currentTimeLocation = this._gl.getUniformLocation(this._program, "currentTime");
         this._currentTime = 0;
 
         //Other setup
-        let positionLocation = gl.getAttribLocation(
-            this._program,
-            "a_position"
-        );
+        let positionLocation = gl.getAttribLocation(this._program, "a_position");
         let buffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
         gl.enableVertexAttribArray(positionLocation);
         gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
         gl.bufferData(
             gl.ARRAY_BUFFER,
-            new Float32Array([
-                1.0,
-                1.0,
-                0.0,
-                1.0,
-                1.0,
-                0.0,
-                1.0,
-                0.0,
-                0.0,
-                1.0,
-                0.0,
-                0.0
-            ]),
+            new Float32Array([1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0]),
             gl.STATIC_DRAW
         );
-        let texCoordLocation = gl.getAttribLocation(
-            this._program,
-            "a_texCoord"
-        );
+        let texCoordLocation = gl.getAttribLocation(this._program, "a_texCoord");
         gl.enableVertexAttribArray(texCoordLocation);
         gl.vertexAttribPointer(texCoordLocation, 2, gl.FLOAT, false, 0, 0);
         this._displayName = "ProcessingNode";
@@ -295,10 +251,7 @@ class ProcessingNode extends GraphNode {
 
             if (typeof propertyValue === "number") {
                 gl.uniform1f(propertyLocation, propertyValue);
-            } else if (
-                Object.prototype.toString.call(propertyValue) ===
-                "[object Array]"
-            ) {
+            } else if (Object.prototype.toString.call(propertyValue) === "[object Array]") {
                 if (propertyValue.length === 1) {
                     gl.uniform1fv(propertyLocation, propertyValue);
                 } else if (propertyValue.length === 2) {

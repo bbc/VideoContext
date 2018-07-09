@@ -1,46 +1,40 @@
-#Run unit tests
 set -o monitor
-echo "###############################"
-echo "# Runing Available Unit Tests #"
-echo "###############################"
 
-node ./node_modules/mocha/bin/mocha --compilers js:babel-core/register
+if [ "$TEST_SUITE" == "unit" ]
+  then
+      echo "###############################"
+      echo "# Running Available Unit Tests #"
+      echo "###############################"
 
+      npm run test-coverage
 
-echo "######################################"
-echo "# Runing Available Integration Tests #"
-echo "######################################"
+elif [ "$TEST_SUITE" == "integration" ]
+  then
 
-echo "Starting webserver..."
-#Start a webserver to view the integration tests
-node ./node_modules/http-server/bin/http-server &
+      echo "######################################"
+      echo "# Running Available Integration Tests #"
+      echo "######################################"
 
+      npm run test-integration
 
-echo "Detecting OS..."
+elif [ "$TEST_SUITE" == "regression" ]
+  then
+      echo "#####################################"
+      echo "# Running Available Regression Tests #"
+      echo "#####################################"
 
-#Detect the OS
-#credit for this - http://stackoverflow.com/questions/394230/detect-the-os-from-a-bash-script
-platform='unknown'
-unamestr=`uname`
-if [[ "$unamestr" == 'Linux' ]]; then
-   platform='linux'
+      npm run test-regression
+
+elif [ "$TEST_SUITE" == "build" ]
+  then
+    echo "#####################################"
+    echo "# Linting and Building package #"
+    echo "#####################################"
+
+    npm run lint
+    npm run build
+
+else
+    echo "exit 1. TEST_SUITE env should be set to unit, integration or regression"
+    exit 1
 fi
-
-# Arbitrary time for http-server to start - FixMe
-sleep 1
-
-echo "Opening browser to run integration tests..."
-
-# Run integration tests
-if [[ $platform == 'linux' ]]; then
-    xdg-open http://localhost:8080/test/
-elif [[ $platform == 'unknown' ]]; then
-    open http://localhost:8080/test/
-fi
-
-echo
-echo "Bring webserver process to foreground...(CTRL+C to kill)"
-echo
-# bring the server process to the foreground so it can be killed
-fg %1
-    

@@ -6,7 +6,7 @@
     },
     "tags": {
         "allowUnknownTags": true,
-        "dictionaries": ["jsdoc","closure"]
+        "dictionaries": ["jsdoc", "closure"]
     },
     "source": {
         "include": ["./src/", "./src/DestinationNode", "./src/ProcessingNodes", "./src/SourceNodes/"],

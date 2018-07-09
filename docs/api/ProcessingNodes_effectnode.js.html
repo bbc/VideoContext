@@ -81,14 +81,8 @@ class EffectNode extends ProcessingNode {
             }
 
             gl.activeTexture(textureUnit);
-            let textureLocation = gl.getUniformLocation(
-                this._program,
-                textureName
-            );
-            gl.uniform1i(
-                textureLocation,
-                this._parameterTextureCount + textureOffset
-            );
+            let textureLocation = gl.getUniformLocation(this._program, textureName);
+            gl.uniform1i(textureLocation, this._parameterTextureCount + textureOffset);
             textureOffset += 1;
             gl.bindTexture(gl.TEXTURE_2D, inputTexture);
         }

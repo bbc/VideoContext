@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+    <head>
+        <meta charset="utf-8">
+        <title>VideoContext Regression Tests – Opacity Effect</title>
+        <link media="all" rel="stylesheet" href="../assets/shared-styles.css" />
+        <script type="text/javascript" src="../../../dist/videocontext.js"></script>
+    </head>
+
+    <body>
+        <canvas id="canvas"></canvas>
+
+        <script type="text/javascript">
+            window.onload = function() {
+                var canvas = document.getElementById("canvas");
+
+                // Create a new VideoContext instance
+                var videoCtx = new VideoContext(canvas);
+
+                /**
+                 * Create source & effect nodes for the processing graph.
+                 * N.B. Chromium only supports .webm video formats.
+                 */
+                var videoNode = videoCtx.video("../assets/video1.webm");
+                var opacityEffect = videoCtx.effect(VideoContext.DEFINITIONS.OPACITY);
+
+                videoNode.startAt(0);
+
+                // Connect the processing graph together
+                videoNode.connect(videoCtx.destination);
+
+                // Apply effect on click
+                canvas.addEventListener("click", function onClick() {
+                    canvas.removeEventListener("click", onClick);
+
+                    videoNode.disconnect();
+                    videoNode.connect(opacityEffect);
+                    opacityEffect.connect(videoCtx.destination);
+                });
+            };
+        </script>
+    </body>
+</html>

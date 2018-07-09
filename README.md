@@ -1,11 +1,13 @@
 # VideoContext
+![build status](https://travis-ci.org/bbc/VideoContext.svg?branch=master)
+
 The VideoContext is an experimental HTML5/WebGL media processing and sequencing library for creating interactive and responsive videos on the web.
 
 
-It consist of two main components. A graph based, shader accelerated processing pipeline, and a media playback sequencing time-line. 
+It consist of two main components. A graph based, shader accelerated processing pipeline, and a media playback sequencing time-line.
 
 
-The design is heavily inspired by the WebAudioAPI so should feel familiar to use for people who've had previous experience in the WebAudio world. 
+The design is heavily inspired by the WebAudioAPI so should feel familiar to use for people who've had previous experience in the WebAudio world.
 
 
 [Live examples can be found here](http://bbc.github.io/VideoContext/)
@@ -179,7 +181,7 @@ videoNode.stop(60);
 var sepiaEffect = ctx.effect(monochromDescription);
 
 //Give a sepia tint to the monochrome output (note how shader description properties are automatically bound to the JavaScript object).
-sepiaEffect.outputMix = [1.25,1.18,0.9]; 
+sepiaEffect.outputMix = [1.25,1.18,0.9];
 
 //Set-up the processing chain.
 videoNode.connect(sepiaEffect);
@@ -259,7 +261,7 @@ videoNode2.stop(18);
 //Create the sepia effect node (from the above Monochrome effect description).
 var crossfadeEffect = ctx.transition(crossfadeDescription);
 
-//Setup the transition. This will change the "mix" property of the cross-fade node from 0.0 to 1.0. 
+//Setup the transition. This will change the "mix" property of the cross-fade node from 0.0 to 1.0.
 //Transision mix value from 0.0 to 1.0 at time=8 over a period of 2 seconds to time=10.
 crossfadeEffect.transition(8.0, 10.0, 0.0, 1.0, "mix");
 
@@ -269,7 +271,7 @@ videoNode1.connect(crossfadeEffect); //this will connect videoNode1 to the "imag
 videoNode2.connect(crossfadeEffect); //this will connect videoNode2 to the "image_b" input of the processing node
 
 
-// NOTE: There's multiple ways to connect a node to specific input of a processing node, the 
+// NOTE: There's multiple ways to connect a node to specific input of a processing node, the
 // following are all equivalent.
 //
 // By default behavior:
@@ -327,7 +329,7 @@ var combineDecription ={
     properties:{
     },
     inputs:["u_image"]
-}; 
+};
 ```
 
 And here's an example of how it can be used.
@@ -380,8 +382,8 @@ var effectDefinition ={
     fragmentShader : "",    //The fragment shader
     properties:{            //An object containing uniforms from the fragment shader for mapping onto the effect node.
     },
-    inputs:["u_image"]      //the names of the uniform sampler2D's in the fragment shader which represent the texture inputs to the effect. 
-}; 
+    inputs:["u_image"]      //the names of the uniform sampler2D's in the fragment shader which represent the texture inputs to the effect.
+};
 ```
 
 
@@ -400,4 +402,4 @@ npm run doc       # create documentation
 npm run build_all # do all of the above
 ```
 
-The library is written in es6 and cross-compiled using babel. 
+The library is written in es6 and cross-compiled using babel.

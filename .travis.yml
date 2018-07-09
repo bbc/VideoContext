@@ -1,0 +1,20 @@
+language: node_js
+node_js:
+  - "node"
+cache:
+  directories:
+    - "node_modules"
+deploy:
+  provider: npm
+  email:
+    secure: JINq33TBEkUPM8uTWh4XloVD8uV3uUvEoLq2Ho4ixp+a2xZBvBI10ROFQ8sCJ9YwXqe9aKRZxVuW9ePlV6yNf4cJ3qXNL4dJL0SBmxpmlG/zwxMghtj0V/mb4AUX8y7zPs3YAhjjTSzQGturAjrBn9dXQTvOY1AUyrrdCyDUt/1l2rzjylUEiOPCU1MjceM9VyasCLHR06zCIIy3Injbswp8gL2XW5CBUDeN467yyqkelMen6Q0EvA9swjw9A0wFRkQyeLEDsk1TpdNUXeYvaijOExrkepU8cpOtvgJkBpZ8qvrGVLkHOHKJQbdB7D3Uox6LNSxj5lOnNfEdpIdEKmBpybAgpf++Pi/Yuiw+NWRWCcD2vh1elndz9skOYykzlqDB8JW5oKAyGuhlXghigCJ+HycoDulCc3zRRHmoKsl5RHGcMOGWtsryFw1nUHFuM9F6awJCykwux9bxv/3HeqmYDJnDpl7hWQhFGkUG/0ygN6aaKyKFn8Nlr8d+uuZ5DaoD0KOhsNxKBuH3Js/4KryWt7LGxEdX8MyMyol5nIgHEFbh8RjRqE3iDhjxTb1MucRbbWZwiA+JIvnGUIrQhQiHvbb4dUvuHzXy9WJJ+iMGBHKVNvV3ZBxCMbiw3mFIv/0ClgJG5gG37m1oTMKTmxVf9wYxqNhM+2cBMy0wQsE=
+  api_key:
+    secure: X8aAmbID91xCl7IjgE1bJG+hW+PRej7LQytZqALda0A3wn2bCbIk4ukRjLIslotLnaRGWUrgZGW3oAy3pjVJtTYf9W6rf4ewyG/nHMVjTqYRxhPiB24VO2AS0p+VanF3FkGA080P5wSgUJufUUoTV6wKZaMOBxeRUTLI6NUN6KRHs912eH/JR+mac2Qxh7z/fqmLOB5p/x+qK8q/xlBlWvE2whCSGrAFi74hpQH30iU3qTf/XaeidsEOXzfBUSB5zLx5s8XK6C2GjVuMFSCo2Z37CXNvd7KKZ7kOTDlJP5jUXwmk9xRQtdfj/cJj2dH5fEDN+AeQYF3WufNceiD5ouUkDcLwA4+s3lGYGjZB15O2ZBhF66phh/ANUx9CIBy4NZAONH147wKjDNSauh9pW5F93NYPjrtSWRH5DNNyLs8SpfDAZXpo2QNtZswa1pfTQcywdRkOzVutJsTYcko+neiTM2ShvHeo3Ij3EB5qCPNWcaOzEF79rPuJGWUeDiDWe4ZS/57zli//O/L48ArMtOmL6RsA9lxowudZEcfNyr1VUHetCvYngp3JfpmTPzXqhNRYQ9VGIINfxkTabKPNufNBXHhCuUq3CEOUsC57UBM4oB95lbTdwf3UGkG39DIQcDvFCqAPX74vDfBLTNWA2awqix+gfDUbnDxAyDIAjhA=
+  on:
+    tags: true
+    repo: bbc/VideoContext
+env:
+  - TEST_SUITE=unit
+  - TEST_SUITE=integration
+  - TEST_SUITE=regression
+  - TEST_SUITE=build

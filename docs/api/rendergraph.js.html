@@ -78,10 +78,7 @@ class RenderGraph {
     getZIndexInputsForNode(node) {
         let results = [];
         this.connections.forEach(function(connection) {
-            if (
-                connection.destination === node &amp;&amp;
-                connection.type === "zIndex"
-            ) {
+            if (connection.destination === node &amp;&amp; connection.type === "zIndex") {
                 results.push(connection);
             }
         });
@@ -114,10 +111,7 @@ class RenderGraph {
             }
             let indexedInputsIndex = 0;
             for (let i = 0; i &lt; results.length; i++) {
-                if (
-                    results[i] === undefined &amp;&amp;
-                    indexedInputs[indexedInputsIndex] !== undefined
-                ) {
+                if (results[i] === undefined &amp;&amp; indexedInputs[indexedInputsIndex] !== undefined) {
                     results[i] = indexedInputs[indexedInputsIndex].source;
                     indexedInputsIndex += 1;
                 }
@@ -142,10 +136,7 @@ class RenderGraph {
         if (node._inputNames.indexOf(inputName) === -1) return false;
         for (let connection of this.connections) {
             if (connection.type === "name") {
-                if (
-                    connection.destination === node &amp;&amp;
-                    connection.name === inputName
-                ) {
+                if (connection.destination === node &amp;&amp; connection.name === inputName) {
                     return false;
                 }
             }
@@ -163,13 +154,10 @@ class RenderGraph {
      */
     registerConnection(sourceNode, destinationNode, target) {
         if (
-            destinationNode.inputs.length >=
-                destinationNode.inputNames.length &amp;&amp;
+            destinationNode.inputs.length >= destinationNode.inputNames.length &amp;&amp;
             destinationNode._limitConnections === true
         ) {
-            throw new ConnectException(
-                "Node has reached max number of inputs, can't connect"
-            );
+            throw new ConnectException("Node has reached max number of inputs, can't connect");
         }
 
         if (destinationNode._limitConnections === false) {
@@ -191,10 +179,7 @@ class RenderGraph {
                 zIndex: target,
                 destination: destinationNode
             });
-        } else if (
-            typeof target === "string" &amp;&amp;
-            destinationNode._limitConnections
-        ) {
+        } else if (typeof target === "string" &amp;&amp; destinationNode._limitConnections) {
             //target is a named port
 
             //make sure named port is free
@@ -206,16 +191,13 @@ class RenderGraph {
                     destination: destinationNode
                 });
             } else {
-                throw new ConnectException(
-                    "Port " + target + " is already connected to"
-                );
+                throw new ConnectException("Port " + target + " is already connected to");
             }
         } else {
             //target is undefined so just make it a high zIndex
             let indexedConns = this.getZIndexInputsForNode(destinationNode);
             let index = 0;
-            if (indexedConns.length > 0)
-                index = indexedConns[indexedConns.length - 1].zIndex + 1;
+            if (indexedConns.length > 0) index = indexedConns[indexedConns.length - 1].zIndex + 1;
             this.connections.push({
                 source: sourceNode,
                 type: "zIndex",
@@ -236,10 +218,7 @@ class RenderGraph {
         let toRemove = [];
 
         this.connections.forEach(function(connection) {
-            if (
-                connection.source === sourceNode &amp;&amp;
-                connection.destination === destinationNode
-            ) {
+            if (connection.source === sourceNode &amp;&amp; connection.destination === destinationNode) {
                 toRemove.push(connection);
             }
         });
