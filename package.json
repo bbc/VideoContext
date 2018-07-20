@@ -32,7 +32,7 @@
     "test-coverage": "jest test/unit/*.js --coverage --collectCoverageFrom 'src/**/*.js'",
     "test-regression": "jest test/regression/*.js",
     "docs": "bash ./build-docs.sh",
-    "docs-commit": "npm run docs && git add docs && git commit -m 'update docs in preparation for release'",
+    "docs-commit": "npm run docs && git add docs && git diff-index --quiet HEAD || git commit -m 'update docs in preparation for release'",
     "format": "prettier --write '{src,test}/**/*.js'",
     "lint": "eslint '{src,test}/**/*.js'",
     "precommit": "npm run lint && npm run format && npm run test-unit",
