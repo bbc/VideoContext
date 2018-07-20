@@ -1,7 +1,9 @@
 let horizontal_blur = {
-    "title":"Horizontal Blur",
-    "description": "A horizontal blur effect. Adpated from http://xissburg.com/faster-gaussian-blur-in-glsl/",
-    "vertexShader" : "\
+    title: "Horizontal Blur",
+    description:
+        "A horizontal blur effect. Adpated from http://xissburg.com/faster-gaussian-blur-in-glsl/",
+    vertexShader:
+        "\
         attribute vec2 a_position;\
         attribute vec2 a_texCoord;\
         uniform float blurAmount;\
@@ -25,7 +27,8 @@ let horizontal_blur = {
             v_blurTexCoords[12] = v_texCoord + vec2( 0.024 * blurAmount, 0.0);\
             v_blurTexCoords[13] = v_texCoord + vec2( 0.028 * blurAmount, 0.0);\
         }",
-    "fragmentShader" : "\
+    fragmentShader:
+        "\
         precision mediump float;\
         uniform sampler2D u_image;\
         varying vec2 v_texCoord;\
@@ -48,10 +51,10 @@ let horizontal_blur = {
             gl_FragColor += texture2D(u_image, v_blurTexCoords[12])*0.00895781211794;\
             gl_FragColor += texture2D(u_image, v_blurTexCoords[13])*0.0044299121055113265;\
         }",
-    "properties":{
-        "blurAmount":{"type":"uniform", "value":1.0}
+    properties: {
+        blurAmount: { type: "uniform", value: 1.0 }
     },
-    "inputs":["u_image"]
+    inputs: ["u_image"]
 };
 
 export default horizontal_blur;

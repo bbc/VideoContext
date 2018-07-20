@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+    <head>
+        <meta charset="utf-8">
+        <title>VideoContext Regression Tests – Static Dissolve Transition</title>
+        <link media="all" rel="stylesheet" href="../assets/shared-styles.css" />
+        <script type="text/javascript" src="../../../dist/videocontext.js"></script>
+    </head>
+
+    <body>
+        <canvas id="canvas"></canvas>
+
+        <script type="text/javascript">
+            window.onload = function() {
+                var canvas = document.getElementById("canvas");
+
+                // Create a new VideoContext instance
+                var videoCtx = new VideoContext(canvas);
+
+                /**
+                 * Create source & processing nodes for the processing graph.
+                 * N.B. Chromium only supports .webm video formats.
+                 */
+                var videoNode1 = videoCtx.video("../assets/video1.webm");
+                var videoNode2 = videoCtx.video("../assets/video2.webm");
+                var staticDissolve = videoCtx.transition(VideoContext.DEFINITIONS.STATIC_DISSOLVE);
+
+                // Setup start/stop times for video source nodes
+                videoNode1.start(0);
+                videoNode1.stop(4);
+
+                videoNode2.start(2);
+                videoNode2.stop(6);
+
+                // Configure the staticDissolve transition node
+                staticDissolve.transition(2, 4, 0.0, 1.0, "mix");
+
+                // Connect the processing graph together
+                videoNode1.connect(staticDissolve);
+                videoNode2.connect(staticDissolve);
+                staticDissolve.connect(videoCtx.destination);
+
+                /**
+                 * Trigger the playback sequence on click, necessary after Chrome's
+                 * autoplay policy changes: https://bit.ly/2rFeCcV
+                 */
+                canvas.addEventListener("click", function onClick() {
+                    canvas.removeEventListener("click", onClick);
+                    videoCtx.play();
+                });
+            };
+        </script>
+    </body>
+</html>

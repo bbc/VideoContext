@@ -1,7 +1,9 @@
 let monochrome = {
-    "title":"Monochrome",
-    "description": "Change images to a single chroma (e.g can be used to make a black & white filter). Input color mix and output color mix can be adjusted.",
-    "vertexShader" : "\
+    title: "Monochrome",
+    description:
+        "Change images to a single chroma (e.g can be used to make a black & white filter). Input color mix and output color mix can be adjusted.",
+    vertexShader:
+        "\
             attribute vec2 a_position;\
             attribute vec2 a_texCoord;\
             varying vec2 v_texCoord;\
@@ -9,7 +11,8 @@ let monochrome = {
                 gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
                 v_texCoord = a_texCoord;\
             }",
-    "fragmentShader" : "\
+    fragmentShader:
+        "\
             precision mediump float;\
             uniform sampler2D u_image;\
             uniform vec3 inputMix;\
@@ -24,11 +27,11 @@ let monochrome = {
                 color[2] = mono * outputMix[2];\
                 gl_FragColor = color;\
             }",
-    "properties":{
-        "inputMix":{"type":"uniform", "value":[0.4,0.6,0.2]},
-        "outputMix":{"type":"uniform", "value":[1.0,1.0,1.0]}
+    properties: {
+        inputMix: { type: "uniform", value: [0.4, 0.6, 0.2] },
+        outputMix: { type: "uniform", value: [1.0, 1.0, 1.0] }
     },
-    "inputs":["u_image"]
+    inputs: ["u_image"]
 };
 
 export default monochrome;
