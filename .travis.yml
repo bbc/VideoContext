@@ -22,7 +22,9 @@ env:
   - TEST_SUITE=build
 jobs:
     include:
-      - state: npm publish
+      - state: deploy
+        name: "Deploy to NPM"
+        script: npm run build
         deploy:
           provider: npm
           email:
@@ -34,5 +36,3 @@ jobs:
             repo: bbc/VideoContext
             branch: master
           skip_cleanup: true
-        env:
-          - TEST_SUITE=build
