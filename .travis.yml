@@ -22,8 +22,7 @@ env:
   - TEST_SUITE=build
 jobs:
     include:
-      - state: deploy
-        name: "Deploy to NPM"
+      - stage: deploy
         script: npm run build
         deploy:
           provider: npm
