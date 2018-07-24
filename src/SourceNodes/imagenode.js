@@ -53,7 +53,7 @@ class ImageNode extends SourceNode {
 
     _unload() {
         super._unload();
-        if (this._isResponsibleForElementLifeCycle) {
+        if (this._isResponsibleForElementLifeCycle && this._element !== undefined) {
             this._element.src = "";
             this._element.onerror = undefined;
             this._element = undefined;

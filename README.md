@@ -384,13 +384,51 @@ var effectDefinition ={
 ```
 
 
-## Build
+## Development
+VideoContext has a pretty standard `package.json`
 
-Live reload development version
 ```
+# install build and development dependencies
 npm install
+
+# run a dev server with automatic reload
 npm run dev
+
+# watch unit and integration tests
+npm run test-watch
+
+# run regression tests in headless browser
+npm run test-regression
 ```
+
+### Gitflow
+VideoContext uses the gitflow branching model.
+To contribute raise a pull request against the `develop` branch.
+
+
+### Releases
+Releases are prepared in release branches. When the the release is ready run one of
+
+```
+npm run release:major
+npm run release:minor
+npm run release:patch
+```
+
+these scripts build and commit the docs, the changelog, update the `package.json` verson number
+and push to the current branch with tags.
+
+CI will publish to npm when the release branch has been merged into master.
+
+### CI
+VideoContext uses the BBCs public travis account to run all tests and publish to npmjs.
+All tests must pass before PRs can be merged.
+
+
+
+
+
+
 
 Other options
 ```
