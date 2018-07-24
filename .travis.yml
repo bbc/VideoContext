@@ -9,6 +9,9 @@ env:
   - TEST_SUITE=integration
   - TEST_SUITE=regression
   - TEST_SUITE=build
+branches:
+  only:
+    - master
 jobs:
     include:
       - stage: deploy
