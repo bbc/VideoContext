@@ -63,6 +63,19 @@ class MediaNode extends SourceNode {
         return this._elementURL;
     }
 
+    /**
+     * @property {Boolean}
+     * @summary - Check if the element is waiting on the network to continue playback
+     */
+
+    get _buffering() {
+        if (this._element) {
+            return this._element.readyState < HTMLMediaElement.HAVE_FUTURE_DATA;
+        }
+
+        return false;
+    }
+
     set volume(volume) {
         this._volume = volume;
         if (this._element !== undefined) this._element.volume = this._volume;
@@ -219,14 +232,6 @@ class MediaNode extends SourceNode {
             this._isElementPlaying = false;
         }
         this._unload();
-    }
-
-    get _buffering() {
-        if (this._element) {
-            return this._element.readyState < HTMLMediaElement.HAVE_FUTURE_DATA;
-        }
-
-        return false;
     }
 
     destroy() {
