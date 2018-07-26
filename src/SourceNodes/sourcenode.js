@@ -338,6 +338,9 @@ class SourceNode extends GraphNode {
     }
 
     _isReady() {
+        if (this._buffering) {
+            return false;
+        }
         if (
             this._state === STATE.playing ||
             this._state === STATE.paused ||
