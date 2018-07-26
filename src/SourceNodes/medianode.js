@@ -221,6 +221,14 @@ class MediaNode extends SourceNode {
         this._unload();
     }
 
+    get _buffering() {
+        if (this._element) {
+            return this._element.readyState < HTMLMediaElement.HAVE_FUTURE_DATA;
+        }
+
+        return false;
+    }
+
     destroy() {
         if (this._element) this._element.pause();
         super.destroy();
