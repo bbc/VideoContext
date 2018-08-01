@@ -12,6 +12,7 @@ env:
 branches:
   only:
     - master
+    - develop
 jobs:
     include:
       - stage: deploy
