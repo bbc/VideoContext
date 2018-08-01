@@ -15,7 +15,7 @@ class MediaNode extends SourceNode {
         sourceOffset = 0,
         preloadTime = 4,
         mediaElementCache = undefined,
-        attributes = {}
+        attributes = { volume: 1.0 }
     ) {
         super(src, gl, renderGraph, currentTime);
         this._preloadTime = preloadTime;
