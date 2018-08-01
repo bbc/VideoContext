@@ -23,7 +23,6 @@ class MediaNode extends SourceNode {
         this._globalPlaybackRate = globalPlaybackRate;
         this._mediaElementCache = mediaElementCache;
         this._playbackRate = 1.0;
-        this._volume = 1.0;
         this._playbackRateUpdated = true;
         this._attributes = attributes;
         this._loopElement = false;
@@ -77,8 +76,8 @@ class MediaNode extends SourceNode {
     }
 
     set volume(volume) {
-        this._volume = volume;
-        if (this._element !== undefined) this._element.volume = this._volume;
+        this._attributes.volume = volume;
+        if (this._element !== undefined) this._element.volume = this._attributes.volume;
     }
 
     _load() {
@@ -118,7 +117,7 @@ class MediaNode extends SourceNode {
                 this._element.setAttribute("playsinline", "");
                 this._playbackRateUpdated = true;
             }
-            this._element.volume = this._volume;
+            this._element.volume = this._attributes.volume;
             if (window.MediaStream !== undefined && this._elementURL instanceof MediaStream) {
                 this._element.srcObject = this._elementURL;
             } else {
