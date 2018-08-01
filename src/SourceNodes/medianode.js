@@ -15,7 +15,7 @@ class MediaNode extends SourceNode {
         sourceOffset = 0,
         preloadTime = 4,
         mediaElementCache = undefined,
-        attributes = { volume: 1.0 }
+        attributes = {}
     ) {
         super(src, gl, renderGraph, currentTime);
         this._preloadTime = preloadTime;
@@ -24,7 +24,7 @@ class MediaNode extends SourceNode {
         this._mediaElementCache = mediaElementCache;
         this._playbackRate = 1.0;
         this._playbackRateUpdated = true;
-        this._attributes = attributes;
+        this._attributes = Object.assign({ volume: 1.0 }, attributes);
         this._loopElement = false;
         this._isElementPlaying = false;
         if (this._attributes.loop) {
