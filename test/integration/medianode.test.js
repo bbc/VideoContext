@@ -18,6 +18,7 @@ const nodeFactory = (vidCtx, attr = {}) => {
 
 beforeEach(() => {
     const canvas = new HTMLCanvasElement(500, 500);
+    // Don't useVideoElementCache as unnecessary and would need to be patched with a mock
     ctx = new VideoContext(canvas, undefined, { useVideoElementCache: false });
 });
 
