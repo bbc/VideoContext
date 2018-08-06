@@ -22,7 +22,7 @@ beforeEach(() => {
 });
 
 describe("medianode", () => {
-    describe("attributes", () => {
+    describe("volume", () => {
         it("volume setter sets volume on element", () => {
             const { element, node } = nodeFactory(ctx);
             node.volume = 0.5;
@@ -56,6 +56,21 @@ describe("medianode", () => {
             ctx.update(1);
 
             expect(element.volume).toBe(0.2);
+        });
+    });
+
+    describe("other attributes", () => {
+        it("should set generic attributes on node when update loop is run", () => {
+            const { element } = nodeFactory(ctx, { asdf: "great!" });
+            expect(element.asdf).toBe(undefined /* because our mock has no asdf attr */);
+
+            // We want to trigger a load so that the node attributes will be applied to
+            // the video element.
+            // advance timeline 1s to do this
+            ctx.update(1);
+
+            expect(element.asdf).toBe("great!");
+            expect(element.notasdf).toBe(undefined);
         });
     });
 });
