@@ -12,6 +12,7 @@ env:
 branches:
   only:
     - master
+    - develop
 jobs:
     include:
       - stage: deploy
@@ -23,7 +24,6 @@ jobs:
           api_key:
             secure: irrK4TWdklM+pTNINlOk1EeQtT0JjPd3/9JhKDGwk/MEyAjw8+Flk7OH9MtF9gzc6AWL/8xVB05s+IyiJwcHuC/H3l4QunHl1MW343OVRG0cZzGXbJJgN9HfL+hBmOg6uOS8YLCk2ETPtYkfHuelwoPw/hIoKNnp7ZlgRV9X7Pi0qhP3ZJwHhnuGTt0TwqaGXTeUXEyycjjwBRlPf9o9UhReMxTX/7k2TEPaG0F4whkQqkcel7eZM9YB23qANMtmYfDhl1W2OxepiXpgwqtWQkj0bO9EzsTtbyEsGVbaPU+hAuZG4CDdCXyuNlL9SqNLYJdDPJuPvjMEp39/E3F+0sRiLoGu9c5Zb5v6vwnUThVhSR6EMp4W6cZihNP7PGuL+C/KqDSkPniY9qqtbCr0OasiAIgs78lfzyXMB0iXZXD9lpuKScNkSulQmQihOAIYrvfE7Z6iEnqf/v3WYytA1q+VYhP/65WOCaFMaM32qRp1XLmQFPQvACtW4LnC+OL7iRC5A3AXJrJVrib1uwl9FjaKSzqP8sThaWOW3ecipleC4ncD/O4YF2MHdH4K/4D2Xi0A0GXJ8YxvG6/pxCFgWFK+W2aMTnIzP7ATaVk91dLavFi8YC5G8zsl6dXkNHH9pFVMDvb0fLb9HMlkERhiUSV5Wo/LzBx1kWRRIH7mrh0=
           on:
-            tags: true
             repo: bbc/VideoContext
             branch: master
           skip_cleanup: true
