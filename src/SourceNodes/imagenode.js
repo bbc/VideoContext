@@ -19,31 +19,39 @@ class ImageNode extends SourceNode {
     }
 
     _load() {
-        if (this._element !== undefined) {
+        if (this._image !== undefined){
             for (var key in this._attributes) {
-                this._element[key] = this._attributes[key];
+                this._image[key] = this._attributes[key];
             }
             return;
         }
         if (this._isResponsibleForElementLifeCycle) {
             super._load();
-            this._element = new Image();
-            this._element.setAttribute("crossorigin", "anonymous");
-            this._element.src = this._elementURL;
-            this._element.onload = () => {
+            this._image = new Image();
+            this._image.setAttribute("crossorigin", "anonymous");
+            this._image.src = this._elementURL;
+            this._image.onload = () => {
                 this._ready = true;
-                this._triggerCallbacks("loaded");
+                if (window.createImageBitmap) {
+                    window.createImageBitmap(this._image, { imageOrientation: "flipY" }).then(imageBitmap => {
+                        this._element = imageBitmap;
+                        this._triggerCallbacks("loaded");
+                    });
+                } else {
+                    this._element = this._image;
+                    this._triggerCallbacks("loaded");
+                }
             };
-            this._element.onerror = () => {
+            this._image.onerror = () => {
                 console.error("ImageNode failed to load. url:", this._elementURL);
             };
 
             for (let key in this._attributes) {
-                this._element[key] = this._attributes[key];
+                this._image[key] = this._attributes[key];
             }
         }
-        this._element.onerror = () => {
-            console.debug("Error with element", this._element);
+        this._image.onerror = () => {
+            console.debug("Error with element", this._image);
             this._state = SOURCENODESTATE.error;
             //Event though there's an error ready should be set to true so the node can output transparenn
             this._ready = true;
@@ -53,11 +61,11 @@ class ImageNode extends SourceNode {
 
     _unload() {
         super._unload();
-        if (this._isResponsibleForElementLifeCycle && this._element !== undefined) {
-            this._element.src = "";
-            this._element.onerror = undefined;
-            this._element = undefined;
-            delete this._element;
+        if (this._isResponsibleForElementLifeCycle){
+            this._image.src = "";
+            this._image.onerror = undefined;
+            this._image = undefined;
+            delete this._image;
         }
         this._ready = false;
     }
@@ -65,7 +73,7 @@ class ImageNode extends SourceNode {
     _seek(time) {
         super._seek(time);
         if (this.state === SOURCENODESTATE.playing || this.state === SOURCENODESTATE.paused) {
-            if (this._element === undefined) this._load();
+            if (this._image === undefined) this._load();
         }
         if (
             (this._state === SOURCENODESTATE.sequenced || this._state === SOURCENODESTATE.ended) &&
@@ -94,11 +102,19 @@ class ImageNode extends SourceNode {
             return true;
         } else if (this._state === SOURCENODESTATE.paused) {
             return true;
-        } else if (this._state === SOURCENODESTATE.ended && this._element !== undefined) {
+        } else if (this._state === SOURCENODESTATE.ended && this._image !== undefined){
             this._unload();
             return false;
         }
     }
+
+    destroy() {
+        if (this._element instanceof window.ImageBitmap) {
+            this._element.close();
+        }
+        super.destroy();
+    }
+
 }
 
 export default ImageNode;
