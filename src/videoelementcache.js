@@ -1,8 +1,8 @@
 function stripHash(url) {
     if (url.port === "" || url.port === undefined) {
-        return `${url.protocol}//${url.hostname}${url.pathname}`;
+        return `${url.protocol}//${url.hostname}${url.pathname}${url.search}`;
     } else {
-        return `${url.protocol}//${url.hostname}:${url.port}${url.pathname}`;
+        return `${url.protocol}//${url.hostname}:${url.port}${url.pathname}${url.search}`;
     }
 }
 
