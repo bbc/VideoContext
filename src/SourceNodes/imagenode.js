@@ -62,10 +62,15 @@ class ImageNode extends SourceNode {
     _unload() {
         super._unload();
         if (this._isResponsibleForElementLifeCycle){
-            this._image.src = "";
-            this._image.onerror = undefined;
-            this._image = undefined;
-            delete this._image;
+            if (this._image !== undefined) {
+                this._image.src = "";
+                this._image.onerror = undefined;
+                this._image = undefined;
+                delete this._image;
+            }
+            if (this._element instanceof window.ImageBitmap) {
+                this._element.close();
+            }
         }
         this._ready = false;
     }
@@ -106,13 +111,6 @@ class ImageNode extends SourceNode {
             this._unload();
             return false;
         }
-    }
-
-    destroy() {
-        if (this._element instanceof window.ImageBitmap) {
-            this._element.close();
-        }
-        super.destroy();
     }
 
 }
