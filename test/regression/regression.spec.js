@@ -20,7 +20,7 @@ const transitionTest = async ({ file, seqLength }) => {
     // eslint-disable-next-line
     await page.goto(`file:${path.join(__dirname, `test-pages/${file}`)}`, {
         waitUntil: "networkidle0",
-        timeout: 60000
+        timeout: testTimeout
     });
 
     // Start playback sequence
@@ -44,7 +44,7 @@ const effectTest = async ({ file }) => {
     // eslint-disable-next-line
     await page.goto(`file:${path.join(__dirname, `test-pages/${file}`)}`, {
         waitUntil: "networkidle0",
-        timeout: 60000
+        timeout: testTimeout
     });
 
     const beforeImage = await page.screenshot(screenshotParams);
@@ -55,6 +55,35 @@ const effectTest = async ({ file }) => {
 
     const afterImage = await page.screenshot(screenshotParams);
     expect(afterImage).toMatchImageSnapshot(imageSnapshotParams);
+};
+
+/**
+ * @param {Object} configuration - test configuration parameters.
+ * @param {String} configuration.file - the .html file to be tested.
+ * @param {String} configuration.waitTime - time in ms to wait between action and screenshot
+ */
+const playbackTest = async ({ file, waitTime }) => {
+    console.info(`Started test of: ${file}`);
+
+    // eslint-disable-next-line
+    await page.goto(`file:${path.join(__dirname, `test-pages/${file}`)}`, {
+        waitUntil: "networkidle0",
+        timeout: testTimeout
+    });
+
+    // Start playback
+    await page.click("#play");
+    await page.waitFor(waitTime);
+
+    const afterPlayImage = await page.screenshot(screenshotParams);
+    expect(afterPlayImage).toMatchImageSnapshot(imageSnapshotParams);
+
+    // Pause playback
+    await page.waitFor(waitTime);
+    await page.click("#pause");
+
+    const afterPauseImage = await page.screenshot(screenshotParams);
+    expect(afterPauseImage).toMatchImageSnapshot(imageSnapshotParams);
 };
 
 beforeEach(async () => {
@@ -69,29 +98,29 @@ afterEach(async () => {
 
 describe("Visual regressions: playback", () => {
     test(
-        "Play/Pause",
+        "Play/Pause video",
         async () => {
-            console.info("Started test of: playback.html");
-
-            // eslint-disable-next-line
-            await page.goto(`file:${path.join(__dirname, `test-pages/playback.html`)}`, {
-                waitUntil: "networkidle0",
-                timeout: 60000
+            await playbackTest({
+                file: "playback.html",
+                waitTime: 1000
             });
-
-            // Start playback
-            await page.click("#play");
-            await page.waitFor(1000);
-
-            const afterPlayImage = await page.screenshot(screenshotParams);
-            expect(afterPlayImage).toMatchImageSnapshot(imageSnapshotParams);
-
-            // Pause playback
-            await page.waitFor(1000);
-            await page.click("#pause");
-
-            const afterPauseImage = await page.screenshot(screenshotParams);
-            expect(afterPauseImage).toMatchImageSnapshot(imageSnapshotParams);
+        },
+        testTimeout
+    );
+    test(
+        "Play/Pause image",
+        async () => {
+            await playbackTest({ file: "playback-image.html", waitTime: 1000 });
+        },
+        testTimeout
+    );
+    test(
+        "Play/Pause image with no createImageBitmap",
+        async () => {
+            await playbackTest({
+                file: "playback-image-with-no-createImageBitmap.html",
+                waitTime: 1000
+            });
         },
         testTimeout
     );
