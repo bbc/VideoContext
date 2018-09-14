@@ -19,7 +19,7 @@ class ImageNode extends SourceNode {
     }
 
     _load() {
-        if (this._image !== undefined){
+        if (this._image !== undefined) {
             for (var key in this._attributes) {
                 this._image[key] = this._attributes[key];
             }
@@ -33,10 +33,12 @@ class ImageNode extends SourceNode {
             this._image.onload = () => {
                 this._ready = true;
                 if (window.createImageBitmap) {
-                    window.createImageBitmap(this._image, { imageOrientation: "flipY" }).then(imageBitmap => {
-                        this._element = imageBitmap;
-                        this._triggerCallbacks("loaded");
-                    });
+                    window
+                        .createImageBitmap(this._image, { imageOrientation: "flipY" })
+                        .then(imageBitmap => {
+                            this._element = imageBitmap;
+                            this._triggerCallbacks("loaded");
+                        });
                 } else {
                     this._element = this._image;
                     this._triggerCallbacks("loaded");
@@ -61,7 +63,7 @@ class ImageNode extends SourceNode {
 
     _unload() {
         super._unload();
-        if (this._isResponsibleForElementLifeCycle){
+        if (this._isResponsibleForElementLifeCycle) {
             if (this._image !== undefined) {
                 this._image.src = "";
                 this._image.onerror = undefined;
@@ -107,12 +109,11 @@ class ImageNode extends SourceNode {
             return true;
         } else if (this._state === SOURCENODESTATE.paused) {
             return true;
-        } else if (this._state === SOURCENODESTATE.ended && this._image !== undefined){
+        } else if (this._state === SOURCENODESTATE.ended && this._image !== undefined) {
             this._unload();
             return false;
         }
     }
-
 }
 
 export default ImageNode;
