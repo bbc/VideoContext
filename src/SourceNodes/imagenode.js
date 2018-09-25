@@ -29,7 +29,8 @@ class ImageNode extends SourceNode {
             super._load();
             this._image = new Image();
             this._image.setAttribute("crossorigin", "anonymous");
-            this._image.src = this._elementURL;
+            // It's important to set the `onload` event before the `src` property
+            // https://stackoverflow.com/questions/12354865/image-onload-event-and-browser-cache?answertab=active#tab-top
             this._image.onload = () => {
                 this._ready = true;
                 if (window.createImageBitmap) {
@@ -44,6 +45,7 @@ class ImageNode extends SourceNode {
                     this._triggerCallbacks("loaded");
                 }
             };
+            this._image.src = this._elementURL;
             this._image.onerror = () => {
                 console.error("ImageNode failed to load. url:", this._elementURL);
             };
