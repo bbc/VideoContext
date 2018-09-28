@@ -180,8 +180,9 @@ class MediaNode extends SourceNode {
     _unload() {
         super._unload();
         if (this._isResponsibleForElementLifeCycle &amp;&amp; this._element !== undefined) {
-            this._element.src = "";
+            this._element.removeAttribute("src");
             this._element.srcObject = undefined;
+            this._element.load();
             for (let key in this._attributes) {
                 this._element.removeAttribute(key);
             }
