@@ -1,6 +1,6 @@
 {
   "name": "videocontext",
-  "version": "0.52.7",
+  "version": "0.52.8",
   "description": "A WebGL & HTML5 graph based video composition library",
   "repository": {
     "type": "git",
@@ -68,5 +68,8 @@
     "webgl-mock": "^0.1.7",
     "webpack": "^4.10.2",
     "webpack-cli": "^3.0.1"
-  }
+  },
+  "files": [
+    "dist"
+  ]
 }
