@@ -1,6 +1,7 @@
 //Matthew Shotton, R&D User Experience,© BBC 2015
 import SourceNode, { SOURCENODESTATE } from "./sourcenode";
 
+const TYPE = "CanvasNode";
 class ImageNode extends SourceNode {
     /**
      * Initialise an instance of an ImageNode.
@@ -11,7 +12,7 @@ class ImageNode extends SourceNode {
         this._preloadTime = preloadTime;
         this._attributes = attributes;
         this._textureUploaded = false;
-        this._displayName = "ImageNode";
+        this._displayName = TYPE;
     }
 
     get elementURL() {
@@ -100,5 +101,7 @@ class ImageNode extends SourceNode {
         }
     }
 }
+
+export { TYPE as IMAGETYPE };
 
 export default ImageNode;

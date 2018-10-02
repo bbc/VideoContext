@@ -1,5 +1,5 @@
 //Matthew Shotton, R&D User Experience,© BBC 2015
-import VideoNode from "./SourceNodes/videonode.js";
+import VideoNode, { VIDEOTYPE } from "./SourceNodes/videonode.js";
 import AudioNode from "./SourceNodes/audionode.js";
 import ImageNode from "./SourceNodes/imagenode.js";
 import CanvasNode from "./SourceNodes/canvasnode.js";
@@ -393,7 +393,7 @@ export default class VideoContext {
             throw new RangeError("playbackRate must be greater than 0");
         }
         for (let node of this._sourceNodes) {
-            if (node.constructor.name === "VideoNode") {
+            if (node.constructor.name === VIDEOTYPE) {
                 node._globalPlaybackRate = rate;
                 node._playbackRateUpdated = true;
             }
