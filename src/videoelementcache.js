@@ -1,10 +1,4 @@
-function stripHash(url) {
-    if (url.port === "" || url.port === undefined) {
-        return `${url.protocol}//${url.hostname}${url.pathname}`;
-    } else {
-        return `${url.protocol}//${url.hostname}:${url.port}${url.pathname}`;
-    }
-}
+import { mediaElementHasSource } from "./utils";
 
 class VideoElementCache {
     constructor(cache_size = 3) {
@@ -21,7 +15,6 @@ class VideoElementCache {
         videoElement.setAttribute("crossorigin", "anonymous");
         videoElement.setAttribute("webkit-playsinline", "");
         videoElement.setAttribute("playsinline", "");
-        videoElement.src = "";
         return videoElement;
     }
 
@@ -47,13 +40,9 @@ class VideoElementCache {
         //Try and get an already intialised element.
         for (let element of this._elements) {
             // For some reason an uninitialised videoElement has its sr attribute set to the windows href. Hence the below check.
-            if (
-                (element.src === "" ||
-                    element.src === undefined ||
-                    element.src === stripHash(window.location)) &&
-                element.srcObject == null
-            )
+            if (!mediaElementHasSource(element)) {
                 return element;
+            }
         }
         //Fallback to creating a new element if non exists.
         console.debug(
@@ -73,12 +62,7 @@ class VideoElementCache {
         let count = 0;
         for (let element of this._elements) {
             // For some reason an uninitialised videoElement has its sr attribute set to the windows href. Hence the below check.
-            if (
-                (element.src === "" ||
-                    element.src === undefined ||
-                    element.src === stripHash(window.location)) &&
-                element.srcObject == null
-            )
+            if (!mediaElementHasSource(element))
                 count += 1;
         }
         return count;

@@ -850,3 +850,7 @@ export class UpdateablesManager {
         }
     }
 }
+
+export function mediaElementHasSource({ src, srcObject }) {
+    return !((src === "" || src === undefined) && srcObject == null);
+}
