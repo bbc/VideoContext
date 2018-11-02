@@ -7,12 +7,27 @@ require("webgl-mock");
 * creates a video node with provided attributes.
 * returns: the node instance and the mocked HTMLVideoElement which is controlled by the node
 */
-const nodeFactory = (vidCtx, attr = {}) => {
+const nodeFactory = (
+    vidCtx,
+    attr = {},
+    { sourceOffset = undefined, preloadTime = undefined } = {}
+) => {
+    let _currentTime = undefined;
+    const _currentTimeSetter = jest.fn(v => {
+        _currentTime = v;
+    });
     const element = {
         play: jest.fn(),
-        pause: jest.fn()
+        pause: jest.fn(),
+        get currentTime() {
+            return _currentTime;
+        },
+        set currentTime(v) {
+            return _currentTimeSetter(v);
+        },
+        _currentTimeSetter
     };
-    const node = vidCtx.video(element, undefined, undefined, attr);
+    const node = vidCtx.video(element, sourceOffset, preloadTime, attr);
     // some sane defaults
     // node should play from the start
     node.start(0);
@@ -85,6 +100,44 @@ describe("medianode", () => {
 
             expect(element.asdf).toBe("great!");
             expect(element.notasdf).toBe(undefined);
+        });
+    });
+
+    describe("currentTime on provided element", () => {
+        it("element.currentTime should equal ctx.currentTime be zero after load if no sourceOffset is given", () => {
+            const { element } = nodeFactory(ctx, {}, { sourceOffset: undefined });
+
+            // We want to trigger a load so that the node attributes will be applied to
+            // the video element.
+            // advance timeline 1s to do this
+            ctx.update(1);
+
+            expect(element.currentTime).toBe(0);
+        });
+
+        it("element.currentTime should equal ctx.currentTime plus offset if sourceOffset is given", () => {
+            const { element } = nodeFactory(ctx, {}, { sourceOffset: 2 });
+
+            // We want to trigger a load so that the node attributes will be applied to
+            // the video element.
+            // advance timeline 1s to do this
+            ctx.update(1);
+
+            expect(element.currentTime).toBe(2);
+        });
+
+        it("element.currentTime not set on each update", () => {
+            const { element } = nodeFactory(ctx, {}, { sourceOffset: 2 });
+
+            // We want to trigger a load so that the node attributes will be applied to
+            // the video element.
+            // advance timeline 1s to do this
+            ctx.update(1);
+            ctx.update(2);
+            ctx.update(3);
+            ctx.update(4);
+
+            expect(element._currentTimeSetter).toHaveBeenCalledTimes(1);
         });
     });
 });
