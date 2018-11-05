@@ -1,5 +1,7 @@
 //Matthew Shotton, R&D User Experience,© BBC 2015
 import ProcessingNode from "../ProcessingNodes/processingnode";
+import fragmentShader from "./destinationnode.frag";
+import vertexShader from "./destinationnode.vert";
 
 const TYPE = "DestinationNode";
 
@@ -12,29 +14,9 @@ class DestinationNode extends ProcessingNode {
      * You should not instantiate this directly.
      */
     constructor(gl, renderGraph) {
-        let vertexShader =
-            "\
-            attribute vec2 a_position;\
-            attribute vec2 a_texCoord;\
-            varying vec2 v_texCoord;\
-            void main() {\
-                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
-                v_texCoord = a_texCoord;\
-            }";
-
-        let fragmentShader =
-            "\
-            precision mediump float;\
-            uniform sampler2D u_image;\
-            varying vec2 v_texCoord;\
-            varying float v_progress;\
-            void main(){\
-                gl_FragColor = texture2D(u_image, v_texCoord);\
-            }";
-
         let deffinition = {
-            fragmentShader: fragmentShader,
-            vertexShader: vertexShader,
+            fragmentShader,
+            vertexShader,
             properties: {},
             inputs: ["u_image"]
         };
