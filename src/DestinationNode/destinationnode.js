@@ -1,6 +1,8 @@
 //Matthew Shotton, R&D User Experience,© BBC 2015
 import ProcessingNode from "../ProcessingNodes/processingnode";
 
+const TYPE = "DestinationNode";
+
 class DestinationNode extends ProcessingNode {
     /**
      * Initialise an instance of a DestinationNode.
@@ -38,7 +40,7 @@ class DestinationNode extends ProcessingNode {
         };
 
         super(gl, renderGraph, deffinition, deffinition.inputs, false);
-        this._displayName = "DestinationNode";
+        this._displayName = TYPE;
     }
 
     _render() {
@@ -68,5 +70,7 @@ class DestinationNode extends ProcessingNode {
         });
     }
 }
+
+export { TYPE as DESTINATIONTYPE };
 
 export default DestinationNode;

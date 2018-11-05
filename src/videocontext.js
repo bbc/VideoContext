@@ -1,15 +1,4 @@
 //Matthew Shotton, R&D User Experience,© BBC 2015
-import VideoNode from "./SourceNodes/videonode.js";
-import AudioNode from "./SourceNodes/audionode.js";
-import ImageNode from "./SourceNodes/imagenode.js";
-import CanvasNode from "./SourceNodes/canvasnode.js";
-import { SOURCENODESTATE } from "./SourceNodes/sourcenode.js";
-import CompositingNode from "./ProcessingNodes/compositingnode.js";
-import DestinationNode from "./DestinationNode/destinationnode.js";
-import EffectNode from "./ProcessingNodes/effectnode.js";
-import TransitionNode from "./ProcessingNodes/transitionnode.js";
-import RenderGraph from "./rendergraph.js";
-import VideoElementCache from "./videoelementcache.js";
 import {
     createSigmaGraphDataFromRenderGraph,
     visualiseVideoContextTimeline,
@@ -21,6 +10,17 @@ import {
     snapshot,
     generateRandomId
 } from "./utils.js";
+import VideoNode, { VIDEOTYPE } from "./SourceNodes/videonode.js";
+import AudioNode from "./SourceNodes/audionode.js";
+import ImageNode from "./SourceNodes/imagenode.js";
+import CanvasNode from "./SourceNodes/canvasnode.js";
+import { SOURCENODESTATE } from "./SourceNodes/sourcenode.js";
+import CompositingNode from "./ProcessingNodes/compositingnode.js";
+import DestinationNode from "./DestinationNode/destinationnode.js";
+import EffectNode from "./ProcessingNodes/effectnode.js";
+import TransitionNode from "./ProcessingNodes/transitionnode.js";
+import RenderGraph from "./rendergraph.js";
+import VideoElementCache from "./videoelementcache.js";
 import DEFINITIONS from "./Definitions/definitions.js";
 
 let updateablesManager = new UpdateablesManager();
@@ -393,7 +393,7 @@ export default class VideoContext {
             throw new RangeError("playbackRate must be greater than 0");
         }
         for (let node of this._sourceNodes) {
-            if (node.constructor.name === "VideoNode") {
+            if (node.constructor.name === VIDEOTYPE) {
                 node._globalPlaybackRate = rate;
                 node._playbackRateUpdated = true;
             }
