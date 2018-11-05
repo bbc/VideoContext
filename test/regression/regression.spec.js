@@ -110,7 +110,10 @@ describe("Visual regressions: playback", () => {
     test(
         "Play/Pause image",
         async () => {
-            await playbackTest({ file: "playback-image.html", waitTime: 1000 });
+            await playbackTest({ 
+              file: "playback-image.html",
+              waitTime: 1000
+            });
         },
         testTimeout
     );
@@ -120,6 +123,17 @@ describe("Visual regressions: playback", () => {
             await playbackTest({
                 file: "playback-image-with-no-createImageBitmap.html",
                 waitTime: 1000
+            });
+        },
+        testTimeout
+    );
+
+    test(
+        "Play/Pause with user supplied element and start offset",
+        async () => {
+            await playbackTest({
+              file: "playback-user-supplied-element.html",
+              waitTime: 1000
             });
         },
         testTimeout
