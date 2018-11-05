@@ -1,4 +1,7 @@
 //Matthew Shotton, R&D User Experience,© BBC 2015
+
+const TYPE = "GraphNode";
+
 class GraphNode {
     /**
      * Base class from which all processing and source nodes are derrived.
@@ -13,7 +16,7 @@ class GraphNode {
         this._gl = gl;
         this._renderGraph = renderGraph;
         this._rendered = false;
-        this._displayName = "GraphNode";
+        this._displayName = TYPE;
     }
 
     /**
@@ -115,5 +118,7 @@ class GraphNode {
         this._destroyed = true;
     }
 }
+
+export { TYPE as GRAPHTYPE };
 
 export default GraphNode;

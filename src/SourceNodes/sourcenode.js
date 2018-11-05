@@ -11,6 +11,8 @@ let STATE = {
     error: 5
 };
 
+const TYPE = "SourceNode";
+
 class SourceNode extends GraphNode {
     /**
      * Initialise an instance of a SourceNode.
@@ -55,7 +57,7 @@ class SourceNode extends GraphNode {
         );
         this._callbacks = [];
         this._renderPaused = false;
-        this._displayName = "SourceNode";
+        this._displayName = TYPE;
     }
 
     /**
@@ -435,5 +437,6 @@ class SourceNode extends GraphNode {
 }
 
 export { STATE as SOURCENODESTATE };
+export { TYPE as SOURCETYPE };
 
 export default SourceNode;
