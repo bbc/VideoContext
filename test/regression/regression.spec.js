@@ -57,6 +57,34 @@ const effectTest = async ({ file }) => {
     expect(afterImage).toMatchImageSnapshot(imageSnapshotParams);
 };
 
+/**
+ * @param {Object} configuration - test configuration parameters.
+ * @param {String} configuration.file - the .html file to be tested.
+ */
+const playbackTest = async ({ file }) => {
+    console.info(`Started test of: ${file}`);
+
+    // eslint-disable-next-line
+    await page.goto(`file:${path.join(__dirname, `test-pages/${file}`)}`, {
+        waitUntil: "networkidle0",
+        timeout: 60000
+    });
+
+    // Start playback
+    await page.click("#play");
+    await page.waitFor(1000);
+
+    const afterPlayImage = await page.screenshot(screenshotParams);
+    expect(afterPlayImage).toMatchImageSnapshot(imageSnapshotParams);
+
+    // Pause playback
+    await page.waitFor(1000);
+    await page.click("#pause");
+
+    const afterPauseImage = await page.screenshot(screenshotParams);
+    expect(afterPauseImage).toMatchImageSnapshot(imageSnapshotParams);
+};
+
 beforeEach(async () => {
     browser = await puppeteer.launch(puppeteerParams);
     page = await browser.newPage();
@@ -71,27 +99,15 @@ describe("Visual regressions: playback", () => {
     test(
         "Play/Pause",
         async () => {
-            console.info("Started test of: playback.html");
+            await playbackTest({ file: "playback.html" });
+        },
+        testTimeout
+    );
 
-            // eslint-disable-next-line
-            await page.goto(`file:${path.join(__dirname, `test-pages/playback.html`)}`, {
-                waitUntil: "networkidle0",
-                timeout: 60000
-            });
-
-            // Start playback
-            await page.click("#play");
-            await page.waitFor(1000);
-
-            const afterPlayImage = await page.screenshot(screenshotParams);
-            expect(afterPlayImage).toMatchImageSnapshot(imageSnapshotParams);
-
-            // Pause playback
-            await page.waitFor(1000);
-            await page.click("#pause");
-
-            const afterPauseImage = await page.screenshot(screenshotParams);
-            expect(afterPauseImage).toMatchImageSnapshot(imageSnapshotParams);
+    test(
+        "Play/Pause with user supplied element and start offset",
+        async () => {
+            await playbackTest({ file: "playback-user-supplied-element.html" });
         },
         testTimeout
     );
