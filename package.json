@@ -1,6 +1,6 @@
 {
   "name": "videocontext",
-  "version": "0.52.8",
+  "version": "0.52.9",
   "description": "A WebGL & HTML5 graph based video composition library",
   "repository": {
     "type": "git",
@@ -27,7 +27,7 @@
     "build": "webpack --config webpack.config.js",
     "test": "bash ./test.sh",
     "test-unit": "jest test/unit/*.js",
-    "test-integration": "jest test/unit/*.js",
+    "test-integration": "jest test/integration/*.js",
     "test-watch": "jest --watch",
     "test-coverage": "jest test/unit/*.js --coverage --collectCoverageFrom 'src/**/*.js'",
     "test-regression": "jest test/regression/*.js",
