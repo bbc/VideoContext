@@ -1,6 +1,7 @@
 //Matthew Shotton, R&D User Experience,© BBC 2015
 import SourceNode, { SOURCENODESTATE } from "./sourcenode";
 
+const TYPE = "CanvasNode";
 class CanvasNode extends SourceNode {
     /**
      * Initialise an instance of a CanvasNode.
@@ -9,7 +10,7 @@ class CanvasNode extends SourceNode {
     constructor(canvas, gl, renderGraph, currentTime, preloadTime = 4) {
         super(canvas, gl, renderGraph, currentTime);
         this._preloadTime = preloadTime;
-        this._displayName = "CanvasNode";
+        this._displayName = TYPE;
     }
 
     _load() {
@@ -57,5 +58,7 @@ class CanvasNode extends SourceNode {
         }
     }
 }
+
+export { TYPE as CANVASTYPE };
 
 export default CanvasNode;

@@ -1,6 +1,8 @@
 //Matthew Shotton, R&D User Experience,© BBC 2015
 import EffectNode from "./effectnode";
 
+const TYPE = "TransitionNode";
+
 class TransitionNode extends EffectNode {
     /**
      * Initialise an instance of a TransitionNode. You should not instantiate this directly, but use VideoContest.createTransitonNode().
@@ -14,7 +16,7 @@ class TransitionNode extends EffectNode {
         for (let propertyName in this._properties) {
             this._initialPropertyValues[propertyName] = this._properties[propertyName].value;
         }
-        this._displayName = "TransitionNode";
+        this._displayName = TYPE;
     }
 
     _doesTransitionFitOnTimeline(testTransition) {
@@ -157,5 +159,7 @@ class TransitionNode extends EffectNode {
         }
     }
 }
+
+export { TYPE as TRANSITIONTYPE };
 
 export default TransitionNode;

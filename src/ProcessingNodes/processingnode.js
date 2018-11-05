@@ -8,6 +8,8 @@ import {
 } from "../utils.js";
 import { RenderException } from "../exceptions.js";
 
+const TYPE = "ProcessingNode";
+
 class ProcessingNode extends GraphNode {
     /**
      * Initialise an instance of a ProcessingNode.
@@ -135,7 +137,7 @@ class ProcessingNode extends GraphNode {
         let texCoordLocation = gl.getAttribLocation(this._program, "a_texCoord");
         gl.enableVertexAttribArray(texCoordLocation);
         gl.vertexAttribPointer(texCoordLocation, 2, gl.FLOAT, false, 0, 0);
-        this._displayName = "ProcessingNode";
+        this._displayName = TYPE;
     }
 
     /**
@@ -258,5 +260,7 @@ class ProcessingNode extends GraphNode {
         }
     }
 }
+
+export { TYPE as PROCESSINGTYPE };
 
 export default ProcessingNode;

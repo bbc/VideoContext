@@ -1,0 +1,6 @@
+{
+    "name": "horizontalWipe",
+    "version": "0.0.0",
+    "private": true,
+    "main": "./horizontalWipe.js"
+}
