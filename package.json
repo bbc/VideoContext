@@ -27,7 +27,7 @@
     "build": "webpack --config webpack.config.js",
     "test": "bash ./test.sh",
     "test-unit": "jest test/unit/*.js",
-    "test-integration": "jest test/unit/*.js",
+    "test-integration": "jest test/integration/*.js",
     "test-watch": "jest --watch",
     "test-coverage": "jest test/unit/*.js --coverage --collectCoverageFrom 'src/**/*.js'",
     "test-regression": "jest test/regression/*.js",
