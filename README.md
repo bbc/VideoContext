@@ -4,7 +4,7 @@
 The VideoContext is an experimental HTML5/WebGL media processing and sequencing library for creating interactive and responsive videos on the web.
 
 
-It consist of two main components. A graph based, shader accelerated processing pipeline, and a media playback sequencing time-line.
+It consists of two main components. A graph based, shader accelerated processing pipeline, and a media playback sequencing time-line.
 
 
 The design is heavily inspired by the WebAudioAPI so should feel familiar to use for people who've had previous experience in the WebAudio world.
@@ -28,7 +28,7 @@ The design is heavily inspired by the WebAudioAPI so should feel familiar to use
         Its CSS width and height will define the space it takes on screen
         If omitted, the canvas dimensions will be 300x150 and your videos will not rendered at their
         optimum definition
-        https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/width
+        https://webglfundamentals.org/webgl/lessons/webgl-resizing-the-canvas.html
     -->
     <canvas id="canvas" width="1280" height="720" style="width: 852px; height: 480px"></canvas>
 
@@ -128,7 +128,7 @@ canvasNode.stop(4);
 ### EffectNode
 An EffectNode is the simplest form of processing node. It's built from a definition object, which is a combination of fragment shader code, vertex shader code, input descriptions, and property descriptions. There are a number of common operations available as node descriptions accessible as static properties on the VideoContext at VideoContext.DESCRIPTIONS.*
 
-The vertex and shader code is GLSL code which gets compiled to produce the shader program. The input descriptio ntells the VideoContext how many ports there are to connect to and the name of the image associated with the port within the shader code. Inputs are always render-able textures (i.e images, videos, canvases). The property descriptions tell the VideoContext what controls to attached to the EffectNode and the name, type, and default value of the control within the shader code.
+The vertex and shader code is GLSL code which gets compiled to produce the shader program. The input description tells the VideoContext how many ports there are to connect to and the name of the image associated with the port within the shader code. Inputs are always render-able textures (i.e images, videos, canvases). The property descriptions tell the VideoContext what controls to attached to the EffectNode and the name, type, and default value of the control within the shader code.
 
 The following is a an example of a simple shader description used to describe a monochrome effect. It has one input (the image to be processed) and two modifiable properties to control the color RGB mix for the processing result.
 
@@ -137,29 +137,29 @@ The following is a an example of a simple shader description used to describe a 
 var monochromeDescription = {
     title:"Monochrome",
     description: "Change images to a single chroma (e.g can be used to make a black & white filter). Input color mix and output color mix can be adjusted.",
-    vertexShader : "\
-        attribute vec2 a_position;\
-        attribute vec2 a_texCoord;\
-        varying vec2 v_texCoord;\
-        void main() {\
-            gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
-            v_texCoord = a_texCoord;\
-        }",
-    fragmentShader : "\
-        precision mediump float;\
-        uniform sampler2D u_image;\
-        uniform vec3 inputMix;\
-        uniform vec3 outputMix;\
-        varying vec2 v_texCoord;\
-        varying float v_mix;\
-        void main(){\
-            vec4 color = texture2D(u_image, v_texCoord);\
-            float mono = color[0]*inputMix[0] + color[1]*inputMix[1] + color[2]*inputMix[2];\
-            color[0] = mono * outputMix[0];\
-            color[1] = mono * outputMix[1];\
-            color[2] = mono * outputMix[2];\
-            gl_FragColor = color;\
-        }",
+    vertexShader : `
+        attribute vec2 a_position;
+        attribute vec2 a_texCoord;
+        varying vec2 v_texCoord;
+        void main() {
+            gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);
+            v_texCoord = a_texCoord;
+        }`,
+    fragmentShader : `
+        precision mediump float;
+        uniform sampler2D u_image;
+        uniform vec3 inputMix;
+        uniform vec3 outputMix;
+        varying vec2 v_texCoord;
+        varying float v_mix;
+        void main(){
+            vec4 color = texture2D(u_image, v_texCoord);
+            float mono = color[0]*inputMix[0] + color[1]*inputMix[1] + color[2]*inputMix[2];
+            color[0] = mono * outputMix[0];
+            color[1] = mono * outputMix[1];
+            color[2] = mono * outputMix[2];
+            gl_FragColor = color;
+        }`,
     properties:{
         "inputMix":{type:"uniform", value:[0.4,0.6,0.2]},
         "outputMix":{type:"uniform", value:[1.0,1.0,1.0]}
@@ -209,34 +209,34 @@ The following is an example of a simple cross-fade shader.
 var crossfadeDescription = {
     title:"Cross-Fade",
     description: "A cross-fade effect. Typically used as a transistion.",
-    vertexShader : "\
-            attribute vec2 a_position;\
-            attribute vec2 a_texCoord;\
-            varying vec2 v_texCoord;\
-            void main() {\
-                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
-                v_texCoord = a_texCoord;\
-            }",
-        fragmentShader : "\
-            precision mediump float;\
-            uniform sampler2D u_image_a;\
-            uniform sampler2D u_image_b;\
-            uniform float mix;\
-            varying vec2 v_texCoord;\
-            varying float v_mix;\
-            void main(){\
-                vec4 color_a = texture2D(u_image_a, v_texCoord);\
-                vec4 color_b = texture2D(u_image_b, v_texCoord);\
-                color_a[0] *= mix;\
-                color_a[1] *= mix;\
-                color_a[2] *= mix;\
-                color_a[3] *= mix;\
-                color_b[0] *= (1.0 - mix);\
-                color_b[1] *= (1.0 - mix);\
-                color_b[2] *= (1.0 - mix);\
-                color_b[3] *= (1.0 - mix);\
-                gl_FragColor = color_a + color_b;\
-            }",
+    vertexShader : `
+            attribute vec2 a_position;
+            attribute vec2 a_texCoord;
+            varying vec2 v_texCoord;
+            void main() {
+                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);
+                v_texCoord = a_texCoord;
+            }`,
+        fragmentShader : `
+            precision mediump float;
+            uniform sampler2D u_image_a;
+            uniform sampler2D u_image_b;
+            uniform float mix;
+            varying vec2 v_texCoord;
+            varying float v_mix;
+            void main(){
+                vec4 color_a = texture2D(u_image_a, v_texCoord);
+                vec4 color_b = texture2D(u_image_b, v_texCoord);
+                color_a[0] *= mix;
+                color_a[1] *= mix;
+                color_a[2] *= mix;
+                color_a[3] *= mix;
+                color_b[0] *= (1.0 - mix);
+                color_b[1] *= (1.0 - mix);
+                color_b[2] *= (1.0 - mix);
+                color_b[3] *= (1.0 - mix);
+                gl_FragColor = color_a + color_b;
+            }`,
         properties:{
             "mix":{type:"uniform", value:0.0}
         },
@@ -313,23 +313,23 @@ Here's a really simple shader which renders all the inputs to the same output.
 var combineDecription ={
     title:"Combine",
     description: "A basic effect which renders the input to the output, Typically used as a combine node for layering up media with alpha transparency.",
-    vertexShader : "\
-        attribute vec2 a_position;\
-        attribute vec2 a_texCoord;\
-        varying vec2 v_texCoord;\
-        void main() {\
-            gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
-            v_texCoord = a_texCoord;\
-        }",
-    fragmentShader : "\
-        precision mediump float;\
-        uniform sampler2D u_image;\
-        varying vec2 v_texCoord;\
-        varying float v_mix;\
-        void main(){\
-            vec4 color = texture2D(u_image, v_texCoord);\
-            gl_FragColor = color;\
-        }",
+    vertexShader : `
+        attribute vec2 a_position;
+        attribute vec2 a_texCoord;
+        varying vec2 v_texCoord;
+        void main() {
+            gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);
+            v_texCoord = a_texCoord;
+        }`,
+    fragmentShader : `
+        precision mediump float;
+        uniform sampler2D u_image;
+        varying vec2 v_texCoord;
+        varying float v_mix;
+        void main(){
+            vec4 color = texture2D(u_image, v_texCoord);
+            gl_FragColor = color;
+        }`,
     properties:{
     },
     inputs:["u_image"]
@@ -422,7 +422,7 @@ npm run release:minor
 npm run release:patch
 ```
 
-these scripts build and commit the docs, the changelog, update the `package.json` verson number
+these scripts build and commit the docs, the changelog, update the `package.json` version number
 and push to the current branch with tags.
 
 CI will publish to npm when the release branch has been merged into master.
