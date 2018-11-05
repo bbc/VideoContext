@@ -199,8 +199,11 @@ class MediaNode extends SourceNode {
             this._element = undefined;
             if (!this._mediaElementCache) delete this._element;
         }
+        // reset class to initial state
         this._ready = false;
         this._isElementPlaying = false;
+        // For completeness. I couldn't find a path that required reuse of this._loadTriggered after _unload.
+        this._loadTriggered = false;
     }
 
     _seek(time) {
