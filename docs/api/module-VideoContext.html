@@ -253,81 +253,6 @@ ctx.play();</code></pre>
 
 
 <div class="description">
-    <p>Set the progress through the internal timeline.
-Setting this can be used as a way to implement a scrubaable timeline.</p>
-</div>
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line286">line 286</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>var canvasElement = document.getElementById("canvas");
-var ctx = new VideoContext(canvasElement);
-var videoNode = ctx.video("video.mp4");
-videoNode.connect(ctx.destination);
-videoNode.start(0);
-videoNode.stop(20);
-ctx.currentTime = 10; // seek 10 seconds in
-ctx.play();</code></pre>
-
-
-
-        
-            
-<h4 class="name" id="currentTime"><span class="type-signature"></span>currentTime<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
     <p>Get how far through the internal timeline has been played.</p>
 <p>Getting this value will give the current playhead position. Can be used for updating timelines.</p>
 </div>
@@ -392,6 +317,81 @@ videoNode.start(0);
 videoNode.stop(10);
 ctx.play();
 setTimeout(function(){console.log(ctx.currentTime);},1000); //should print roughly 1.0</code></pre>
+
+
+
+        
+            
+<h4 class="name" id="currentTime"><span class="type-signature"></span>currentTime<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>Set the progress through the internal timeline.
+Setting this can be used as a way to implement a scrubaable timeline.</p>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line286">line 286</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>var canvasElement = document.getElementById("canvas");
+var ctx = new VideoContext(canvasElement);
+var videoNode = ctx.video("video.mp4");
+videoNode.connect(ctx.destination);
+videoNode.start(0);
+videoNode.stop(20);
+ctx.currentTime = 10; // seek 10 seconds in
+ctx.play();</code></pre>
 
 
 
