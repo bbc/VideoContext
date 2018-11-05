@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+
+<head>
+    <meta charset="utf-8">
+    <title>VideoContext Regression Tests – Playback</title>
+    <link media="all" rel="stylesheet" href="../assets/shared-styles.css" />
+    <script type="text/javascript" src="../../../dist/videocontext.js"></script>
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
+    <div style="margin: 20px auto 0 auto;">
+        <button id="play">Play</button>
+        <button id="pause">Pause</button>
+    </div>
+
+    <script type="text/javascript">
+        window.onload = function () {
+            var playBtn = document.getElementById("play");
+            var pauseBtn = document.getElementById("pause");
+            var canvas = document.getElementById("canvas");
+
+            // Create a new VideoContext instance
+            var videoCtx = new VideoContext(canvas);
+
+            var video = document.createElement("video")
+            video.src = "../assets/video1.webm"
+            video.crossOrigin = "anonymous";
+
+            var sourceOffset = 10
+            var videoNode = videoCtx.video(video, sourceOffset);
+
+            videoNode.startAt(0);
+            videoNode.connect(videoCtx.destination);
+
+            playBtn.addEventListener("click", function () {
+                videoCtx.play();
+            });
+
+            pauseBtn.addEventListener("click", function () {
+                videoCtx.pause();
+            });
+        };
+    </script>
+</body>
+
+</html>
