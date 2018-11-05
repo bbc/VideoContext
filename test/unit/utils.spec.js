@@ -9,7 +9,7 @@ describe(`Utils`, () => {
             expect(Utils.mediaElementHasSource(mockMediaElement)).toBe(true);
             mockMediaElement.src = "fgdfgdfgdg";
             expect(Utils.mediaElementHasSource(mockMediaElement)).toBe(true);
-            
+
             delete mockMediaElement.src;
             expect(Utils.mediaElementHasSource(mockMediaElement)).toBe(false);
         });
@@ -31,10 +31,9 @@ describe(`Utils`, () => {
         });
 
         it(`Should throw given empty argument`, () => {
-            expect(() => (Utils.mediaElementHasSource())).toThrow();
-            expect(() => (Utils.mediaElementHasSource(null))).toThrow();
-            expect(() => (Utils.mediaElementHasSource(undefined))).toThrow();
+            expect(() => Utils.mediaElementHasSource()).toThrow();
+            expect(() => Utils.mediaElementHasSource(null)).toThrow();
+            expect(() => Utils.mediaElementHasSource(undefined)).toThrow();
         });
-
     });
 });

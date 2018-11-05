@@ -62,8 +62,7 @@ class VideoElementCache {
         let count = 0;
         for (let element of this._elements) {
             // For some reason an uninitialised videoElement has its sr attribute set to the windows href. Hence the below check.
-            if (!mediaElementHasSource(element))
-                count += 1;
+            if (!mediaElementHasSource(element)) count += 1;
         }
         return count;
     }
