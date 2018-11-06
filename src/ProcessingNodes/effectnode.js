@@ -2,6 +2,8 @@
 import ProcessingNode from "./processingnode";
 import { createElementTexture } from "../utils.js";
 
+const TYPE = "EffectNode";
+
 class EffectNode extends ProcessingNode {
     /**
      * Initialise an instance of an EffectNode. You should not instantiate this directly, but use VideoContest.createEffectNode().
@@ -23,7 +25,7 @@ class EffectNode extends ProcessingNode {
         super(gl, renderGraph, definition, definition.inputs, true);
 
         this._placeholderTexture = placeholderTexture;
-        this._displayName = "EffectNode";
+        this._displayName = TYPE;
     }
 
     _render() {
@@ -62,5 +64,7 @@ class EffectNode extends ProcessingNode {
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     }
 }
+
+export { TYPE as EFFECTYPE };
 
 export default EffectNode;

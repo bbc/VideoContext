@@ -1,0 +1,6 @@
+{
+    "name": "aaf_video_scale",
+    "version": "0.0.0",
+    "private": true,
+    "main": "./aaf_video_scale.js"
+}
