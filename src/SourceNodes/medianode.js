@@ -11,6 +11,7 @@ class MediaNode extends SourceNode {
         gl,
         renderGraph,
         currentTime,
+        audioCtx,
         globalPlaybackRate = 1.0,
         sourceOffset = 0,
         preloadTime = 4,
@@ -18,6 +19,7 @@ class MediaNode extends SourceNode {
         attributes = {}
     ) {
         super(src, gl, renderGraph, currentTime);
+        this._audioCtx = audioCtx;
         this._preloadTime = preloadTime;
         this._sourceOffset = sourceOffset;
         this._globalPlaybackRate = globalPlaybackRate;
@@ -60,6 +62,10 @@ class MediaNode extends SourceNode {
 
     get elementURL() {
         return this._elementURL;
+    }
+
+    get audioNode() {
+        return this._audioNode;
     }
 
     /**
@@ -117,6 +123,8 @@ class MediaNode extends SourceNode {
                 this._ready = true;
                 this._triggerCallbacks("error");
             };
+            this._audioNode = this._audioCtx.createMediaElementSource(this._element);
+            this._triggerCallbacks("audio:ready");
         } else {
             // If the element doesn't exist for whatever reason enter the error state.
             this._state = SOURCENODESTATE.error;

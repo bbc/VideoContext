@@ -125,6 +125,17 @@ class RenderGraph {
      * @return {boolean} Will return true if connection succeeds otherwise will throw a ConnectException.
      */
     registerConnection(sourceNode, destinationNode, target) {
+
+        if (!sourceNode._audioNode) {
+            const connectAudioNode = () => {
+                sourceNode._audioNode.connect(destinationNode._audioNode);
+                sourceNode.unregisterCallback(connectAudioNode);
+            };
+            sourceNode.registerCallback("audio:ready", connectAudioNode);
+        } else {
+            sourceNode._audioNode.connect(destinationNode._audioNode);
+        }
+
         if (
             destinationNode.inputs.length >= destinationNode.inputNames.length &&
             destinationNode._limitConnections === true
@@ -192,6 +203,7 @@ class RenderGraph {
         this.connections.forEach(function(connection) {
             if (connection.source === sourceNode && connection.destination === destinationNode) {
                 toRemove.push(connection);
+                sourceNode._audioNode.disconnect(destinationNode._audioNode);
             }
         });
 

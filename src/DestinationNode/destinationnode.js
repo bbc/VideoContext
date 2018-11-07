@@ -13,15 +13,17 @@ class DestinationNode extends ProcessingNode {
      *
      * You should not instantiate this directly.
      */
-    constructor(gl, renderGraph) {
-        let deffinition = {
+    constructor(gl, audioCtx, renderGraph) {
+        let definition = {
             fragmentShader,
             vertexShader,
             properties: {},
             inputs: ["u_image"]
         };
 
-        super(gl, renderGraph, deffinition, deffinition.inputs, false);
+        super(gl, audioCtx, renderGraph, definition, definition.inputs, false);
+
+        this._audioNode.connect(audioCtx.destination);
         this._displayName = TYPE;
     }
 
@@ -31,7 +33,7 @@ class DestinationNode extends ProcessingNode {
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
         gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
         gl.enable(gl.BLEND);
-        gl.clearColor(0, 0, 0, 0.0); // green;
+        gl.clearColor(0, 0, 0, 0.0);
         gl.clear(gl.COLOR_BUFFER_BIT);
 
         this.inputs.forEach(node => {

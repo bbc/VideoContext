@@ -7,8 +7,8 @@ class TransitionNode extends EffectNode {
     /**
      * Initialise an instance of a TransitionNode. You should not instantiate this directly, but use VideoContest.createTransitonNode().
      */
-    constructor(gl, renderGraph, definition) {
-        super(gl, renderGraph, definition);
+    constructor(gl, audioCtx, renderGraph, definition) {
+        super(gl, audioCtx, renderGraph, definition);
         this._transitions = {};
 
         //save a version of the original property values

@@ -8,7 +8,7 @@ class CompositingNode extends ProcessingNode {
     /**
      * Initialise an instance of a Compositing Node. You should not instantiate this directly, but use VideoContest.createCompositingNode().
      */
-    constructor(gl, renderGraph, definition) {
+    constructor(gl, audioCtx, renderGraph, definition) {
         let placeholderTexture = createElementTexture(gl);
         gl.texImage2D(
             gl.TEXTURE_2D,
@@ -21,7 +21,7 @@ class CompositingNode extends ProcessingNode {
             gl.UNSIGNED_BYTE,
             new Uint8Array([0, 0, 0, 0])
         );
-        super(gl, renderGraph, definition, definition.inputs, false);
+        super(gl, audioCtx, renderGraph, definition, definition.inputs, false);
         this._placeholderTexture = placeholderTexture;
         this._displayName = TYPE;
     }
@@ -36,7 +36,7 @@ class CompositingNode extends ProcessingNode {
             this._texture,
             0
         );
-        gl.clearColor(0, 0, 0, 0); // green;
+        gl.clearColor(0, 0, 0, 0);
         gl.clear(gl.COLOR_BUFFER_BIT);
         gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 

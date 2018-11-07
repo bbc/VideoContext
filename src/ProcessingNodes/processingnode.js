@@ -16,7 +16,7 @@ class ProcessingNode extends GraphNode {
      *
      * This class is not used directly, but is extended to create CompositingNodes, TransitionNodes, and EffectNodes.
      */
-    constructor(gl, renderGraph, definition, inputNames, limitConnections) {
+    constructor(gl, audioCtx, renderGraph, definition, inputNames, limitConnections) {
         super(gl, renderGraph, inputNames, limitConnections);
         this._vertexShader = compileShader(gl, definition.vertexShader, gl.VERTEX_SHADER);
         this._fragmentShader = compileShader(gl, definition.fragmentShader, gl.FRAGMENT_SHADER);
@@ -35,6 +35,10 @@ class ProcessingNode extends GraphNode {
                 value: propertyValue
             };
         }
+
+        this._audioCtx = audioCtx;
+        this._audioNode = this._audioCtx.createGain();
+        this._audioNode.value = 1;
 
         this._inputTextureUnitMapping = [];
         this._maxTextureUnits = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);

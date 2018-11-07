@@ -6,9 +6,9 @@ const TYPE = "EffectNode";
 
 class EffectNode extends ProcessingNode {
     /**
-     * Initialise an instance of an EffectNode. You should not instantiate this directly, but use VideoContest.createEffectNode().
+     * Initialise an instance of an EffectNode. You should not instantiate this directly, but use vc.effect(definition).
      */
-    constructor(gl, renderGraph, definition) {
+    constructor(gl, audioCtx, renderGraph, definition) {
         let placeholderTexture = createElementTexture(gl);
         gl.texImage2D(
             gl.TEXTURE_2D,
@@ -22,7 +22,11 @@ class EffectNode extends ProcessingNode {
             new Uint8Array([0, 0, 0, 0])
         );
 
-        super(gl, renderGraph, definition, definition.inputs, true);
+        super(gl, audioCtx, renderGraph, definition, definition.inputs, true);
+
+        if (definition.audioEffect) {
+            this._audioNode = definition.audioEffect();
+        }
 
         this._placeholderTexture = placeholderTexture;
         this._displayName = TYPE;

@@ -105,6 +105,9 @@ export default class VideoContext {
         if (window.__VIDEOCONTEXT_REFS__ === undefined) window.__VIDEOCONTEXT_REFS__ = {};
         window.__VIDEOCONTEXT_REFS__[this._id] = this;
 
+        this._audioCtx = new AudioContext({
+            latencyHint: "interactive"
+        });
         this._renderGraph = new RenderGraph();
         this._sourceNodes = [];
         this._processingNodes = [];
@@ -114,7 +117,7 @@ export default class VideoContext {
         this._playbackRate = 1.0;
         this._volume = 1.0;
         this._sourcesPlaying = undefined;
-        this._destinationNode = new DestinationNode(this._gl, this._renderGraph);
+        this._destinationNode = new DestinationNode(this._gl, this._audioCtx, this._renderGraph);
 
         this._callbacks = new Map();
         this._callbacks.set("stalled", []);
@@ -445,6 +448,7 @@ export default class VideoContext {
         console.debug("VideoContext - playing");
         //Initialise the video elemnt cache
         if (this._videoElementCache) this._videoElementCache.init();
+        if (this._audioCtx) this._audioCtx.resume();
         // set the state.
         this._state = VideoContext.STATE.PLAYING;
         return true;
@@ -495,6 +499,7 @@ export default class VideoContext {
             this._gl,
             this._renderGraph,
             this._currentTime,
+            this._audioCtx,
             this._playbackRate,
             sourceOffset,
             preloadTime,
@@ -511,6 +516,7 @@ export default class VideoContext {
             this._gl,
             this._renderGraph,
             this._currentTime,
+            this._audioCtx,
             this._playbackRate,
             sourceOffset,
             preloadTime,
@@ -522,11 +528,11 @@ export default class VideoContext {
     }
 
     /**
-     * @depricated
+     * @deprecated
      */
     createVideoSourceNode(src, sourceOffset = 0, preloadTime = 4, videoElementAttributes = {}) {
         this._depricate(
-            "Warning: createVideoSourceNode will be depricated in v1.0, please switch to using VideoContext.video()"
+            "Warning: createVideoSourceNode will be deprecated in v1.0, please switch to using VideoContext.video()"
         );
         return this.video(src, sourceOffset, preloadTime, videoElementAttributes);
     }
@@ -563,11 +569,11 @@ export default class VideoContext {
     }
 
     /**
-     * @depricated
+     * @deprecated
      */
     createImageSourceNode(src, sourceOffset = 0, preloadTime = 4, imageElementAttributes = {}) {
         this._depricate(
-            "Warning: createImageSourceNode will be depricated in v1.0, please switch to using VideoContext.image()"
+            "Warning: createImageSourceNode will be deprecated in v1.0, please switch to using VideoContext.image()"
         );
         return this.image(src, sourceOffset, preloadTime, imageElementAttributes);
     }
@@ -584,11 +590,11 @@ export default class VideoContext {
     }
 
     /**
-     * @depricated
+     * @deprecated
      */
     createCanvasSourceNode(canvas, sourceOffset = 0, preloadTime = 4) {
         this._depricate(
-            "Warning: createCanvasSourceNode will be depricated in v1.0, please switch to using VideoContext.canvas()"
+            "Warning: createCanvasSourceNode will be deprecated in v1.0, please switch to using VideoContext.canvas()"
         );
         return this.canvas(canvas, sourceOffset, preloadTime);
     }
@@ -599,17 +605,17 @@ export default class VideoContext {
      * @return {EffectNode} A new effect node created from the passed definition
      */
     effect(definition) {
-        let effectNode = new EffectNode(this._gl, this._renderGraph, definition);
-        this._processingNodes.push(effectNode);
-        return effectNode;
+        let audioEffectNode = new EffectNode(this._gl, this._audioCtx, this._renderGraph, definition);
+        this._processingNodes.push(audioEffectNode);
+        return audioEffectNode;
     }
 
     /**
-     * @depricated
+     * @deprecated
      */
     createEffectNode(definition) {
         this._depricate(
-            "Warning: createEffectNode will be depricated in v1.0, please switch to using VideoContext.effect()"
+            "Warning: createEffectNode will be deprecated in v1.0, please switch to using VideoContext.effect()"
         );
         return this.effect(definition);
     }
@@ -677,17 +683,17 @@ export default class VideoContext {
      *
      */
     compositor(definition) {
-        let compositingNode = new CompositingNode(this._gl, this._renderGraph, definition);
+        let compositingNode = new CompositingNode(this._gl, this._audioCtx, this._renderGraph, definition);
         this._processingNodes.push(compositingNode);
         return compositingNode;
     }
 
     /**
-     * @depricated
+     * @deprecated
      */
     createCompositingNode(definition) {
         this._depricate(
-            "Warning: createCompositingNode will be depricated in v1.0, please switch to using VideoContext.compositor()"
+            "Warning: createCompositingNode will be deprecated in v1.0, please switch to using VideoContext.compositor()"
         );
         return this.compositor(definition);
     }
@@ -771,17 +777,17 @@ export default class VideoContext {
      * ctx.play();
      */
     transition(definition) {
-        let transitionNode = new TransitionNode(this._gl, this._renderGraph, definition);
+        let transitionNode = new TransitionNode(this._gl, this._audioCtx, this._renderGraph, definition);
         this._processingNodes.push(transitionNode);
         return transitionNode;
     }
 
     /**
-     * @depricated
+     * @deprecated
      */
     createTransitionNode(definition) {
         this._depricate(
-            "Warning: createTransitionNode will be depricated in v1.0, please switch to using VideoContext.transition()"
+            "Warning: createTransitionNode will be deprecated in v1.0, please switch to using VideoContext.transition()"
         );
         return this.transition(definition);
     }
