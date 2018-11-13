@@ -1,13 +1,13 @@
 {
   "name": "videocontext",
-  "version": "0.52.9",
+  "version": "0.52.10",
   "description": "A WebGL & HTML5 graph based video composition library",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/bbc/VideoContext.git"
   },
   "license": "Apache-2.0",
-  "main": "dist/videocontext.js",
+  "browser": "dist/videocontext.js",
   "keywords": [
     "video",
     "context",
