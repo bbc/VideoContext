@@ -1,0 +1,6 @@
+{
+    "name": "monochrome",
+    "version": "0.0.0",
+    "private": true,
+    "main": "./monochrome.js"
+}

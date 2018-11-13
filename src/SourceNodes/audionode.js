@@ -1,6 +1,7 @@
 //Matthew Shotton, R&D User Experience,© BBC 2015
 import MediaNode from "./medianode";
 
+const TYPE = "AudioNode";
 class AudioNode extends MediaNode {
     /**
      * Initialise an instance of an AudioNode.
@@ -8,7 +9,7 @@ class AudioNode extends MediaNode {
      */
     constructor() {
         super(...arguments);
-        this._displayName = "AudioNode";
+        this._displayName = TYPE;
         this._elementType = "audio";
     }
 
@@ -16,5 +17,7 @@ class AudioNode extends MediaNode {
         super._update(currentTime, false);
     }
 }
+
+export { TYPE as AUDIOTYPE };
 
 export default AudioNode;

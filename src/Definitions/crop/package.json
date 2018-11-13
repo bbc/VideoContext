@@ -1,0 +1,6 @@
+{
+    "name": "crop",
+    "version": "0.0.0",
+    "private": true,
+    "main": "./crop.js"
+}

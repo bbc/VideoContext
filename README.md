@@ -23,7 +23,14 @@ The design is heavily inspired by the WebAudioAPI so should feel familiar to use
     <script type="text/javascript" src="../dist/videocontext.js"></script>
 </head>
 <body>
-    <canvas id="canvas"></canvas>
+    <!--
+        A canvas needs to define its width and height to know how many pixels you can draw onto it.
+        Its CSS width and height will define the space it takes on screen
+        If omitted, the canvas dimensions will be 300x150 and your videos will not rendered at their
+        optimum definition
+        https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/width
+    -->
+    <canvas id="canvas" width="1280" height="720" style="width: 852px; height: 480px"></canvas>
 
     <script type="text/javascript">
         window.onload = function(){

@@ -1,6 +1,12 @@
 //Matthew Shotton, R&D User Experience,© BBC 2015
 import DEFINITIONS from "./Definitions/definitions.js";
 import { SOURCENODESTATE } from "./SourceNodes/sourcenode.js";
+import { VIDEOTYPE } from "./SourceNodes/videonode.js";
+import { CANVASTYPE } from "./SourceNodes/canvasnode.js";
+import { IMAGETYPE } from "./SourceNodes/imagenode.js";
+import { DESTINATIONTYPE } from "./DestinationNode/destinationnode.js";
+import { TRANSITIONTYPE } from "./ProcessingNodes/transitionnode.js";
+import { COMPOSITINGTYPE } from "./ProcessingNodes/compositingnode.js";
 
 /*
 * Utility function to compile a WebGL Vertex or Fragment shader.
@@ -311,7 +317,7 @@ function snapshotNodes(vc) {
             stop: source.stopTime,
             state: sourceNodeStateMapping[source.state]
         };
-        if (node.type === "VideoNode") {
+        if (node.type === VIDEOTYPE) {
             node.currentTime = null;
             if (source.element && source.element.currentTime) {
                 node.currentTime = source.element.currentTime;
@@ -338,7 +344,7 @@ function snapshotNodes(vc) {
             node.properties[property] = processor[property];
         }
 
-        if (node.type === "TransitionNode") {
+        if (node.type === TRANSITIONTYPE) {
             node.transitions = processor._transitions;
         }
 
@@ -554,22 +560,22 @@ export function visualiseVideoContextGraph(videoContext, canvas) {
         let pos = calculateNodePos(node, nodeDepths, xStep, nodeHeight);
         let color = "#AA9639";
         let text = "";
-        if (node.displayName === "CompositingNode") {
+        if (node.displayName === COMPOSITINGTYPE) {
             color = "#000000";
         }
-        if (node.displayName === "DestinationNode") {
+        if (node.displayName === DESTINATIONTYPE) {
             color = "#7D9F35";
             text = "Output";
         }
-        if (node.displayName === "VideoNode") {
+        if (node.displayName === VIDEOTYPE) {
             color = "#572A72";
             text = "Video";
         }
-        if (node.displayName === "CanvasNode") {
+        if (node.displayName === CANVASTYPE) {
             color = "#572A72";
             text = "Canvas";
         }
-        if (node.displayName === "ImageNode") {
+        if (node.displayName === IMAGETYPE) {
             color = "#572A72";
             text = "Image";
         }
@@ -705,7 +711,7 @@ export function visualiseVideoContextTimeline(videoContext, canvas, currentTime)
     ctx.fillStyle = "#999";
 
     for (let node of videoContext._processingNodes) {
-        if (node.displayName !== "TransitionNode") continue;
+        if (node.displayName !== TRANSITIONTYPE) continue;
         for (let propertyName in node._transitions) {
             for (let transition of node._transitions[propertyName]) {
                 let tW = (transition.end - transition.start) * pixelsPerSecond;

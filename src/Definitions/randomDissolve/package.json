@@ -1,0 +1,6 @@
+{
+    "name": "randomDissolve",
+    "version": "0.0.0",
+    "private": true,
+    "main": "./randomDissolve.js"
+}

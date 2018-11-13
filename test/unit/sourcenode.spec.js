@@ -1,6 +1,6 @@
+import * as utils from "../../src/utils";
 import SourceNode from "../../src/SourceNodes/sourcenode";
 import sinon from "sinon";
-import * as utils from "../../src/utils";
 import "webgl-mock";
 
 global.window = {}; // eslint-disable-line
