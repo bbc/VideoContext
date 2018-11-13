@@ -126,14 +126,14 @@ class RenderGraph {
      */
     registerConnection(sourceNode, destinationNode, target) {
 
-        if (!sourceNode._audioNode) {
-            const connectAudioNode = () => {
-                sourceNode._audioNode.connect(destinationNode._audioNode);
-                sourceNode.unregisterCallback(connectAudioNode);
-            };
-            sourceNode.registerCallback("audio:ready", connectAudioNode);
+        if (sourceNode.audioNode) {
+            sourceNode.audioNode.connect(destinationNode.audioNode);
         } else {
-            sourceNode._audioNode.connect(destinationNode._audioNode);
+            const connectAudio = () => {
+                sourceNode.audioNode.connect(destinationNode.audioNode);
+                sourceNode.unregisterCallback("audioready");
+            };
+            sourceNode.registerCallback("audioready", connectAudio);
         }
 
         if (

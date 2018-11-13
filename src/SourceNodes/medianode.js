@@ -1,5 +1,6 @@
 //Matthew Shotton, R&D User Experience,© BBC 2015
 import SourceNode, { SOURCENODESTATE } from "./sourcenode";
+import { CachedMedia } from "../utils";
 
 class MediaNode extends SourceNode {
     /**
@@ -31,6 +32,13 @@ class MediaNode extends SourceNode {
         this._isElementPlaying = false;
         if (this._attributes.loop) {
             this._loopElement = this._attributes.loop;
+        }
+
+        this._audioReady = false;
+
+        if (!this._isResponsibleForElementLifeCycle) {
+            this._audioNode = audioCtx.createMediaElementSource(this._element);
+            this._audioReady = true;
         }
     }
 
@@ -65,7 +73,9 @@ class MediaNode extends SourceNode {
     }
 
     get audioNode() {
-        return this._audioNode;
+        if (this._audioReady) {
+            return this._audioNode;
+        }
     }
 
     /**
@@ -89,24 +99,26 @@ class MediaNode extends SourceNode {
     _triggerLoad() {
         // If the user hasn't supplied an element, videocontext is responsible for the element
         if (this._isResponsibleForElementLifeCycle) {
-            if (this._mediaElementCache) {
-                this._element = this._mediaElementCache.get();
-            } else {
-                this._element = document.createElement(this._elementType);
-                this._element.setAttribute("crossorigin", "anonymous");
-                this._element.setAttribute("webkit-playsinline", "");
-                this._element.setAttribute("playsinline", "");
-                this._playbackRateUpdated = true;
-            }
+
+            const media = this._mediaElementCache
+                ? this._mediaElementCache.get()
+                : new CachedMedia({ audioCtx: this._audioCtx, type: this._elementType });
+
+            this._element = media.element;
+            this._audioNode = media.audioNode;
             this._element.volume = this._attributes.volume;
             if (window.MediaStream !== undefined && this._elementURL instanceof MediaStream) {
                 this._element.srcObject = this._elementURL;
             } else {
                 this._element.src = this._elementURL;
             }
+
+            this._audioReady = true;
+            this._triggerCallbacks("audioready");
         }
         // at this stage either the user or the element cache should have provided an element
         if (this._element) {
+
             for (let key in this._attributes) {
                 this._element[key] = this._attributes[key];
             }
@@ -123,8 +135,6 @@ class MediaNode extends SourceNode {
                 this._ready = true;
                 this._triggerCallbacks("error");
             };
-            this._audioNode = this._audioCtx.createMediaElementSource(this._element);
-            this._triggerCallbacks("audio:ready");
         } else {
             // If the element doesn't exist for whatever reason enter the error state.
             this._state = SOURCENODESTATE.error;

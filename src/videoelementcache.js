@@ -1,28 +1,21 @@
-import { mediaElementHasSource } from "./utils";
+import { mediaElementHasSource, CachedMedia } from "./utils";
 
 class VideoElementCache {
-    constructor(cache_size = 3) {
-        this._elements = [];
-        this._elementsInitialised = false;
+    constructor({ cache_size = 3, audioCtx }) {
+        this._cachedVideos = [];
+        this._videosInitialised = false;
         for (let i = 0; i < cache_size; i++) {
-            let element = this._createElement();
-            this._elements.push(element);
+            let cachedVideo = new CachedMedia({ audioCtx });
+            this._cachedVideos.push(cachedVideo);
         }
-    }
-
-    _createElement() {
-        let videoElement = document.createElement("video");
-        videoElement.setAttribute("crossorigin", "anonymous");
-        videoElement.setAttribute("webkit-playsinline", "");
-        videoElement.setAttribute("playsinline", "");
-        return videoElement;
+        this._audioCtx = audioCtx;
     }
 
     init() {
-        if (!this._elementsInitialised) {
-            for (let element of this._elements) {
+        if (!this._videosInitialised) {
+            for (let cachedVideo of this._cachedVideos) {
                 try {
-                    element.play().then(
+                    cachedVideo.element.play().then(
                         () => {},
                         e => {
                             if (e.name !== "NotSupportedError") throw e;
@@ -33,36 +26,36 @@ class VideoElementCache {
                 }
             }
         }
-        this._elementsInitialised = true;
+        this._videosInitialised = true;
     }
 
     get() {
         //Try and get an already intialised element.
-        for (let element of this._elements) {
+        for (let cachedVideo of this._cachedVideos) {
             // For some reason an uninitialised videoElement has its sr attribute set to the windows href. Hence the below check.
-            if (!mediaElementHasSource(element)) {
-                return element;
+            if (!mediaElementHasSource(cachedVideo.element)) {
+                return cachedVideo;
             }
         }
         //Fallback to creating a new element if non exists.
         console.debug(
             "No available video element in the cache, creating a new one. This may break mobile, make your initial cache larger."
         );
-        let element = this._createElement();
-        this._elements.push(element);
-        this._elementsInitialised = false;
-        return element;
+        let cachedVideo = new CachedMedia({ audioCtx: this._audioCtx });
+        this._cachedVideos.push(cachedVideo);
+        this._cachedVideosInitialised = false;
+        return cachedVideo;
     }
 
     get length() {
-        return this._elements.length;
+        return this._cachedVideos.length;
     }
 
     get unused() {
         let count = 0;
-        for (let element of this._elements) {
+        for (let cachedVideo of this._cachedVideos) {
             // For some reason an uninitialised videoElement has its sr attribute set to the windows href. Hence the below check.
-            if (!mediaElementHasSource(element)) count += 1;
+            if (!mediaElementHasSource(cachedVideo.element)) count += 1;
         }
         return count;
     }

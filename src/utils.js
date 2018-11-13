@@ -860,3 +860,25 @@ export class UpdateablesManager {
 export function mediaElementHasSource({ src, srcObject }) {
     return !((src === "" || src === undefined) && srcObject == null);
 }
+
+export class CachedMedia {
+
+    constructor({ audioCtx, type = "video" }) {
+        const media = document.createElement(type);
+        media.setAttribute("crossorigin", "anonymous");
+        media.setAttribute("webkit-playsinline", "");
+        media.setAttribute("playsinline", "");
+
+        this._mediaElement = media;
+        this._audioNode = audioCtx.createMediaElementSource(media);
+    }
+
+    get element() {
+        return this._mediaElement;
+    }
+
+    get audioNode() {
+        return this._audioNode;
+    }
+
+}

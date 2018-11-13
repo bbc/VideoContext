@@ -17,6 +17,7 @@ class GraphNode {
         this._renderGraph = renderGraph;
         this._rendered = false;
         this._displayName = TYPE;
+        this._callbacks = [];
     }
 
     /**
@@ -80,6 +81,71 @@ class GraphNode {
         return this._destroyed;
     }
 
+    get audioNode() {
+        return this._audioNode;
+    }
+
+    /**
+     * Register callbacks against one of these events: "load", "destroy", "seek", "pause", "play", "ended", "durationchange", "loaded", "error"
+     *
+     * @param {String} type - the type of event to register the callback against.
+     * @param {function} func - the function to call.
+     *
+     * @example
+     * var ctx = new VideoContext();
+     * var videoNode = ctx.createVideoSourceNode('video.mp4');
+     *
+     * videoNode.registerCallback("load", function(){"video is loading"});
+     * videoNode.registerCallback("play", function(){"video is playing"});
+     * videoNode.registerCallback("ended", function(){"video has eneded"});
+     *
+     */
+    registerCallback(type, func) {
+        this._callbacks.push({ type: type, func: func });
+    }
+
+    /**
+     * Remove callback.
+     *
+     * @param {function} [func] - the callback to remove, if undefined will remove all callbacks for this node.
+     *
+     * @example
+     * var ctx = new VideoContext();
+     * var videoNode = ctx.createVideoSourceNode('video.mp4');
+     *
+     * videoNode.registerCallback("load", function(){"video is loading"});
+     * videoNode.registerCallback("play", function(){"video is playing"});
+     * videoNode.registerCallback("ended", function(){"video has eneded"});
+     * videoNode.unregisterCallback(); //remove all of the three callbacks.
+     *
+     */
+    unregisterCallback(func) {
+        let toRemove = [];
+        for (let callback of this._callbacks) {
+            if (func === undefined) {
+                toRemove.push(callback);
+            } else if (callback.func === func) {
+                toRemove.push(callback);
+            }
+        }
+        for (let callback of toRemove) {
+            let index = this._callbacks.indexOf(callback);
+            this._callbacks.splice(index, 1);
+        }
+    }
+
+    _triggerCallbacks(type, data) {
+        for (let callback of this._callbacks) {
+            if (callback.type === type) {
+                if (data !== undefined) {
+                    callback.func(this, data);
+                } else {
+                    callback.func(this);
+                }
+            }
+        }
+    }
+
     /**
      * Connect this node to the targetNode
      *
@@ -112,6 +178,7 @@ class GraphNode {
      */
     destroy() {
         this.disconnect();
+        this.unregisterCallback();
         for (let input of this.inputs) {
             input.disconnect(this);
         }

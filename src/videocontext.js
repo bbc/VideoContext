@@ -87,12 +87,19 @@ export default class VideoContext {
             return;
         }
 
+        this._audioCtx = new AudioContext({
+            latencyHint: "interactive"
+        });
+
         // Initialise the video element cache
         if (options.useVideoElementCache === undefined) options.useVideoElementCache = true;
         this._useVideoElementCache = options.useVideoElementCache;
         if (this._useVideoElementCache) {
             if (!options.videoElementCacheSize) options.videoElementCacheSize = 5;
-            this._videoElementCache = new VideoElementCache(options.videoElementCacheSize);
+            this._videoElementCache = new VideoElementCache({
+                videoElementCacheSize: options.videoElementCacheSize,
+                audioCtx: this._audioCtx
+            });
         }
 
         // Create a unique ID for this VideoContext which can be used in the debugger.
@@ -105,9 +112,6 @@ export default class VideoContext {
         if (window.__VIDEOCONTEXT_REFS__ === undefined) window.__VIDEOCONTEXT_REFS__ = {};
         window.__VIDEOCONTEXT_REFS__[this._id] = this;
 
-        this._audioCtx = new AudioContext({
-            latencyHint: "interactive"
-        });
         this._renderGraph = new RenderGraph();
         this._sourceNodes = [];
         this._processingNodes = [];
@@ -115,7 +119,6 @@ export default class VideoContext {
         this._currentTime = 0;
         this._state = VideoContext.STATE.PAUSED;
         this._playbackRate = 1.0;
-        this._volume = 1.0;
         this._sourcesPlaying = undefined;
         this._destinationNode = new DestinationNode(this._gl, this._audioCtx, this._renderGraph);
 
@@ -417,12 +420,7 @@ export default class VideoContext {
      * @param {number} volume - the volume to apply to the video nodes.
      */
     set volume(vol) {
-        for (let node of this._sourceNodes) {
-            if (node instanceof VideoNode || node instanceof AudioNode) {
-                node.volume = vol;
-            }
-        }
-        this._volume = vol;
+        return this._destinationNode.audioNode.value = vol;
     }
 
     /**
@@ -430,7 +428,7 @@ export default class VideoContext {
      * @return {number} A value representing the volume. 1.0 by default.
      */
     get volume() {
-        return this._volume;
+        return this._destinationNode.audioNode.value;
     }
 
     /**
@@ -605,7 +603,12 @@ export default class VideoContext {
      * @return {EffectNode} A new effect node created from the passed definition
      */
     effect(definition) {
-        let audioEffectNode = new EffectNode(this._gl, this._audioCtx, this._renderGraph, definition);
+        let audioEffectNode = new EffectNode(
+            this._gl,
+            this._audioCtx,
+            this._renderGraph,
+            definition
+        );
         this._processingNodes.push(audioEffectNode);
         return audioEffectNode;
     }
@@ -683,7 +686,12 @@ export default class VideoContext {
      *
      */
     compositor(definition) {
-        let compositingNode = new CompositingNode(this._gl, this._audioCtx, this._renderGraph, definition);
+        let compositingNode = new CompositingNode(
+            this._gl,
+            this._audioCtx,
+            this._renderGraph,
+            definition
+        );
         this._processingNodes.push(compositingNode);
         return compositingNode;
     }
@@ -777,7 +785,12 @@ export default class VideoContext {
      * ctx.play();
      */
     transition(definition) {
-        let transitionNode = new TransitionNode(this._gl, this._audioCtx, this._renderGraph, definition);
+        let transitionNode = new TransitionNode(
+            this._gl,
+            this._audioCtx,
+            this._renderGraph,
+            definition
+        );
         this._processingNodes.push(transitionNode);
         return transitionNode;
     }

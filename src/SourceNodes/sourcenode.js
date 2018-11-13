@@ -55,7 +55,6 @@ class SourceNode extends GraphNode {
             gl.UNSIGNED_BYTE,
             new Uint8Array([0, 0, 0, 0])
         );
-        this._callbacks = [];
         this._renderPaused = false;
         this._displayName = TYPE;
     }
@@ -151,67 +150,6 @@ class SourceNode extends GraphNode {
     _unload() {
         this._triggerCallbacks("destroy");
         this._loadCalled = false;
-    }
-
-    /**
-     * Register callbacks against one of these events: "load", "destroy", "seek", "pause", "play", "ended", "durationchange", "loaded", "error"
-     *
-     * @param {String} type - the type of event to register the callback against.
-     * @param {function} func - the function to call.
-     *
-     * @example
-     * var ctx = new VideoContext();
-     * var videoNode = ctx.createVideoSourceNode('video.mp4');
-     *
-     * videoNode.registerCallback("load", function(){"video is loading"});
-     * videoNode.registerCallback("play", function(){"video is playing"});
-     * videoNode.registerCallback("ended", function(){"video has eneded"});
-     *
-     */
-    registerCallback(type, func) {
-        this._callbacks.push({ type: type, func: func });
-    }
-
-    /**
-     * Remove callback.
-     *
-     * @param {function} [func] - the callback to remove, if undefined will remove all callbacks for this node.
-     *
-     * @example
-     * var ctx = new VideoContext();
-     * var videoNode = ctx.createVideoSourceNode('video.mp4');
-     *
-     * videoNode.registerCallback("load", function(){"video is loading"});
-     * videoNode.registerCallback("play", function(){"video is playing"});
-     * videoNode.registerCallback("ended", function(){"video has eneded"});
-     * videoNode.unregisterCallback(); //remove all of the three callbacks.
-     *
-     */
-    unregisterCallback(func) {
-        let toRemove = [];
-        for (let callback of this._callbacks) {
-            if (func === undefined) {
-                toRemove.push(callback);
-            } else if (callback.func === func) {
-                toRemove.push(callback);
-            }
-        }
-        for (let callback of toRemove) {
-            let index = this._callbacks.indexOf(callback);
-            this._callbacks.splice(index, 1);
-        }
-    }
-
-    _triggerCallbacks(type, data) {
-        for (let callback of this._callbacks) {
-            if (callback.type === type) {
-                if (data !== undefined) {
-                    callback.func(this, data);
-                } else {
-                    callback.func(this);
-                }
-            }
-        }
     }
 
     /**
@@ -422,7 +360,6 @@ class SourceNode extends GraphNode {
     destroy() {
         this._unload();
         super.destroy();
-        this.unregisterCallback();
         delete this._element;
         this._elementURL = undefined;
         this._state = STATE.waiting;
