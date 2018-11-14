@@ -37,11 +37,26 @@ class ProcessingNode extends GraphNode {
         }
 
         this._audioCtx = audioCtx;
-        this._audioNode = this._audioCtx.createGain();
-        this._audioNode.gain.value = 1;
 
-        this._inputAudioNode = this._audioNode;
-        this._outputAudioNode = this._audioNode;
+        if (definition && definition.hearable) {
+
+            const { input, output } = definition.hearable.audioNodesFactory(this._audioCtx);
+
+            if (!input || !output) {
+                throw new RenderException("an `audioNodesFactory` must return an object with two keys `input` and `output`");
+            }
+
+            this._inputAudioNode = input;
+            this._outputAudioNode = output;
+
+        } else {
+            // If no nodes are provided we provide a passthrough with a `GainNode`
+            const audioNode = this._audioCtx.createGain();
+            audioNode.gain.value = 1;
+
+            this._inputAudioNode = audioNode;
+            this._outputAudioNode = audioNode;
+        }
 
         this._inputTextureUnitMapping = [];
         this._maxTextureUnits = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
