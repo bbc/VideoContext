@@ -6,7 +6,7 @@ const TYPE = "CompositingNode";
 
 class CompositingNode extends ProcessingNode {
     /**
-     * Initialise an instance of a Compositing Node. You should not instantiate this directly, but use VideoContest.createCompositingNode().
+     * Initialise an instance of a Compositing Node. You should not instantiate this directly, but use vc.effect().
      */
     constructor(gl, audioCtx, renderGraph, definition) {
         let placeholderTexture = createElementTexture(gl);

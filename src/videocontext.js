@@ -420,7 +420,7 @@ export default class VideoContext {
      * @param {number} volume - the volume to apply to the video nodes.
      */
     set volume(vol) {
-        return this._destinationNode.audioNode.value = vol;
+        return this._destinationNode.audioNode.gain.value = vol;
     }
 
     /**
@@ -428,7 +428,7 @@ export default class VideoContext {
      * @return {number} A value representing the volume. 1.0 by default.
      */
     get volume() {
-        return this._destinationNode.audioNode.value;
+        return this._destinationNode.audioNode.gain.value;
     }
 
     /**

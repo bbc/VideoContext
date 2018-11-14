@@ -81,8 +81,12 @@ class GraphNode {
         return this._destroyed;
     }
 
-    get audioNode() {
-        return this._audioNode;
+    get inputAudioNode() {
+        return this._inputAudioNode;
+    }
+
+    get outputAudioNode() {
+        return this._outputAudioNode;
     }
 
     /**

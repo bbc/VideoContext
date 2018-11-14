@@ -38,7 +38,10 @@ class ProcessingNode extends GraphNode {
 
         this._audioCtx = audioCtx;
         this._audioNode = this._audioCtx.createGain();
-        this._audioNode.value = 1;
+        this._audioNode.gain.value = 1;
+
+        this._inputAudioNode = this._audioNode;
+        this._outputAudioNode = this._audioNode;
 
         this._inputTextureUnitMapping = [];
         this._maxTextureUnits = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);

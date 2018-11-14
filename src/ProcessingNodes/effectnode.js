@@ -24,10 +24,6 @@ class EffectNode extends ProcessingNode {
 
         super(gl, audioCtx, renderGraph, definition, definition.inputs, true);
 
-        if (definition.audioEffect) {
-            this._audioNode = definition.audioEffect();
-        }
-
         this._placeholderTexture = placeholderTexture;
         this._displayName = TYPE;
     }

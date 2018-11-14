@@ -126,11 +126,11 @@ class RenderGraph {
      */
     registerConnection(sourceNode, destinationNode, target) {
 
-        if (sourceNode.audioNode) {
-            sourceNode.audioNode.connect(destinationNode.audioNode);
+        if (sourceNode.outputAudioNode) {
+            sourceNode.outputAudioNode.connect(destinationNode.inputAudioNode);
         } else {
             const connectAudio = () => {
-                sourceNode.audioNode.connect(destinationNode.audioNode);
+                sourceNode.outputAudioNode.connect(destinationNode.inputAudioNode);
                 sourceNode.unregisterCallback("audioready");
             };
             sourceNode.registerCallback("audioready", connectAudio);
@@ -203,7 +203,7 @@ class RenderGraph {
         this.connections.forEach(function(connection) {
             if (connection.source === sourceNode && connection.destination === destinationNode) {
                 toRemove.push(connection);
-                sourceNode._audioNode.disconnect(destinationNode._audioNode);
+                sourceNode._outputAudioNode.disconnect(destinationNode._inputAudioNode);
             }
         });
 

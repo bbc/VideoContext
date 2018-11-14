@@ -5,7 +5,7 @@ const TYPE = "TransitionNode";
 
 class TransitionNode extends EffectNode {
     /**
-     * Initialise an instance of a TransitionNode. You should not instantiate this directly, but use VideoContest.createTransitonNode().
+     * Initialise an instance of a TransitionNode. You should not instantiate this directly, but use vc.transition().
      */
     constructor(gl, audioCtx, renderGraph, definition) {
         super(gl, audioCtx, renderGraph, definition);

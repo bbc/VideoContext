@@ -1,6 +1,7 @@
 //Matthew Shotton, R&D User Experience,© BBC 2015
 import SourceNode, { SOURCENODESTATE } from "./sourcenode";
 import { CachedMedia } from "../utils";
+import { RenderException } from "../exceptions.js";
 
 class MediaNode extends SourceNode {
     /**
@@ -38,6 +39,7 @@ class MediaNode extends SourceNode {
 
         if (!this._isResponsibleForElementLifeCycle) {
             this._audioNode = audioCtx.createMediaElementSource(this._element);
+            this._outputAudioNode = this._audioNode;
             this._audioReady = true;
         }
     }
@@ -72,7 +74,11 @@ class MediaNode extends SourceNode {
         return this._elementURL;
     }
 
-    get audioNode() {
+    get inputAudioNode() {
+        throw new RenderException("A MediaNode can not have any inputs");
+    }
+
+    get outputAudioNode() {
         if (this._audioReady) {
             return this._audioNode;
         }
@@ -106,6 +112,7 @@ class MediaNode extends SourceNode {
 
             this._element = media.element;
             this._audioNode = media.audioNode;
+            this._outputAudioNode = media.audioNode;
             this._element.volume = this._attributes.volume;
             if (window.MediaStream !== undefined && this._elementURL instanceof MediaStream) {
                 this._element.srcObject = this._elementURL;
