@@ -113,6 +113,7 @@ export default class VideoContext {
         window.__VIDEOCONTEXT_REFS__[this._id] = this;
 
         this._renderGraph = new RenderGraph();
+        this._destinationNode = new DestinationNode(this._gl, this._audioCtx, this._renderGraph);
         this._sourceNodes = [];
         this._processingNodes = [];
         this._timeline = [];
@@ -120,7 +121,6 @@ export default class VideoContext {
         this._state = VideoContext.STATE.PAUSED;
         this._playbackRate = 1.0;
         this._sourcesPlaying = undefined;
-        this._destinationNode = new DestinationNode(this._gl, this._audioCtx, this._renderGraph);
 
         this._callbacks = new Map();
         this._callbacks.set("stalled", []);

@@ -7,7 +7,19 @@ class TransitionNode extends EffectNode {
     /**
      * Initialise an instance of a TransitionNode. You should not instantiate this directly, but use vc.transition().
      */
-    constructor(gl, audioCtx, renderGraph, definition) {
+    constructor(gl, audioCtx, renderGraph, definition = {}) {
+
+        definition.hearable = {
+            audioNodesFactory: (audioCtx) => {
+                const inputLength = definition.inputs ? definition.inputs.length : 1;
+                const channelMerger = audioCtx.createChannelMerger(inputLength);
+                return {
+                    input: channelMerger,
+                    output: channelMerger
+                };
+            }
+        };
+
         super(gl, audioCtx, renderGraph, definition);
         this._transitions = {};
 
@@ -150,13 +162,75 @@ class TransitionNode extends EffectNode {
                         (this._currentTime - transition.start) /
                         (transition.end - transition.start);
                     transitionActive = true;
-                    this[propertyName] = transition.current + difference * progress;
+
+                    const propertyValue = transition.current + difference * progress;
+                    this[propertyName] = propertyValue;
+
+                    this.inputs.forEach((input, index) => {
+                        const value = index % 2 === 0 ? ((difference * progress) - transition.target) : ((difference * progress) + transition.current);
+                        input.outputAudioNode.gain.setValueAtTime(
+                            value,
+                            this._audioCtx.currentTime
+                        );
+                    });
+
                     break;
                 }
             }
 
             if (!transitionActive) this[propertyName] = value;
         }
+    }
+
+    // _setAudioParams() {
+    //     if (this._definition.hearable) {
+
+    //         const rampType = this._definition.hearable.rampType || `linear`;
+
+    //         Object.keys(this._transitions).forEach(transitionName => {
+    //             this._transitions[transitionName].forEach(({ start, end, current, target }) => {
+
+    //                 this.inputs.forEach((input, index) => {
+
+    //                     const addAudioTransition = () => {
+    //                         const initialValue = index % 2 === 0 ? current : target;
+    //                         const targetValue = index % 2 === 0 ? target : current;
+    //                         console.log(input.outputAudioNode);
+    //                         input.outputAudioNode.gain.setValueAtTime(initialValue, start);
+    //                         input.outputAudioNode.gain[`${rampType}RampToValueAtTime`](targetValue, end);
+    //                         input.unregisterCallback("audioready", addAudioTransition);
+    //                     };
+
+    //                     if (input._audioReady) {
+    //                         addAudioTransition();
+    //                     } else {
+    //                         input.registerCallback("audioready", addAudioTransition);
+    //                     }
+    //                 });
+
+    //             });
+    //         });
+    //     }
+    // }
+
+    // _resetAudioParams() {
+    //     if (this._definition.hearable) {
+    //         console.log("let's reset the audio params");
+    //     }
+    // }
+
+    connect() {
+        const isConnected = super.connect.apply(this, arguments);
+        // if (this._inputNames.length === this.inputs.length) {
+        //     this._setAudioParams();
+        // }
+        return isConnected;
+    }
+
+    disconnect() {
+        const isDisconnected = super.connect(arguments);
+        // this._resetAudioParams();
+        return isDisconnected;
     }
 }
 

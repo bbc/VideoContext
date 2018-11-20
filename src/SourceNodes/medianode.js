@@ -38,7 +38,10 @@ class MediaNode extends SourceNode {
         this._audioReady = false;
 
         if (!this._isResponsibleForElementLifeCycle) {
-            this._audioNode = audioCtx.createMediaElementSource(this._element);
+            const mediaElementSource = audioCtx.createMediaElementSource(this._element);
+            const gainNode = audioCtx.createGain();
+            mediaElementSource.connect(gainNode);
+            this._audioNode = gainNode;
             this._outputAudioNode = this._audioNode;
             this._audioReady = true;
         }

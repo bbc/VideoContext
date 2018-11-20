@@ -162,6 +162,14 @@ class ProcessingNode extends GraphNode {
         this._displayName = TYPE;
     }
 
+    get inputAudioNode() {
+        return this._inputAudioNode;
+    }
+
+    get outputAudioNode() {
+        return this._outputAudioNode;
+    }
+
     /**
      * Sets the passed processing node property to the passed value.
      * @param {string} name - The name of the processing node parameter to modify.

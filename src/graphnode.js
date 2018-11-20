@@ -56,11 +56,8 @@ class GraphNode {
      * @return {GraphNode[]} An array of nodes which connect to this node.
      */
     get inputs() {
-        let result = this._renderGraph.getInputsForNode(this);
-        result = result.filter(function(n) {
-            return n !== undefined;
-        });
-        return result;
+        const result = this._renderGraph.getInputsForNode(this);
+        return result.filter(n => n !== undefined);
     }
 
     /**
@@ -79,14 +76,6 @@ class GraphNode {
      */
     get destroyed() {
         return this._destroyed;
-    }
-
-    get inputAudioNode() {
-        return this._inputAudioNode;
-    }
-
-    get outputAudioNode() {
-        return this._outputAudioNode;
     }
 
     /**
