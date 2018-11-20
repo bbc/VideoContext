@@ -108,7 +108,6 @@ class MediaNode extends SourceNode {
     _triggerLoad() {
         // If the user hasn't supplied an element, videocontext is responsible for the element
         if (this._isResponsibleForElementLifeCycle) {
-
             const media = this._mediaElementCache
                 ? this._mediaElementCache.get()
                 : new CachedMedia({ audioCtx: this._audioCtx, type: this._elementType });
@@ -128,7 +127,6 @@ class MediaNode extends SourceNode {
         }
         // at this stage either the user or the element cache should have provided an element
         if (this._element) {
-
             for (let key in this._attributes) {
                 this._element[key] = this._attributes[key];
             }

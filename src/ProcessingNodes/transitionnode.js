@@ -8,9 +8,8 @@ class TransitionNode extends EffectNode {
      * Initialise an instance of a TransitionNode. You should not instantiate this directly, but use vc.transition().
      */
     constructor(gl, audioCtx, renderGraph, definition = {}) {
-
         definition.hearable = {
-            audioNodesFactory: (audioCtx) => {
+            audioNodesFactory: audioCtx => {
                 const inputLength = definition.inputs ? definition.inputs.length : 1;
                 const channelMerger = audioCtx.createChannelMerger(inputLength);
                 return {
@@ -167,7 +166,10 @@ class TransitionNode extends EffectNode {
                     this[propertyName] = propertyValue;
 
                     this.inputs.forEach((input, index) => {
-                        const value = index % 2 === 0 ? ((difference * progress) - transition.target) : ((difference * progress) + transition.current);
+                        const value =
+                            index % 2 === 0
+                                ? difference * progress - transition.target
+                                : difference * progress + transition.current;
                         input.outputAudioNode.gain.setValueAtTime(
                             value,
                             this._audioCtx.currentTime

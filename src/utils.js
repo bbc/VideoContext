@@ -862,7 +862,6 @@ export function mediaElementHasSource({ src, srcObject }) {
 }
 
 export class CachedMedia {
-
     constructor({ audioCtx, type = "video" }) {
         const media = document.createElement(type);
         media.setAttribute("crossorigin", "anonymous");
@@ -887,5 +886,4 @@ export class CachedMedia {
     get audioNode() {
         return this._audioNode;
     }
-
 }
