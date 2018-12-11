@@ -38,7 +38,16 @@ class CompositingNode extends ProcessingNode {
         );
         gl.clearColor(0, 0, 0, 0); // green;
         gl.clear(gl.COLOR_BUFFER_BIT);
-        gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+        if (this.inputs.length == 1) {
+            // If there is only 1 input, set the blendFunc to prioritise the SRC rgba values to ensure
+            // there is no blending of the background clearColor to a transparent SRC image i.e. no 'bleeding' of background color into transparency
+            gl.blendFunc(gl.ONE, gl.ZERO);
+        } else {
+            // If there is more than 1 input, set the blendFunc to blend the RGB separately from A
+            // We blend separately because as you stack layers in a CompositingNode, we don't want to interpolate alpha
+            // (i.e. we don't want a mid-point or a weighted average of the alpha channels)
+            gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+        }
 
         this.inputs.forEach(node => {
             if (node === undefined) return;
