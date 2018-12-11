@@ -46,7 +46,12 @@ class CompositingNode extends ProcessingNode {
             // If there is more than 1 input, set the blendFunc to blend the RGB separately from A
             // We blend separately because as you stack layers in a CompositingNode, we don't want to interpolate alpha
             // (i.e. we don't want a mid-point or a weighted average of the alpha channels)
-            gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+            gl.blendFuncSeparate(
+                gl.SRC_ALPHA,
+                gl.ONE_MINUS_SRC_ALPHA,
+                gl.ONE,
+                gl.ONE_MINUS_SRC_ALPHA
+            );
         }
 
         this.inputs.forEach(node => {
