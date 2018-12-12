@@ -1,6 +1,6 @@
 {
   "name": "videocontext",
-  "version": "0.52.10",
+  "version": "0.54.0",
   "description": "A WebGL & HTML5 graph based video composition library",
   "repository": {
     "type": "git",
@@ -8,6 +8,7 @@
   },
   "license": "Apache-2.0",
   "browser": "dist/videocontext.js",
+  "main": "dist/videocontext.js",
   "keywords": [
     "video",
     "context",
