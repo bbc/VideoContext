@@ -7,7 +7,7 @@
     "url": "git+https://github.com/bbc/VideoContext.git"
   },
   "license": "Apache-2.0",
-  "browser": "dist/videocontext.js",
+  "main": "dist/videocontext.js",
   "keywords": [
     "video",
     "context",
