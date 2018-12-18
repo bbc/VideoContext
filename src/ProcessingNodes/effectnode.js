@@ -40,6 +40,7 @@ class EffectNode extends ProcessingNode {
         );
         gl.clearColor(0, 0, 0, 0); // green;
         gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.blendFunc(gl.ONE, gl.ZERO);
 
         super._render();
 
