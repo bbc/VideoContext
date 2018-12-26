@@ -42,8 +42,7 @@ class DestinationNode extends ProcessingNode {
 
             for (let mapping of this._inputTextureUnitMapping) {
                 gl.activeTexture(mapping.textureUnit);
-                let textureLocation = gl.getUniformLocation(this._program, mapping.name);
-                gl.uniform1i(textureLocation, this._parameterTextureCount + textureOffset);
+                gl.uniform1i(mapping.textureLocation, this._parameterTextureCount + textureOffset);
                 textureOffset += 1;
                 gl.bindTexture(gl.TEXTURE_2D, texture);
             }

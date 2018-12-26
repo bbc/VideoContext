@@ -100,7 +100,8 @@ class ProcessingNode extends GraphNode {
         for (let inputName of definition.inputs) {
             this._inputTextureUnitMapping.push({
                 name: inputName,
-                textureUnit: gl.TEXTURE0 + this._boundTextureUnits
+                textureUnit: gl.TEXTURE0 + this._boundTextureUnits,
+                textureLocation: gl.getUniformLocation(this._program, inputName)
             });
             this._boundTextureUnits += 1;
             this._inputTextureCount += 1;

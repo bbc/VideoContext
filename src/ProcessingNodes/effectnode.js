@@ -49,14 +49,15 @@ class EffectNode extends ProcessingNode {
         for (var i = 0; i < this._inputTextureUnitMapping.length; i++) {
             let inputTexture = this._placeholderTexture;
             let textureUnit = this._inputTextureUnitMapping[i].textureUnit;
-            let textureName = this._inputTextureUnitMapping[i].name;
             if (i < inputs.length && inputs[i] !== undefined) {
                 inputTexture = inputs[i]._texture;
             }
 
             gl.activeTexture(textureUnit);
-            let textureLocation = gl.getUniformLocation(this._program, textureName);
-            gl.uniform1i(textureLocation, this._parameterTextureCount + textureOffset);
+            gl.uniform1i(
+                this._inputTextureUnitMapping[i].textureLocation,
+                this._parameterTextureCount + textureOffset
+            );
             textureOffset += 1;
             gl.bindTexture(gl.TEXTURE_2D, inputTexture);
         }
