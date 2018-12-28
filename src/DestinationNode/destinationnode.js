@@ -29,10 +29,13 @@ class DestinationNode extends ProcessingNode {
         let gl = this._gl;
 
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-        gl.enable(gl.BLEND);
         gl.clearColor(0, 0, 0, 0.0); // green;
         gl.clear(gl.COLOR_BUFFER_BIT);
+
+        // Set the initial blend function to 'proiritize' the SRC so that the background
+        // clearColor doesn't bleed / blend into output
+        gl.enable(gl.BLEND);
+        gl.blendFunc(gl.ONE, gl.ZERO);
 
         this.inputs.forEach(node => {
             super._render();
@@ -49,6 +52,10 @@ class DestinationNode extends ProcessingNode {
             }
 
             gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+            // Update the blend function to allow for 'default' blend of transparency
+            // of the next inputs of the node
+            gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
         });
     }
 }
