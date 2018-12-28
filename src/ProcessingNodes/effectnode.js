@@ -44,21 +44,19 @@ class EffectNode extends ProcessingNode {
         super._render();
 
         let inputs = this._renderGraph.getInputsForNode(this);
-        let textureOffset = 0;
 
-        for (var i = 0; i < this._inputTextureUnitMapping.length; i++) {
+        for (var i = 0; i < this._shaderInputsTextureUnitMapping.length; i++) {
             let inputTexture = this._placeholderTexture;
-            let textureUnit = this._inputTextureUnitMapping[i].textureUnit;
+            let textureUnit = this._shaderInputsTextureUnitMapping[i].textureUnit;
             if (i < inputs.length && inputs[i] !== undefined) {
                 inputTexture = inputs[i]._texture;
             }
 
             gl.activeTexture(textureUnit);
             gl.uniform1i(
-                this._inputTextureUnitMapping[i].textureLocation,
-                this._parameterTextureCount + textureOffset
+                this._shaderInputsTextureUnitMapping[i].location,
+                this._shaderInputsTextureUnitMapping[i].textureUnitIndex
             );
-            textureOffset += 1;
             gl.bindTexture(gl.TEXTURE_2D, inputTexture);
         }
         gl.drawArrays(gl.TRIANGLES, 0, 6);
