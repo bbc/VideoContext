@@ -17,7 +17,7 @@ class ProcessingNode extends GraphNode {
      * This class is not used directly, but is extended to create CompositingNodes, TransitionNodes, and EffectNodes.
      */
     constructor(gl, audioCtx, renderGraph, definition, inputNames, limitConnections) {
-        super(gl, renderGraph, inputNames, limitConnections);
+        super(gl, audioCtx, renderGraph, inputNames, limitConnections);
         this._vertexShader = compileShader(gl, definition.vertexShader, gl.VERTEX_SHADER);
         this._fragmentShader = compileShader(gl, definition.fragmentShader, gl.FRAGMENT_SHADER);
         this._definition = definition;
@@ -36,26 +36,26 @@ class ProcessingNode extends GraphNode {
             };
         }
 
-        this._audioCtx = audioCtx;
+        if (audioCtx) {
+            if (definition && definition.hearable) {
+                const { input, output } = definition.hearable.audioNodesFactory(this._audioCtx);
 
-        if (definition && definition.hearable) {
-            const { input, output } = definition.hearable.audioNodesFactory(this._audioCtx);
+                if (!input || !output) {
+                    throw new RenderException(
+                        "an `audioNodesFactory` must return an object with two keys `input` and `output`"
+                    );
+                }
 
-            if (!input || !output) {
-                throw new RenderException(
-                    "an `audioNodesFactory` must return an object with two keys `input` and `output`"
-                );
+                this._inputAudioNode = input;
+                this._outputAudioNode = output;
+            } else {
+                // If no nodes are provided we provide a passthrough with a `GainNode`
+                const audioNode = this._audioCtx.createGain();
+                audioNode.gain.value = 1;
+
+                this._inputAudioNode = audioNode;
+                this._outputAudioNode = audioNode;
             }
-
-            this._inputAudioNode = input;
-            this._outputAudioNode = output;
-        } else {
-            // If no nodes are provided we provide a passthrough with a `GainNode`
-            const audioNode = this._audioCtx.createGain();
-            audioNode.gain.value = 1;
-
-            this._inputAudioNode = audioNode;
-            this._outputAudioNode = audioNode;
         }
 
         this._inputTextureUnitMapping = [];

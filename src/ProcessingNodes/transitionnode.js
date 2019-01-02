@@ -8,18 +8,20 @@ class TransitionNode extends EffectNode {
      * Initialise an instance of a TransitionNode. You should not instantiate this directly, but use vc.transition().
      */
     constructor(gl, audioCtx, renderGraph, definition = {}) {
-        definition.hearable = {
-            audioNodesFactory: audioCtx => {
-                const inputLength = definition.inputs ? definition.inputs.length : 1;
-                const channelMerger = audioCtx.createChannelMerger(inputLength);
-                const gainNode = audioCtx.createGain();
-                channelMerger.connect(gainNode);
-                return {
-                    input: channelMerger,
-                    output: gainNode
-                };
-            }
-        };
+        if (audioCtx) {
+            definition.hearable = {
+                audioNodesFactory: audioCtx => {
+                    const inputLength = definition.inputs ? definition.inputs.length : 1;
+                    const channelMerger = audioCtx.createChannelMerger(inputLength);
+                    const gainNode = audioCtx.createGain();
+                    channelMerger.connect(gainNode);
+                    return {
+                        input: channelMerger,
+                        output: gainNode
+                    };
+                }
+            };
+        }
 
         super(gl, audioCtx, renderGraph, definition);
         this._transitions = {};
@@ -167,16 +169,18 @@ class TransitionNode extends EffectNode {
                     const propertyValue = transition.current + difference * progress;
                     this[propertyName] = propertyValue;
 
-                    this.inputs.forEach((input, index) => {
-                        const value =
-                            index % 2 === 0
-                                ? difference * progress - transition.target
-                                : difference * progress + transition.current;
-                        input.outputAudioNode.gain.setValueAtTime(
-                            value,
-                            this._audioCtx.currentTime
-                        );
-                    });
+                    if (this._audioCtx) {
+                        this.inputs.forEach((input, index) => {
+                            const value =
+                                index % 2 === 0
+                                    ? difference * progress - transition.target
+                                    : difference * progress + transition.current;
+                            input.outputAudioNode.gain.setValueAtTime(
+                                value,
+                                this._audioCtx.currentTime
+                            );
+                        });
+                    }
 
                     break;
                 }

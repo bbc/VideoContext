@@ -870,13 +870,15 @@ export class CachedMedia {
 
         this._mediaElement = media;
 
-        const mediaElementSource = audioCtx.createMediaElementSource(media);
-        const gainNode = audioCtx.createGain();
-        mediaElementSource.connect(gainNode);
+        if (audioCtx) {
+            const mediaElementSource = audioCtx.createMediaElementSource(media);
+            const gainNode = audioCtx.createGain();
+            mediaElementSource.connect(gainNode);
 
-        // We are adding a gain node after the source node
-        // to be able to add transition effects using `exponentialRampToValueAtTime` for example
-        this._audioNode = gainNode;
+            // We are adding a gain node after the source node
+            // to be able to add transition effects using `exponentialRampToValueAtTime` for example
+            this._audioNode = gainNode;
+        }
     }
 
     get element() {

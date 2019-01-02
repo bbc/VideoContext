@@ -20,8 +20,7 @@ class MediaNode extends SourceNode {
         mediaElementCache = undefined,
         attributes = {}
     ) {
-        super(src, gl, renderGraph, currentTime);
-        this._audioCtx = audioCtx;
+        super(src, gl, audioCtx, renderGraph, currentTime);
         this._preloadTime = preloadTime;
         this._sourceOffset = sourceOffset;
         this._globalPlaybackRate = globalPlaybackRate;
@@ -37,7 +36,7 @@ class MediaNode extends SourceNode {
 
         this._audioReady = false;
 
-        if (!this._isResponsibleForElementLifeCycle) {
+        if (!this._isResponsibleForElementLifeCycle && audioCtx) {
             const mediaElementSource = audioCtx.createMediaElementSource(this._element);
             const gainNode = audioCtx.createGain();
             mediaElementSource.connect(gainNode);

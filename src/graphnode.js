@@ -6,7 +6,7 @@ class GraphNode {
     /**
      * Base class from which all processing and source nodes are derrived.
      */
-    constructor(gl, renderGraph, inputNames, limitConnections = false) {
+    constructor(gl, audioCtx, renderGraph, inputNames, limitConnections = false) {
         this._renderGraph = renderGraph;
         this._limitConnections = limitConnections;
         this._inputNames = inputNames;
@@ -14,10 +14,15 @@ class GraphNode {
 
         //Setup WebGL output texture
         this._gl = gl;
+        this._audioCtx = audioCtx;
         this._renderGraph = renderGraph;
         this._rendered = false;
         this._displayName = TYPE;
         this._callbacks = [];
+    }
+
+    get webAudioEnabled() {
+        return this._audioCtx instanceof AudioContext;
     }
 
     /**

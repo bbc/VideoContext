@@ -59,7 +59,8 @@ export default class VideoContext {
             webglContextAttributes: {
                 preserveDrawingBuffer: true,
                 alpha: false
-            }
+            },
+            webAudioEnabled: true
         }
     ) {
         this._canvas = canvas;
@@ -87,9 +88,12 @@ export default class VideoContext {
             return;
         }
 
-        this._audioCtx = new AudioContext({
-            latencyHint: "interactive"
-        });
+        this._webAudioEnabled = options.webAudioEnabled;
+        if (this._webAudioEnabled) {
+            this._audioCtx = new AudioContext({
+                latencyHint: "interactive"
+            });
+        }
 
         // Initialise the video element cache
         if (options.useVideoElementCache === undefined) options.useVideoElementCache = true;

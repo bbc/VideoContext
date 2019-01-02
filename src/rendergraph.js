@@ -121,12 +121,11 @@ class RenderGraph {
      *
      * @param {GraphNode} sourceNode - the node to connect from.
      * @param {GraphNode} destinationNode - the node to connect to.
-     * @param {(String | number)} [target] - the target port of the conenction, this could be a string to specfiy a specific named port, a number to specify a port by index, or undefined, in which case the next available port will be connected to.
+     * @param {(String | number)} [target] - the target port of the connection, this could be a string to specfiy a specific named port, a number to specify a port by index, or undefined, in which case the next available port will be connected to.
      * @return {boolean} Will return true if connection succeeds otherwise will throw a ConnectException.
      */
     registerConnection(sourceNode, destinationNode, target) {
-
-        if (sourceNode.hasAudio) {
+        if (sourceNode.hasAudio && sourceNode.webAudioEnabled && destinationNode.webAudioEnabled) {
             if (sourceNode.outputAudioNode) {
                 sourceNode.outputAudioNode.connect(destinationNode.inputAudioNode);
             } else {

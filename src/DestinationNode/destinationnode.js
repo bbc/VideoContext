@@ -23,7 +23,9 @@ class DestinationNode extends ProcessingNode {
 
         super(gl, audioCtx, renderGraph, definition, definition.inputs, false);
 
-        this._outputAudioNode.connect(audioCtx.destination);
+        if (audioCtx) {
+            this._outputAudioNode.connect(audioCtx.destination);
+        }
         this._displayName = TYPE;
     }
 

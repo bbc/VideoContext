@@ -18,8 +18,8 @@ class SourceNode extends GraphNode {
      * Initialise an instance of a SourceNode.
      * This is the base class for other Nodes which generate media to be passed into the processing pipeline.
      */
-    constructor(src, gl, renderGraph, currentTime) {
-        super(gl, renderGraph, [], true);
+    constructor(src, gl, audioCtx, renderGraph, currentTime) {
+        super(gl, audioCtx, renderGraph, [], true);
         this._element = undefined;
         this._elementURL = undefined;
         this._isResponsibleForElementLifeCycle = true;
