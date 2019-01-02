@@ -78,6 +78,10 @@ class GraphNode {
         return this._destroyed;
     }
 
+    get hasAudio() {
+        return true;
+    }
+
     /**
      * Register callbacks against one of these events: "load", "destroy", "seek", "pause", "play", "ended", "durationchange", "loaded", "error"
      *

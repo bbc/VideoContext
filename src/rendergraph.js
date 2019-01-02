@@ -125,14 +125,17 @@ class RenderGraph {
      * @return {boolean} Will return true if connection succeeds otherwise will throw a ConnectException.
      */
     registerConnection(sourceNode, destinationNode, target) {
-        if (sourceNode.outputAudioNode) {
-            sourceNode.outputAudioNode.connect(destinationNode.inputAudioNode);
-        } else {
-            const connectAudio = () => {
+
+        if (sourceNode.hasAudio) {
+            if (sourceNode.outputAudioNode) {
                 sourceNode.outputAudioNode.connect(destinationNode.inputAudioNode);
-                sourceNode.unregisterCallback("audioready");
-            };
-            sourceNode.registerCallback("audioready", connectAudio);
+            } else {
+                const connectAudio = () => {
+                    sourceNode.outputAudioNode.connect(destinationNode.inputAudioNode);
+                    sourceNode.unregisterCallback("audioready");
+                };
+                sourceNode.registerCallback("audioready", connectAudio);
+            }
         }
 
         if (

@@ -140,6 +140,10 @@ class SourceNode extends GraphNode {
         return this._stretchPaused;
     }
 
+    get hasAudio() {
+        return false;
+    }
+
     _load() {
         if (!this._loadCalled) {
             this._triggerCallbacks("load");

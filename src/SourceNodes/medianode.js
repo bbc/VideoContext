@@ -105,6 +105,10 @@ class MediaNode extends SourceNode {
         if (this._element !== undefined) this._element.volume = this._attributes.volume;
     }
 
+    get hasAudio() {
+        return true;
+    }
+
     _triggerLoad() {
         // If the user hasn't supplied an element, videocontext is responsible for the element
         if (this._isResponsibleForElementLifeCycle) {
