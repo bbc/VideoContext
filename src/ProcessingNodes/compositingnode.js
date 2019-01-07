@@ -50,13 +50,10 @@ class CompositingNode extends ProcessingNode {
 
             //map the input textures input the node
             var texture = node._texture;
-            let textureOffset = 0;
 
-            for (let mapping of this._inputTextureUnitMapping) {
+            for (let mapping of this._shaderInputsTextureUnitMapping) {
                 gl.activeTexture(mapping.textureUnit);
-                let textureLocation = gl.getUniformLocation(this._program, mapping.name);
-                gl.uniform1i(textureLocation, this._parameterTextureCount + textureOffset);
-                textureOffset += 1;
+                gl.uniform1i(mapping.location, mapping.textureUnitIndex);
                 gl.bindTexture(gl.TEXTURE_2D, texture);
             }
 
