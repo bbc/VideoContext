@@ -925,17 +925,17 @@ export default class VideoContext {
             }
 
             /*
-            * Itterate the directed acyclic graph using Khan's algorithm (KHAAAAAN!).
-            *
-            * This has highlighted a bunch of ineffencies in the rendergraph class about how its stores connections.
-            * Mainly the fact that to get inputs for a node you have to iterate the full list of connections rather than
-            * a node owning it's connections.
-            * The trade off with changing this is making/removing connections becomes more costly performance wise, but
-            * this is deffinately worth while because getting the connnections is a much more common operation.
-            *
-            * TL;DR Future matt - refactor this.
-            *
-            */
+             * Itterate the directed acyclic graph using Khan's algorithm (KHAAAAAN!).
+             *
+             * This has highlighted a bunch of ineffencies in the rendergraph class about how its stores connections.
+             * Mainly the fact that to get inputs for a node you have to iterate the full list of connections rather than
+             * a node owning it's connections.
+             * The trade off with changing this is making/removing connections becomes more costly performance wise, but
+             * this is definately worth while because getting the connnections is a much more common operation.
+             *
+             * TL;DR Future matt - refactor this.
+             *
+             */
             let sortedNodes = [];
             let connections = this._renderGraph.connections.slice();
             let nodes = RenderGraph.getInputlessNodes(connections);

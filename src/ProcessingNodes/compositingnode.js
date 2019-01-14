@@ -50,13 +50,10 @@ class CompositingNode extends ProcessingNode {
 
             //map the input textures input the node
             var texture = node._texture;
-            let textureOffset = 0;
 
-            for (let mapping of this._inputTextureUnitMapping) {
+            for (let mapping of this._shaderInputsTextureUnitMapping) {
                 gl.activeTexture(mapping.textureUnit);
-                let textureLocation = gl.getUniformLocation(this._program, mapping.name);
-                gl.uniform1i(textureLocation, this._parameterTextureCount + textureOffset);
-                textureOffset += 1;
+                gl.uniform1i(mapping.location, mapping.textureUnitIndex);
                 gl.bindTexture(gl.TEXTURE_2D, texture);
             }
 
@@ -65,8 +62,10 @@ class CompositingNode extends ProcessingNode {
             // Update the blend function to allow for 'default' blend of transparency
             // of the next inputs of the node
             gl.blendFuncSeparate(
-                gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA,
-                gl.ONE, gl.ONE_MINUS_SRC_ALPHA
+                gl.SRC_ALPHA,
+                gl.ONE_MINUS_SRC_ALPHA,
+                gl.ONE,
+                gl.ONE_MINUS_SRC_ALPHA
             );
             // We blend RGB and Alpha separately because as you stack layers in a CompositionNode, we don’t want to interpolate alpha
             // (i.e. we don’t want a mid-point or a weighted average of the alpha channels)

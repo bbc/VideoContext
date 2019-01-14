@@ -36,11 +36,9 @@ class ProcessingNode extends GraphNode {
             };
         }
 
-        this._inputTextureUnitMapping = [];
+        this._shaderInputsTextureUnitMapping = [];
         this._maxTextureUnits = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
         this._boundTextureUnits = 0;
-        this._parameterTextureCount = 0;
-        this._inputTextureCount = 0;
         this._texture = createElementTexture(gl);
         gl.texImage2D(
             gl.TEXTURE_2D,
@@ -85,9 +83,9 @@ class ProcessingNode extends GraphNode {
             let propertyValue = this._properties[propertyName].value;
             if (propertyValue instanceof Image) {
                 this._properties[propertyName].texture = createElementTexture(gl);
-                this._properties[propertyName].texutreUnit = gl.TEXTURE0 + this._boundTextureUnits;
+                this._properties[propertyName].textureUnit = gl.TEXTURE0 + this._boundTextureUnits;
+                this._properties[propertyName].textureUnitIndex = this._boundTextureUnits;
                 this._boundTextureUnits += 1;
-                this._parameterTextureCount += 1;
                 if (this._boundTextureUnits > this._maxTextureUnits) {
                     throw new RenderException(
                         "Trying to bind more than available textures units to shader"
@@ -98,12 +96,13 @@ class ProcessingNode extends GraphNode {
 
         //calculate texutre units for input textures
         for (let inputName of definition.inputs) {
-            this._inputTextureUnitMapping.push({
+            this._shaderInputsTextureUnitMapping.push({
                 name: inputName,
-                textureUnit: gl.TEXTURE0 + this._boundTextureUnits
+                textureUnit: gl.TEXTURE0 + this._boundTextureUnits,
+                textureUnitIndex: this._boundTextureUnits,
+                location: gl.getUniformLocation(this._program, inputName)
             });
             this._boundTextureUnits += 1;
-            this._inputTextureCount += 1;
             if (this._boundTextureUnits > this._maxTextureUnits) {
                 throw new RenderException(
                     "Trying to bind more than available textures units to shader"
@@ -214,9 +213,6 @@ class ProcessingNode extends GraphNode {
         //upload the default uniforms
         gl.uniform1f(this._currentTimeLocation, parseFloat(this._currentTime));
 
-        //upload/update the custom uniforms
-        let textureOffset = 0;
-
         for (let propertyName in this._properties) {
             let propertyValue = this._properties[propertyName].value;
             let propertyType = this._properties[propertyName].type;
@@ -244,12 +240,12 @@ class ProcessingNode extends GraphNode {
                 }
             } else if (propertyValue instanceof Image) {
                 let texture = this._properties[propertyName].texture;
-                let textureUnit = this._properties[propertyName].texutreUnit;
+                let textureUnit = this._properties[propertyName].textureUnit;
+                let textureUnitIndex = this._properties[propertyName].textureUnit;
                 updateTexture(gl, texture, propertyValue);
 
                 gl.activeTexture(textureUnit);
-                gl.uniform1i(propertyLocation, textureOffset);
-                textureOffset += 1;
+                gl.uniform1i(propertyLocation, textureUnitIndex);
                 gl.bindTexture(gl.TEXTURE_2D, texture);
             } else {
                 //TODO - add tests for textures
