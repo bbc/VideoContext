@@ -62,8 +62,10 @@ class CompositingNode extends ProcessingNode {
             // Update the blend function to allow for 'default' blend of transparency
             // of the next inputs of the node
             gl.blendFuncSeparate(
-                gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA,
-                gl.ONE, gl.ONE_MINUS_SRC_ALPHA
+                gl.SRC_ALPHA,
+                gl.ONE_MINUS_SRC_ALPHA,
+                gl.ONE,
+                gl.ONE_MINUS_SRC_ALPHA
             );
             // We blend RGB and Alpha separately because as you stack layers in a CompositionNode, we don’t want to interpolate alpha
             // (i.e. we don’t want a mid-point or a weighted average of the alpha channels)
