@@ -310,16 +310,22 @@ class SourceNode extends GraphNode {
 
         if (this._state === STATE.waiting) return;
         if (time < this._startTime) {
-            clearTexture(this._gl, this._texture);
-            this._state = STATE.sequenced;
+            // A quick check to ensure we don't call 'clearTexture' every RAF when only needed once
+            if (this._state != STATE.sequenced) {
+                clearTexture(this._gl, this._texture);
+                this._state = STATE.sequenced;
+            }
         }
         if (time >= this._startTime && this._state !== STATE.paused) {
             this._state = STATE.playing;
         }
         if (time >= this._stopTime) {
-            clearTexture(this._gl, this._texture);
-            this._triggerCallbacks("ended");
-            this._state = STATE.ended;
+            // A quick check to ensure we don't call 'clearTexture' every RAF when only needed once
+            if (this._state != STATE.ended) {
+                clearTexture(this._gl, this._texture);
+                this._triggerCallbacks("ended");
+                this._state = STATE.ended;
+            }
         }
         //update the current time
         this._currentTime = time;
@@ -371,8 +377,11 @@ class SourceNode extends GraphNode {
         this._triggerCallbacks("render", currentTime);
 
         if (currentTime < this._startTime) {
-            clearTexture(this._gl, this._texture);
-            this._state = STATE.sequenced;
+            // A quick check to ensure we don't call 'clearTexture' every RAF when only needed once
+            if (this._state != STATE.sequenced) {
+                clearTexture(this._gl, this._texture);
+                this._state = STATE.sequenced;
+            }
         }
 
         if (
@@ -385,9 +394,12 @@ class SourceNode extends GraphNode {
         }
 
         if (currentTime >= this._stopTime) {
-            clearTexture(this._gl, this._texture);
-            this._triggerCallbacks("ended");
-            this._state = STATE.ended;
+            // A quick check to ensure we don't call 'clearTexture' every RAF when only needed once
+            if (this._state != STATE.ended) {
+                clearTexture(this._gl, this._texture);
+                this._triggerCallbacks("ended");
+                this._state = STATE.ended;
+            }
         }
 
         //update this source nodes texture
