@@ -226,11 +226,9 @@ class MediaNode extends SourceNode {
         //if (!super._update(currentTime)) return false;
         super._update(currentTime, triggerTextureUpdate);
         //check if the media has ended
-        if (this._element !== undefined) {
-            if (this._element.ended) {
-                this._state = SOURCENODESTATE.ended;
-                this._triggerCallbacks("ended");
-            }
+        if (this._currentTime > this._stopTime) {
+            this._state = SOURCENODESTATE.ended;
+            this._triggerCallbacks("ended");
         }
 
         if (
