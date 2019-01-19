@@ -75,7 +75,7 @@
   ],
   "jest": {
     "moduleNameMapper": {
-      "\\.(frag|vert)$": "<rootDir>/__mocks__/glsl.js"
+      "\\.(frag|vert)$": "<rootDir>/test/__mocks__/glsl.js"
     }
   }
 }
