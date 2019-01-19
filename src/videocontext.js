@@ -66,11 +66,14 @@ export default class VideoContext {
         this._canvas = canvas;
         this.endOnLastSourceEnd = endOnLastSourceEnd;
 
-        this._gl = canvas.getContext("experimental-webgl", Object.assign(
-            { preserveDrawingBuffer: true }, // can be overriden
-            webglContextAttributes,
-            { alpha: true } // Can't be overriden because it is copied last
-        ));
+        this._gl = canvas.getContext(
+            "experimental-webgl",
+            Object.assign(
+                { preserveDrawingBuffer: true }, // can be overriden
+                webglContextAttributes,
+                { alpha: true } // Can't be overriden because it is copied last
+            )
+        );
         if (this._gl === null) {
             console.error("Failed to intialise WebGL.");
             if (initErrorCallback) initErrorCallback();
@@ -105,11 +108,9 @@ export default class VideoContext {
         this._destinationNode = new DestinationNode(this._gl, this._renderGraph);
 
         this._callbacks = new Map();
-        this._callbacks.set("stalled", []);
-        this._callbacks.set("update", []);
-        this._callbacks.set("ended", []);
-        this._callbacks.set("content", []);
-        this._callbacks.set("nocontent", []);
+        Object.keys(VideoContext.EVENTS).forEach(name =>
+            this._callbacks.set(VideoContext.EVENTS[name], [])
+        );
 
         this._timelineCallbacks = [];
 
@@ -169,23 +170,17 @@ export default class VideoContext {
     }
 
     /**
-     * Register a callback to listen to one of the following events: "stalled", "update", "ended", "content", "nocontent"
+     * Register a callback to listen to one of the events defined in `VideoContext.EVENTS`
      *
-     * "stalled" happens anytime the playback is stopped due to buffer starvation for playing assets.
-     * "update" is called any time a frame is rendered to the screen.
-     * "ended" is called once plackback has finished (i.e ctx.currentTime == ctx.duration).
-     * "content" is called at the start of a time region where there is content playing out of one or more sourceNodes.
-     * "nocontent" is called at the start of any time region where the VideoContext is still playing, but there are currently no active playing sources.
-     *
-     * @param {String} type - the event to register against ("stalled", "update", "ended", "content", "nocontent").
+     * @param {String} type - the event to register against.
      * @param {Function} func - the callback to register.
      *
      * @example
      * var canvasElement = document.getElementById("canvas");
      * var ctx = new VideoContext(canvasElement);
-     * ctx.registerCallback("stalled", () => console.log("Playback stalled"));
-     * ctx.registerCallback("update", () => console.log("new frame"));
-     * ctx.registerCallback("ended", () => console.log("Playback ended"));
+     * ctx.registerCallback(VideoContext.EVENTS.STALLED, () => console.log("Playback stalled"));
+     * ctx.registerCallback(VideoContext.EVENTS.UPDATE, () => console.log("new frame"));
+     * ctx.registerCallback(VideoContext.EVENTS.ENDED, () => console.log("Playback ended"));
      */
     registerCallback(type, func) {
         if (!this._callbacks.has(type)) return false;
@@ -205,7 +200,7 @@ export default class VideoContext {
      * var updateCallback = () => console.log("new frame");
      *
      * //register the callback
-     * ctx.registerCallback("update", updateCallback);
+     * ctx.registerCallback(VideoContext.EVENTS.UPDATE, updateCallback);
      * //then unregister it
      * ctx.unregisterCallback(updateCallback);
      *
@@ -823,11 +818,11 @@ export default class VideoContext {
             this._state === VideoContext.STATE.STALLED ||
             this._state === VideoContext.STATE.PAUSED
         ) {
-            this._callCallbacks("update");
+            this._callCallbacks(VideoContext.EVENTS.UPDATE);
 
             if (this._state !== VideoContext.STATE.PAUSED) {
                 if (this._isStalled()) {
-                    this._callCallbacks("stalled");
+                    this._callCallbacks(VideoContext.EVENTS.STALLED);
                     this._state = VideoContext.STATE.STALLED;
                 } else {
                     this._state = VideoContext.STATE.PLAYING;
@@ -872,7 +867,7 @@ export default class VideoContext {
                         this._sourceNodes[i]._update(this._currentTime);
                     }
                     this._state = VideoContext.STATE.ENDED;
-                    this._callCallbacks("ended");
+                    this._callCallbacks(VideoContext.EVENTS.ENDED);
                 }
             }
 
@@ -905,9 +900,9 @@ export default class VideoContext {
                 this._state === VideoContext.STATE.PLAYING
             ) {
                 if (sourcesPlaying === true) {
-                    this._callCallbacks("content");
+                    this._callCallbacks(VideoContext.EVENTS.CONTENT);
                 } else {
-                    this._callCallbacks("nocontent");
+                    this._callCallbacks(VideoContext.EVENTS.NOCONTENT);
                 }
                 this._sourcesPlaying = sourcesPlaying;
             }
@@ -970,11 +965,9 @@ export default class VideoContext {
         this._state = VideoContext.STATE.PAUSED;
         this._playbackRate = 1.0;
         this._sourcesPlaying = undefined;
-        this._callbacks.set("stalled", []);
-        this._callbacks.set("update", []);
-        this._callbacks.set("ended", []);
-        this._callbacks.set("content", []);
-        this._callbacks.set("nocontent", []);
+        Object.keys(VideoContext.EVENTS).forEach(name =>
+            this._callbacks.set(VideoContext.EVENTS[name], [])
+        );
         this._timelineCallbacks = [];
     }
 
@@ -1012,6 +1005,25 @@ const STATE = Object.freeze({
     BROKEN: 4
 });
 VideoContext.STATE = STATE;
+
+/**
+ * Video Context Events
+ * @readonly
+ * @typedef {Object} STATE
+ * @property {string} STATE.UPDATE - Called any time a frame is rendered to the screen.
+ * @property {string} STATE.STALLED - happens anytime the playback is stopped due to buffer starvation for playing assets.
+ * @property {string} STATE.ENDED - Called once plackback has finished (i.e ctx.currentTime == ctx.duration).
+ * @property {string} STATE.CONTENT - Called at the start of a time region where there is content playing out of one or more sourceNodes.
+ * @property {number} STATE.NOCONTENT - Called at the start of any time region where the VideoContext is still playing, but there are currently no active playing sources.
+ */
+const EVENTS = Object.freeze({
+    UPDATE: "update",
+    STALLED: "stalled",
+    ENDED: "ended",
+    CONTENT: "content",
+    NOCONTENT: "nocontent"
+});
+VideoContext.EVENTS = EVENTS;
 
 VideoContext.visualiseVideoContextTimeline = visualiseVideoContextTimeline;
 VideoContext.visualiseVideoContextGraph = visualiseVideoContextGraph;
