@@ -70,8 +70,8 @@ If you need to debug video context graphs or get a better insight into what is h
 ## Documentation
 API Documentation can be built using [ESDoc](https://esdoc.org/) by running the following commands:
 ```
-npm install
-npm run doc
+yarn install
+yarn run doc
 ```
 The documentation will be generated in the "./doc" folder of the repository.
 
@@ -396,16 +396,16 @@ VideoContext has a pretty standard `package.json`
 
 ```
 # install build and development dependencies
-npm install
+yarn install
 
 # run a dev server with automatic reload
-npm run dev
+yarn run dev
 
 # watch unit and integration tests
-npm run test-watch
+yarn run test-watch
 
 # run regression tests in headless browser
-npm run test-regression
+yarn run test-regression
 ```
 
 ### Gitflow
@@ -417,9 +417,9 @@ To contribute raise a pull request against the `develop` branch.
 Releases are prepared in release branches. When the the release is ready run one of
 
 ```
-npm run release:major
-npm run release:minor
-npm run release:patch
+yarn run release:major
+yarn run release:minor
+yarn run release:patch
 ```
 
 these scripts build and commit the docs, the changelog, update the `package.json` version number
@@ -439,9 +439,9 @@ All tests must pass before PRs can be merged.
 
 Other options
 ```
-npm run build     # build dist packages
-npm run doc       # create documentation
-npm run build_all # do all of the above
+yarn run build     # build dist packages
+yarn run doc       # create documentation
+yarn run build_all # do all of the above
 ```
 
 The library is written in es6 and cross-compiled using babel.

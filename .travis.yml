@@ -17,7 +17,7 @@ branches:
 jobs:
     include:
       - stage: deploy
-        script: npm run build
+        script: yarn run build
         deploy:
           provider: npm
           email:

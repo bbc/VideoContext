@@ -32,13 +32,13 @@
     "test-coverage": "jest test/unit/*.js --coverage --collectCoverageFrom 'src/**/*.js'",
     "test-regression": "jest test/regression/*.js",
     "docs": "bash ./build-docs.sh",
-    "docs-commit": "npm run docs && git add docs && git diff-index --quiet HEAD || git commit -m 'update docs in preparation for release'",
+    "docs-commit": "yarn run docs && git add docs && git diff-index --quiet HEAD || git commit -m 'update docs in preparation for release'",
     "format": "prettier --write '{src,test}/**/*.js'",
     "lint": "eslint '{src,test}/**/*.js'",
-    "precommit": "npm run lint && npm run format && npm run test-unit",
-    "release:major": "npm run docs-commit && changelog -M && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version --new-version major",
-    "release:minor": "npm run docs-commit && changelog -m && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version --new-version minor",
-    "release:patch": "npm run docs-commit && changelog -p && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version --new-version patch",
+    "precommit": "yarn run lint && yarn run format && yarn run test-unit",
+    "release:major": "yarn run docs-commit && changelog -M && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && yarn version --new-version major",
+    "release:minor": "yarn run docs-commit && changelog -m && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && yarn version --new-version minor",
+    "release:patch": "yarn run docs-commit && changelog -p && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && yarn version --new-version patch",
     "postversion": "git push -u origin HEAD --follow-tags"
   },
   "dependencies": {

@@ -6,7 +6,7 @@ if [ "$TEST_SUITE" == "unit" ]
       echo "# Running Available Unit Tests #"
       echo "###############################"
 
-      npm run test-coverage
+      yarn run test-coverage
 
 elif [ "$TEST_SUITE" == "integration" ]
   then
@@ -15,7 +15,7 @@ elif [ "$TEST_SUITE" == "integration" ]
       echo "# Running Available Integration Tests #"
       echo "######################################"
 
-      npm run test-integration
+      yarn run test-integration
 
 elif [ "$TEST_SUITE" == "regression" ]
   then
@@ -23,7 +23,7 @@ elif [ "$TEST_SUITE" == "regression" ]
       echo "# Running Available Regression Tests #"
       echo "#####################################"
 
-      npm run test-regression
+      yarn run test-regression
 
 elif [ "$TEST_SUITE" == "build" ]
   then
@@ -31,8 +31,8 @@ elif [ "$TEST_SUITE" == "build" ]
     echo "# Linting and Building package #"
     echo "#####################################"
 
-    npm run lint
-    npm run build
+    yarn run lint
+    yarn run build
 
 else
     echo "exit 1. TEST_SUITE env should be set to unit, integration or regression"
