@@ -64,14 +64,14 @@ export default class VideoContext {
         } = {}
     ) {
         this._canvas = canvas;
-        this.endOnLastSourceEnd = endOnLastSourceEnd;
+        this._endOnLastSourceEnd = endOnLastSourceEnd;
 
         this._gl = canvas.getContext(
             "experimental-webgl",
             Object.assign(
                 { preserveDrawingBuffer: true }, // can be overriden
                 webglContextAttributes,
-                { alpha: true } // Can't be overriden because it is copied last
+                { alpha: false } // Can't be overriden because it is copied last
             )
         );
         if (this._gl === null) {
