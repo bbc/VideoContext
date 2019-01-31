@@ -94,7 +94,7 @@ class ProcessingNode extends GraphNode {
             }
         }
 
-        //calculate texutre units for input textures
+        // calculate texture units for input textures
         for (let inputName of definition.inputs) {
             this._shaderInputsTextureUnitMapping.push({
                 name: inputName,
