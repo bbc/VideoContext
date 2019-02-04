@@ -133,7 +133,7 @@ View below a custom source node that can now play an HLS VOD.
 
 ```JavaScript
 
-import Hls from "hls.js;
+import Hls from "hls.js";
 
 class HLSNode extends VideoNode {
     constructor(src, gl, renderGraph, currentTime, playbackRate, sourceOffset, preloadTime, hlsOptions = {}) {
