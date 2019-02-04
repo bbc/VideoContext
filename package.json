@@ -60,6 +60,7 @@
     "cypress-image-snapshot": "^3.0.0",
     "eslint": "^3.9.1",
     "eslint-loader": "^2.0.0",
+    "eslint-plugin-cypress": "^2.2.0",
     "generate-changelog": "^1.7.1",
     "http-server": "^0.11.1",
     "husky": "^0.14.3",
