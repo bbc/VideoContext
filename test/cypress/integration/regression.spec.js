@@ -12,6 +12,10 @@ context("playback tests", () => {
 
         cy.get("#play").click();
 
+        // give videocontext a chance to render first frame
+        // should try and use the vidctx events here
+        cy.wait(100);
+
         cy.get("#canvas").matchImageSnapshot("after play");
 
         // pause after a wait
