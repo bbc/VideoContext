@@ -1,9 +1,9 @@
 /* eslint-env node */
 
-const env = process.env.NODE_ENV;
+const env = process.env.TEST_SUITE;
 
 module.exports = {
-    mode: env || "development",
+    mode: env === "build" ? "production" : "development",
     entry: __dirname + "/src/videocontext.js",
     devtool: "source-map",
     stats: { warnings: false },

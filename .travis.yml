@@ -9,7 +9,7 @@ env:
   - TEST_SUITE=unit
   - TEST_SUITE=integration
   - TEST_SUITE=regression
-  - TEST_SUITE=build NODE_ENV=production
+  - TEST_SUITE=build
 branches:
   only:
     - master
