@@ -38,7 +38,11 @@ class CompositingNode extends ProcessingNode {
         );
         gl.clearColor(0, 0, 0, 0);
         gl.clear(gl.COLOR_BUFFER_BIT);
-        gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+
+        // Set the initial blend function to 'proiritize' the SRC so that the background
+        // clearColor doesn't bleed / blend into output
+        gl.enable(gl.BLEND);
+        gl.blendFunc(gl.ONE, gl.ZERO);
 
         this.inputs.forEach(node => {
             if (node === undefined) return;
@@ -46,17 +50,27 @@ class CompositingNode extends ProcessingNode {
 
             //map the input textures input the node
             var texture = node._texture;
-            let textureOffset = 0;
 
-            for (let mapping of this._inputTextureUnitMapping) {
+            for (let mapping of this._shaderInputsTextureUnitMapping) {
                 gl.activeTexture(mapping.textureUnit);
-                let textureLocation = gl.getUniformLocation(this._program, mapping.name);
-                gl.uniform1i(textureLocation, this._parameterTextureCount + textureOffset);
-                textureOffset += 1;
+                gl.uniform1i(mapping.location, mapping.textureUnitIndex);
                 gl.bindTexture(gl.TEXTURE_2D, texture);
             }
 
             gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+            // Update the blend function to allow for 'default' blend of transparency
+            // of the next inputs of the node
+            gl.blendFuncSeparate(
+                gl.SRC_ALPHA,
+                gl.ONE_MINUS_SRC_ALPHA,
+                gl.ONE,
+                gl.ONE_MINUS_SRC_ALPHA
+            );
+            // We blend RGB and Alpha separately because as you stack layers in a CompositionNode, we don’t want to interpolate alpha
+            // (i.e. we don’t want a mid-point or a weighted average of the alpha channels)
+            // Transparent things in real life don’t blend. The colors blend, but the opacity gets monotonically more opaque as things pile up
+            // (i.e. stack two transparent gels and the result is more opaque than either one individually)
         });
 
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);

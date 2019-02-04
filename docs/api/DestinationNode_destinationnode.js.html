@@ -28,6 +28,10 @@
         <article>
             <pre class="prettyprint source linenums"><code>//Matthew Shotton, R&amp;D User Experience,© BBC 2015
 import ProcessingNode from "../ProcessingNodes/processingnode";
+import fragmentShader from "./destinationnode.frag";
+import vertexShader from "./destinationnode.vert";
+
+const TYPE = "DestinationNode";
 
 class DestinationNode extends ProcessingNode {
     /**
@@ -38,35 +42,15 @@ class DestinationNode extends ProcessingNode {
      * You should not instantiate this directly.
      */
     constructor(gl, renderGraph) {
-        let vertexShader =
-            "\
-            attribute vec2 a_position;\
-            attribute vec2 a_texCoord;\
-            varying vec2 v_texCoord;\
-            void main() {\
-                gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
-                v_texCoord = a_texCoord;\
-            }";
-
-        let fragmentShader =
-            "\
-            precision mediump float;\
-            uniform sampler2D u_image;\
-            varying vec2 v_texCoord;\
-            varying float v_progress;\
-            void main(){\
-                gl_FragColor = texture2D(u_image, v_texCoord);\
-            }";
-
-        let deffinition = {
-            fragmentShader: fragmentShader,
-            vertexShader: vertexShader,
+        let definition = {
+            fragmentShader,
+            vertexShader,
             properties: {},
             inputs: ["u_image"]
         };
 
-        super(gl, renderGraph, deffinition, deffinition.inputs, false);
-        this._displayName = "DestinationNode";
+        super(gl, renderGraph, definition, definition.inputs, false);
+        this._displayName = TYPE;
     }
 
     _render() {
@@ -82,13 +66,10 @@ class DestinationNode extends ProcessingNode {
             super._render();
             //map the input textures input the node
             var texture = node._texture;
-            let textureOffset = 0;
 
-            for (let mapping of this._inputTextureUnitMapping) {
+            for (let mapping of this._shaderInputsTextureUnitMapping) {
                 gl.activeTexture(mapping.textureUnit);
-                let textureLocation = gl.getUniformLocation(this._program, mapping.name);
-                gl.uniform1i(textureLocation, this._parameterTextureCount + textureOffset);
-                textureOffset += 1;
+                gl.uniform1i(mapping.location, mapping.textureUnitIndex);
                 gl.bindTexture(gl.TEXTURE_2D, texture);
             }
 
@@ -96,6 +77,8 @@ class DestinationNode extends ProcessingNode {
         });
     }
 }
+
+export { TYPE as DESTINATIONTYPE };
 
 export default DestinationNode;
 </code></pre>

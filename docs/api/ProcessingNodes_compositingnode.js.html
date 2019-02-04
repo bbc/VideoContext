@@ -30,6 +30,8 @@
 import ProcessingNode from "./processingnode";
 import { createElementTexture } from "../utils.js";
 
+const TYPE = "CompositingNode";
+
 class CompositingNode extends ProcessingNode {
     /**
      * Initialise an instance of a Compositing Node. You should not instantiate this directly, but use VideoContest.createCompositingNode().
@@ -49,7 +51,7 @@ class CompositingNode extends ProcessingNode {
         );
         super(gl, renderGraph, definition, definition.inputs, false);
         this._placeholderTexture = placeholderTexture;
-        this._displayName = "CompositingNode";
+        this._displayName = TYPE;
     }
 
     _render() {
@@ -72,13 +74,10 @@ class CompositingNode extends ProcessingNode {
 
             //map the input textures input the node
             var texture = node._texture;
-            let textureOffset = 0;
 
-            for (let mapping of this._inputTextureUnitMapping) {
+            for (let mapping of this._shaderInputsTextureUnitMapping) {
                 gl.activeTexture(mapping.textureUnit);
-                let textureLocation = gl.getUniformLocation(this._program, mapping.name);
-                gl.uniform1i(textureLocation, this._parameterTextureCount + textureOffset);
-                textureOffset += 1;
+                gl.uniform1i(mapping.location, mapping.textureUnitIndex);
                 gl.bindTexture(gl.TEXTURE_2D, texture);
             }
 
@@ -88,6 +87,8 @@ class CompositingNode extends ProcessingNode {
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     }
 }
+
+export { TYPE as COMPOSITINGTYPE };
 
 export default CompositingNode;
 </code></pre>
