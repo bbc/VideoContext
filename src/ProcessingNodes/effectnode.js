@@ -42,11 +42,6 @@ class EffectNode extends ProcessingNode {
         gl.clear(gl.COLOR_BUFFER_BIT);
         gl.blendFunc(gl.ONE, gl.ZERO);
 
-        // Set the initial blend function to 'proiritize' the SRC so that the background
-        // clearColor doesn't bleed / blend into output
-        gl.enable(gl.BLEND);
-        gl.blendFunc(gl.ONE, gl.ZERO);
-
         super._render();
 
         let inputs = this._renderGraph.getInputsForNode(this);
