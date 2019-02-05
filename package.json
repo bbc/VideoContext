@@ -6,6 +6,9 @@
     "type": "git",
     "url": "git+https://github.com/bbc/VideoContext.git"
   },
+  "publishConfig": {
+      "registry": "https://npm.grabyo.com"
+  },
   "license": "Apache-2.0",
   "main": "dist/videocontext.js",
   "keywords": [
