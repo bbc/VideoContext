@@ -66,7 +66,7 @@
     "jsdoc": "^3.4.3",
     "path": "^0.12.7",
     "prettier": "^1.13.2",
-    "puppeteer": "^1.4.0",
+    "puppeteer": "1.11.0",
     "raw-loader": "^0.5.1",
     "sinon": "^4.2.1",
     "web-audio-test-api": "^0.5.2",

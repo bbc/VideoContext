@@ -204,6 +204,7 @@ class RenderGraph {
         this.connections.forEach(function(connection) {
             if (connection.source === sourceNode && connection.destination === destinationNode) {
                 toRemove.push(connection);
+
                 if (sourceNode._outputAudioNode) {
                     sourceNode._outputAudioNode.disconnect(destinationNode._inputAudioNode);
                 }
