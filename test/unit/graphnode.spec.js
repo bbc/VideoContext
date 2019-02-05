@@ -1,5 +1,3 @@
-import "web-audio-test-api";
-
 import Rendergraph from "../../src/rendergraph.js";
 import GraphNode from "../../src/graphnode.js";
 import { ConnectException } from "../../src/exceptions.js";
@@ -11,7 +9,13 @@ describe("GraphNode", () => {
         let node_a, node_b;
 
         beforeEach(() => {
-            node_a = new GraphNode(undefined, mockAudioCtx, undefined, ["input_a", "input_b"], true);
+            node_a = new GraphNode(
+                undefined,
+                mockAudioCtx,
+                undefined,
+                ["input_a", "input_b"],
+                true
+            );
             node_b = new GraphNode(undefined, mockAudioCtx, undefined, [], true);
         });
 
@@ -25,9 +29,21 @@ describe("GraphNode", () => {
         let node_a, node_b, node_c;
 
         beforeEach(() => {
-            node_a = new GraphNode(undefined, mockAudioCtx, undefined, ["input_a", "input_b"], false);
+            node_a = new GraphNode(
+                undefined,
+                mockAudioCtx,
+                undefined,
+                ["input_a", "input_b"],
+                false
+            );
             node_b = new GraphNode(undefined, mockAudioCtx, undefined, [], true);
-            node_c = new GraphNode(undefined, mockAudioCtx, undefined, ["input_a", "input_b"], true);
+            node_c = new GraphNode(
+                undefined,
+                mockAudioCtx,
+                undefined,
+                ["input_a", "input_b"],
+                true
+            );
         });
 
         test("should return the maximum number of connections that can be made to the node (Infinity if number of connections is not limited)", () => {
@@ -42,9 +58,27 @@ describe("GraphNode", () => {
 
         beforeEach(() => {
             rendergraph = new Rendergraph();
-            node_a = new GraphNode(undefined, mockAudioCtx, rendergraph, ["input_a", "input_b"], true);
-            node_b = new GraphNode(undefined, mockAudioCtx, rendergraph, ["input_a", "input_b"], true);
-            node_c = new GraphNode(undefined, mockAudioCtx, rendergraph, ["input_a", "input_b"], true);
+            node_a = new GraphNode(
+                undefined,
+                mockAudioCtx,
+                rendergraph,
+                ["input_a", "input_b"],
+                true
+            );
+            node_b = new GraphNode(
+                undefined,
+                mockAudioCtx,
+                rendergraph,
+                ["input_a", "input_b"],
+                true
+            );
+            node_c = new GraphNode(
+                undefined,
+                mockAudioCtx,
+                rendergraph,
+                ["input_a", "input_b"],
+                true
+            );
         });
 
         test("should return an array of the nodes connected as inputs", () => {
@@ -63,9 +97,27 @@ describe("GraphNode", () => {
 
         beforeEach(() => {
             rendergraph = new Rendergraph();
-            node_a = new GraphNode(undefined, mockAudioCtx, rendergraph, ["input_a", "input_b"], true);
-            node_b = new GraphNode(undefined, mockAudioCtx, rendergraph, ["input_a", "input_b"], true);
-            node_c = new GraphNode(undefined, mockAudioCtx, rendergraph, ["input_a", "input_b"], true);
+            node_a = new GraphNode(
+                undefined,
+                mockAudioCtx,
+                rendergraph,
+                ["input_a", "input_b"],
+                true
+            );
+            node_b = new GraphNode(
+                undefined,
+                mockAudioCtx,
+                rendergraph,
+                ["input_a", "input_b"],
+                true
+            );
+            node_c = new GraphNode(
+                undefined,
+                mockAudioCtx,
+                rendergraph,
+                ["input_a", "input_b"],
+                true
+            );
         });
 
         test("should return the nodes this node connects to as outputs", () => {
@@ -84,10 +136,34 @@ describe("GraphNode", () => {
 
         beforeEach(() => {
             rendergraph = new Rendergraph();
-            node_a = new GraphNode(undefined, mockAudioCtx, rendergraph, ["input_a", "input_b"], true);
-            node_b = new GraphNode(undefined, mockAudioCtx, rendergraph, ["input_a", "input_b"], true);
-            node_c = new GraphNode(undefined, mockAudioCtx, rendergraph, ["input_a", "input_b"], true);
-            node_d = new GraphNode(undefined, mockAudioCtx, rendergraph, ["input_a", "input_b"], true);
+            node_a = new GraphNode(
+                undefined,
+                mockAudioCtx,
+                rendergraph,
+                ["input_a", "input_b"],
+                true
+            );
+            node_b = new GraphNode(
+                undefined,
+                mockAudioCtx,
+                rendergraph,
+                ["input_a", "input_b"],
+                true
+            );
+            node_c = new GraphNode(
+                undefined,
+                mockAudioCtx,
+                rendergraph,
+                ["input_a", "input_b"],
+                true
+            );
+            node_d = new GraphNode(
+                undefined,
+                mockAudioCtx,
+                rendergraph,
+                ["input_a", "input_b"],
+                true
+            );
         });
 
         test("should return true if connection was successful", () => {
@@ -142,10 +218,34 @@ describe("GraphNode", () => {
 
         beforeEach(() => {
             rendergraph = new Rendergraph();
-            node_a = new GraphNode(undefined, mockAudioCtx, rendergraph, ["input_a", "input_b"], true);
-            node_b = new GraphNode(undefined, mockAudioCtx, rendergraph, ["input_a", "input_b"], true);
-            node_c = new GraphNode(undefined, mockAudioCtx, rendergraph, ["input_a", "input_b"], true);
-            node_d = new GraphNode(undefined, mockAudioCtx, rendergraph, ["input_a", "input_b"], true);
+            node_a = new GraphNode(
+                undefined,
+                mockAudioCtx,
+                rendergraph,
+                ["input_a", "input_b"],
+                true
+            );
+            node_b = new GraphNode(
+                undefined,
+                mockAudioCtx,
+                rendergraph,
+                ["input_a", "input_b"],
+                true
+            );
+            node_c = new GraphNode(
+                undefined,
+                mockAudioCtx,
+                rendergraph,
+                ["input_a", "input_b"],
+                true
+            );
+            node_d = new GraphNode(
+                undefined,
+                mockAudioCtx,
+                rendergraph,
+                ["input_a", "input_b"],
+                true
+            );
         });
 
         test("should remove node from input list of target node", () => {
