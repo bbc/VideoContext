@@ -1,6 +1,6 @@
 {
   "name": "videocontext",
-  "version": "0.52.14",
+  "version": "0.55.0-grabyo-beta.0",
   "description": "A WebGL & HTML5 graph based video composition library",
   "repository": {
     "type": "git",
