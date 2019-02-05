@@ -1,6 +1,9 @@
+import "web-audio-test-api";
 import Rendergraph from "../../src/rendergraph.js";
 import GraphNode from "../../src/graphnode.js";
 import { ConnectException } from "../../src/exceptions.js";
+
+const mockAudioCtx = {};
 
 describe("Rendergraph", () => {
     describe("#registerConnection()", () => {
@@ -8,10 +11,10 @@ describe("Rendergraph", () => {
 
         beforeEach(() => {
             rendergraph = new Rendergraph();
-            node_a = new GraphNode(undefined, rendergraph, ["input_a", "input_b"], true);
-            node_b = new GraphNode(undefined, rendergraph, ["input_a", "input_b"], true);
-            node_c = new GraphNode(undefined, rendergraph, ["input_a", "input_b"], true);
-            node_d = new GraphNode(undefined, rendergraph, ["input_a", "input_b"], true);
+            node_a = new GraphNode(undefined, mockAudioCtx, rendergraph, ["input_a", "input_b"], true);
+            node_b = new GraphNode(undefined, mockAudioCtx, rendergraph, ["input_a", "input_b"], true);
+            node_c = new GraphNode(undefined, mockAudioCtx, rendergraph, ["input_a", "input_b"], true);
+            node_d = new GraphNode(undefined, mockAudioCtx, rendergraph, ["input_a", "input_b"], true);
         });
 
         test("should return true when connection is successful", () => {
@@ -60,9 +63,9 @@ describe("Rendergraph", () => {
 
         beforeEach(() => {
             rendergraph = new Rendergraph();
-            node_a = new GraphNode(undefined, rendergraph, ["input_a", "input_b"], true);
-            node_b = new GraphNode(undefined, rendergraph, ["input_a", "input_b"], true);
-            node_c = new GraphNode(undefined, rendergraph, ["input_a", "input_b"], true);
+            node_a = new GraphNode(undefined, mockAudioCtx, rendergraph, ["input_a", "input_b"], true);
+            node_b = new GraphNode(undefined, mockAudioCtx, rendergraph, ["input_a", "input_b"], true);
+            node_c = new GraphNode(undefined, mockAudioCtx, rendergraph, ["input_a", "input_b"], true);
         });
 
         test("should return true when disconnection is successful", () => {
@@ -87,8 +90,8 @@ describe("Rendergraph", () => {
 
         beforeEach(() => {
             rendergraph = new Rendergraph();
-            node_a = new GraphNode(undefined, rendergraph, ["input_a", "input_b"], true);
-            node_b = new GraphNode(undefined, rendergraph, ["input_a", "input_b"], true);
+            node_a = new GraphNode(undefined, mockAudioCtx ,rendergraph, ["input_a", "input_b"], true);
+            node_b = new GraphNode(undefined, mockAudioCtx ,rendergraph, ["input_a", "input_b"], true);
         });
 
         test("should return true if input is free", () => {
@@ -111,9 +114,9 @@ describe("Rendergraph", () => {
 
         beforeEach(() => {
             rendergraph = new Rendergraph();
-            node_a = new GraphNode(undefined, rendergraph, ["input_a", "input_b"], true);
-            node_b = new GraphNode(undefined, rendergraph, ["input_a", "input_b"], true);
-            node_c = new GraphNode(undefined, rendergraph, ["input_a", "input_b"], true);
+            node_a = new GraphNode(undefined, mockAudioCtx, rendergraph, ["input_a", "input_b"], true);
+            node_b = new GraphNode(undefined, mockAudioCtx, rendergraph, ["input_a", "input_b"], true);
+            node_c = new GraphNode(undefined, mockAudioCtx, rendergraph, ["input_a", "input_b"], true);
         });
 
         test("should return array of connected nodes, with 'undefined' for inputs which have no connection", () => {
@@ -132,10 +135,10 @@ describe("Rendergraph", () => {
 
         beforeEach(() => {
             rendergraph = new Rendergraph();
-            node_a = new GraphNode(undefined, rendergraph, ["input_a", "input_b", "input_c"], true);
-            node_b = new GraphNode(undefined, rendergraph, [], true);
-            node_c = new GraphNode(undefined, rendergraph, [], true);
-            node_d = new GraphNode(undefined, rendergraph, [], true);
+            node_a = new GraphNode(undefined, mockAudioCtx, rendergraph, ["input_a", "input_b", "input_c"], true);
+            node_b = new GraphNode(undefined, mockAudioCtx, rendergraph, [], true);
+            node_c = new GraphNode(undefined, mockAudioCtx, rendergraph, [], true);
+            node_d = new GraphNode(undefined, mockAudioCtx, rendergraph, [], true);
         });
 
         test("should return array of nodes which have been connected by z-index, or port/z-index not specified.", () => {
@@ -167,10 +170,10 @@ describe("Rendergraph", () => {
 
         beforeEach(() => {
             rendergraph = new Rendergraph();
-            node_a = new GraphNode(undefined, rendergraph, ["input_a", "input_b", "input_c"], true);
-            node_b = new GraphNode(undefined, rendergraph, [], true);
-            node_c = new GraphNode(undefined, rendergraph, [], true);
-            node_d = new GraphNode(undefined, rendergraph, [], true);
+            node_a = new GraphNode(undefined, mockAudioCtx, rendergraph, ["input_a", "input_b", "input_c"], true);
+            node_b = new GraphNode(undefined, mockAudioCtx, rendergraph, [], true);
+            node_c = new GraphNode(undefined, mockAudioCtx, rendergraph, [], true);
+            node_d = new GraphNode(undefined, mockAudioCtx, rendergraph, [], true);
         });
 
         test("should return array of nodes which have been connected by name", () => {
@@ -196,10 +199,10 @@ describe("Rendergraph", () => {
 
         beforeEach(() => {
             rendergraph = new Rendergraph();
-            node_a = new GraphNode(undefined, rendergraph, ["input_a", "input_b", "input_c"], true);
-            node_b = new GraphNode(undefined, rendergraph, ["input_a"], true);
-            node_c = new GraphNode(undefined, rendergraph, ["input_a"], true);
-            node_d = new GraphNode(undefined, rendergraph, ["input_a"], true);
+            node_a = new GraphNode(undefined, mockAudioCtx, rendergraph, ["input_a", "input_b", "input_c"], true);
+            node_b = new GraphNode(undefined, mockAudioCtx, rendergraph, ["input_a"], true);
+            node_c = new GraphNode(undefined, mockAudioCtx, rendergraph, ["input_a"], true);
+            node_d = new GraphNode(undefined, mockAudioCtx, rendergraph, ["input_a"], true);
         });
 
         test("should return array of nodes connected to the output of the passed node", () => {
