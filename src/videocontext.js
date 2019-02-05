@@ -55,17 +55,16 @@ export default class VideoContext {
     constructor(
         canvas,
         initErrorCallback,
-        options = {
-            preserveDrawingBuffer: true,
-            manualUpdate: false,
-            endOnLastSourceEnd: true,
-            useVideoElementCache: true,
-            videoElementCacheSize: 6,
-            webglContextAttributes: {
+        {
+            manualUpdate = false,
+            endOnLastSourceEnd = true,
+            useVideoElementCache = true,
+            webglContextAttributes = {
                 preserveDrawingBuffer: true,
                 alpha: false
             },
-            webAudioEnabled: true
+            webAudioEnabled = true,
+            videoElementCacheSize = 6
         }
     ) {
         this._canvas = canvas;
@@ -85,7 +84,7 @@ export default class VideoContext {
             return;
         }
 
-        this._webAudioEnabled = options.webAudioEnabled;
+        this._webAudioEnabled = webAudioEnabled;
         if (this._webAudioEnabled) {
             this._audioCtx = new AudioContext({
                 latencyHint: "interactive"
@@ -95,9 +94,8 @@ export default class VideoContext {
         // Initialise the video element cache
         this._useVideoElementCache = useVideoElementCache;
         if (this._useVideoElementCache) {
-            if (!options.videoElementCacheSize) options.videoElementCacheSize = 5;
             this._videoElementCache = new VideoElementCache({
-                videoElementCacheSize: options.videoElementCacheSize,
+                videoElementCacheSize: videoElementCacheSize,
                 audioCtx: this._audioCtx
             });
         }
