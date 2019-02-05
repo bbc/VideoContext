@@ -13,7 +13,11 @@ class DestinationNode extends ProcessingNode {
      *
      * You should not instantiate this directly.
      */
+<<<<<<< HEAD
     constructor(gl, audioCtx, renderGraph) {
+=======
+    constructor(gl, renderGraph) {
+>>>>>>> upstream/develop
         let definition = {
             fragmentShader,
             vertexShader,
@@ -21,11 +25,15 @@ class DestinationNode extends ProcessingNode {
             inputs: ["u_image"]
         };
 
+<<<<<<< HEAD
         super(gl, audioCtx, renderGraph, definition, definition.inputs, false);
 
         if (audioCtx) {
             this._outputAudioNode.connect(audioCtx.destination);
         }
+=======
+        super(gl, renderGraph, definition, definition.inputs, false);
+>>>>>>> upstream/develop
         this._displayName = TYPE;
     }
 

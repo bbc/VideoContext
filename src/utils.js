@@ -9,15 +9,15 @@ import { TRANSITIONTYPE } from "./ProcessingNodes/transitionnode.js";
 import { COMPOSITINGTYPE } from "./ProcessingNodes/compositingnode.js";
 
 /*
-* Utility function to compile a WebGL Vertex or Fragment shader.
-*
-* @param {WebGLRenderingContext} gl - the webgl context fo which to build the shader.
-* @param {String} shaderSource - A string of shader code to compile.
-* @param {number} shaderType - Shader type, either WebGLRenderingContext.VERTEX_SHADER or WebGLRenderingContext.FRAGMENT_SHADER.
-*
-* @return {WebGLShader} A compiled shader.
-*
-*/
+ * Utility function to compile a WebGL Vertex or Fragment shader.
+ *
+ * @param {WebGLRenderingContext} gl - the webgl context fo which to build the shader.
+ * @param {String} shaderSource - A string of shader code to compile.
+ * @param {number} shaderType - Shader type, either WebGLRenderingContext.VERTEX_SHADER or WebGLRenderingContext.FRAGMENT_SHADER.
+ *
+ * @return {WebGLShader} A compiled shader.
+ *
+ */
 export function compileShader(gl, shaderSource, shaderType) {
     let shader = gl.createShader(shaderType);
     gl.shaderSource(shader, shaderSource);
@@ -30,14 +30,14 @@ export function compileShader(gl, shaderSource, shaderType) {
 }
 
 /*
-* Create a shader program from a passed vertex and fragment shader source string.
-*
-* @param {WebGLRenderingContext} gl - the webgl context fo which to build the shader.
-* @param {WebGLShader} vertexShader - A compiled vertex shader.
-* @param {WebGLShader} fragmentShader - A compiled fragment shader.
-*
-* @return {WebGLProgram} A compiled & linkde shader program.
-*/
+ * Create a shader program from a passed vertex and fragment shader source string.
+ *
+ * @param {WebGLRenderingContext} gl - the webgl context fo which to build the shader.
+ * @param {WebGLShader} vertexShader - A compiled vertex shader.
+ * @param {WebGLShader} fragmentShader - A compiled fragment shader.
+ *
+ * @return {WebGLProgram} A compiled & linkde shader program.
+ */
 export function createShaderProgram(gl, vertexShader, fragmentShader) {
     let program = gl.createProgram();
 
@@ -77,22 +77,29 @@ export function updateTexture(gl, texture, element) {
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, element);
+
+    texture._isTextureCleared = false;
 }
 
 export function clearTexture(gl, texture) {
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-    gl.texImage2D(
-        gl.TEXTURE_2D,
-        0,
-        gl.RGBA,
-        1,
-        1,
-        0,
-        gl.RGBA,
-        gl.UNSIGNED_BYTE,
-        new Uint8Array([0, 0, 0, 0])
-    );
+    // A quick check to ensure we don't call 'texImage2D' when the texture has already been 'cleared' #performance
+    if (!texture._isTextureCleared) {
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+        gl.texImage2D(
+            gl.TEXTURE_2D,
+            0,
+            gl.RGBA,
+            1,
+            1,
+            0,
+            gl.RGBA,
+            gl.UNSIGNED_BYTE,
+            new Uint8Array([0, 0, 0, 0])
+        );
+
+        texture._isTextureCleared = true;
+    }
 }
 
 export function generateRandomId() {
