@@ -10,6 +10,7 @@ import {
     snapshot,
     generateRandomId
 } from "./utils.js";
+import NODES from "./SourceNodes/nodes.js";
 import VideoNode, { VIDEOTYPE } from "./SourceNodes/videonode.js";
 import AudioNode from "./SourceNodes/audionode.js";
 import ImageNode from "./SourceNodes/imagenode.js";
@@ -666,7 +667,19 @@ export default class VideoContext {
     }
 
     /**
-     * @deprecated
+     * Instanciate a custom built source node
+     * @param {SourceNode} CustomSourceNode
+     * @param {Object} src
+     * @param  {...any} options
+     */
+    customSourceNode(CustomSourceNode, src, ...options) {
+        const customSourceNode = new CustomSourceNode(src, this._gl, this._renderGraph, this._currentTime, ...options);
+        this._sourceNodes.push(customSourceNode);
+        return customSourceNode;
+    }
+
+    /**
+     * @depricated
      */
     createCompositingNode(definition) {
         this._deprecate(
@@ -977,6 +990,10 @@ export default class VideoContext {
 
     static get DEFINITIONS() {
         return DEFINITIONS;
+    }
+
+    static get NODES() {
+        return NODES;
     }
 
     /**
