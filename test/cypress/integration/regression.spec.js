@@ -4,7 +4,8 @@
 
 const takeScreenShotAtTime = (time, { ctx }) =>
     new Promise(resolve => {
-        ctx.registerTimelineCallback(time, () => {
+        ctx.registerTimelineCallback(time, currentTime => {
+            console.log("snapshot at time", time, currentTime);
             ctx.pause();
             resolve(
                 // we must return a cypress chain
@@ -33,7 +34,7 @@ const takeScreenShotAtTimes = (times = [1, 25, 50]) => {
         window = win;
     });
 
-    // reduce over the times taking a when each time is reached
+    // reduce over the times taking a screen-shot when each time is reached
     times.forEach(time => {
         cyPromise = cyPromise.then(() => takeScreenShotAtTime(time, { ctx: window.ctx }));
     });
@@ -46,10 +47,10 @@ const takeScreenShotAtTimes = (times = [1, 25, 50]) => {
 
 context("playback tests", () => {
     it("playback.html", () => {
-        cy.visit("playback.html");
+        cy.visit("index.html");
 
         // use cy.window to put tests here
 
-        takeScreenShotAtTimes([0.1, 1, 2]);
+        takeScreenShotAtTimes([0.1, 1, 1.5]);
     });
 });

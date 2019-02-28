@@ -5,5 +5,5 @@
     "screenshotsFolder": "test/cypress/screenshots",
     "videosFolder": "test/cypress/videos",
     "supportFile": "test/cypress/support/index.js",
-    "baseUrl": "http://localhost:3001/test/regression/test-pages/"
+    "baseUrl": "http://localhost:3001/test/cypress/html/"
 }
