@@ -27,6 +27,7 @@
                 videoNode.startAt(0);
                 videoNode.connect(videoCtx.destination);
 
+                // pull all of this into a test utility
                 playBtn.addEventListener("click", function() {
                     videoCtx.play();
                 });
@@ -34,6 +35,11 @@
                 pauseBtn.addEventListener("click", function() {
                     videoCtx.pause();
                 });
+
+                // fire off an event for cypress when playback has started
+                videoCtx.registerCallback("update", () => {
+                    window.dispatchEvent(new Event("cy:update"))
+                })
             };
         </script>
     </body>
