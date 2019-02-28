@@ -21,23 +21,23 @@
                 var canvas = document.getElementById("canvas");
 
                 // Create a new VideoContext instance
-                var videoCtx = new VideoContext(canvas);
-                var videoNode = videoCtx.video("../assets/video1.webm");
+                window.ctx = new VideoContext(canvas);
+                var videoNode = window.ctx.video("../assets/video1.webm");
 
                 videoNode.startAt(0);
-                videoNode.connect(videoCtx.destination);
+                videoNode.connect(window.ctx.destination);
 
                 // pull all of this into a test utility
                 playBtn.addEventListener("click", function() {
-                    videoCtx.play();
+                    window.ctx.play();
                 });
 
                 pauseBtn.addEventListener("click", function() {
-                    videoCtx.pause();
+                    window.ctx.pause();
                 });
 
                 // fire off an event for cypress when playback has started
-                videoCtx.registerCallback("update", () => {
+                window.ctx.registerCallback("update", () => {
                     window.dispatchEvent(new Event("cy:update"))
                 })
             };
