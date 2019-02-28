@@ -21,16 +21,24 @@ const takeScreenShotAtTime = (time, { ctx }) =>
 // TODO we should also define the pipeline like this
 // only dep in html should be the canvas and window.VideoContext
 const takeScreenShotAtTimes = (times = [1, 25, 50]) => {
+    // use a closure to access window
     let window;
-    let cyPromise = cy.window().then(win => {
+
+    // we're going to chain on this promise
+    let cyPromise = cy.window();
+
+    // prepare by starting playback and storing the window object
+    cyPromise = cyPromise.then(win => {
         win.ctx.play();
         window = win;
     });
 
+    // reduce over the times taking a when each time is reached
     times.forEach(time => {
         cyPromise = cyPromise.then(() => takeScreenShotAtTime(time, { ctx: window.ctx }));
     });
 
+    // last, rest the context so that playback and updates stop
     return cyPromise.then(() => {
         window.ctx.reset();
     });
