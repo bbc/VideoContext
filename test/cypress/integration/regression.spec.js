@@ -2,7 +2,7 @@
  * to update snapshots run: `yarn run cypress:update`
  */
 
-const takeScreenShotAtTime = (time, { ctx }) =>
+const takeScreenShotAtTime = (time, { ctx, id }) =>
     new Promise(resolve => {
         ctx.registerTimelineCallback(time, currentTime => {
             console.log("snapshot at time", time, currentTime);
@@ -11,7 +11,7 @@ const takeScreenShotAtTime = (time, { ctx }) =>
                 // we must return a cypress chain
                 cy
                     .get("#canvas")
-                    .matchImageSnapshot(`at time ${time}`)
+                    .matchImageSnapshot(`${id} at time ${time}`)
                     .then(() => {
                         ctx.play();
                     })
@@ -21,7 +21,7 @@ const takeScreenShotAtTime = (time, { ctx }) =>
 
 // TODO we should also define the pipeline like this
 // only dep in html should be the canvas and window.VideoContext
-const takeScreenShotAtTimes = (times = [1, 25, 50]) => {
+const takeScreenShotAtTimes = (times = [1, 25, 50], { id }) => {
     // use a closure to access window
     let window;
 
@@ -36,7 +36,7 @@ const takeScreenShotAtTimes = (times = [1, 25, 50]) => {
 
     // reduce over the times taking a screen-shot when each time is reached
     times.forEach(time => {
-        cyPromise = cyPromise.then(() => takeScreenShotAtTime(time, { ctx: window.ctx }));
+        cyPromise = cyPromise.then(() => takeScreenShotAtTime(time, { ctx: window.ctx, id }));
     });
 
     // last, rest the context so that playback and updates stop
@@ -46,11 +46,18 @@ const takeScreenShotAtTimes = (times = [1, 25, 50]) => {
 };
 
 context("playback tests", () => {
-    it("playback.html", () => {
+    it("plays back video", () => {
         cy.visit("index.html");
+        cy.viewport("macbook-11");
 
-        // use cy.window to put tests here
+        // set up VideoContext
+        cy.window().then(({ ctx }) => {
+            const videoNode = ctx.video("../assets/video1.webm"); // path relative to index.html
+            videoNode.startAt(0);
+            videoNode.connect(ctx.destination);
+        });
 
-        takeScreenShotAtTimes([0.1, 1, 1.5]);
+        // check output  match the snapshots at times on the timeline
+        takeScreenShotAtTimes([0.5, 1, 1.5], { id: "playback" });
     });
 });
