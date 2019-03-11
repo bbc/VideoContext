@@ -57,7 +57,7 @@
     "generate-changelog": "^1.7.1",
     "http-server": "^0.11.1",
     "husky": "^0.14.3",
-    "jest": "^23.1.0",
+    "jest": "^24.3.1",
     "jest-cli": "^23.1.0",
     "jest-image-snapshot": "^2.4.2",
     "jsdoc": "^3.4.3",
