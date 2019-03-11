@@ -31,7 +31,7 @@
     "test-watch": "jest --watch",
     "test-coverage": "jest test/unit/*.js --coverage --collectCoverageFrom 'src/**/*.js'",
     "test-regression": "jest test/regression/*.js",
-    "cypress": "yarn run _server_cy_then _cy:open",
+    "cypress": "echo \"disabled due to issues. try upgrading? # yarn run _server_cy_then _cy:open\"",
     "cypress:update-snapshots": "yarn run _server_cy_then _cy:update",
     "ci:cypress": "yarn run _server_cy_then _cy:run",
     "_cy:update": "cypress run --env updateSnapshots=true",
