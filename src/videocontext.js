@@ -673,7 +673,13 @@ export default class VideoContext {
      * @param  {...any} options
      */
     customSourceNode(CustomSourceNode, src, ...options) {
-        const customSourceNode = new CustomSourceNode(src, this._gl, this._renderGraph, this._currentTime, ...options);
+        const customSourceNode = new CustomSourceNode(
+            src,
+            this._gl,
+            this._renderGraph,
+            this._currentTime,
+            ...options
+        );
         this._sourceNodes.push(customSourceNode);
         return customSourceNode;
     }
