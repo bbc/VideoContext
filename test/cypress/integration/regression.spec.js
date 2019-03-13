@@ -19,6 +19,18 @@ const takeScreenShotAtTime = (time, { ctx, id }) =>
         });
     });
 
+/**
+ * takeScreenShotAtTimes
+ *
+ * Play the ctx from 0 and take snapshots at certain times.
+ *
+ * Note: the higher the times the longer the test will take to run!
+ * In some circumstances you may prefer to scrub to a time to make things faster
+ *
+ *
+ * @param {Array<number>} times at which to take snapshots (in seconds)
+ * @param {{ id: string }} options `id`: unique id to name snapshots
+ */
 const takeScreenShotAtTimes = (times = [1, 25, 50], { id }) => {
     // use a closure to access window
     let window;
