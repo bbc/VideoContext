@@ -1,5 +1,5 @@
 import { addMatchImageSnapshotCommand } from "cypress-image-snapshot/command";
-import takeScreenShotAtTimesCommand from "./takeScreenShotAtTimesCommand";
+import videoContextScreenShotsAtTimesCommand from "./videoContextScreenShotsAtTimesCommand";
 
 addMatchImageSnapshotCommand({
     failureThreshold: 0.06, // threshold for entire image
@@ -9,4 +9,4 @@ addMatchImageSnapshotCommand({
     disableTimersAndAnimations: false // we always pause before taking screenshots
 });
 
-takeScreenShotAtTimesCommand();
+videoContextScreenShotsAtTimesCommand();

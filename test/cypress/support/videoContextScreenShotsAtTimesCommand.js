@@ -20,7 +20,7 @@ const takeScreenShotAtTime = (time, { ctx, id }) =>
     });
 
 /**
- * takeScreenShotAtTimes
+ * videoContextScreenShotsAtTimes
  *
  * Play the ctx from 0 and take snapshots at certain times.
  *
@@ -31,7 +31,7 @@ const takeScreenShotAtTime = (time, { ctx, id }) =>
  * @param {Array<number>} times at which to take snapshots (in seconds)
  * @param {{ id: string }} options `id`: unique id to name snapshots
  */
-const takeScreenShotAtTimes = (times = [1, 25, 50], { id }) => {
+const videoContextScreenShotsAtTimes = (times = [1, 25, 50], { id }) => {
     // use a closure to access window
     let window;
 
@@ -55,8 +55,8 @@ const takeScreenShotAtTimes = (times = [1, 25, 50], { id }) => {
     });
 };
 
-const takeScreenShotAtTimesCommand = () => {
-    Cypress.Commands.add("takeScreenShotAtTimes", takeScreenShotAtTimes);
+const videoContextScreenShotsAtTimesCommand = () => {
+    Cypress.Commands.add("videoContextScreenShotsAtTimes", videoContextScreenShotsAtTimes);
 };
 
-export default takeScreenShotAtTimesCommand;
+export default videoContextScreenShotsAtTimesCommand;

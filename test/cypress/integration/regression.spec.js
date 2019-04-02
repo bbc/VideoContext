@@ -13,7 +13,7 @@ context("playback tests", () => {
         });
 
         // check output  match the snapshots at times on the timeline
-        cy.takeScreenShotAtTimes([0.5, 1, 1.5], { id: "playback-video" });
+        cy.videoContextScreenShotsAtTimes([0.5, 1, 1.5], { id: "playback-video" });
     });
 
     it("plays back image", () => {
@@ -25,7 +25,7 @@ context("playback tests", () => {
         });
 
         // check output  match the snapshots at times on the timeline
-        cy.takeScreenShotAtTimes([0.5, 1, 1.5], { id: "playback-image" });
+        cy.videoContextScreenShotsAtTimes([0.5, 1, 1.5], { id: "playback-image" });
     });
 
     it("plays back image with no creatImageBitmap", () => {
@@ -41,7 +41,7 @@ context("playback tests", () => {
         });
 
         // check output  match the snapshots at times on the timeline
-        cy.takeScreenShotAtTimes([0.5, 1, 1.5], {
+        cy.videoContextScreenShotsAtTimes([0.5, 1, 1.5], {
             id: "playback-image-with-no-createImageBitmap"
         });
     });
@@ -62,6 +62,8 @@ context("playback tests", () => {
         });
 
         // check output  match the snapshots at times on the timeline
-        cy.takeScreenShotAtTimes([0.5, 1, 1.5], { id: "playback-user-supplied-element" });
+        cy.videoContextScreenShotsAtTimes([0.5, 1, 1.5], {
+            id: "playback-user-supplied-element"
+        });
     });
 });
