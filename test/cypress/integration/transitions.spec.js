@@ -1,44 +1,54 @@
+const TRANSITION_START = 1;
+const TRANSITION_END = 2;
+const SCREEN_SHOT_TIMES = [0.5, 1.5, 2.5]; // before, during, after
+
 beforeEach(() => {
     cy.visit("index.html");
     cy.viewport("macbook-11");
 });
 
 /**
- * porting
- * 
- * "transition-crossfade.html"
-"transition-starWipe.html"
-"transition-verticalWipe.html"
-"transition-horizontalWipe.html"
-"transition-dreamFade.html"
-"transition-randomDissolve.html"
-"transition-staticDissolve.html"
-"transition-toColorAndBackFade.html"
+ * All transition tests can be the same but with a different DEFINITION
+ *
+ * @param {string} definitionName - the name of the DEFINITION
  */
+const setupTransitionPipelineForDefinition = definitionName => ({ ctx, VideoContext }) => {
+    const videoNode1 = ctx.video("../assets/video1.webm");
+    const videoNode2 = ctx.video("../assets/video2.webm");
+    const crossFade = ctx.transition(VideoContext.DEFINITIONS[definitionName]);
 
-it("crossfades", () => {
-    // set up VideoContext
-    cy.window().then(({ ctx, VideoContext }) => {
-        const videoNode1 = ctx.video("../assets/video1.webm");
-        const videoNode2 = ctx.video("../assets/video2.webm");
-        const crossFade = ctx.transition(VideoContext.DEFINITIONS.CROSSFADE);
+    // Setup start/stop times for video source nodes
+    videoNode1.start(0);
+    videoNode1.stop(4);
 
-        // Setup start/stop times for video source nodes
-        videoNode1.start(0);
-        videoNode1.stop(4);
+    videoNode2.start(0);
+    videoNode2.stop(4);
 
-        videoNode2.start(0);
-        videoNode2.stop(4);
+    // Configure the crossFade transition node
+    crossFade.transition(TRANSITION_START, TRANSITION_END, 0.0, 1.0, "mix");
 
-        // Configure the crossFade transition node
-        crossFade.transition(0.8, 1.2, 0.0, 1.0, "mix");
+    // Connect the processing graph together
+    videoNode1.connect(crossFade);
+    videoNode2.connect(crossFade);
+    crossFade.connect(ctx.destination);
+};
 
-        // Connect the processing graph together
-        videoNode1.connect(crossFade);
-        videoNode2.connect(crossFade);
-        crossFade.connect(ctx.destination);
+[
+    "CROSSFADE",
+    "DREAMFADE",
+    "HORIZONTAL_WIPE",
+    "VERTICAL_WIPE",
+    "RANDOM_DISSOLVE",
+    "STATIC_DISSOLVE",
+    "TO_COLOR_AND_BACK",
+    "STAR_WIPE"
+].forEach(definitionName => {
+    const testName = definitionName.toLowerCase().replace("_", " ");
+    it(testName, () => {
+        // setup VideoContext
+        cy.window().then(setupTransitionPipelineForDefinition(definitionName));
+        return cy.videoContextScreenShotsAtTimes(SCREEN_SHOT_TIMES, {
+            id: `transition-${testName}`
+        });
     });
-
-    // check output  match the snapshots at times on the timeline
-    cy.videoContextScreenShotsAtTimes([0.5, 1, 1.5], { id: "transition-crossfade" });
 });
