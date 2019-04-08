@@ -124,6 +124,50 @@ canvasNode.stop(4);
 
 ```
 
+### CustomSourceNode
+
+Sometimes using the pre-built node is just not enough.
+You can create your own source nodes that host more logic and let you hook into the VideoContext Node API easily.
+
+View below a custom source node that can now play an HLS VOD.
+
+```JavaScript
+
+import Hls from "hls.js";
+
+class HLSNode extends VideoNode {
+    constructor(src, gl, renderGraph, currentTime, playbackRate, sourceOffset, preloadTime, hlsOptions = {}) {
+
+        this._src = src;
+        const video = document.createElement("video");
+        this.hls = new Hls(hlsOptions);
+        this.hls.attachVideo(video);
+
+        super(video, gl, renderGraph, currentTime, playbackRate, sourceOffset, preloadTime);
+
+        this._displayName = "HLSNode";
+        this._elementType = "hls";
+    }
+
+    _load() {
+        this.hls.loadSource(this._src);
+        this.hls.on(Hls.Events.MANIFEST_PARSED, () => {
+            this._ready = true;
+            this._triggerCallbacks("loaded");
+        });
+    }
+
+    destroy() {
+        if (this.hls) {
+            this.hls.destroy();
+        }
+        super.destroy();
+    }
+}
+
+```
+
+Another use case for custom node types would be to play GIFs. The custom node would be in charge of decode the GIF frames and paint them on a canvas depending on the `_update` calls from `VideoContext`.
 
 ### EffectNode
 An EffectNode is the simplest form of processing node. It's built from a definition object, which is a combination of fragment shader code, vertex shader code, input descriptions, and property descriptions. There are a number of common operations available as node descriptions accessible as static properties on the VideoContext at VideoContext.DESCRIPTIONS.*
