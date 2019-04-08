@@ -42,14 +42,14 @@ class DestinationNode extends ProcessingNode {
      * You should not instantiate this directly.
      */
     constructor(gl, renderGraph) {
-        let deffinition = {
+        let definition = {
             fragmentShader,
             vertexShader,
             properties: {},
             inputs: ["u_image"]
         };
 
-        super(gl, renderGraph, deffinition, deffinition.inputs, false);
+        super(gl, renderGraph, definition, definition.inputs, false);
         this._displayName = TYPE;
     }
 
@@ -66,13 +66,10 @@ class DestinationNode extends ProcessingNode {
             super._render();
             //map the input textures input the node
             var texture = node._texture;
-            let textureOffset = 0;
 
-            for (let mapping of this._inputTextureUnitMapping) {
+            for (let mapping of this._shaderInputsTextureUnitMapping) {
                 gl.activeTexture(mapping.textureUnit);
-                let textureLocation = gl.getUniformLocation(this._program, mapping.name);
-                gl.uniform1i(textureLocation, this._parameterTextureCount + textureOffset);
-                textureOffset += 1;
+                gl.uniform1i(mapping.location, mapping.textureUnitIndex);
                 gl.bindTexture(gl.TEXTURE_2D, texture);
             }
 
