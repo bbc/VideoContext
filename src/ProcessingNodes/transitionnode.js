@@ -190,54 +190,13 @@ class TransitionNode extends EffectNode {
         }
     }
 
-    // _setAudioParams() {
-    //     if (this._definition.hearable) {
-
-    //         const rampType = this._definition.hearable.rampType || `linear`;
-
-    //         Object.keys(this._transitions).forEach(transitionName => {
-    //             this._transitions[transitionName].forEach(({ start, end, current, target }) => {
-
-    //                 this.inputs.forEach((input, index) => {
-
-    //                     const addAudioTransition = () => {
-    //                         const initialValue = index % 2 === 0 ? current : target;
-    //                         const targetValue = index % 2 === 0 ? target : current;
-    //                         console.log(input.outputAudioNode);
-    //                         input.outputAudioNode.gain.setValueAtTime(initialValue, start);
-    //                         input.outputAudioNode.gain[`${rampType}RampToValueAtTime`](targetValue, end);
-    //                         input.unregisterCallback("audioready", addAudioTransition);
-    //                     };
-
-    //                     if (input._audioReady) {
-    //                         addAudioTransition();
-    //                     } else {
-    //                         input.registerCallback("audioready", addAudioTransition);
-    //                     }
-    //                 });
-
-    //             });
-    //         });
-    //     }
-    // }
-
-    // _resetAudioParams() {
-    //     if (this._definition.hearable) {
-    //         console.log("let's reset the audio params");
-    //     }
-    // }
-
     connect() {
         const isConnected = super.connect.apply(this, arguments);
-        // if (this._inputNames.length === this.inputs.length) {
-        //     this._setAudioParams();
-        // }
         return isConnected;
     }
 
     disconnect() {
         const isDisconnected = super.disconnect(arguments);
-        // this._resetAudioParams();
         return isDisconnected;
     }
 }
