@@ -434,6 +434,38 @@ var effectDefinition ={
 };
 ```
 
+## Audio management
+
+VideoContext manages the audio output through the Web Audio API by default. It is possible to change that behaviour by toggling the `webAudioEnabled` option when creating a VideoContext instance.
+
+By default every transition node will cross fade the audio. It is possible to override that by adding a `hearable` property on the effect definition
+
+```
+const definition = {
+  title: "Star wipe",
+  ...,
+  hearable: {
+    audioNodesFactory: (audioCtx) => {
+
+        const convolver = audioCtx.createConvolver();
+        const biquadFilter = audioCtx.createBiquadFilter();
+
+        biquadFilter.type = "lowshelf";
+
+        // connect the nodes together
+
+        convolver.connect(biquadFilter);
+
+        return {
+            input: convolver,
+            output: biquadFilter,
+        };
+    }
+  }
+}
+```
+
+VideoContext will be in charge of connection `input` to the source node and `output` to the destination of the effect node. The `input` and `output` can be the same.
 
 ## Development
 VideoContext has a pretty standard `package.json`
