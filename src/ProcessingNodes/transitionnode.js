@@ -170,16 +170,16 @@ class TransitionNode extends EffectNode {
                     this[propertyName] = propertyValue;
 
                     if (this._audioCtx) {
-                        this.inputs.forEach((input, index) => {
+                        for (let i = 0; i < this.inputs.length; i++) {
                             const value =
-                                index % 2 === 0
+                                i % 2 === 0
                                     ? difference * progress - transition.target
                                     : difference * progress + transition.current;
-                            input.outputAudioNode.gain.setValueAtTime(
+                            this.inputs[i].outputAudioNode.gain.setValueAtTime(
                                 value,
                                 this._audioCtx.currentTime
                             );
-                        });
+                        }
                     }
 
                     break;

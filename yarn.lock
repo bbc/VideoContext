@@ -6330,6 +6330,11 @@ watchpack@^1.5.0:
     graceful-fs "^4.1.2"
     neo-async "^2.5.0"
 
+web-audio-test-api@^0.5.2:
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/web-audio-test-api/-/web-audio-test-api-0.5.2.tgz#c1e24d21ced0603f1a495272a1eb669db28873fa"
+  integrity sha1-weJNIc7QYD8aSVJyoetmnbKIc/o=
+
 webgl-mock@^0.1.7:
   version "0.1.7"
   resolved "https://registry.yarnpkg.com/webgl-mock/-/webgl-mock-0.1.7.tgz#cad9d7c9789cbc7e61c20ca6026d56577921b770"
