@@ -933,7 +933,7 @@ export default class VideoContext {
              * Mainly the fact that to get inputs for a node you have to iterate the full list of connections rather than
              * a node owning it's connections.
              * The trade off with changing this is making/removing connections becomes more costly performance wise, but
-             * this is definately worth while because getting the connnections is a much more common operation.
+             * this is definitely worth while because getting the connnections is a much more common operation.
              *
              * TL;DR Future matt - refactor this.
              *
