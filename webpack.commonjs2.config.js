@@ -1,7 +1,9 @@
-/* eslint-disable */
+/* eslint-env node */
+
+const env = process.env.NODE_ENV;
 
 module.exports = {
-    mode: "production",
+    mode: env || "development",
     entry: __dirname + "/src/videocontext.js",
     devtool: "source-map",
     stats: { warnings: false },
