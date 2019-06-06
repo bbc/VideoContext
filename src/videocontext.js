@@ -10,6 +10,7 @@ import {
     snapshot,
     generateRandomId
 } from "./utils.js";
+import NODES from "./SourceNodes/nodes.js";
 import VideoNode, { VIDEOTYPE } from "./SourceNodes/videonode.js";
 import AudioNode from "./SourceNodes/audionode.js";
 import ImageNode from "./SourceNodes/imagenode.js";
@@ -666,7 +667,25 @@ export default class VideoContext {
     }
 
     /**
-     * @deprecated
+     * Instanciate a custom built source node
+     * @param {SourceNode} CustomSourceNode
+     * @param {Object} src
+     * @param  {...any} options
+     */
+    customSourceNode(CustomSourceNode, src, ...options) {
+        const customSourceNode = new CustomSourceNode(
+            src,
+            this._gl,
+            this._renderGraph,
+            this._currentTime,
+            ...options
+        );
+        this._sourceNodes.push(customSourceNode);
+        return customSourceNode;
+    }
+
+    /**
+     * @depricated
      */
     createCompositingNode(definition) {
         this._deprecate(
@@ -914,7 +933,7 @@ export default class VideoContext {
              * Mainly the fact that to get inputs for a node you have to iterate the full list of connections rather than
              * a node owning it's connections.
              * The trade off with changing this is making/removing connections becomes more costly performance wise, but
-             * this is definately worth while because getting the connnections is a much more common operation.
+             * this is definitely worth while because getting the connnections is a much more common operation.
              *
              * TL;DR Future matt - refactor this.
              *
@@ -977,6 +996,10 @@ export default class VideoContext {
 
     static get DEFINITIONS() {
         return DEFINITIONS;
+    }
+
+    static get NODES() {
+        return NODES;
     }
 
     /**
