@@ -2345,7 +2345,7 @@ concat-stream@1.6.2, concat-stream@^1.5.0, concat-stream@^1.6.0:
 
 concurrently@^4.1.1:
   version "4.1.1"
-  resolved "https://artifactory.virt.ch.bbc.co.uk:443/artifactory/api/npm/cosmos-npm/concurrently/-/concurrently-4.1.1.tgz#42cf84d625163f3f5b2e2262568211ad76e1dbe8"
+  resolved "https://registry.yarnpkg.com/concurrently/-/concurrently-4.1.1.tgz#42cf84d625163f3f5b2e2262568211ad76e1dbe8"
   integrity sha1-Qs+E1iUWPz9bLiJiVoIRrXbh2+g=
   dependencies:
     chalk "^2.4.1"
@@ -3204,7 +3204,7 @@ executable@4.1.1:
 
 exit-hook@^1.0.0:
   version "1.1.1"
-  resolved "https://artifactory.virt.ch.bbc.co.uk:443/artifactory/api/npm/cosmos-npm/exit-hook/-/exit-hook-1.1.1.tgz#f05ca233b48c05d54fff07765df8507e95c02ff8"
+  resolved "https://registry.yarnpkg.com/exit-hook/-/exit-hook-1.1.1.tgz#f05ca233b48c05d54fff07765df8507e95c02ff8"
   integrity sha1-8FyiM7SMBdVP/wd2XfhQfpXAL/g=
 
 exit@^0.1.2:
@@ -6755,7 +6755,7 @@ once@^1.3.0, once@^1.3.1, once@^1.4.0:
 
 onetime@^1.0.0:
   version "1.1.0"
-  resolved "https://artifactory.virt.ch.bbc.co.uk:443/artifactory/api/npm/cosmos-npm/onetime/-/onetime-1.1.0.tgz#a1f7838f8314c516f05ecefcbc4ccfe04b4ed789"
+  resolved "https://registry.yarnpkg.com/onetime/-/onetime-1.1.0.tgz#a1f7838f8314c516f05ecefcbc4ccfe04b4ed789"
   integrity sha1-ofeDj4MUxRbwXs78vEzP4EtO14k=
 
 onetime@^2.0.0:
@@ -7485,7 +7485,7 @@ read-pkg@^3.0.0:
 
 read-pkg@^4.0.1:
   version "4.0.1"
-  resolved "https://artifactory.virt.ch.bbc.co.uk:443/artifactory/api/npm/cosmos-npm/read-pkg/-/read-pkg-4.0.1.tgz#963625378f3e1c4d48c85872b5a6ec7d5d093237"
+  resolved "https://registry.yarnpkg.com/read-pkg/-/read-pkg-4.0.1.tgz#963625378f3e1c4d48c85872b5a6ec7d5d093237"
   integrity sha1-ljYlN48+HE1IyFhytabsfV0JMjc=
   dependencies:
     normalize-package-data "^2.3.2"
@@ -7789,7 +7789,7 @@ resolve@^1.3.2:
 
 restore-cursor@^1.0.1:
   version "1.0.1"
-  resolved "https://artifactory.virt.ch.bbc.co.uk:443/artifactory/api/npm/cosmos-npm/restore-cursor/-/restore-cursor-1.0.1.tgz#34661f46886327fed2991479152252df92daa541"
+  resolved "https://registry.yarnpkg.com/restore-cursor/-/restore-cursor-1.0.1.tgz#34661f46886327fed2991479152252df92daa541"
   integrity sha1-NGYfRohjJ/7SmRR5FSJS35LapUE=
   dependencies:
     exit-hook "^1.0.0"
@@ -7868,7 +7868,7 @@ rxjs@^5.0.0-beta.11:
 
 rxjs@^6.3.3:
   version "6.5.2"
-  resolved "https://artifactory.virt.ch.bbc.co.uk:443/artifactory/api/npm/cosmos-npm/rxjs/-/rxjs-6.5.2.tgz#2e35ce815cd46d84d02a209fb4e5921e051dbec7"
+  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.5.2.tgz#2e35ce815cd46d84d02a209fb4e5921e051dbec7"
   integrity sha1-LjXOgVzUbYTQKiCftOWSHgUdvsc=
   dependencies:
     tslib "^1.9.0"
@@ -8150,7 +8150,7 @@ source-map@^0.6.0, source-map@^0.6.1, source-map@~0.6.1:
 
 spawn-command@^0.0.2-1:
   version "0.0.2-1"
-  resolved "https://artifactory.virt.ch.bbc.co.uk:443/artifactory/api/npm/cosmos-npm/spawn-command/-/spawn-command-0.0.2-1.tgz#62f5e9466981c1b796dc5929937e11c9c6921bd0"
+  resolved "https://registry.yarnpkg.com/spawn-command/-/spawn-command-0.0.2-1.tgz#62f5e9466981c1b796dc5929937e11c9c6921bd0"
   integrity sha1-YvXpRmmBwbeW3Fkpk34RycaSG9A=
 
 spdx-correct@^3.0.0:
@@ -8437,7 +8437,7 @@ supports-color@^3.1.2:
 
 supports-color@^4.5.0:
   version "4.5.0"
-  resolved "https://artifactory.virt.ch.bbc.co.uk:443/artifactory/api/npm/cosmos-npm/supports-color/-/supports-color-4.5.0.tgz#be7a0de484dec5c5cddf8b3d59125044912f635b"
+  resolved "https://registry.yarnpkg.com/supports-color/-/supports-color-4.5.0.tgz#be7a0de484dec5c5cddf8b3d59125044912f635b"
   integrity sha1-vnoN5ITexcXN34s9WRJQRJEvY1s=
   dependencies:
     has-flag "^2.0.0"
@@ -8693,7 +8693,7 @@ tr46@^1.0.1:
 
 tree-kill@^1.1.0:
   version "1.2.1"
-  resolved "https://artifactory.virt.ch.bbc.co.uk:443/artifactory/api/npm/cosmos-npm/tree-kill/-/tree-kill-1.2.1.tgz#5398f374e2f292b9dcc7b2e71e30a5c3bb6c743a"
+  resolved "https://registry.yarnpkg.com/tree-kill/-/tree-kill-1.2.1.tgz#5398f374e2f292b9dcc7b2e71e30a5c3bb6c743a"
   integrity sha1-U5jzdOLykrncx7LnHjClw7tsdDo=
 
 trim-right@^1.0.1:
@@ -9263,7 +9263,7 @@ yargs-parser@^10.1.0:
 
 yargs-parser@^11.1.1:
   version "11.1.1"
-  resolved "https://artifactory.virt.ch.bbc.co.uk:443/artifactory/api/npm/cosmos-npm/yargs-parser/-/yargs-parser-11.1.1.tgz#879a0865973bca9f6bab5cbdf3b1c67ec7d3bcf4"
+  resolved "https://registry.yarnpkg.com/yargs-parser/-/yargs-parser-11.1.1.tgz#879a0865973bca9f6bab5cbdf3b1c67ec7d3bcf4"
   integrity sha1-h5oIZZc7yp9rq1y987HGfsfTvPQ=
   dependencies:
     camelcase "^5.0.0"
@@ -9296,7 +9296,7 @@ yargs@^11.0.0:
 
 yargs@^12.0.1:
   version "12.0.5"
-  resolved "https://artifactory.virt.ch.bbc.co.uk:443/artifactory/api/npm/cosmos-npm/yargs/-/yargs-12.0.5.tgz#05f5997b609647b64f66b81e3b4b10a368e7ad13"
+  resolved "https://registry.yarnpkg.com/yargs/-/yargs-12.0.5.tgz#05f5997b609647b64f66b81e3b4b10a368e7ad13"
   integrity sha1-BfWZe2CWR7ZPZrgeO0sQo2jnrRM=
   dependencies:
     cliui "^4.0.0"
