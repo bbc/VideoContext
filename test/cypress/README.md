@@ -8,7 +8,7 @@
 - debugging a failing test
 
 
-## Before you begin (some caveats)
+## Before you begin (some known issues)
 
 #### GUI and headless mode produce different snapshots
 
@@ -31,6 +31,20 @@ Then when you are ready to push, regenerate the snapshots using the headless ver
 ```
 yarn cypress:update-snapshots
 ```
+
+#### GUI mode saves snapshots in different locations
+
+When using the GUI mode (`yarn cypress`), how you run the specs affects where the snapshots are saved.
+
+1. __Run All Specs__: saves snapshots under `snapshots/All Specs`
+2. __Running an individual spec__: saves snapshots under `snapshots/<name-of-spec.spec>`
+
+Headless mode always saves snapshots under `snapshots/<name-of-spec.spec>`. With this in mind we are
+`.gitignore`ing the `All Specs` directory.
+
+Feel free to run specs individually during development. But be aware that the first run will generate the
+snapshots (do this before you make changes to the code!).
+
 
 ## Why Cypress
 
