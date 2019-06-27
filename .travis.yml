@@ -5,6 +5,7 @@ cache:
   yarn: true
   directories:
     - "node_modules"
+    - "/home/travis/.cache/Cypress"
 env:
   - TEST_SUITE=unit
   - TEST_SUITE=integration
