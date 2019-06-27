@@ -53,8 +53,12 @@ const videoContextScreenShotsAtTimes = (times = [1, 25, 50], { id, options }) =>
         /**
          * We slow down the playback rate to increase the chance of the registered
          * timeline callback always executing on exactly the same frame.
+         *
+         * This value must be within the range 0.0625 - 16, otherwise Chrome will throw an error, see:
+         * - https://developers.google.com/web/updates/2017/12/chrome-63-64-media-updates#unsupported-playbackRate-raises-exception
+         * - https://www.chromestatus.com/feature/5750156230131712
          */
-        win.ctx.playbackRate = 0.01;
+        win.ctx.playbackRate = 0.0625;
 
         window = win;
     });
