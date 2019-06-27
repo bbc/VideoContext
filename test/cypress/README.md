@@ -8,6 +8,30 @@
 - debugging a failing test
 
 
+## Before you begin (some caveats)
+
+#### GUI and headless mode produce different snapshots
+
+An open issue with Cypress https://github.com/cypress-io/cypress/issues/3324 causes the 
+[cypress-image-snapshot](https://github.com/palmerhq/cypress-image-snapshot/issues/67#issuecomment-499565103) plugin to capture snapshots at a smaller size when run with 
+`yarn ci:cypress` (`cypress run`) as opposed to `yarn cypress` (`cypress open`).
+
+The commit snapshots must always be those intended to be run by CI. This means, when cloned
+locally, the tests will initially fail if you GUI (`yarn cypress`).
+
+If you want to use `yarn cypress` during development you'll first need to regenerate the
+snapshots:
+
+```
+CYPRESS_updateSnapshots=true yarn cypress
+```
+
+Then when you are ready to push, regenerate the snapshots using the headless version
+
+```
+yarn cypress:update-snapshots
+```
+
 ## Why Cypress
 
 Cypress enables us to
