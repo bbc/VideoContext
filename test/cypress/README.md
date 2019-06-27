@@ -22,13 +22,13 @@ locally, the tests will initially fail if you GUI (`yarn cypress`).
 If you want to use `yarn cypress` during development you'll first need to regenerate the
 snapshots:
 
-```
+```sh
 CYPRESS_updateSnapshots=true yarn cypress
 ```
 
 Then when you are ready to push, regenerate the snapshots using the headless version
 
-```
+```sh
 yarn cypress:update-snapshots
 ```
 
@@ -85,11 +85,11 @@ The spec files containing the test code.
 
 ## Running the tests
 
-```
-# serve the html page and open the Cypress GUI
+```sh
+# watch and build changes to `src`, serve the html page, `cypress open` the Cypress GUI
 yarn cypress
 
-# or if you want to simulate what CI does (run in headless mode)
+# or if you want to simulate what CI does (`cypress run` in headless mode)
 yarn ci:cypress
 ```
 
@@ -101,14 +101,14 @@ There are a couple of ways to find out what went wrong when a test fails.
 
 You can watch the test fail by opening the Cypress GUI and running the test
 
-```
+```sh
 yarn cypress
 ```
 
 The test runner will abort if a screen-shot match fails. If you want that test
 to still complete
 
-```
+```sh
 CYPRESS_failOnSnapshotDiff=false yarn cypress
 ```
 
