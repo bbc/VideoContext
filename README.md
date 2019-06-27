@@ -13,9 +13,30 @@ The design is heavily inspired by the Web Audio API, so it should feel familiar 
 [Live examples can be found here](http://bbc.github.io/VideoContext/)
 
 
+## Table of Contents
+
+- [Demo](#demo)
+- [Debugging](#debugging)
+- [Documentation](#documentation)
+- [Node Types](#node-types)
+  - [VideoNode](#videonode)
+  - [ImageNode](#imagenode)
+  - [CanvasNode](#canvasnode)
+  - [CustomSourceNode](#customsourcenode)
+  - [EffectNode](#effectnode)
+  - [TransitionNode](#transitionnode)
+  - [CompositingNode](#compositingnode)
+- [Writing Custom Effect Definitions](#writing-custom-effect-definitions)
+- [Advanced Examples](#advanced-examples)
+- [Development](#development)
+  - [Gitflow](#gitflow)
+  - [Releases](#releases)
+  - [CI](#ci)
+
+
 ## Demo
 
-``` JavaScript
+```JavaScript
 <!DOCTYPE html>
 <html>
 <head>
@@ -65,11 +86,13 @@ The design is heavily inspired by the Web Audio API, so it should feel familiar 
 ![Graph and timeline view](../master/readme-diagram.png?raw=true)
 
 ## Debugging
+
 If you need to debug video context graphs or get a better insight into what is happening under the hood, there's a new browser extension for chrome, [videocontext-devtools](https://github.com/bbc/videocontext-devtools)
 
 ![Debugging view](../master/readme-debugging.jpg?raw=true)
 
 ## Documentation
+
 API Documentation can be built using [ESDoc](https://esdoc.org/) by running the following commands:
 ```
 npm install
@@ -78,6 +101,7 @@ npm run doc
 The documentation will be generated in the "./doc" folder of the repository.
 
 ## Node Types
+
 There are a number of different types of nodes which can be used in the VideoContext's processing graph. Here's a quick list of each one. Following that is a more in-depth discussion of each type.
 
 * VideoNode - Plays video.
@@ -89,10 +113,11 @@ There are a number of different types of nodes which can be used in the VideoCon
 * CompositingNode - Applies same shader to unlimited inputs, rendering to same output.
 * DestinationNode - Node representing output canvas. Can only be one.
 
-
 ### VideoNode
+
 A video source node.
-``` JavaScript
+
+```JavaScript
 var videoNode = videoCtx.video("./video1.mp4");
 videoNode.connect(videoCtx.destination);
 videoNode.start(0);
@@ -108,8 +133,10 @@ avconv -i input.mp4 -tune fastdecode -strict experimental output.mp4
 > View on [CodeSandbox](https://codesandbox.io/embed/naughty-sea-dv0x1)
 
 ### ImageNode
+
 An image source node.
-``` JavaScript
+
+```JavaScript
 var imageNode = videoCtx.image("cats.png");
 imageNode.connect(videoCtx.destination);
 imageNode.start(0);
@@ -119,14 +146,15 @@ imageNode.stop(4);
 > View on [CodeSandbox](https://codesandbox.io/embed/crazy-bas-6m7r7)
 
 ### CanvasNode
+
 A canvas source node.
-``` JavaScript
-var canvas = document.getElementById("input-cavnas");
+
+```JavaScript
+var canvas = document.getElementById("input-canvas");
 var canvasNode = videoCtx.canvas(canvas);
 canvasNode.connect(videoCtx.destination);
 canvasNode.start(0);
 canvasNode.stop(4);
-
 ```
 
 > View on [CodeSandbox](https://codesandbox.io/embed/peaceful-meninsky-jkscs)
@@ -139,12 +167,11 @@ You can create your own source nodes that host more logic and let you hook into 
 View below a custom source node that can now play an HLS VOD.
 
 ```JavaScript
-
 import Hls from "hls.js";
 
 class HLSNode extends VideoNode {
     constructor(src, gl, renderGraph, currentTime, playbackRate, sourceOffset, preloadTime, hlsOptions = {}) {
-
+        
         this._src = src;
         const video = document.createElement("video");
         this.hls = new Hls(hlsOptions);
@@ -171,7 +198,6 @@ class HLSNode extends VideoNode {
         super.destroy();
     }
 }
-
 ```
 
 Another use case for custom node types would be to play GIFs. The custom node would be in charge of decode the GIF frames and paint them on a canvas depending on the `_update` calls from `VideoContext`.
@@ -179,14 +205,14 @@ Another use case for custom node types would be to play GIFs. The custom node wo
 > View on [CodeSandbox]()
 
 ### EffectNode
+
 An EffectNode is the simplest form of processing node. It's built from a definition object, which is a combination of fragment shader code, vertex shader code, input descriptions, and property descriptions. There are a number of common operations available as node descriptions accessible as static properties on the VideoContext at VideoContext.DESCRIPTIONS.*
 
 The vertex and shader code is GLSL code which gets compiled to produce the shader program. The input description tells the VideoContext how many ports there are to connect to and the name of the image associated with the port within the shader code. Inputs are always render-able textures (i.e images, videos, canvases). The property descriptions tell the VideoContext what controls to attached to the EffectNode and the name, type, and default value of the control within the shader code.
 
 The following is a an example of a simple shader description used to describe a monochrome effect. It has one input (the image to be processed) and two modifiable properties to control the color RGB mix for the processing result.
 
-
-``` JavaScript
+```JavaScript
 var monochromeDescription = {
     title:"Monochrome",
     description: "Change images to a single chroma (e.g can be used to make a black & white filter). Input color mix and output color mix can be adjusted.",
@@ -219,12 +245,11 @@ var monochromeDescription = {
     },
     inputs:["u_image"]
 };
-
 ```
 
 Here's an example of how the above node description might be used to apply sepia like effect to a video.
 
-``` JavaScript
+```JavaScript
 //Setup the video context.
 var canvas = document.getElementById("canvas");
 var ctx = new VideoContext(canvas);
@@ -235,7 +260,7 @@ videoNode.start(0);
 videoNode.stop(60);
 
 //Create the sepia effect node (from the above Monochrome effect description).
-var sepiaEffect = ctx.effect(monochromDescription);
+var sepiaEffect = ctx.effect(monochromeDescription);
 
 //Give a sepia tint to the monochrome output (note how shader description properties are automatically bound to the JavaScript object).
 sepiaEffect.outputMix = [1.25,1.18,0.9];
@@ -246,7 +271,6 @@ sepiaEffect.connect(ctx.destination);
 
 //start playback.
 ctx.play();
-
 ```
 
 > View on [CodeSandbox](https://codesandbox.io/embed/hopeful-shtern-q6lvy)
@@ -296,12 +320,11 @@ var crossfadeDescription = {
         },
         inputs:["u_image_a","u_image_b"]
 };
-
 ```
 
 The shader has two inputs and a mix property.
 
-``` JavaScript
+```JavaScript
 //Setup the video context.
 var canvas = document.getElementById("canvas");
 var ctx = new VideoContext(canvas);
@@ -349,7 +372,6 @@ crossfadeEffect.connect(ctx.destination);
 
 //start playback.
 ctx.play();
-
 ```
 
 > View on [CodeSandbox](https://codesandbox.io/embed/modest-sutherland-gp2c5)
@@ -363,7 +385,8 @@ When compositing nodes are run, they map each input in turn to the first input i
 A common use for compositing nodes is to collect a series of source nodes which exist at distinct points on a timeline into a single connection for passing onto further processing. This effectively makes the sources into a single video track.
 
 Here's a really simple shader which renders all the inputs to the same output.
-``` JavaScript
+
+```JavaScript
 var combineDecription ={
     title:"Combine",
     description: "A basic effect which renders the input to the output, Typically used as a combine node for layering up media with alpha transparency.",
@@ -392,7 +415,7 @@ var combineDecription ={
 
 And here's an example of how it can be used.
 
-``` JavaScript
+```JavaScript
 //Setup the video context.
 var canvas = document.getElementById("canvas");
 var ctx = new VideoContext(canvas);
@@ -432,7 +455,7 @@ ctx.play();
 
 Making custom effect shaders for the VideoContext is fairly simple. The best starting point is to take one of the built in effects and modify it. It's very useful to have an understanding of how shaders work and some experience writing shaders in GLSL.
 
-``` JavaScript
+```JavaScript
 var effectDefinition ={
     title:"",               //A title for the effect.
     description: "",        //A textual description of what the effect does.
@@ -444,8 +467,12 @@ var effectDefinition ={
 };
 ```
 
+## Advanced Examples
+
+You can view more advanced usage examples [here](AdvancedExamples.md).
 
 ## Development
+
 VideoContext has a pretty standard `package.json`
 
 ```
@@ -463,11 +490,12 @@ npm run test-regression
 ```
 
 ### Gitflow
+
 VideoContext uses the gitflow branching model.
 To contribute raise a pull request against the `develop` branch.
 
-
 ### Releases
+
 Releases are prepared in release branches. When the the release is ready run one of
 
 ```
@@ -482,14 +510,9 @@ and push to the current branch with tags.
 CI will publish to npm when the release branch has been merged into master.
 
 ### CI
+
 VideoContext uses the BBCs public travis account to run all tests and publish to npmjs.
 All tests must pass before PRs can be merged.
-
-
-
-
-
-
 
 Other options
 ```
