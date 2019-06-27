@@ -1,17 +1,14 @@
 # VideoContext
+
 ![build status](https://travis-ci.org/bbc/VideoContext.svg?branch=master)
 
 The VideoContext is an experimental HTML5/WebGL media processing and sequencing library for creating interactive and responsive videos on the web.
 
-
 It consists of two main components. A graph based, shader accelerated processing pipeline, and a media playback sequencing timeline.
-
 
 The design is heavily inspired by the Web Audio API, so it should feel familiar for people with experience in the Web Audio world.
 
-
 [Live examples can be found here](http://bbc.github.io/VideoContext/)
-
 
 ## Table of Contents
 
@@ -32,7 +29,6 @@ The design is heavily inspired by the Web Audio API, so it should feel familiar 
   - [Gitflow](#gitflow)
   - [Releases](#releases)
   - [CI](#ci)
-
 
 ## Demo
 
@@ -94,24 +90,26 @@ If you need to debug video context graphs or get a better insight into what is h
 ## Documentation
 
 API Documentation can be built using [ESDoc](https://esdoc.org/) by running the following commands:
+
 ```
 npm install
 npm run doc
 ```
+
 The documentation will be generated in the "./doc" folder of the repository.
 
 ## Node Types
 
 There are a number of different types of nodes which can be used in the VideoContext's processing graph. Here's a quick list of each one. Following that is a more in-depth discussion of each type.
 
-* VideoNode - Plays video.
-* AudioNode - Plays audio.
-* ImageNode - Displays images for specified time.
-* CanvasNode - Displays output of canvas for specified time.
-* EffectNode - Applies shader to limited number of inputs.
-* TransitionNode - Applies shader to limited number of inputs. Modifies properties at specific times.
-* CompositingNode - Applies same shader to unlimited inputs, rendering to same output.
-* DestinationNode - Node representing output canvas. Can only be one.
+- [VideoNode](#videonode) - Plays video.
+- [AudioNode](#audionode) - Plays audio.
+- [ImageNode](#imagenode) - Displays images for specified time.
+- [CanvasNode](#canvasnode) - Displays output of canvas for specified time.
+- [EffectNode](#effectnode) - Applies shader to limited number of inputs.
+- [TransitionNode](#transitionnode) - Applies shader to limited number of inputs. Modifies properties at specific times.
+- [CompositingNode](#compositingnode) - Applies same shader to unlimited inputs, rendering to same output.
+- [DestinationNode](#destinationnode) - Node representing output canvas. Can only be one.
 
 ### VideoNode
 
@@ -171,7 +169,7 @@ import Hls from "hls.js";
 
 class HLSNode extends VideoNode {
     constructor(src, gl, renderGraph, currentTime, playbackRate, sourceOffset, preloadTime, hlsOptions = {}) {
-        
+
         this._src = src;
         const video = document.createElement("video");
         this.hls = new Hls(hlsOptions);
@@ -206,7 +204,7 @@ Another use case for custom node types would be to play GIFs. The custom node wo
 
 ### EffectNode
 
-An EffectNode is the simplest form of processing node. It's built from a definition object, which is a combination of fragment shader code, vertex shader code, input descriptions, and property descriptions. There are a number of common operations available as node descriptions accessible as static properties on the VideoContext at VideoContext.DESCRIPTIONS.*
+An EffectNode is the simplest form of processing node. It's built from a definition object, which is a combination of fragment shader code, vertex shader code, input descriptions, and property descriptions. There are a number of common operations available as node descriptions accessible as static properties on the VideoContext at `VideoContext.DEFINITIONS`.
 
 The vertex and shader code is GLSL code which gets compiled to produce the shader program. The input description tells the VideoContext how many ports there are to connect to and the name of the image associated with the port within the shader code. Inputs are always render-able textures (i.e images, videos, canvases). The property descriptions tell the VideoContext what controls to attached to the EffectNode and the name, type, and default value of the control within the shader code.
 
@@ -449,6 +447,7 @@ combineEffect.connect(ctx.destination);
 //start playback.
 ctx.play();
 ```
+
 > View on [CodeSandbox](https://codesandbox.io/embed/sweet-bartik-6cz3d).
 
 ## Writing Custom Effect Definitions
@@ -515,6 +514,7 @@ VideoContext uses the BBCs public travis account to run all tests and publish to
 All tests must pass before PRs can be merged.
 
 Other options
+
 ```
 npm run build     # build dist packages
 npm run doc       # create documentation
