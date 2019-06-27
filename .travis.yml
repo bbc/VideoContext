@@ -1,11 +1,16 @@
 language: node_js
 node_js:
   - "11.10.1"
+addons:
+  apt:
+    packages:
+      # Ubuntu 16+ does not install this dependency by default, so we need to install it ourselves
+      - libgconf-2-4
 cache:
   yarn: true
   directories:
     - "node_modules"
-    - "/home/travis/.cache/Cypress"
+    - "~/.cache/Cypress"
 env:
   - TEST_SUITE=unit
   - TEST_SUITE=integration
