@@ -4,10 +4,10 @@
 The VideoContext is an experimental HTML5/WebGL media processing and sequencing library for creating interactive and responsive videos on the web.
 
 
-It consists of two main components. A graph based, shader accelerated processing pipeline, and a media playback sequencing time-line.
+It consists of two main components. A graph based, shader accelerated processing pipeline, and a media playback sequencing timeline.
 
 
-The design is heavily inspired by the WebAudioAPI so should feel familiar to use for people who've had previous experience in the WebAudio world.
+The design is heavily inspired by the Web Audio API, so it should feel familiar for people with experience in the Web Audio world.
 
 
 [Live examples can be found here](http://bbc.github.io/VideoContext/)
@@ -27,7 +27,7 @@ The design is heavily inspired by the WebAudioAPI so should feel familiar to use
         A canvas needs to define its width and height to know how many pixels you can draw onto it.
         Its CSS width and height will define the space it takes on screen
         If omitted, the canvas dimensions will be 300x150 and your videos will not rendered at their
-        optimum definition
+        optimal definition
         https://webglfundamentals.org/webgl/lessons/webgl-resizing-the-canvas.html
     -->
     <canvas id="canvas" width="1280" height="720" style="width: 852px; height: 480px"></canvas>
@@ -63,7 +63,7 @@ The design is heavily inspired by the WebAudioAPI so should feel familiar to use
 ![Graph and timeline view](../master/readme-diagram.png?raw=true)
 
 ## Debugging
-If you need to debug video context graphs or get a better insight into what is happening under the hood there's a new browser extension for chrome, [videocontext-devtools](https://github.com/bbc/videocontext-devtools)
+If you need to debug video context graphs or get a better insight into what is happening under the hood, there's a new browser extension for chrome, [videocontext-devtools](https://github.com/bbc/videocontext-devtools)
 
 ![Debugging view](../master/readme-debugging.jpg?raw=true)
 
@@ -76,14 +76,14 @@ npm run doc
 The documentation will be generated in the "./doc" folder of the repository.
 
 ## Node Types
-There are a number of different types of nodes which can be used in the VideoContexts processing graph. Here's a quick list of each one, following that is a more in-depth discussion of each type.
+There are a number of different types of nodes which can be used in the VideoContext's processing graph. Here's a quick list of each one. Following that is a more in-depth discussion of each type.
 
 * VideoNode - Plays video.
 * AudioNode - Plays audio.
 * ImageNode - Displays images for specified time.
 * CanvasNode - Displays output of canvas for specified time.
 * EffectNode - Applies shader to limited number of inputs.
-* TransisitonNode - Applies shader to limited number of inputs. Modifies properties at specific times.
+* TransitionNode - Applies shader to limited number of inputs. Modifies properties at specific times.
 * CompositingNode - Applies same shader to unlimited inputs, rendering to same output.
 * DestinationNode - Node representing output canvas. Can only be one.
 
@@ -346,11 +346,11 @@ ctx.play();
 
 ### CompositingNode
 
-Compositing nodes are different from regular effect nodes in that they can have an infinite number of nodes connected to them. They operate by running their effect shader on each connected input in turn and rendering the output to the same texture. This makes them particularly suitable for layering inputs which have alpha channels.  
+Compositing nodes are different from regular effect nodes as they can have an infinite number of nodes connected to them. They operate by running their effect shader on each connected input in turn and rendering the output to the same texture. This makes them particularly suitable for layering inputs which have alpha channels.
 
-When compositing nodes are run they map each input in turn to the first input in the definition, this means compositing node definitions typically only have a single input defined. It's also worth noting that an effect node definition with a single input can also be used as a compositing shader with no additional modifications.
+When compositing nodes are run, they map each input in turn to the first input in the definition. This means compositing node definitions typically only have a single input defined. It's also worth noting that an effect node definition with a single input can also be used as a compositing shader with no additional modifications.
 
-A common use for compositing nodes is to collect a series of source nodes which exist at distinct points on a time-line into a single connection for passing onto further processing. This effectively makes the sources into a single video track.
+A common use for compositing nodes is to collect a series of source nodes which exist at distinct points on a timeline into a single connection for passing onto further processing. This effectively makes the sources into a single video track.
 
 Here's a really simple shader which renders all the inputs to the same output.
 ``` JavaScript

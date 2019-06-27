@@ -28,7 +28,7 @@
 
 <header>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>module:VideoContext<span class="signature">(canvas, initErrorCallback, options)</span><span class="type-signature"></span></h2>
+        <h2><span class="attribs"><span class="type-signature"></span></span>module:VideoContext<span class="signature">(canvas, initErrorCallback<span class="signature-attributes">opt</span>, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h2>
         
     
 </header>
@@ -41,7 +41,7 @@
     
 
     
-    <h4 class="name" id="module:VideoContext"><span class="type-signature"></span>new module:VideoContext<span class="signature">(canvas, initErrorCallback, options)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="module:VideoContext"><span class="type-signature"></span>new module:VideoContext<span class="signature">(canvas, initErrorCallback<span class="signature-attributes">opt</span>, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
     
 
     
@@ -73,6 +73,8 @@
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
         
 
@@ -98,6 +100,14 @@
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -120,6 +130,16 @@
             
             </td>
 
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
             
 
             
@@ -144,10 +164,243 @@
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last"><p>a nuber of custom options which can be set on the VideoContext, generally best left as default.</p></td>
+            <td class="description last"><p>a number of custom options which can be set on the VideoContext, generally best left as default.</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>manualUpdate</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last"><p>Make Video Context not use the updatable manager</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>endOnLastSourceEnd</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    true
+                
+                </td>
+            
+
+            <td class="description last"><p>Trigger an <code>ended</code> event when the current time goes above the duration of the composition</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>useVideoElementCache</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    true
+                
+                </td>
+            
+
+            <td class="description last"><p>Creates a pool of video element that will be all initialised at the same time. Important for mobile support</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>videoElementCacheSize</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    6
+                
+                </td>
+            
+
+            <td class="description last"><p>Number of video element in the pool</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>webglContextAttributes</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>A set of attributes used when getting the GL context. Alpha will always be <code>true</code>.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
         </tr>
 
     
@@ -188,7 +441,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line50">line 50</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line56">line 56</a>
     </li></ul></dd>
     
 
@@ -218,7 +471,7 @@
     <h5>Example</h5>
     
     <pre class="prettyprint"><code>var canvasElement = document.getElementById("canvas");
-var ctx = new VideoContext(canvasElement, function(){console.error("Sorry, your browser dosen\'t support WebGL");});
+var ctx = new VideoContext(canvasElement, () => console.error("Sorry, your browser dosen\'t support WebGL"));
 var videoNode = ctx.video("video.mp4");
 videoNode.connect(ctx.destination);
 videoNode.start(0);
@@ -292,7 +545,7 @@ ctx.play();</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line320">line 320</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line297">line 297</a>
     </li></ul></dd>
     
 
@@ -316,7 +569,7 @@ videoNode.connect(ctx.destination);
 videoNode.start(0);
 videoNode.stop(10);
 ctx.play();
-setTimeout(function(){console.log(ctx.currentTime);},1000); //should print roughly 1.0</code></pre>
+setTimeout(() => console.log(ctx.currentTime),1000); //should print roughly 1.0</code></pre>
 
 
 
@@ -329,7 +582,7 @@ setTimeout(function(){console.log(ctx.currentTime);},1000); //should print rough
 
 <div class="description">
     <p>Set the progress through the internal timeline.
-Setting this can be used as a way to implement a scrubaable timeline.</p>
+Setting this can be used as a way to implement a scrubbable timeline.</p>
 </div>
 
 
@@ -367,7 +620,7 @@ Setting this can be used as a way to implement a scrubaable timeline.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line286">line 286</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line263">line 263</a>
     </li></ul></dd>
     
 
@@ -442,7 +695,7 @@ ctx.play();</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line371">line 371</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line348">line 348</a>
     </li></ul></dd>
     
 
@@ -514,7 +767,7 @@ videoNode.connect(ctx.destination);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line343">line 343</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line320">line 320</a>
     </li></ul></dd>
     
 
@@ -592,7 +845,70 @@ ctx.play();</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line249">line 249</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line233">line 233</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="id"><span class="type-signature"></span>id<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>Returns an ID assigned to the VideoContext instance. This will either be the same id as the underlying canvas element,
+or a uniquely generated one.</p>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line127">line 127</a>
     </li></ul></dd>
     
 
@@ -654,7 +970,7 @@ ctx.play();</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line144">line 144</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line134">line 134</a>
     </li></ul></dd>
     
 
@@ -672,14 +988,13 @@ ctx.play();</code></pre>
 
         
             
-<h4 class="name" id="id"><span class="type-signature"></span>id<span class="type-signature"></span></h4>
+<h4 class="name" id="playbackRate"><span class="type-signature"></span>playbackRate<span class="type-signature"></span></h4>
 
 
 
 
 <div class="description">
-    <p>Reurns an ID assigned to the VideoContext instance. This will either be the same id as the underlying canvas element,
-or a uniquley generated one.</p>
+    <p>Return the current playbackRate of the video context.</p>
 </div>
 
 
@@ -717,7 +1032,7 @@ or a uniquley generated one.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line137">line 137</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line385">line 385</a>
     </li></ul></dd>
     
 
@@ -780,7 +1095,7 @@ This will alter the playback speed of all media elements played through the Vide
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line391">line 391</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line368">line 368</a>
     </li></ul></dd>
     
 
@@ -810,13 +1125,13 @@ ctx.play(); // Double playback rate means this will finish playing in 5 seconds.
 
         
             
-<h4 class="name" id="playbackRate"><span class="type-signature"></span>playbackRate<span class="type-signature"></span></h4>
+<h4 class="name" id="state"><span class="type-signature"></span>state<span class="type-signature"></span></h4>
 
 
 
 
 <div class="description">
-    <p>Return the current playbackRate of the video context.</p>
+    <p>Get the current state.</p>
 </div>
 
 
@@ -854,7 +1169,7 @@ ctx.play(); // Double playback rate means this will finish playing in 5 seconds.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line408">line 408</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line242">line 242</a>
     </li></ul></dd>
     
 
@@ -872,21 +1187,13 @@ ctx.play(); // Double playback rate means this will finish playing in 5 seconds.
 
         
             
-<h4 class="name" id="state"><span class="type-signature"></span>state<span class="type-signature"></span></h4>
+<h4 class="name" id="volume"><span class="type-signature"></span>volume<span class="type-signature"></span></h4>
 
 
 
 
 <div class="description">
-    <p>Get the current state.</p>
-<p>This will be either</p>
-<ul>
-<li>VideoContext.STATE.PLAYING: current sources on timeline are active</li>
-<li>VideoContext.STATE.PAUSED: all sources are paused</li>
-<li>VideoContext.STATE.STALLED: one or more sources is unable to play</li>
-<li>VideoContext.STATE.ENDED: all sources have finished playing</li>
-<li>VideoContext.STATE.BROKEN: the render graph is in a broken state</li>
-</ul>
+    <p>Set the volume of all MediaNode created in the VideoContext.</p>
 </div>
 
 
@@ -924,7 +1231,7 @@ ctx.play(); // Double playback rate means this will finish playing in 5 seconds.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line265">line 265</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line393">line 393</a>
     </li></ul></dd>
     
 
@@ -986,7 +1293,7 @@ ctx.play(); // Double playback rate means this will finish playing in 5 seconds.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line429">line 429</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line406">line 406</a>
     </li></ul></dd>
     
 
@@ -1003,16 +1310,220 @@ ctx.play(); // Double playback rate means this will finish playing in 5 seconds.
 
 
         
-            
-<h4 class="name" id="volume"><span class="type-signature"></span>volume<span class="type-signature"></span></h4>
+    
 
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="audio"><span class="type-signature"></span>audio<span class="signature">(src, sourceOffset<span class="signature-attributes">opt</span>, preloadTime<span class="signature-attributes">opt</span>, imageElementAttributes<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="AudioNode.html">AudioNode</a>}</span></h4>
+    
+
+    
 
 
 
 <div class="description">
-    <p>Set the volume of all VideoNode's created in the VideoContext.</p>
+    <p>Create a new node representing an audio source</p>
 </div>
 
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>src</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">HTMLAudioElement</span>
+|
+
+<span class="param-type">MediaStream</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>The url or audio element to create the audio node from.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>sourceOffset</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    0
+                
+                </td>
+            
+
+            <td class="description last"><p>Offset into the start of the source audio to start playing from.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>preloadTime</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    4
+                
+                </td>
+            
+
+            <td class="description last"><p>How long before a node is to be displayed to attmept to load it.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>imageElementAttributes</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>Any attributes to be given to the underlying image element.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
 
 
@@ -1048,7 +1559,7 @@ ctx.play(); // Double playback rate means this will finish playing in 5 seconds.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line416">line 416</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line492">line 492</a>
     </li></ul></dd>
     
 
@@ -1064,11 +1575,46 @@ ctx.play(); // Double playback rate means this will finish playing in 5 seconds.
 
 
 
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
         
-    
+<div class="param-desc">
+    <p>A new audio node.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="AudioNode.html">AudioNode</a></span>
+
+
+    </dd>
+</dl>
 
     
-        <h3 class="subsection-title">Methods</h3>
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>var canvasElement = document.getElementById("canvas");
+var ctx = new VideoContext(canvasElement);
+var audioNode = ctx.audio("ziggystardust.mp3");</code></pre>
+
+
 
         
             
@@ -1177,7 +1723,7 @@ ctx.play(); // Double playback rate means this will finish playing in 5 seconds.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line580">line 580</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line564">line 564</a>
     </li></ul></dd>
     
 
@@ -1337,7 +1883,7 @@ The shader in the definition is run for each input in turn, drawing them to the 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line679">line 679</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line663">line 663</a>
     </li></ul></dd>
     
 
@@ -1479,6 +2025,8 @@ trackNode.connect(ctx.destination);</code></pre>
     
 
     
+        <dt class="important tag-deprecated">Deprecated:</dt><dd class="yes-def tag-deprecated"><ul class="dummy"><li>Yes</li></ul></dd>
+    
 
     
 
@@ -1491,7 +2039,7 @@ trackNode.connect(ctx.destination);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line589">line 589</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line573">line 573</a>
     </li></ul></dd>
     
 
@@ -1573,7 +2121,7 @@ trackNode.connect(ctx.destination);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line688">line 688</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line690">line 690</a>
     </li></ul></dd>
     
 
@@ -1643,6 +2191,8 @@ trackNode.connect(ctx.destination);</code></pre>
     
 
     
+        <dt class="important tag-deprecated">Deprecated:</dt><dd class="yes-def tag-deprecated"><ul class="dummy"><li>Yes</li></ul></dd>
+    
 
     
 
@@ -1655,7 +2205,7 @@ trackNode.connect(ctx.destination);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line610">line 610</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line594">line 594</a>
     </li></ul></dd>
     
 
@@ -1725,6 +2275,8 @@ trackNode.connect(ctx.destination);</code></pre>
     
 
     
+        <dt class="important tag-deprecated">Deprecated:</dt><dd class="yes-def tag-deprecated"><ul class="dummy"><li>Yes</li></ul></dd>
+    
 
     
 
@@ -1737,7 +2289,7 @@ trackNode.connect(ctx.destination);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line568">line 568</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line552">line 552</a>
     </li></ul></dd>
     
 
@@ -1807,6 +2359,8 @@ trackNode.connect(ctx.destination);</code></pre>
     
 
     
+        <dt class="important tag-deprecated">Deprecated:</dt><dd class="yes-def tag-deprecated"><ul class="dummy"><li>Yes</li></ul></dd>
+    
 
     
 
@@ -1819,7 +2373,7 @@ trackNode.connect(ctx.destination);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line782">line 782</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line784">line 784</a>
     </li></ul></dd>
     
 
@@ -1889,6 +2443,8 @@ trackNode.connect(ctx.destination);</code></pre>
     
 
     
+        <dt class="important tag-deprecated">Deprecated:</dt><dd class="yes-def tag-deprecated"><ul class="dummy"><li>Yes</li></ul></dd>
+    
 
     
 
@@ -1901,7 +2457,216 @@ trackNode.connect(ctx.destination);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line527">line 527</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line511">line 511</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="customSourceNode"><span class="type-signature"></span>customSourceNode<span class="signature">(CustomSourceNode, src, &hellip;options)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Instanciate a custom built source node</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>CustomSourceNode</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="SourceNode.html">SourceNode</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>src</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">any</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                    &lt;repeatable><br>
+                
+                </td>
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line675">line 675</a>
     </li></ul></dd>
     
 
@@ -2036,7 +2801,7 @@ trackNode.connect(ctx.destination);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line601">line 601</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line585">line 585</a>
     </li></ul></dd>
     
 
@@ -2150,6 +2915,9 @@ trackNode.connect(ctx.destination);</code></pre>
 |
 
 <span class="param-type">Image</span>
+|
+
+<span class="param-type">ImageBitmap</span>
 
 
             
@@ -2288,7 +3056,7 @@ trackNode.connect(ctx.destination);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line552">line 552</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line536">line 536</a>
     </li></ul></dd>
     
 
@@ -2408,7 +3176,7 @@ var imageNode = ctx.image(imageElement);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line466">line 466</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line443">line 443</a>
     </li></ul></dd>
     
 
@@ -2445,7 +3213,7 @@ videoNode.start(0);
 videoNode.stop(20);
 ctx.currentTime = 10; // seek 10 seconds in
 ctx.play();
-setTimeout(function(){ctx.pause();}, 1000); //pause playback after roughly one second.</code></pre>
+setTimeout(() => ctx.pause(), 1000); //pause playback after roughly one second.</code></pre>
 
 
 
@@ -2507,7 +3275,7 @@ setTimeout(function(){ctx.pause();}, 1000); //pause playback after roughly one s
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line444">line 444</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line421">line 421</a>
     </li></ul></dd>
     
 
@@ -2560,12 +3328,7 @@ ctx.play();</code></pre>
 
 
 <div class="description">
-    <p>Regsiter a callback to listen to one of the following events: &quot;stalled&quot;, &quot;update&quot;, &quot;ended&quot;, &quot;content&quot;, &quot;nocontent&quot;</p>
-<p>&quot;stalled&quot; happend anytime playback is stopped due to unavailbale data for playing assets (i.e video still loading)
-. &quot;update&quot; is called any time a frame is rendered to the screen. &quot;ended&quot; is called once plackback has finished
-(i.e ctx.currentTime == ctx.duration). &quot;content&quot; is called a the start of a time region where there is content
-playing out of one or more sourceNodes. &quot;nocontent&quot; is called at the start of any time region where the
-VideoContext is still playing, but there are currently no activly playing soureces.</p>
+    <p>Register a callback to listen to one of the events defined in <code>VideoContext.EVENTS</code></p>
 </div>
 
 
@@ -2617,7 +3380,7 @@ VideoContext is still playing, but there are currently no activly playing sourec
 
             
 
-            <td class="description last"><p>the event to register against (&quot;stalled&quot;, &quot;update&quot;, or &quot;ended&quot;).</p></td>
+            <td class="description last"><p>the event to register against.</p></td>
         </tr>
 
     
@@ -2681,7 +3444,7 @@ VideoContext is still playing, but there are currently no activly playing sourec
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line202">line 202</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line186">line 186</a>
     </li></ul></dd>
     
 
@@ -2712,9 +3475,9 @@ VideoContext is still playing, but there are currently no activly playing sourec
     
     <pre class="prettyprint"><code>var canvasElement = document.getElementById("canvas");
 var ctx = new VideoContext(canvasElement);
-ctx.registerCallback("stalled", function(){console.log("Playback stalled");});
-ctx.registerCallback("update", function(){console.log("new frame");});
-ctx.registerCallback("ended", function(){console.log("Playback ended");});</code></pre>
+ctx.registerCallback(VideoContext.EVENTS.STALLED, () => console.log("Playback stalled"));
+ctx.registerCallback(VideoContext.EVENTS.UPDATE, () => console.log("new frame"));
+ctx.registerCallback(VideoContext.EVENTS.ENDED, () => console.log("Playback ended"));</code></pre>
 
 
 
@@ -2887,7 +3650,7 @@ ctx.registerCallback("ended", function(){console.log("Playback ended");});</code
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line158">line 158</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line148">line 148</a>
     </li></ul></dd>
     
 
@@ -2973,7 +3736,7 @@ ctx.registerCallback("ended", function(){console.log("Playback ended");});</code
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line967">line 967</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line969">line 969</a>
     </li></ul></dd>
     
 
@@ -3059,7 +3822,7 @@ ctx.registerCallback("ended", function(){console.log("Playback ended");});</code
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line1004">line 1004</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line1008">line 1008</a>
     </li></ul></dd>
     
 
@@ -3200,7 +3963,7 @@ tragetValue between the startTime and stopTime.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line773">line 773</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line775">line 775</a>
     </li></ul></dd>
     
 
@@ -3330,7 +4093,7 @@ ctx.play();</code></pre>
 
 
 <div class="description">
-    <p>Remove a previously registed callback</p>
+    <p>Remove a previously registered callback</p>
 </div>
 
 
@@ -3423,7 +4186,7 @@ ctx.play();</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line225">line 225</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line209">line 209</a>
     </li></ul></dd>
     
 
@@ -3456,10 +4219,10 @@ ctx.play();</code></pre>
 var ctx = new VideoContext(canvasElement);
 
 //the callback
-var updateCallback = function(){console.log("new frame")};
+var updateCallback = () => console.log("new frame");
 
 //register the callback
-ctx.registerCallback("update", updateCallback);
+ctx.registerCallback(VideoContext.EVENTS.UPDATE, updateCallback);
 //then unregister it
 ctx.unregisterCallback(updateCallback);</code></pre>
 
@@ -3572,7 +4335,7 @@ ctx.unregisterCallback(updateCallback);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line170">line 170</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line160">line 160</a>
     </li></ul></dd>
     
 
@@ -3707,7 +4470,7 @@ ctx.unregisterCallback(updateCallback);</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line819">line 819</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line821">line 821</a>
     </li></ul></dd>
     
 
@@ -3757,7 +4520,7 @@ update();</code></pre>
     
 
     
-    <h4 class="name" id="video"><span class="type-signature"></span>video<span class="signature">(src)</span><span class="type-signature"> &rarr; {<a href="VideoNode.html">VideoNode</a>}</span></h4>
+    <h4 class="name" id="video"><span class="type-signature"></span>video<span class="signature">(src, sourceOffset<span class="signature-attributes">opt</span>, preloadTime<span class="signature-attributes">opt</span>, videoElementAttributes<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="VideoNode.html">VideoNode</a>}</span></h4>
     
 
     
@@ -3789,7 +4552,11 @@ update();</code></pre>
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
+        
+        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -3810,17 +4577,147 @@ update();</code></pre>
 <span class="param-type">string</span>
 |
 
-<span class="param-type">Video</span>
+<span class="param-type">HTMLVideoElement</span>
+|
+
+<span class="param-type">MediaStream</span>
 
 
             
             </td>
 
             
+                <td class="attributes">
+                
 
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
             
 
             <td class="description last"><p>The URL or video element to create the video from.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>sourceOffset</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    0
+                
+                </td>
+            
+
+            <td class="description last"><p>Offset into the start of the source video to start playing from.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>preloadTime</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    4
+                
+                </td>
+            
+
+            <td class="description last"><p>How many seconds before the video is to be played to start loading it.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>videoElementAttributes</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>A dictionary of attributes to map onto the underlying video element.</p></td>
         </tr>
 
     
@@ -3861,7 +4758,7 @@ update();</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line492">line 492</a>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line463">line 463</a>
     </li></ul></dd>
     
 
@@ -3910,22 +4807,453 @@ update();</code></pre>
 
 
 
-    <h5>Examples</h5>
+    <h5>Example</h5>
     
     <pre class="prettyprint"><code>var canvasElement = document.getElementById("canvas");
 var ctx = new VideoContext(canvasElement);
-var videoNode = ctx.video("video.mp4");</code></pre>
-
-    <pre class="prettyprint"><code>var canvasElement = document.getElementById("canvas");
-var videoElement = document.getElementById("video");
-var ctx = new VideoContext(canvasElement);
-var videoNode = ctx.video(videoElement);</code></pre>
+var videoNode = ctx.video("bigbuckbunny.mp4");</code></pre>
 
 
 
         
     
 
+    
+        <h3 class="subsection-title">Type Definitions</h3>
+
+        
+                
+<h4 class="name" id="~STATE">STATE</h4>
+
+
+
+
+<div class="description">
+    <p>Video Context States</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>STATE.PLAYING</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>All sources are active</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>STATE.PAUSED</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>All sources are paused</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>STATE.STALLED</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>One or more sources is unable to play</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>STATE.ENDED</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>All sources have finished playing</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>STATE.BROKEN</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The render graph is in a broken state</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line1013">line 1013</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
+                
+<h4 class="name" id="~STATE">STATE</h4>
+
+
+
+
+<div class="description">
+    <p>Video Context Events</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>STATE.UPDATE</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Called any time a frame is rendered to the screen.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>STATE.STALLED</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>happens anytime the playback is stopped due to buffer starvation for playing assets.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>STATE.ENDED</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Called once plackback has finished (i.e ctx.currentTime == ctx.duration).</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>STATE.CONTENT</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Called at the start of a time region where there is content playing out of one or more sourceNodes.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>STATE.NOCONTENT</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Called at the start of any time region where the VideoContext is still playing, but there are currently no active playing sources.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line1032">line 1032</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
     
 
     
