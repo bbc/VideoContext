@@ -1,12 +1,9 @@
 language: node_js
 node_js:
   - "11.10.1"
-os: osx
-addons:
-  apt:
-    packages:
-      # Ubuntu 16+ does not install this dependency by default, so we need to install it ourselves
-      - libgconf-2-4
+os:
+  - linux
+  - osx # cypress disables hardware acceleration for electron on linux, so we use osx instead
 cache:
   yarn: true
   directories:
@@ -17,6 +14,12 @@ env:
   - TEST_SUITE=integration
   - TEST_SUITE=regression
   - TEST_SUITE=build
+matrix:
+  exclude:
+    - os: linux
+      env: TEST_SUITE=regression
+    - os: osx
+      env: TEST_SUITE=unit TEST_SUITE=integration TEST_SUITE=build
 branches:
   only:
     - master
