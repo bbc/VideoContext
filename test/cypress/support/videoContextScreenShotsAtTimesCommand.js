@@ -58,7 +58,7 @@ const videoContextScreenShotsAtTimes = (times = [1, 25, 50], { id, options }) =>
          * - https://developers.google.com/web/updates/2017/12/chrome-63-64-media-updates#unsupported-playbackRate-raises-exception
          * - https://www.chromestatus.com/feature/5750156230131712
          */
-        win.ctx.playbackRate = 0.0625;
+        win.ctx.playbackRate = Cypress.browser.name === "chrome" ? 0.0625 : 0.01;
 
         window = win;
     });
