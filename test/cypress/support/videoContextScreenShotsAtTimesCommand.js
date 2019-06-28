@@ -65,7 +65,7 @@ const videoContextScreenShotsAtTimes = (times = [1, 25, 50], { id, options }) =>
 
     // reduce over the times taking a screen-shot when each time is reached
     times.forEach(time => {
-        cyPromise = cyPromise.then(() =>
+        cyPromise = cyPromise.then({ timeout: 10000 }, () =>
             takeScreenShotAtTime(time, { ctx: window.ctx, id, options })
         );
     });

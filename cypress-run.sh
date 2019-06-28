@@ -5,7 +5,8 @@
 
 if [ -z "$CYPRESS_RECORD_KEY" ]
 then
-    ./node_modules/.bin/cypress run
+    ./node_modules/.bin/cypress run --browser chrome
 else
+    # use chrome on CI so that WebGL works
     ./node_modules/.bin/cypress run --record --browser chrome
 fi

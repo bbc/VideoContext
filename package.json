@@ -34,7 +34,7 @@
     "cypress": "echo \"disabled due to issues. try upgrading? # yarn run _server_cy_then _cy:open\"",
     "cypress:update-snapshots": "yarn run _server_cy_then _cy:update",
     "ci:cypress": "yarn run _server_cy_then _cy:run",
-    "_cy:update": "cypress run --env updateSnapshots=true",
+    "_cy:update": "CYPRESS_updateSnapshots=true ./cypress-run.sh",
     "_cy:open": "cypress open",
     "_cy:run": "./cypress-run.sh",
     "_server_cy_then": "start-server-and-test _cy-server http://localhost:3001",
