@@ -1,44 +1,48 @@
 language: node_js
 node_js:
-  - "11.10.1"
+- 11.10.1
 os:
-  - linux
-  - osx # cypress disables hardware acceleration for electron on linux, so we use osx instead
+- linux
+- osx
 cache:
   yarn: true
   directories:
-    - "node_modules"
-    - "~/.cache/Cypress"
+  - node_modules
+  - "~/.cache/Cypress"
 env:
+  global:
+  # this is out CYPRESS_RECORD_KEY
+  - secure: bx5SjXI+FQaPdZPOMLZ2tHI5rBeysojH2VHIbmOCVOtQYYeJO94v37ocuPM4CCBTpoM8H/ulft4lAb/AWhM1n3mndizJTZvOhjsqt6TJ+5vHnZrDoEFisgmnTb8dBA+QAGmkERRXZiLql83C1Dd+0vW3i0op7QAIY6FPz+PmSfFBDfs2XZ6WV41ZTicH84Em9y1PC+9kn0z3a32NUuwK3qM/6Q9a0h0NhBm/DblEhhOL/b95sqGFfiLvnj5Rxh4biWPmbsh09mpvHVP2AhRb4Ty/d3UCGyxD62dx2n0G7dBHzK8f3wq4zoeilhtbRoAUGPvn6L/ehlVlCefkjQzTU2X2rCeT/SR59F/5H/yjgBFS57xE0QqMPryQikEaKQPgEijX5UACzZqA7zd7uHOTbv4I1FEGrl2hShpKnNJNlJ2YIpFi9GncWhi0mYh4mS53KmEJY0IH7ZYa35q8pe8NAzPjKvsl9O1i6CtOzzub/IdtSM0RxvFEQX55iQ48Uh7QGduyRfTifFTsrUDoUtoSgc08Ze4maCmfzyIyZJzjdVa1fKYV7/NcYMYMR5OoiwvbXJ1qInVazebm3Ffp/+eDKxjXB9dJ3iANPcZgHLLzw/9Dq6tv0DIKYEcAp5phLXGEuD58Sy7Dht7tIWiXHxGZP0dZi24g43bni4fN9QDYdpY=
+  matrix:
   - TEST_SUITE=unit
   - TEST_SUITE=integration
   - TEST_SUITE=regression
   - TEST_SUITE=build
 matrix:
   exclude:
-    - os: linux
-      env: TEST_SUITE=regression
-    - os: osx
-      env: TEST_SUITE=unit
-    - os: osx
-      env: TEST_SUITE=integration
-    - os: osx
-      env: TEST_SUITE=build
+  - os: linux
+    env: TEST_SUITE=regression
+  - os: osx
+    env: TEST_SUITE=unit
+  - os: osx
+    env: TEST_SUITE=integration
+  - os: osx
+    env: TEST_SUITE=build
 branches:
   only:
-    - master
-    - develop
+  - master
+  - develop
 jobs:
-    include:
-      - stage: deploy
-        script: npm run build
-        deploy:
-          provider: npm
-          email:
-            secure: JINq33TBEkUPM8uTWh4XloVD8uV3uUvEoLq2Ho4ixp+a2xZBvBI10ROFQ8sCJ9YwXqe9aKRZxVuW9ePlV6yNf4cJ3qXNL4dJL0SBmxpmlG/zwxMghtj0V/mb4AUX8y7zPs3YAhjjTSzQGturAjrBn9dXQTvOY1AUyrrdCyDUt/1l2rzjylUEiOPCU1MjceM9VyasCLHR06zCIIy3Injbswp8gL2XW5CBUDeN467yyqkelMen6Q0EvA9swjw9A0wFRkQyeLEDsk1TpdNUXeYvaijOExrkepU8cpOtvgJkBpZ8qvrGVLkHOHKJQbdB7D3Uox6LNSxj5lOnNfEdpIdEKmBpybAgpf++Pi/Yuiw+NWRWCcD2vh1elndz9skOYykzlqDB8JW5oKAyGuhlXghigCJ+HycoDulCc3zRRHmoKsl5RHGcMOGWtsryFw1nUHFuM9F6awJCykwux9bxv/3HeqmYDJnDpl7hWQhFGkUG/0ygN6aaKyKFn8Nlr8d+uuZ5DaoD0KOhsNxKBuH3Js/4KryWt7LGxEdX8MyMyol5nIgHEFbh8RjRqE3iDhjxTb1MucRbbWZwiA+JIvnGUIrQhQiHvbb4dUvuHzXy9WJJ+iMGBHKVNvV3ZBxCMbiw3mFIv/0ClgJG5gG37m1oTMKTmxVf9wYxqNhM+2cBMy0wQsE=
-          api_key:
-            secure: irrK4TWdklM+pTNINlOk1EeQtT0JjPd3/9JhKDGwk/MEyAjw8+Flk7OH9MtF9gzc6AWL/8xVB05s+IyiJwcHuC/H3l4QunHl1MW343OVRG0cZzGXbJJgN9HfL+hBmOg6uOS8YLCk2ETPtYkfHuelwoPw/hIoKNnp7ZlgRV9X7Pi0qhP3ZJwHhnuGTt0TwqaGXTeUXEyycjjwBRlPf9o9UhReMxTX/7k2TEPaG0F4whkQqkcel7eZM9YB23qANMtmYfDhl1W2OxepiXpgwqtWQkj0bO9EzsTtbyEsGVbaPU+hAuZG4CDdCXyuNlL9SqNLYJdDPJuPvjMEp39/E3F+0sRiLoGu9c5Zb5v6vwnUThVhSR6EMp4W6cZihNP7PGuL+C/KqDSkPniY9qqtbCr0OasiAIgs78lfzyXMB0iXZXD9lpuKScNkSulQmQihOAIYrvfE7Z6iEnqf/v3WYytA1q+VYhP/65WOCaFMaM32qRp1XLmQFPQvACtW4LnC+OL7iRC5A3AXJrJVrib1uwl9FjaKSzqP8sThaWOW3ecipleC4ncD/O4YF2MHdH4K/4D2Xi0A0GXJ8YxvG6/pxCFgWFK+W2aMTnIzP7ATaVk91dLavFi8YC5G8zsl6dXkNHH9pFVMDvb0fLb9HMlkERhiUSV5Wo/LzBx1kWRRIH7mrh0=
-          on:
-            repo: bbc/VideoContext
-            branch: master
-          skip_cleanup: true
+  include:
+  - stage: deploy
+    script: npm run build
+    deploy:
+      provider: npm
+      email:
+        secure: JINq33TBEkUPM8uTWh4XloVD8uV3uUvEoLq2Ho4ixp+a2xZBvBI10ROFQ8sCJ9YwXqe9aKRZxVuW9ePlV6yNf4cJ3qXNL4dJL0SBmxpmlG/zwxMghtj0V/mb4AUX8y7zPs3YAhjjTSzQGturAjrBn9dXQTvOY1AUyrrdCyDUt/1l2rzjylUEiOPCU1MjceM9VyasCLHR06zCIIy3Injbswp8gL2XW5CBUDeN467yyqkelMen6Q0EvA9swjw9A0wFRkQyeLEDsk1TpdNUXeYvaijOExrkepU8cpOtvgJkBpZ8qvrGVLkHOHKJQbdB7D3Uox6LNSxj5lOnNfEdpIdEKmBpybAgpf++Pi/Yuiw+NWRWCcD2vh1elndz9skOYykzlqDB8JW5oKAyGuhlXghigCJ+HycoDulCc3zRRHmoKsl5RHGcMOGWtsryFw1nUHFuM9F6awJCykwux9bxv/3HeqmYDJnDpl7hWQhFGkUG/0ygN6aaKyKFn8Nlr8d+uuZ5DaoD0KOhsNxKBuH3Js/4KryWt7LGxEdX8MyMyol5nIgHEFbh8RjRqE3iDhjxTb1MucRbbWZwiA+JIvnGUIrQhQiHvbb4dUvuHzXy9WJJ+iMGBHKVNvV3ZBxCMbiw3mFIv/0ClgJG5gG37m1oTMKTmxVf9wYxqNhM+2cBMy0wQsE=
+      api_key:
+        secure: irrK4TWdklM+pTNINlOk1EeQtT0JjPd3/9JhKDGwk/MEyAjw8+Flk7OH9MtF9gzc6AWL/8xVB05s+IyiJwcHuC/H3l4QunHl1MW343OVRG0cZzGXbJJgN9HfL+hBmOg6uOS8YLCk2ETPtYkfHuelwoPw/hIoKNnp7ZlgRV9X7Pi0qhP3ZJwHhnuGTt0TwqaGXTeUXEyycjjwBRlPf9o9UhReMxTX/7k2TEPaG0F4whkQqkcel7eZM9YB23qANMtmYfDhl1W2OxepiXpgwqtWQkj0bO9EzsTtbyEsGVbaPU+hAuZG4CDdCXyuNlL9SqNLYJdDPJuPvjMEp39/E3F+0sRiLoGu9c5Zb5v6vwnUThVhSR6EMp4W6cZihNP7PGuL+C/KqDSkPniY9qqtbCr0OasiAIgs78lfzyXMB0iXZXD9lpuKScNkSulQmQihOAIYrvfE7Z6iEnqf/v3WYytA1q+VYhP/65WOCaFMaM32qRp1XLmQFPQvACtW4LnC+OL7iRC5A3AXJrJVrib1uwl9FjaKSzqP8sThaWOW3ecipleC4ncD/O4YF2MHdH4K/4D2Xi0A0GXJ8YxvG6/pxCFgWFK+W2aMTnIzP7ATaVk91dLavFi8YC5G8zsl6dXkNHH9pFVMDvb0fLb9HMlkERhiUSV5Wo/LzBx1kWRRIH7mrh0=
+      on:
+        repo: bbc/VideoContext
+        branch: master
+      skip_cleanup: true
