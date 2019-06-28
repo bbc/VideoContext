@@ -6,6 +6,7 @@
 - updating snapshots
 - creating a test
 - debugging a failing test
+- debugging a failing test in CI
 
 
 ## Before you begin (some known issues)
@@ -93,7 +94,7 @@ yarn cypress
 yarn ci:cypress
 ```
 
-### Debugging a test
+### Debugging a test locally
 
 There are a couple of ways to find out what went wrong when a test fails.
 
@@ -129,3 +130,13 @@ Here you will find an image like this one
 
 ![cypress image diff](assets/readme-screenshot-image-diff.png)
 <p align="center"><em>A failing image diff</em></p>
+
+
+### Debugging a test on CI
+
+We have a cypress dashboard where you can view recordings of the CI test runs
+
+https://dashboard.cypress.io/#/projects/mdase9/runs
+
+
+
