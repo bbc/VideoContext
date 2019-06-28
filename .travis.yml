@@ -19,7 +19,11 @@ matrix:
     - os: linux
       env: TEST_SUITE=regression
     - os: osx
-      env: TEST_SUITE=unit TEST_SUITE=integration TEST_SUITE=build
+      env: TEST_SUITE=unit
+    - os: osx
+      env: TEST_SUITE=integration
+    - os: osx
+      env: TEST_SUITE=build
 branches:
   only:
     - master
