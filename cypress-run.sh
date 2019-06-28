@@ -5,7 +5,7 @@
 
 if [ -z "$CYPRESS_RECORD_KEY" ]
 then
-    ./node_modules/.bin/cypress run --record
-else
     ./node_modules/.bin/cypress run
+else
+    ./node_modules/.bin/cypress run --record
 fi
