@@ -36,7 +36,7 @@
     "ci:cypress": "yarn run _server_cy_then _cy:run",
     "_cy:update": "cypress run --env updateSnapshots=true",
     "_cy:open": "cypress open",
-    "_cy:run": "cypress run",
+    "_cy:run": "cypress run --browser chrome",
     "_server_cy_then": "start-server-and-test _cy-server http://localhost:3001",
     "_cy-server": "concurrently \"npm run dev\" \"ws -p 3001\"",
     "docs": "bash ./build-docs.sh",
