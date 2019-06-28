@@ -7,5 +7,5 @@ if [ -z "$CYPRESS_RECORD_KEY" ]
 then
     ./node_modules/.bin/cypress run
 else
-    ./node_modules/.bin/cypress run --record
+    ./node_modules/.bin/cypress run --record --browser chrome
 fi

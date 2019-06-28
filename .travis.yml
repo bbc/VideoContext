@@ -1,14 +1,17 @@
 language: node_js
 node_js:
 - 11.10.1
-os:
-- linux
-- osx
 cache:
   yarn: true
   directories:
   - node_modules
   - "~/.cache/Cypress"
+addons:
+  apt:
+    packages:
+      # Ubuntu 16+ does not install this dependency by default, so we need to install it ourselves
+      - libgconf-2-4
+    chrome: stable
 env:
   global:
   # this is out CYPRESS_RECORD_KEY
@@ -18,16 +21,6 @@ env:
   - TEST_SUITE=integration
   - TEST_SUITE=regression
   - TEST_SUITE=build
-matrix:
-  exclude:
-  - os: linux
-    env: TEST_SUITE=regression
-  - os: osx
-    env: TEST_SUITE=unit
-  - os: osx
-    env: TEST_SUITE=integration
-  - os: osx
-    env: TEST_SUITE=build
 branches:
   only:
   - master
