@@ -8,6 +8,8 @@
 
 This example captures the middle frame from a horizontal wipe transition.
 
+> View on [CodeSandbox](https://codesandbox.io/embed/summer-architecture-74d1t).
+
 ```js
 <!DOCTYPE html>
 <html>
@@ -96,5 +98,3 @@ This example captures the middle frame from a horizontal wipe transition.
 </body>
 </html>
 ```
-
-> View on [CodeSandbox](https://codesandbox.io/embed/summer-architecture-74d1t).

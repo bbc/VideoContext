@@ -32,6 +32,8 @@ The design is heavily inspired by the Web Audio API, so it should feel familiar 
 
 ## Demo
 
+> View on [CodeSandbox](https://codesandbox.io/embed/nostalgic-meitner-08sh2).
+
 ```JavaScript
 <!DOCTYPE html>
 <html>
@@ -77,8 +79,6 @@ The design is heavily inspired by the Web Audio API, so it should feel familiar 
 </html>
 ```
 
-> View on [CodeSandbox](https://codesandbox.io/embed/nostalgic-meitner-08sh2).
-
 ![Graph and timeline view](../master/readme-diagram.png?raw=true)
 
 ## Debugging
@@ -115,6 +115,8 @@ There are a number of different types of nodes which can be used in the VideoCon
 
 A video source node.
 
+> View on [CodeSandbox](https://codesandbox.io/embed/naughty-sea-dv0x1)
+
 ```JavaScript
 var videoNode = videoCtx.video("./video1.mp4");
 videoNode.connect(videoCtx.destination);
@@ -128,11 +130,11 @@ For best results the video played by a VideoNode should be encoded with a fast d
 avconv -i input.mp4 -tune fastdecode -strict experimental output.mp4
 ```
 
-> View on [CodeSandbox](https://codesandbox.io/embed/naughty-sea-dv0x1)
-
 ### ImageNode
 
 An image source node.
+
+> View on [CodeSandbox](https://codesandbox.io/embed/crazy-bas-6m7r7)
 
 ```JavaScript
 var imageNode = videoCtx.image("cats.png");
@@ -141,11 +143,11 @@ imageNode.start(0);
 imageNode.stop(4);
 ```
 
-> View on [CodeSandbox](https://codesandbox.io/embed/crazy-bas-6m7r7)
-
 ### CanvasNode
 
 A canvas source node.
+
+> View on [CodeSandbox](https://codesandbox.io/embed/peaceful-meninsky-jkscs)
 
 ```JavaScript
 var canvas = document.getElementById("input-canvas");
@@ -154,8 +156,6 @@ canvasNode.connect(videoCtx.destination);
 canvasNode.start(0);
 canvasNode.stop(4);
 ```
-
-> View on [CodeSandbox](https://codesandbox.io/embed/peaceful-meninsky-jkscs)
 
 ### CustomSourceNode
 
@@ -200,8 +200,6 @@ class HLSNode extends VideoNode {
 
 Another use case for custom node types would be to play GIFs. The custom node would be in charge of decode the GIF frames and paint them on a canvas depending on the `_update` calls from `VideoContext`.
 
-> View on [CodeSandbox]()
-
 ### EffectNode
 
 An EffectNode is the simplest form of processing node. It's built from a definition object, which is a combination of fragment shader code, vertex shader code, input descriptions, and property descriptions. There are a number of common operations available as node descriptions accessible as static properties on the VideoContext at `VideoContext.DEFINITIONS`.
@@ -209,6 +207,8 @@ An EffectNode is the simplest form of processing node. It's built from a definit
 The vertex and shader code is GLSL code which gets compiled to produce the shader program. The input description tells the VideoContext how many ports there are to connect to and the name of the image associated with the port within the shader code. Inputs are always render-able textures (i.e images, videos, canvases). The property descriptions tell the VideoContext what controls to attached to the EffectNode and the name, type, and default value of the control within the shader code.
 
 The following is a an example of a simple shader description used to describe a monochrome effect. It has one input (the image to be processed) and two modifiable properties to control the color RGB mix for the processing result.
+
+> View on [CodeSandbox](https://codesandbox.io/embed/hopeful-shtern-q6lvy)
 
 ```JavaScript
 var monochromeDescription = {
@@ -271,8 +271,6 @@ sepiaEffect.connect(ctx.destination);
 ctx.play();
 ```
 
-> View on [CodeSandbox](https://codesandbox.io/embed/hopeful-shtern-q6lvy)
-
 ### TransitionNode
 
 Transition nodes are a type of effect node which allow the automatic modification/tweening of properties in relation to the VideoContexts notion of time. In every respect they are the same as an effect node except they have a "transition" function which can be used to cue the transitioning of a shader property from one value to another.
@@ -280,6 +278,8 @@ Transition nodes are a type of effect node which allow the automatic modificatio
 You can use them to perform a video transition effect (such as cross-fades, wipes, etc) by creating a definition with two inputs and having a property which controls the mix of the two inputs in the output buffer.
 
 The following is an example of a simple cross-fade shader.
+
+> View on [CodeSandbox](https://codesandbox.io/embed/modest-sutherland-gp2c5)
 
 ```JavaScript
 var crossfadeDescription = {
@@ -372,8 +372,6 @@ crossfadeEffect.connect(ctx.destination);
 ctx.play();
 ```
 
-> View on [CodeSandbox](https://codesandbox.io/embed/modest-sutherland-gp2c5)
-
 ### CompositingNode
 
 Compositing nodes are different from regular effect nodes as they can have an infinite number of nodes connected to them. They operate by running their effect shader on each connected input in turn and rendering the output to the same texture. This makes them particularly suitable for layering inputs which have alpha channels.
@@ -383,6 +381,8 @@ When compositing nodes are run, they map each input in turn to the first input i
 A common use for compositing nodes is to collect a series of source nodes which exist at distinct points on a timeline into a single connection for passing onto further processing. This effectively makes the sources into a single video track.
 
 Here's a really simple shader which renders all the inputs to the same output.
+
+> View on [CodeSandbox](https://codesandbox.io/embed/sweet-bartik-6cz3d).
 
 ```JavaScript
 var combineDecription ={
@@ -447,8 +447,6 @@ combineEffect.connect(ctx.destination);
 //start playback.
 ctx.play();
 ```
-
-> View on [CodeSandbox](https://codesandbox.io/embed/sweet-bartik-6cz3d).
 
 ## Writing Custom Effect Definitions
 
