@@ -40,14 +40,14 @@ class VideoElementCache {
      *
      * @param {Object} mediaNode A `MediaNode` instance
      */
-    get(mediaNode) {
+    getElementAndLinkToNode(mediaNode) {
         // Try and get an already intialised element.
-        for (let elementItem of this._elements) {
+        for (let cacheItem of this._elements) {
             // For some reason an uninitialised videoElement has its sr attribute set to the windows href. Hence the below check.
-            if (!mediaElementHasSource(elementItem.element)) {
+            if (!mediaElementHasSource(cacheItem.element)) {
                 // attach node to the element
-                elementItem.linkNode(mediaNode);
-                return elementItem.element;
+                cacheItem.linkNode(mediaNode);
+                return cacheItem.element;
             }
         }
         // Fallback to creating a new element if none exist or are available
@@ -65,7 +65,7 @@ class VideoElementCache {
      *
      * @param {VideoElement} element The element to unlink from any media nodes
      */
-    unlink(element) {
+    unlinkNodeFromElement(element) {
         for (let cacheItem of this._elements) {
             // Unlink the node from the element
             if (element === cacheItem._element) {

@@ -88,7 +88,7 @@ class MediaNode extends SourceNode {
                  * Get a cached video element and also pass this instance so the
                  * cache can access the current play state.
                  */
-                this._element = this._mediaElementCache.get(this);
+                this._element = this._mediaElementCache.getElementAndLinkToNode(this);
             } else {
                 this._element = document.createElement(this._elementType);
                 this._element.setAttribute("crossorigin", "anonymous");
@@ -201,7 +201,8 @@ class MediaNode extends SourceNode {
                 this._element.removeAttribute(key);
             }
             // Unlink this form the cache, freeing up the element for another media node
-            if (this._mediaElementCache) this._mediaElementCache.unlink(this._element);
+            if (this._mediaElementCache)
+                this._mediaElementCache.unlinkNodeFromElement(this._element);
             this._element = undefined;
             if (!this._mediaElementCache) delete this._element;
         }
