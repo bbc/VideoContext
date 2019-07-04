@@ -3,17 +3,17 @@ import { mediaElementHasSource } from "./utils";
 
 class VideoElementCache {
     constructor(cache_size = 3) {
-        this._elements = [];
-        this._elementsInitialised = false;
+        this._cacheItems = [];
+        this._cacheItemsInitialised = false;
         for (let i = 0; i < cache_size; i++) {
             // Create a video element and cache
-            this._elements.push(new VideoElementCacheItem());
+            this._cacheItems.push(new VideoElementCacheItem());
         }
     }
 
     init() {
-        if (!this._elementsInitialised) {
-            for (let cacheItem of this._elements) {
+        if (!this._cacheItemsInitialised) {
+            for (let cacheItem of this._cacheItems) {
                 try {
                     cacheItem.element.play().then(
                         () => {
@@ -31,7 +31,7 @@ class VideoElementCache {
                 }
             }
         }
-        this._elementsInitialised = true;
+        this._cacheItemsInitialised = true;
     }
 
     /**
@@ -42,7 +42,7 @@ class VideoElementCache {
      */
     getElementAndLinkToNode(mediaNode) {
         // Try and get an already intialised element.
-        for (let cacheItem of this._elements) {
+        for (let cacheItem of this._cacheItems) {
             // For some reason an uninitialised videoElement has its sr attribute set to the windows href. Hence the below check.
             if (!mediaElementHasSource(cacheItem.element)) {
                 // attach node to the element
@@ -55,8 +55,8 @@ class VideoElementCache {
             "No available video element in the cache, creating a new one. This may break mobile, make your initial cache larger."
         );
         let cacheItem = new VideoElementCacheItem(mediaNode);
-        this._elements.push(cacheItem);
-        this._elementsInitialised = false;
+        this._cacheItems.push(cacheItem);
+        this._cacheItemsInitialised = false;
         return cacheItem.element;
     }
 
@@ -66,7 +66,7 @@ class VideoElementCache {
      * @param {VideoElement} element The element to unlink from any media nodes
      */
     unlinkNodeFromElement(element) {
-        for (let cacheItem of this._elements) {
+        for (let cacheItem of this._cacheItems) {
             // Unlink the node from the element
             if (element === cacheItem._element) {
                 cacheItem.unlinkNode();
@@ -75,12 +75,12 @@ class VideoElementCache {
     }
 
     get length() {
-        return this._elements.length;
+        return this._cacheItems.length;
     }
 
     get unused() {
         let count = 0;
-        for (let cacheItem of this._elements) {
+        for (let cacheItem of this._cacheItems) {
             // For some reason an uninitialised videoElement has its sr attribute set to the windows href. Hence the below check.
             if (!mediaElementHasSource(cacheItem.element)) count += 1;
         }

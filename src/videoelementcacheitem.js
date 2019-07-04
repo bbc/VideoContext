@@ -39,7 +39,7 @@ class VideoElementCacheItem {
     }
 
     isPlaying() {
-        return this._node._state === SOURCENODESTATE.playing;
+        return this._node && this._node._state === SOURCENODESTATE.playing;
     }
 }
 
