@@ -506,6 +506,19 @@ and push to the current branch with tags.
 
 CI will publish to npm when the release branch has been merged into master.
 
+#### Release set-by-step
+
+1. `git checkout develop`
+2. `git pull`
+3. `git checkout -b release-xxx`
+4. `npm run release:patch|minor|major`
+5. open pull request
+6. merge when tests have passed
+
+There is one housekeeping task (this will be automated at somepoint):
+
+1. update the codesandbox examples to use the latest release
+
 ### CI
 
 VideoContext uses the BBCs public travis account to run all tests and publish to npmjs.
