@@ -7,7 +7,9 @@ more stable and a fun project to contribute to!
 
 When contributing to this repository, please first discuss the change you wish to make via issue,
 email, or any other method with the owners of this repository before making a change. We really
-value your time, and would love to help out where possible. 
+value your time, and would love to help out where possible.
+
+For more detail on the development proceess see [./README.md#development](./README.md#development)
 
 Please note we have a code of conduct, please follow it in all your interactions with the project.
 
