@@ -32,7 +32,7 @@ The design is heavily inspired by the Web Audio API, so it should feel familiar 
 
 ## Demo
 
-> View on [CodeSandbox](https://codesandbox.io/embed/nostalgic-meitner-08sh2).
+> View on [CodeSandbox](https://codesandbox.io/embed/videocontext-demo-65t8v).
 
 ```JavaScript
 <!DOCTYPE html>
@@ -115,7 +115,7 @@ There are a number of different types of nodes which can be used in the VideoCon
 
 A video source node.
 
-> View on [CodeSandbox](https://codesandbox.io/embed/naughty-sea-dv0x1)
+> View on [CodeSandbox](https://codesandbox.io/embed/videocontext-videonode-qmuzz).
 
 ```JavaScript
 var videoNode = videoCtx.video("./video1.mp4");
@@ -134,7 +134,7 @@ avconv -i input.mp4 -tune fastdecode -strict experimental output.mp4
 
 An image source node.
 
-> View on [CodeSandbox](https://codesandbox.io/embed/crazy-bas-6m7r7)
+> View on [CodeSandbox](https://codesandbox.io/embed/videocontext-imagenode-twy48).
 
 ```JavaScript
 var imageNode = videoCtx.image("cats.png");
@@ -147,7 +147,7 @@ imageNode.stop(4);
 
 A canvas source node.
 
-> View on [CodeSandbox](https://codesandbox.io/embed/peaceful-meninsky-jkscs)
+> View on [CodeSandbox](https://codesandbox.io/embed/videocontext-canvasnode-5myep).
 
 ```JavaScript
 var canvas = document.getElementById("input-canvas");
@@ -208,7 +208,7 @@ The vertex and shader code is GLSL code which gets compiled to produce the shade
 
 The following is a an example of a simple shader description used to describe a monochrome effect. It has one input (the image to be processed) and two modifiable properties to control the color RGB mix for the processing result.
 
-> View on [CodeSandbox](https://codesandbox.io/embed/hopeful-shtern-q6lvy)
+> View on [CodeSandbox](https://codesandbox.io/embed/videocontext-effectnode-ysc7w).
 
 ```JavaScript
 var monochromeDescription = {
@@ -279,7 +279,7 @@ You can use them to perform a video transition effect (such as cross-fades, wipe
 
 The following is an example of a simple cross-fade shader.
 
-> View on [CodeSandbox](https://codesandbox.io/embed/modest-sutherland-gp2c5)
+> View on [CodeSandbox](https://codesandbox.io/embed/videocontext-transitionnode-gp2c5).
 
 ```JavaScript
 var crossfadeDescription = {
@@ -382,7 +382,7 @@ A common use for compositing nodes is to collect a series of source nodes which 
 
 Here's a really simple shader which renders all the inputs to the same output.
 
-> View on [CodeSandbox](https://codesandbox.io/embed/sweet-bartik-6cz3d).
+> View on [CodeSandbox](https://codesandbox.io/embed/videocontext-compositingnode-6cz3d).
 
 ```JavaScript
 var combineDecription ={
