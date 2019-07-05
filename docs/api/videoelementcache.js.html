@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: videoelementcache.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: videoelementcache.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import VideoElementCacheItem from "./videoelementcacheitem";
+import { mediaElementHasSource } from "./utils";
+
+class VideoElementCache {
+    constructor(cache_size = 3) {
+        this._cacheItems = [];
+        this._cacheItemsInitialised = false;
+        for (let i = 0; i &lt; cache_size; i++) {
+            // Create a video element and cache
+            this._cacheItems.push(new VideoElementCacheItem());
+        }
+    }
+
+    init() {
+        if (!this._cacheItemsInitialised) {
+            for (let cacheItem of this._cacheItems) {
+                try {
+                    cacheItem.element.play().then(
+                        () => {
+                            // Pause any elements not in the "playing" state
+                            if (!cacheItem.isPlaying()) {
+                                cacheItem.element.pause();
+                            }
+                        },
+                        e => {
+                            if (e.name !== "NotSupportedError") throw e;
+                        }
+                    );
+                } catch (e) {
+                    //console.log(e.name);
+                }
+            }
+        }
+        this._cacheItemsInitialised = true;
+    }
+
+    /**
+     * Find and return an empty initialised element or, if the cache is
+     * empty, create a new one.
+     *
+     * @param {Object} mediaNode A `MediaNode` instance
+     */
+    getElementAndLinkToNode(mediaNode) {
+        // Try and get an already intialised element.
+        for (let cacheItem of this._cacheItems) {
+            // For some reason an uninitialised videoElement has its sr attribute set to the windows href. Hence the below check.
+            if (!mediaElementHasSource(cacheItem.element)) {
+                // attach node to the element
+                cacheItem.linkNode(mediaNode);
+                return cacheItem.element;
+            }
+        }
+        // Fallback to creating a new element if none exist or are available
+        console.debug(
+            "No available video element in the cache, creating a new one. This may break mobile, make your initial cache larger."
+        );
+        let cacheItem = new VideoElementCacheItem(mediaNode);
+        this._cacheItems.push(cacheItem);
+        this._cacheItemsInitialised = false;
+        return cacheItem.element;
+    }
+
+    /**
+     * Unlink any media node currently linked to a cached video element.
+     *
+     * @param {VideoElement} element The element to unlink from any media nodes
+     */
+    unlinkNodeFromElement(element) {
+        for (let cacheItem of this._cacheItems) {
+            // Unlink the node from the element
+            if (element === cacheItem._element) {
+                cacheItem.unlinkNode();
+            }
+        }
+    }
+
+    get length() {
+        return this._cacheItems.length;
+    }
+
+    get unused() {
+        let count = 0;
+        for (let cacheItem of this._cacheItems) {
+            // For some reason an uninitialised videoElement has its sr attribute set to the windows href. Hence the below check.
+            if (!mediaElementHasSource(cacheItem.element)) count += 1;
+        }
+        return count;
+    }
+}
+
+export default VideoElementCache;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-VideoContext.html">VideoContext</a></li></ul><h3>Classes</h3><ul><li><a href="AudioNode.html">AudioNode</a></li><li><a href="CanvasNode.html">CanvasNode</a></li><li><a href="CompositingNode.html">CompositingNode</a></li><li><a href="DestinationNode.html">DestinationNode</a></li><li><a href="EffectNode.html">EffectNode</a></li><li><a href="GraphNode.html">GraphNode</a></li><li><a href="ImageNode.html">ImageNode</a></li><li><a href="MediaNode.html">MediaNode</a></li><li><a href="module-VideoContext.html">VideoContext</a></li><li><a href="ProcessingNode.html">ProcessingNode</a></li><li><a href="RenderGraph.html">RenderGraph</a></li><li><a href="SourceNode.html">SourceNode</a></li><li><a href="TransitionNode.html">TransitionNode</a></li><li><a href="VideoElementCacheItem.html">VideoElementCacheItem</a></li><li><a href="VideoNode.html">VideoNode</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

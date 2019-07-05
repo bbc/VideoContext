@@ -506,81 +506,6 @@ ctx.play();</code></pre>
 
 
 <div class="description">
-    <p>Get how far through the internal timeline has been played.</p>
-<p>Getting this value will give the current playhead position. Can be used for updating timelines.</p>
-</div>
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line297">line 297</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>var canvasElement = document.getElementById("canvas");
-var ctx = new VideoContext(canvasElement);
-var videoNode = ctx.video("video.mp4");
-videoNode.connect(ctx.destination);
-videoNode.start(0);
-videoNode.stop(10);
-ctx.play();
-setTimeout(() => console.log(ctx.currentTime),1000); //should print roughly 1.0</code></pre>
-
-
-
-        
-            
-<h4 class="name" id="currentTime"><span class="type-signature"></span>currentTime<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
     <p>Set the progress through the internal timeline.
 Setting this can be used as a way to implement a scrubbable timeline.</p>
 </div>
@@ -645,6 +570,81 @@ videoNode.start(0);
 videoNode.stop(20);
 ctx.currentTime = 10; // seek 10 seconds in
 ctx.play();</code></pre>
+
+
+
+        
+            
+<h4 class="name" id="currentTime"><span class="type-signature"></span>currentTime<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>Get how far through the internal timeline has been played.</p>
+<p>Getting this value will give the current playhead position. Can be used for updating timelines.</p>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line297">line 297</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>var canvasElement = document.getElementById("canvas");
+var ctx = new VideoContext(canvasElement);
+var videoNode = ctx.video("video.mp4");
+videoNode.connect(ctx.destination);
+videoNode.start(0);
+videoNode.stop(10);
+ctx.play();
+setTimeout(() => console.log(ctx.currentTime),1000); //should print roughly 1.0</code></pre>
 
 
 
@@ -994,68 +994,6 @@ or a uniquely generated one.</p>
 
 
 <div class="description">
-    <p>Return the current playbackRate of the video context.</p>
-</div>
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line385">line 385</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
-            
-<h4 class="name" id="playbackRate"><span class="type-signature"></span>playbackRate<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
     <p>Set the playback rate of the VideoContext instance.
 This will alter the playback speed of all media elements played through the VideoContext.</p>
 </div>
@@ -1120,6 +1058,68 @@ videoNode.stop(10);
 videoNode.connect(ctx.destination);
 ctx.playbackRate = 2;
 ctx.play(); // Double playback rate means this will finish playing in 5 seconds.</code></pre>
+
+
+
+        
+            
+<h4 class="name" id="playbackRate"><span class="type-signature"></span>playbackRate<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>Return the current playbackRate of the video context.</p>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="videocontext.js.html">videocontext.js</a>, <a href="videocontext.js.html#line385">line 385</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
 
 
 
@@ -5267,7 +5267,7 @@ var videoNode = ctx.video("bigbuckbunny.mp4");</code></pre>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-VideoContext.html">VideoContext</a></li></ul><h3>Classes</h3><ul><li><a href="AudioNode.html">AudioNode</a></li><li><a href="CanvasNode.html">CanvasNode</a></li><li><a href="CompositingNode.html">CompositingNode</a></li><li><a href="DestinationNode.html">DestinationNode</a></li><li><a href="EffectNode.html">EffectNode</a></li><li><a href="GraphNode.html">GraphNode</a></li><li><a href="ImageNode.html">ImageNode</a></li><li><a href="MediaNode.html">MediaNode</a></li><li><a href="module-VideoContext.html">VideoContext</a></li><li><a href="ProcessingNode.html">ProcessingNode</a></li><li><a href="RenderGraph.html">RenderGraph</a></li><li><a href="SourceNode.html">SourceNode</a></li><li><a href="TransitionNode.html">TransitionNode</a></li><li><a href="VideoNode.html">VideoNode</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-VideoContext.html">VideoContext</a></li></ul><h3>Classes</h3><ul><li><a href="AudioNode.html">AudioNode</a></li><li><a href="CanvasNode.html">CanvasNode</a></li><li><a href="CompositingNode.html">CompositingNode</a></li><li><a href="DestinationNode.html">DestinationNode</a></li><li><a href="EffectNode.html">EffectNode</a></li><li><a href="GraphNode.html">GraphNode</a></li><li><a href="ImageNode.html">ImageNode</a></li><li><a href="MediaNode.html">MediaNode</a></li><li><a href="module-VideoContext.html">VideoContext</a></li><li><a href="ProcessingNode.html">ProcessingNode</a></li><li><a href="RenderGraph.html">RenderGraph</a></li><li><a href="SourceNode.html">SourceNode</a></li><li><a href="TransitionNode.html">TransitionNode</a></li><li><a href="VideoElementCacheItem.html">VideoElementCacheItem</a></li><li><a href="VideoNode.html">VideoNode</a></li></ul>
 </nav>
 
 <br class="clear">

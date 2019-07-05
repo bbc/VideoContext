@@ -3581,7 +3581,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
                 // If the user hasn't supplied an element, videocontext is responsible for the element
                 if (this._isResponsibleForElementLifeCycle) {
                     if (this._mediaElementCache) {
-                        this._element = this._mediaElementCache.get();
+                        /**
+                         * Get a cached video element and also pass this instance so the
+                         * cache can access the current play state.
+                         */
+                        this._element = this._mediaElementCache.getElementAndLinkToNode(this);
                     } else {
                         this._element = document.createElement(this._elementType);
                         this._element.setAttribute("crossorigin", "anonymous");
@@ -3681,6 +3685,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
                     for (var key in this._attributes) {
                         this._element.removeAttribute(key);
                     }
+                    // Unlink this form the cache, freeing up the element for another media node
+                    if (this._mediaElementCache) this._mediaElementCache.unlinkNodeFromElement(this._element);
                     this._element = undefined;
                     if (!this._mediaElementCache) delete this._element;
                 }
@@ -6735,7 +6741,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
                      * Mainly the fact that to get inputs for a node you have to iterate the full list of connections rather than
                      * a node owning it's connections.
                      * The trade off with changing this is making/removing connections becomes more costly performance wise, but
-                     * this is definately worth while because getting the connnections is a much more common operation.
+                     * this is definitely worth while because getting the connnections is a much more common operation.
                      *
                      * TL;DR Future matt - refactor this.
                      *
@@ -7117,17 +7123,25 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;(function (global, factory) {
     if (true) {
-        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [module, exports, __webpack_require__(/*! ./utils */ "./src/utils.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [module, exports, __webpack_require__(/*! ./videoelementcacheitem */ "./src/videoelementcacheitem.js"), __webpack_require__(/*! ./utils */ "./src/utils.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
     } else { var mod; }
-})(this, function (module, exports, _utils) {
+})(this, function (module, exports, _videoelementcacheitem, _utils) {
     "use strict";
 
     Object.defineProperty(exports, "__esModule", {
         value: true
     });
+
+    var _videoelementcacheitem2 = _interopRequireDefault(_videoelementcacheitem);
+
+    function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : {
+            default: obj
+        };
+    }
 
     function _classCallCheck(instance, Constructor) {
         if (!(instance instanceof Constructor)) {
@@ -7159,42 +7173,42 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
             _classCallCheck(this, VideoElementCache);
 
-            this._elements = [];
-            this._elementsInitialised = false;
+            this._cacheItems = [];
+            this._cacheItemsInitialised = false;
             for (var i = 0; i < cache_size; i++) {
-                var element = this._createElement();
-                this._elements.push(element);
+                // Create a video element and cache
+                this._cacheItems.push(new _videoelementcacheitem2.default());
             }
         }
 
         _createClass(VideoElementCache, [{
-            key: "_createElement",
-            value: function _createElement() {
-                var videoElement = document.createElement("video");
-                videoElement.setAttribute("crossorigin", "anonymous");
-                videoElement.setAttribute("webkit-playsinline", "");
-                videoElement.setAttribute("playsinline", "");
-                return videoElement;
-            }
-        }, {
             key: "init",
             value: function init() {
-                if (!this._elementsInitialised) {
+                if (!this._cacheItemsInitialised) {
+                    var _loop = function _loop(cacheItem) {
+                        try {
+                            cacheItem.element.play().then(function () {
+                                // Pause any elements not in the "playing" state
+                                if (!cacheItem.isPlaying()) {
+                                    cacheItem.element.pause();
+                                }
+                            }, function (e) {
+                                if (e.name !== "NotSupportedError") throw e;
+                            });
+                        } catch (e) {
+                            //console.log(e.name);
+                        }
+                    };
+
                     var _iteratorNormalCompletion = true;
                     var _didIteratorError = false;
                     var _iteratorError = undefined;
 
                     try {
-                        for (var _iterator = this._elements[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                            var element = _step.value;
+                        for (var _iterator = this._cacheItems[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                            var cacheItem = _step.value;
 
-                            try {
-                                element.play().then(function () {}, function (e) {
-                                    if (e.name !== "NotSupportedError") throw e;
-                                });
-                            } catch (e) {
-                                //console.log(e.name);
-                            }
+                            _loop(cacheItem);
                         }
                     } catch (err) {
                         _didIteratorError = true;
@@ -7211,26 +7225,28 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
                         }
                     }
                 }
-                this._elementsInitialised = true;
+                this._cacheItemsInitialised = true;
             }
         }, {
-            key: "get",
-            value: function get() {
+            key: "getElementAndLinkToNode",
+            value: function getElementAndLinkToNode(mediaNode) {
                 var _iteratorNormalCompletion2 = true;
                 var _didIteratorError2 = false;
                 var _iteratorError2 = undefined;
 
                 try {
-                    //Try and get an already intialised element.
-                    for (var _iterator2 = this._elements[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-                        var _element = _step2.value;
+                    // Try and get an already intialised element.
+                    for (var _iterator2 = this._cacheItems[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                        var _cacheItem = _step2.value;
 
                         // For some reason an uninitialised videoElement has its sr attribute set to the windows href. Hence the below check.
-                        if (!(0, _utils.mediaElementHasSource)(_element)) {
-                            return _element;
+                        if (!(0, _utils.mediaElementHasSource)(_cacheItem.element)) {
+                            // attach node to the element
+                            _cacheItem.linkNode(mediaNode);
+                            return _cacheItem.element;
                         }
                     }
-                    //Fallback to creating a new element if non exists.
+                    // Fallback to creating a new element if none exist or are available
                 } catch (err) {
                     _didIteratorError2 = true;
                     _iteratorError2 = err;
@@ -7247,30 +7263,26 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
                 }
 
                 console.debug("No available video element in the cache, creating a new one. This may break mobile, make your initial cache larger.");
-                var element = this._createElement();
-                this._elements.push(element);
-                this._elementsInitialised = false;
-                return element;
+                var cacheItem = new _videoelementcacheitem2.default(mediaNode);
+                this._cacheItems.push(cacheItem);
+                this._cacheItemsInitialised = false;
+                return cacheItem.element;
             }
         }, {
-            key: "length",
-            get: function get() {
-                return this._elements.length;
-            }
-        }, {
-            key: "unused",
-            get: function get() {
-                var count = 0;
+            key: "unlinkNodeFromElement",
+            value: function unlinkNodeFromElement(element) {
                 var _iteratorNormalCompletion3 = true;
                 var _didIteratorError3 = false;
                 var _iteratorError3 = undefined;
 
                 try {
-                    for (var _iterator3 = this._elements[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-                        var element = _step3.value;
+                    for (var _iterator3 = this._cacheItems[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                        var cacheItem = _step3.value;
 
-                        // For some reason an uninitialised videoElement has its sr attribute set to the windows href. Hence the below check.
-                        if (!(0, _utils.mediaElementHasSource)(element)) count += 1;
+                        // Unlink the node from the element
+                        if (element === cacheItem._element) {
+                            cacheItem.unlinkNode();
+                        }
                     }
                 } catch (err) {
                     _didIteratorError3 = true;
@@ -7286,6 +7298,41 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
                         }
                     }
                 }
+            }
+        }, {
+            key: "length",
+            get: function get() {
+                return this._cacheItems.length;
+            }
+        }, {
+            key: "unused",
+            get: function get() {
+                var count = 0;
+                var _iteratorNormalCompletion4 = true;
+                var _didIteratorError4 = false;
+                var _iteratorError4 = undefined;
+
+                try {
+                    for (var _iterator4 = this._cacheItems[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                        var cacheItem = _step4.value;
+
+                        // For some reason an uninitialised videoElement has its sr attribute set to the windows href. Hence the below check.
+                        if (!(0, _utils.mediaElementHasSource)(cacheItem.element)) count += 1;
+                    }
+                } catch (err) {
+                    _didIteratorError4 = true;
+                    _iteratorError4 = err;
+                } finally {
+                    try {
+                        if (!_iteratorNormalCompletion4 && _iterator4.return) {
+                            _iterator4.return();
+                        }
+                    } finally {
+                        if (_didIteratorError4) {
+                            throw _iteratorError4;
+                        }
+                    }
+                }
 
                 return count;
             }
@@ -7295,6 +7342,104 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     }();
 
     exports.default = VideoElementCache;
+    module.exports = exports["default"];
+});
+
+/***/ }),
+
+/***/ "./src/videoelementcacheitem.js":
+/*!**************************************!*\
+  !*** ./src/videoelementcacheitem.js ***!
+  \**************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;(function (global, factory) {
+    if (true) {
+        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [module, exports, __webpack_require__(/*! ./SourceNodes/sourcenode */ "./src/SourceNodes/sourcenode.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+    } else { var mod; }
+})(this, function (module, exports, _sourcenode) {
+    "use strict";
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
+        }
+
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
+
+    var VideoElementCacheItem = function () {
+        function VideoElementCacheItem() {
+            var node = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+
+            _classCallCheck(this, VideoElementCacheItem);
+
+            this._element = this._createElement();
+            this._node = node;
+        }
+
+        _createClass(VideoElementCacheItem, [{
+            key: "_createElement",
+            value: function _createElement() {
+                var videoElement = document.createElement("video");
+                videoElement.setAttribute("crossorigin", "anonymous");
+                videoElement.setAttribute("webkit-playsinline", "");
+                videoElement.setAttribute("playsinline", "");
+                return videoElement;
+            }
+        }, {
+            key: "linkNode",
+            value: function linkNode(node) {
+                this._node = node;
+            }
+        }, {
+            key: "unlinkNode",
+            value: function unlinkNode() {
+                this._node = null;
+            }
+        }, {
+            key: "isPlaying",
+            value: function isPlaying() {
+                return this._node && this._node._state === _sourcenode.SOURCENODESTATE.playing;
+            }
+        }, {
+            key: "element",
+            get: function get() {
+                return this._element;
+            },
+            set: function set(element) {
+                this._element = element;
+            }
+        }]);
+
+        return VideoElementCacheItem;
+    }();
+
+    exports.default = VideoElementCacheItem;
     module.exports = exports["default"];
 });
 
