@@ -516,9 +516,11 @@ CI will publish to npm when the release branch has been merged into master.
 5. open pull request against master
 6. merge when tests have passed
 7. merge master back in to develop:
+    - `git checkout master`
     - `git pull`
     - `git checkout develop`
     - `git merge master`
+    - `git push`
 
 There is one housekeeping task (this will be automated at some point):
 
