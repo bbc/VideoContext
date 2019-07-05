@@ -506,7 +506,7 @@ and push to the current branch with tags.
 
 CI will publish to npm when the release branch has been merged into master.
 
-#### Release set-by-step
+#### Release step-by-step
 
 1. `git checkout develop`
 2. `git pull`
