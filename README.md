@@ -520,7 +520,7 @@ CI will publish to npm when the release branch has been merged into master.
     - `git checkout develop`
     - `git merge master`
 
-There is one housekeeping task (this will be automated at somepoint):
+There is one housekeeping task (this will be automated at some point):
 
 1. update the codesandbox examples to use the latest release
 
