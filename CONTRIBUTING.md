@@ -9,7 +9,7 @@ When contributing to this repository, please first discuss the change you wish t
 email, or any other method with the owners of this repository before making a change. We really
 value your time, and would love to help out where possible.
 
-For more detail on the development proceess see [./README.md#development](./README.md#development)
+For more detail on the development process see [./README.md#development](./README.md#development)
 
 Please note we have a code of conduct, please follow it in all your interactions with the project.
 
