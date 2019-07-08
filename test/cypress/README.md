@@ -31,7 +31,7 @@ To get around this issue, two sets of snapshots are generated and committed for 
 - `ci` - Used by Travis (CI) and for headless browser testing using the Docker container. These are the important ones.
 - `local` - Used by the headed browser when testing locally using the Cypress GUI.
 
-See the [Updating snapshots](#updating-snapshots) section for more information on generating both types of snapshots. Also see [Running the tests](#running-the-tests) for more information on how they're used.
+See "[Updating snapshots](#updating-snapshots)" for more information on generating both types of snapshots. Also see "[Running the tests](#running-the-tests)" for more information on how they're used.
 
 ### GUI mode saves snapshots in different locations
 
@@ -88,7 +88,7 @@ To create a new test, add a new `my-test.spec.js` file to the `<cypress dir>/int
 
 > We recommend reading through one of the existing specs first, to get an idea of how they should be structured and formatted.
 
-If you're testing with snapshots, then you'll need to generate some base snapshots first to test against. See the [Updating snapshots](#updating-snapshots) for instructions.
+If you're testing with snapshots, then you'll need to generate some base snapshots first to test against. See "[Updating snapshots](#updating-snapshots)" for instructions.
 
 ## Running the tests
 
@@ -102,7 +102,7 @@ To run the tests in an environment most similar to the CI, use:
 yarn cypress
 ```
 
-This wil build and run a [Docker](https://www.docker.com) container with Cypress installed. The tests will be run in a headless version of the Chrome browser using the snapshots in the `<cypress dir>/snapshots/ci/` directory (see the "[GUI and headless mode produce different snapshots](#gui-and-headless-mode-produce-different-snapshots)" section for an explanation on why different snapshots are used).
+This wil build and run a [Docker](https://www.docker.com) container with Cypress installed. The tests will be run in a headless version of the Chrome browser using the snapshots in the `<cypress dir>/snapshots/ci/` directory (see "[GUI and headless mode produce different snapshots](#gui-and-headless-mode-produce-different-snapshots)" for an explanation on why different snapshots are used).
 
 > **Prerequisite**: [Docker](https://www.docker.com) must be installed on your system - download the [Mac](https://hub.docker.com/editions/community/docker-ce-desktop-mac) or [Windows](https://hub.docker.com/editions/community/docker-ce-desktop-windows) version.
 
@@ -116,7 +116,7 @@ yarn cypress:gui
 
 This will serve a HTML page and open the [Cypress GUI](https://www.cypress.io/features), where you can select to run all or individual specs.
 
-These tests will use the snapshots from the `<cypress dir>/snapshots/local` directory (see the "[GUI and headless mode produce different snapshots](#gui-and-headless-mode-produce-different-snapshots)" section for an explanation on why different snapshots are used).
+These tests will use the snapshots from the `<cypress dir>/snapshots/local` directory (see "[GUI and headless mode produce different snapshots](#gui-and-headless-mode-produce-different-snapshots)" for an explanation on why different snapshots are used).
 
 ## Debugging a test
 
@@ -163,7 +163,7 @@ If you add a new test or change the result of an existing test, then you will ne
 Snapshots for the CI and headless environment can be generated using:
 
 ```sh
-cypress:update-snapshots
+yarn cypress:update-snapshots
 ```
 
 This wil build and run a [Docker](https://www.docker.com) container with Cypress installed. It will run the tests through a headless version of the Chrome browser and update the snapshots in the `<cypress dir>/snapshots/ci/` directory.
@@ -175,7 +175,7 @@ This wil build and run a [Docker](https://www.docker.com) container with Cypress
 Snapshots for the local GUI version can be generated using:
 
 ```sh
-cypress:gui-update-snapshots
+yarn cypress:gui-update-snapshots
 ```
 
 This will load the Cypress GUI and run through all the tests, updating the snapshots in the `<cypress dir>/snapshots/local` directory.
