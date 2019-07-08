@@ -483,7 +483,7 @@ npm run dev
 npm run test-watch
 
 # run regression tests in headless browser
-npm run test-regression
+npm run cypress
 ```
 
 ### Gitflow
