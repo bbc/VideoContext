@@ -7,13 +7,13 @@
   - [GUI mode saves snapshots in different locations](#gui-mode-saves-snapshots-in-different-locations)
 - [Why Cypress?](#why-cypress)
 - [Structure](#structure)
-- [Creating a test](#)
+- [Creating a test](#creating-a-test)
 - [Running the tests](#running-the-tests)
   - [Command Line (Headless)](#command-line-headless)
-  - [GUI (Headed)](gui-headed)
+  - [GUI (Headed)](#gui-headed)
 - [Debugging a test](#debugging-a-test)
-  - [Locally](#locally)
-  - [On CI](#on-ci)
+  - [Debugging locally](#debugging-locally)
+  - [Debugging on CI](#debugging-on-ci)
 - [Updating snapshots](#updating-snapshots)
   - [CI snapshots](#ci-snapshots)
   - [GUI snapshots](#gui-snapshots)
@@ -82,6 +82,14 @@ command.
 
 The spec files containing the test code.
 
+## Creating a test
+
+To create a new test, add a new `my-test.spec.js` file to the `<cypress dir>/integration` directory and write your test code.
+
+> We recommend reading through one of the existing specs first, to get an idea of how they should be structured and formatted.
+
+If you're testing with snapshots, then you'll need to generate some base snapshots first to test against. See the [Updating snapshots](#updating-snapshots) for instructions.
+
 ## Running the tests
 
 There are two ways to run the tests:
@@ -112,7 +120,7 @@ These tests will use the snapshots from the `<cypress dir>/snapshots/local` dire
 
 ## Debugging a test
 
-### Locally
+### Debugging locally
 
 There are a couple of ways to find out what went wrong when a test fails.
 
@@ -140,7 +148,7 @@ Here you will find an image like this one:
 
 <p align="center"><em>A failing image diff</em></p>
 
-### On CI
+### Debugging on CI
 
 We have a cypress dashboard where you can view screenshots of the CI test runs:
 
