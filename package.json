@@ -37,7 +37,7 @@
     "cypress:gui": "yarn run _server_cy_then _cy:open",
     "cypress:gui-update-snapshots": "yarn run _server_cy_then _cy:local-update-snapshots",
     "_cy:local-update-snapshots": "./cypress-run.sh local-update-snapshots",
-    "_cy:open": "cypress open",
+    "_cy:open": "./cypress-run.sh local",
     "_cy:run": "./cypress-run.sh",
     "_cy-server": "concurrently \"npm run dev\" \"ws -p 3001\"",
     "_server_cy_then": "start-server-and-test _cy-server http://localhost:3001",

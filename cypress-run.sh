@@ -8,11 +8,15 @@
 # Use the first argument as the switch "mode"
 # If no argument is passed, then it defaults to "ci" mode.
 case ${1} in
+    "local")
+        # Run Cypress locally with the headed browser (GUI)
+        CYPRESS_local=true ./node_modules/.bin/cypress open
+        ;;
     "local-update-snapshots")
         # Update snapshots for the local Cypress GUI version.
         # These are typically larger (see bug comment above) than the
         # versions generated and used by Travis (CI) and Docker.
-        CYPRESS_updateSnapshots=true CYPRESS_local=true ./node_modules/.bin/cypress run --browser chrome
+        CYPRESS_local=true CYPRESS_updateSnapshots=true ./node_modules/.bin/cypress run --browser chrome
         ;;
     "docker")
         # Run Cypress in a headless docker image.
