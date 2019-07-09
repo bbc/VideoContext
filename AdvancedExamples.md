@@ -104,7 +104,7 @@ This example captures the middle frame from a horizontal wipe transition.
 
 Browsers are beginning to support some of the Media Fragments spec. 
 
-In this example we add support for defining a loop within a VideoNode using the
+In this example we add support for defining a loop within a `VideoNode` using the
 media fragments syntax. eg
 
 ```JavaScript
@@ -120,8 +120,8 @@ const urlForMediaFragment = "./BigBuckBunny.mp4#t=5,12"
 The loop itself is handled by extending the `VideoNode._update` method.
 
 - Intro to media fragments: <https://gingertech.net/tag/media-fragment-uri/>
-- The Media Fragments Spec: <https://www.w3.org/TR/media-frags/>
-- Browser Support: <https://caniuse.com/#feat=media-fragments>
+- The Media Fragments Specification: <https://www.w3.org/TR/media-frags/>
+- Browser support: <https://caniuse.com/#feat=media-fragments>
 
 > View on [CodeSandbox](https://codesandbox.io/embed/videocontext-customsourcenode-mediafragmentvideonode-rymtf).
 
