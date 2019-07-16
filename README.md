@@ -472,7 +472,7 @@ You can view more advanced usage examples [here](AdvancedExamples.md).
 
 VideoContext has a pretty standard `package.json`
 
-```
+```sh
 # install build and development dependencies
 npm install
 
@@ -482,9 +482,15 @@ npm run dev
 # watch unit and integration tests
 npm run test-watch
 
-# run regression tests in headless browser
+# run the end-to-end regression tests in a headless browser
 npm run cypress
 ```
+
+For more information on writing, running and debugging the end-to-end cypress tests
+see [./test/cypress#readme](./test/cypress#readme).
+
+For an overview of all testing see [./test#readme](./test#readme)
+
 
 ### Gitflow
 
