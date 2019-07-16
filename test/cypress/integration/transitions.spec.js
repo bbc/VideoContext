@@ -33,22 +33,41 @@ const setupTransitionPipelineForDefinition = definitionName => ({ ctx, VideoCont
     crossFade.connect(ctx.destination);
 };
 
+/**
+ * Definition list to test.
+ *
+ * The `options` property overrides the `addMatchImageSnapshotCommand`
+ * defaults defined in /test/cypress/support/commands.js
+ */
 [
-    "CROSSFADE",
-    "DREAMFADE",
-    "HORIZONTAL_WIPE",
-    "VERTICAL_WIPE",
-    "RANDOM_DISSOLVE",
-    "STATIC_DISSOLVE",
-    "TO_COLOR_AND_BACK",
-    "STAR_WIPE"
-].forEach(definitionName => {
+    { definitionName: "CROSSFADE" },
+    { definitionName: "HORIZONTAL_WIPE" },
+    { definitionName: "VERTICAL_WIPE" },
+    { definitionName: "RANDOM_DISSOLVE" },
+    { definitionName: "TO_COLOR_AND_BACK" },
+    { definitionName: "STAR_WIPE" },
+    // This is very frame dependent so we allow for inconsistent runs
+    {
+        definitionName: "DREAMFADE",
+        options: {
+            failureThreshold: 0.2 // threshold for entire image
+        }
+    },
+    // This is quite random, so we allow for very inconsistent runs
+    {
+        definitionName: "STATIC_DISSOLVE",
+        options: {
+            failureThreshold: 0.6 // threshold for entire image
+        }
+    }
+].forEach(({ definitionName, options }) => {
     const testName = definitionName.toLowerCase().replace("_", " ");
     it(testName, () => {
         // setup VideoContext
         cy.window().then(setupTransitionPipelineForDefinition(definitionName));
         return cy.videoContextScreenShotsAtTimes(SCREEN_SHOT_TIMES, {
-            id: `transition-${testName}`
+            id: `transition-${testName}`,
+            options
         });
     });
 });
