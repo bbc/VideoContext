@@ -513,7 +513,6 @@ see [./test/cypress#readme](./test/cypress#readme).
 
 For an overview of all testing see [./test#readme](./test#readme)
 
-
 ### Gitflow
 
 VideoContext uses the gitflow branching model.
@@ -540,15 +539,15 @@ CI will publish to npm when the release branch has been merged into master.
 2. `git pull`
 3. `git checkout -b release-xxx`
 4. tag and push using script
-    - `npm run release:patch|minor|major`
+   - `npm run release:patch|minor|major`
 5. open pull request against master
 6. merge when tests have passed
 7. merge master back in to develop:
-    - `git checkout master`
-    - `git pull`
-    - `git checkout develop`
-    - `git merge master`
-    - `git push`
+   - `git checkout master`
+   - `git pull`
+   - `git checkout develop`
+   - `git merge master`
+   - `git push`
 
 There is one housekeeping task (this will be automated at some point):
 

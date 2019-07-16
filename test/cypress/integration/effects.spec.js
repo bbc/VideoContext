@@ -22,7 +22,7 @@ it("Color Threshold", () => {
         colorThresholdEffect.connect(ctx.destination);
     });
 
-    // check output matches the snapshots at times on the timeline
+    // Check output matches the snapshots at times on the timeline
     cy.videoContextScreenShotsAtTimes(SCREEN_SHOT_TIMES, { id: "effect-color-threshold" });
 });
 
@@ -43,7 +43,7 @@ it("Crop", () => {
         cropEffect.connect(ctx.destination);
     });
 
-    // check output matches the snapshots at times on the timeline
+    // Check output matches the snapshots at times on the timeline
     cy.videoContextScreenShotsAtTimes(SCREEN_SHOT_TIMES, { id: "effect-crop" });
 });
 
@@ -60,7 +60,7 @@ it("Horizontal Blur", () => {
         horizontalBlurEffect.connect(ctx.destination);
     });
 
-    // check output matches the snapshots at times on the timeline
+    // Check output matches the snapshots at times on the timeline
     cy.videoContextScreenShotsAtTimes(SCREEN_SHOT_TIMES, { id: "effect-horizontal-blur" });
 });
 
@@ -77,7 +77,7 @@ it("Monochrome", () => {
         monochromeEffect.connect(ctx.destination);
     });
 
-    // check output matches the snapshots at times on the timeline
+    // Check output matches the snapshots at times on the timeline
     cy.videoContextScreenShotsAtTimes(SCREEN_SHOT_TIMES, { id: "effect-monochrome" });
 });
 
@@ -94,7 +94,7 @@ it("Opacity", () => {
         opacityEffect.connect(ctx.destination);
     });
 
-    // check output matches the snapshots at times on the timeline
+    // Check output matches the snapshots at times on the timeline
     cy.videoContextScreenShotsAtTimes(SCREEN_SHOT_TIMES, { id: "effect-opacity" });
 });
 
@@ -111,7 +111,7 @@ it("Static", () => {
         staticEffect.connect(ctx.destination);
     });
 
-    // check output matches the snapshots at times on the timeline
+    // Check output matches the snapshots at times on the timeline
     cy.videoContextScreenShotsAtTimes(SCREEN_SHOT_TIMES, { id: "effect-static" });
 });
 
@@ -128,6 +128,6 @@ it("Vertical Blur", () => {
         verticalBlurEffect.connect(ctx.destination);
     });
 
-    // check output matches the snapshots at times on the timeline
+    // Check output matches the snapshots at times on the timeline
     cy.videoContextScreenShotsAtTimes(SCREEN_SHOT_TIMES, { id: "effect-vertical-blur" });
 });

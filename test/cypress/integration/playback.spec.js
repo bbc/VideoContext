@@ -4,34 +4,34 @@ beforeEach(() => {
 });
 
 it("plays back video", () => {
-    // set up VideoContext
+    // Set up VideoContext
     cy.window().then(({ ctx }) => {
-        const videoNode = ctx.video("../assets/video1.webm"); // path relative to index.html
+        const videoNode = ctx.video("../assets/video1.webm"); // Path relative to index.html
         videoNode.startAt(0);
         videoNode.connect(ctx.destination);
     });
 
-    // check output  match the snapshots at times on the timeline
+    // Check output  match the snapshots at times on the timeline
     cy.videoContextScreenShotsAtTimes([0.5, 1, 1.5], { id: "playback-video" });
 });
 
 it("plays back image", () => {
-    // set up VideoContext
+    // Set up VideoContext
     cy.window().then(({ ctx }) => {
         const imageNode = ctx.image("../assets/test-image.png");
         imageNode.startAt(0);
         imageNode.connect(ctx.destination);
     });
 
-    // check output  match the snapshots at times on the timeline
+    // Check output  match the snapshots at times on the timeline
     cy.videoContextScreenShotsAtTimes([0.5, 1, 1.5], { id: "playback-image" });
 });
 
 it("plays back image with no creatImageBitmap", () => {
-    // set up VideoContext
+    // Set up VideoContext
     cy.window().then(win => {
         const ctx = win.ctx;
-        // remove createImageBitmap to simulate being in a browser with no support
+        // Remove createImageBitmap to simulate being in a browser with no support
         win.createImageBitmap = undefined;
 
         const imageNode = ctx.image("../assets/test-image.png");
@@ -39,14 +39,14 @@ it("plays back image with no creatImageBitmap", () => {
         imageNode.connect(ctx.destination);
     });
 
-    // check output  match the snapshots at times on the timeline
+    // Check output  match the snapshots at times on the timeline
     cy.videoContextScreenShotsAtTimes([0.5, 1, 1.5], {
         id: "playback-image-with-no-createImageBitmap"
     });
 });
 
 it("plays back  with user supplied element and start offset", () => {
-    // set up VideoContext
+    // Set up VideoContext
     cy.window().then(win => {
         const ctx = win.ctx;
         const video = win.document.createElement("video");
@@ -60,7 +60,7 @@ it("plays back  with user supplied element and start offset", () => {
         videoNode.connect(ctx.destination);
     });
 
-    // check output  match the snapshots at times on the timeline
+    // Check output  match the snapshots at times on the timeline
     cy.videoContextScreenShotsAtTimes([0.5, 1, 1.5], {
         id: "playback-user-supplied-element"
     });

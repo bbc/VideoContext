@@ -1,5 +1,17 @@
 /**
- * to update snapshots run: `yarn run cypress:update`
+ * takeScreenShotAtTime
+ *
+ * Capture and compare a frame with an existing snapshot
+ * for a specific time.
+ *
+ * To update snapshots run:
+ *  - CI: `yarn cypress:update-snapshots`
+ *  - GUI: `yarn cypress:gui-update-snapshots`
+ *
+ * See the README.md for more information.
+ *
+ * @param {number} time at which to take snapshots (in seconds)
+ * @param {{ ctx: object, id: string, options: object }} options - `ctx` VideoContext, `id` unique id to name snapshots, `options` matchImageSnapshot config overrides
  */
 const takeScreenShotAtTime = (time, { ctx, id, options }) =>
     new Promise(resolve => {
@@ -10,20 +22,20 @@ const takeScreenShotAtTime = (time, { ctx, id, options }) =>
          */
         ctx.currentTime = time - 0.005;
 
-        // start playback
+        // Start playback
         ctx.play();
 
-        // register a callback at the time we want to snapshot
+        // Register a callback at the time we want to snapshot
         ctx.registerTimelineCallback(time, () => {
             console.log("snapshot at time", time, ctx.currentTime - time);
-            // stop the player from progressing past this frame
+            // Stop the player from progressing past this frame
             ctx.pause();
 
             resolve(
-                // we must return a cypress chain
+                // We must return a cypress chain
                 cy
                     .get("#canvas")
-                    // compare this frame with the snapshot
+                    // Compare this frame with the snapshot
                     .matchImageSnapshot(`${id} at time ${time}`, options)
             );
         });
@@ -39,16 +51,16 @@ const takeScreenShotAtTime = (time, { ctx, id, options }) =>
  *
  *
  * @param {Array<number>} times at which to take snapshots (in seconds)
- * @param {{ id: string }} options `id`: unique id to name snapshots
+ * @param {{ id: string, options: object }} options `id`: unique id to name snapshots
  */
 const videoContextScreenShotsAtTimes = (times = [1, 25, 50], { id, options }) => {
-    // use a closure to access window
+    // Use a closure to access window
     let window;
 
-    // we're going to chain on this promise
+    // We're going to chain on this promise
     let cyPromise = cy.window();
 
-    // prepare by starting playback and storing the window object
+    // Prepare by starting playback and storing the window object
     cyPromise = cyPromise.then(win => {
         /**
          * We slow down the playback rate to increase the chance of the registered
@@ -63,14 +75,14 @@ const videoContextScreenShotsAtTimes = (times = [1, 25, 50], { id, options }) =>
         window = win;
     });
 
-    // reduce over the times taking a screen-shot when each time is reached
+    // Reduce over the times taking a screen-shot when each time is reached
     times.forEach(time => {
         cyPromise = cyPromise.then({ timeout: 10000 }, () =>
             takeScreenShotAtTime(time, { ctx: window.ctx, id, options })
         );
     });
 
-    // last, rest the context so that playback and updates stop
+    // Last, rest the context so that playback and updates stop
     return cyPromise.then(() => {
         window.ctx.reset();
     });
