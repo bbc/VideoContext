@@ -2,10 +2,11 @@
 
 ## Quick links
 
-- Before you start (some caveats to bear in mind)
-- updating snapshots
-- creating a test
-- debugging a failing test
+* [Before you begin (some known issues)](#before-you-begin-some-known-issues)
+* [Why Cypress](#why-cypress)
+* [Structure](#structure)
+* [Running the tests](#running-the-tests)
+* [Debugging a test](#debugging-a-test)
 
 
 ## Before you begin (some known issues)

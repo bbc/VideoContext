@@ -31,3 +31,5 @@ Cypress is used to take and compare screenshots out the output to previous build
 - __framework__: [cypress](https://www.cypress.io/)
 - __coverage__: low
 - __coupling__: low
+
+For more detail see [./cypress#readme](./cypress#readme)
