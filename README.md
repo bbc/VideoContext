@@ -159,43 +159,65 @@ canvasNode.stop(4);
 
 ### CustomSourceNode
 
-Sometimes using the pre-built node is just not enough.
-You can create your own source nodes that host more logic and let you hook into the VideoContext Node API easily.
+Sometimes using the pre-built node is just not enough. You can create your own source nodes that host more logic and let you hook into the VideoContext Node API easily.
 
-View below a custom source node that can now play an HLS VOD.
+The following example shows how to create a custom source node that can play a HLS VOD:
+
+> View on [CodeSandbox](https://codesandbox.io/embed/videocontext-customsourcenode-ijzh8)
 
 ```JavaScript
 import Hls from "hls.js";
 
-class HLSNode extends VideoNode {
-    constructor(src, gl, renderGraph, currentTime, playbackRate, sourceOffset, preloadTime, hlsOptions = {}) {
+class HLSNode extends VideoContext.NODES.VideoNode {
+  constructor(src, gl, renderGraph, currentTime, playbackRate, sourceOffset, preloadTime, hlsOptions = {}) {
+    //Create a video element.
+    const video = document.createElement("video");
 
-        this._src = src;
-        const video = document.createElement("video");
-        this.hls = new Hls(hlsOptions);
-        this.hls.attachVideo(video);
+    super(video, gl, renderGraph, currentTime, playbackRate, sourceOffset, preloadTime);
 
-        super(video, gl, renderGraph, currentTime, playbackRate, sourceOffset, preloadTime);
+    //Create a HLS object.
+    this.hls = new Hls(hlsOptions);
 
-        this._displayName = "HLSNode";
-        this._elementType = "hls";
+    //Bind the video element.
+    this.hls.attachMedia(video);
+
+    //Set the source path.
+    this._src = src;
+
+    this._displayName = "HLSNode";
+    this._elementType = "hls";
+  }
+
+  _load() {
+    //Load the video source on first load.
+    if (!this._loadTriggered) {
+      this.hls.loadSource(this._src);
     }
+    super._load();
+  }
 
-    _load() {
-        this.hls.loadSource(this._src);
-        this.hls.on(Hls.Events.MANIFEST_PARSED, () => {
-            this._ready = true;
-            this._triggerCallbacks("loaded");
-        });
+  destroy() {
+    if (this.hls) {
+      this.hls.destroy();
     }
-
-    destroy() {
-        if (this.hls) {
-            this.hls.destroy();
-        }
-        super.destroy();
-    }
+    super.destroy();
+  }
 }
+
+//Setup the video context.
+const canvas = document.getElementById("canvas");
+const ctx = new VideoContext(canvas);
+
+//Create a custom HLS source node and play it for 60 seconds.
+const hlsNode = ctx.customSourceNode(HLSNode, "https://video-dev.github.io/streams/x36xhzz/x36xhzz.m3u8");
+hlsNode.start(0);
+hlsNode.stop(60);
+
+//Set-up the processing chain.
+hlsNode.connect(ctx.destination);
+
+//start playback.
+ctx.play();
 ```
 
 Another use case for custom node types would be to play GIFs. The custom node would be in charge of decode the GIF frames and paint them on a canvas depending on the `_update` calls from `VideoContext`.

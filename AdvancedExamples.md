@@ -3,6 +3,7 @@
 ## Table of Contents
 
 - [Extracting an image at a given time](#extracting-an-image-at-a-given-time)
+- [Supporting Media Fragments with `customSourceNode`](#supporting-media-fragments-with-customsourcenode)
 
 ## Extracting an image at a given time
 
@@ -97,4 +98,146 @@ This example captures the middle frame from a horizontal wipe transition.
     </script>
 </body>
 </html>
+```
+
+## Supporting Media Fragments with `customSourceNode`
+
+Browsers are beginning to support some of the Media Fragments spec. 
+
+In this example we add support for defining a loop within a `VideoNode` using the
+media fragments syntax. eg
+
+```JavaScript
+/**
+ * URL for requesting a fragments of `BigBuckBunny.mp4` that starts at
+ * 5 seconds and ends at 12 seconds.
+ * 
+ * In our example we want to loop between these points in time
+ */
+const urlForMediaFragment = "./BigBuckBunny.mp4#t=5,12"
+```
+
+The loop itself is handled by extending the `VideoNode._update` method.
+
+- Intro to media fragments: <https://gingertech.net/tag/media-fragment-uri/>
+- The Media Fragments Specification: <https://www.w3.org/TR/media-frags/>
+- Browser support: <https://caniuse.com/#feat=media-fragments>
+
+> View on [CodeSandbox](https://codesandbox.io/embed/videocontext-customsourcenode-mediafragmentvideonode-rymtf).
+
+```JavaScript
+import VideoContext from "videocontext";
+import parse from "url-parse";
+
+class MediaFragmentVideoNode extends VideoContext.NODES.VideoNode {
+  constructor(
+    src,
+    gl,
+    renderGraph,
+    currentTime,
+    sourceOffset,
+    preloadTime,
+    options
+  ) {
+    /**
+     * In this example we're just supporting part of media fragments
+     * spec, and only when the element is set to `loop`.
+     *
+     * First, parse the start and end loop times from the src url
+     */
+    const fragment =
+      options.loop &&
+      parse(src)
+        .hash.split("&")
+        .filter(str => str.includes("t="))
+        .map(str => str.split("t=")[1])
+        .map(values => values.split(",").map(parseFloat))
+        .map(([start, end]) => ({ start, end }))[0];
+
+    /**
+     * We follow the VideoNode implementation pretty closely when
+     * calling `super`.
+     *
+     * The only difference:
+     *   - hard code values for playback rate and mediaelement cache
+     *   - add our fragement `start` time to the the `sourceOffset`
+     **/
+    super(
+      src,
+      gl,
+      renderGraph,
+      currentTime,
+      1 /* playback rate */,
+      sourceOffset + (fragment && fragment.start),
+      preloadTime,
+      undefined /* mediaelement cache */,
+      options
+    );
+
+    /**
+     * Next we update add a couple of custom properties to
+     * our class. These will only be accessed within our subclass
+     */
+    if (fragment) {
+      this._loopStart = fragment.start;
+      this._loopDuration = fragment.end - fragment.start;
+    }
+
+    this._displayName = "MediaFragmentVideoNode";
+  }
+
+  /**
+   * We extend the VideoNode `_update` method to implement our loop.
+   *
+   *
+   * Normal caveat with custom source nodes: you are tying your
+   * code to a private API, be careful when upgrading videocontext! accessed
+   *
+   * Our `_update` signature matches that of `VideoNode._update`
+   * @param {number} currentTime
+   * @param {boolean} triggerTextureUpdate
+   */
+  _update(currentTime, triggerTextureUpdate = true) {
+    super._update(currentTime, triggerTextureUpdate);
+
+    /**
+     * if no fragment is set `_update` behaves as before.
+     * otherwise:
+     */
+    if (this._loopStart) {
+      const loopEndTime = this._startTime + this._loopDuration;
+      if (this._currentTime >= loopEndTime) {
+        // tell the node that it should start again from now
+        this._startTime = loopEndTime;
+        // seek the element back to the start
+        // sourceOffset already has the loop start included
+        this._element.currentTime = this._sourceOffset || 0;
+      }
+    }
+  }
+}
+
+const START_LOOP_TIME = 19;
+const END_LOOP_TIME = 21;
+const MEDIA_FRAGMENT_URL = `http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4#t=${START_LOOP_TIME},${END_LOOP_TIME}`;
+
+// Setup the video context.
+const canvas = document.getElementById("canvas");
+const ctx = new VideoContext(canvas);
+
+const videoNode1 = ctx.customSourceNode(
+  MediaFragmentVideoNode,
+  MEDIA_FRAGMENT_URL,
+  0,
+  4,
+  {
+    volume: 0,
+    loop: true
+  }
+);
+
+videoNode1.startAt(0);
+videoNode1.connect(ctx.destination);
+
+ctx.play();
 ```
