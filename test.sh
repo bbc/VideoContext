@@ -23,7 +23,7 @@ elif [ "$TEST_SUITE" == "regression" ]
       echo "# Running Available Regression Tests #"
       echo "#####################################"
 
-      npm run test-regression
+      npm run test-ci:cypress
 
 elif [ "$TEST_SUITE" == "build" ]
   then
