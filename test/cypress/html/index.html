@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+
+<head>
+    <meta charset="utf-8">
+    <title>VideoContext Cypress Tests</title>
+    <script type="text/javascript" src="../../../dist/videocontext.js"></script>
+</head>
+
+<body>
+    <canvas id="canvas" width="1920" height="1080" style="width: 500px;"></canvas>
+
+    <script type="text/javascript">
+        window.onload = function () {
+            window.ctx = new VideoContext(canvas);
+        };
+    </script>
+</body>
+
+</html>
