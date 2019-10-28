@@ -89,6 +89,9 @@
   "jest": {
     "moduleNameMapper": {
       "\\.(frag|vert)$": "<rootDir>/__mocks__/glsl.js"
-    }
+    },
+    "testMatch": [
+      "**/test/(integration|unit)/?(*.)+(spec|test).js?(x)"
+    ]
   }
 }
