@@ -50,7 +50,7 @@ const setupTransitionPipelineForDefinition = definitionName => ({ ctx, VideoCont
     {
         definitionName: "DREAMFADE",
         options: {
-            failureThreshold: 0.2 // threshold for entire image
+            failureThreshold: 0.3 // threshold for entire image
         }
     },
     // This is quite random, so we allow for very inconsistent runs
