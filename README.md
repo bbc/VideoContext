@@ -17,6 +17,7 @@ The design is heavily inspired by the Web Audio API, so it should feel familiar 
 - [Documentation](#documentation)
 - [Node Types](#node-types)
   - [VideoNode](#videonode)
+  - [AudioNode](#audionode)
   - [ImageNode](#imagenode)
   - [CanvasNode](#canvasnode)
   - [CustomSourceNode](#customsourcenode)
@@ -128,6 +129,21 @@ For best results the video played by a VideoNode should be encoded with a fast d
 
 ```Bash
 avconv -i input.mp4 -tune fastdecode -strict experimental output.mp4
+```
+
+### AudioNode
+
+An audio source node.
+
+> View on [CodeSandbox](https://codesandbox.io/embed/videocontext-audionode-lbqrs).
+
+```JavaScript
+var audioNode = videoCtx.audio("./audio.mp3");
+audioNode.connect(videoCtx.destination);
+audioNode.start(0);
+audioNode.stop(4);
+
+videoCtx.play();
 ```
 
 ### ImageNode
