@@ -93,8 +93,8 @@ If you need to debug video context graphs or get a better insight into what is h
 API Documentation can be built using [ESDoc](https://esdoc.org/) by running the following commands:
 
 ```
-npm install
-npm run doc
+yarn install
+yarn doc
 ```
 
 The documentation will be generated in the "./doc" folder of the repository.
@@ -512,16 +512,16 @@ VideoContext has a pretty standard `package.json`
 
 ```sh
 # install build and development dependencies
-npm install
+yarn install
 
 # run a dev server with automatic reload
-npm run dev
+yarn dev
 
 # watch unit and integration tests
-npm run test-watch
+yarn test-watch
 
 # run the end-to-end regression tests in a headless browser
-npm run cypress
+yarn cypress
 ```
 
 For more information on writing, running and debugging the end-to-end cypress tests
@@ -539,9 +539,9 @@ To contribute raise a pull request against the `develop` branch.
 Releases are prepared in release branches. When the the release is ready run one of
 
 ```
-npm run release:major
-npm run release:minor
-npm run release:patch
+yarn release:major
+yarn release:minor
+yarn release:patch
 ```
 
 these scripts build and commit the docs, the changelog, update the `package.json` version number
@@ -577,9 +577,9 @@ All tests must pass before PRs can be merged.
 Other options
 
 ```
-npm run build     # build dist packages
-npm run doc       # create documentation
-npm run build_all # do all of the above
+yarn build     # build dist packages
+yarn doc       # create documentation
+yarn build_all # do all of the above
 ```
 
 The library is written in es6 and cross-compiled using babel.
