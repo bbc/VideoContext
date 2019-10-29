@@ -142,8 +142,6 @@ var audioNode = videoCtx.audio("./audio.mp3");
 audioNode.connect(videoCtx.destination);
 audioNode.start(0);
 audioNode.stop(4);
-
-videoCtx.play();
 ```
 
 ### ImageNode
