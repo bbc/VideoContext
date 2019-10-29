@@ -112,7 +112,11 @@ it("Static", () => {
     });
 
     // Check output matches the snapshots at times on the timeline
-    cy.videoContextScreenShotsAtTimes(SCREEN_SHOT_TIMES, { id: "effect-static" });
+    cy.videoContextScreenShotsAtTimes(SCREEN_SHOT_TIMES, {
+        id: "effect-static",
+        // Allow a large failure threshold, due to the randomness of this effect
+        options: { failureThreshold: 0.8 }
+    });
 });
 
 it("Vertical Blur", () => {
