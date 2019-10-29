@@ -45,13 +45,8 @@ const setupTransitionPipelineForDefinition = definitionName => ({ ctx, VideoCont
     { definitionName: "VERTICAL_WIPE" },
     { definitionName: "RANDOM_DISSOLVE" },
     { definitionName: "TO_COLOR_AND_BACK" },
-    // These are very frame dependent so we allow for inconsistent runs
-    {
-        definitionName: "STAR_WIPE",
-        options: {
-            failureThreshold: 0.3 // threshold for entire image
-        }
-    },
+    { definitionName: "STAR_WIPE" },
+    // This is very frame dependent so we allow for inconsistent runs
     {
         definitionName: "DREAMFADE",
         options: {
