@@ -1,80 +1,87 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-	<title>VideoContext - Transition Example</title>
-		<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<script type="text/javascript" src="../dist/videocontext.js"></script>
-	<script type="text/javascript" src="../js/utils.js"></script>
-	<style type="text/css">
-	.credits,a {
-		color: #bbb;
-		text-align: center;
-		font-size: 0.75em;
-	}
-	</style>
+  <title>VideoContext - Transition Example</title>
+  <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.1/build/pure-min.css"
+    integrity="sha384-oAOxQR6DkCoMliIh8yFnu25d7Eq/PHS21PClpwjOTeU2jRSq11vu66rf90/cZr47" crossorigin="anonymous">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script type="text/javascript" src="../dist/videocontext.js"></script>
+  <script type="text/javascript" src="../js/utils.js"></script>
+  <style type="text/css">
+    .credits,
+    a {
+      color: #bbb;
+      text-align: center;
+      font-size: 0.75em;
+    }
+  </style>
 </head>
+
 <body>
-	<script type="text/javascript">
-		window.onload = function(){
-			var canvas = document.getElementById("canvas");
-			var videoContext = new VideoContext(canvas);
+  <script type="text/javascript">
+    window.onload = function () {
+      var canvas = document.getElementById("canvas");
+      var videoContext = new VideoContext(canvas);
 
-			var videoNode1 = videoContext.video("../assets/introductions-rant.mp4", 0, 4, {volume:0.2, loop:true});
-			videoNode1.startAt(0);
-			videoNode1.stopAt(8);
-			
-			var videoNode2 = videoContext.video("../assets/introductions-rant.mp4", 30, 4, {volume:0.2, loop:true});
-			videoNode2.startAt(3);
-			videoNode2.stopAt(11);
+      var videoNode1 = videoContext.video("../assets/introductions-rant.mp4", 0, 4, { volume: 0.2, loop: true });
+      videoNode1.startAt(0);
+      videoNode1.stopAt(8);
 
-
-			var crossFade = videoContext.transition(VideoContext.DEFINITIONS.CROSSFADE);
-
-			videoNode1.connect(crossFade);
-			videoNode2.connect(crossFade);
-
-			crossFade.connect(videoContext.destination);
-			crossFade.transition(3,8,0.0,1.0);
+      var videoNode2 = videoContext.video("../assets/introductions-rant.mp4", 30, 4, { volume: 0.2, loop: true });
+      videoNode2.startAt(3);
+      videoNode2.stopAt(11);
 
 
-			//Wire in button controls
-			var playButton = document.getElementById("play-button");
-			var pauseButton = document.getElementById("pause-button");
-			playButton.onclick = videoContext.play.bind(videoContext);
-			pauseButton.onclick = videoContext.pause.bind(videoContext);
-			//Set-up the visualisation using the convienience function in ../js/utils.js
-			InitVisualisations(videoContext, "graph-canvas", "visualisation-canvas");
-		}
-	</script>
+      var crossFade = videoContext.transition(VideoContext.DEFINITIONS.CROSSFADE);
+
+      videoNode1.connect(crossFade);
+      videoNode2.connect(crossFade);
+
+      crossFade.connect(videoContext.destination);
+      crossFade.transition(3, 8, 0.0, 1.0);
 
 
-	<div class="pure-g">
-    	<div class="pure-u-1-3"></div>
-    	<div class="pure-u-1-3">
-    		<h1>VideoContext</h1>
-    		<h2>Transition Example	</h2>
-		    <p>
-		        <canvas id="canvas" width="480", height="270"></canvas>
-		    </p>
-		    <p>
-		        <button class="pure-button" id="play-button">Play</button><button class="pure-button" id="pause-button">Pause</button> 
-		        <canvas id="visualisation-canvas" width="480", height="20"></canvas>
-    		</p>
-    		<p>
-        		<h3>Graph</h3>
-        		<canvas id="graph-canvas" width="480", height="200"></canvas>
-    		</p>
-    		<div class="credits">
-	    		<p>
-	    			Clip taken from <a href="https://vimeo.com/125095515">#Introductions</a> 
-				</p>
-				<p>
-	    			By LaBeouf, Rönkkö & Turner in collaboration with Central Saint Martins BA Fine Art 2015 students. Joshua Parker's section.
-	    		</p>
-    		</div>
-    	</div>
-    	<div class="pure-u-1-3"></div>
+      //Wire in button controls
+      var playButton = document.getElementById("play-button");
+      var pauseButton = document.getElementById("pause-button");
+      playButton.onclick = videoContext.play.bind(videoContext);
+      pauseButton.onclick = videoContext.pause.bind(videoContext);
+      //Set-up the visualisation using the convienience function in ../js/utils.js
+      InitVisualisations(videoContext, "graph-canvas", "visualisation-canvas");
+    }
+  </script>
+
+
+  <div class="pure-g">
+    <div class="pure-u-1-3"></div>
+    <div class="pure-u-1-3">
+      <h1>VideoContext</h1>
+      <h2>Transition Example </h2>
+      <p>
+        <canvas id="canvas" width="480" , height="270"></canvas>
+      </p>
+      <p>
+        <button class="pure-button" id="play-button">Play</button><button class="pure-button"
+          id="pause-button">Pause</button>
+        <canvas id="visualisation-canvas" width="480" , height="20"></canvas>
+      </p>
+      <p>
+        <h3>Graph</h3>
+        <canvas id="graph-canvas" width="480" , height="200"></canvas>
+      </p>
+      <div class="credits">
+        <p>
+          Clip taken from <a href="https://vimeo.com/125095515">#Introductions</a>
+        </p>
+        <p>
+          By LaBeouf, Rönkkö & Turner in collaboration with Central Saint Martins BA Fine Art 2015 students.
+          Joshua Parker's section.
+        </p>
+      </div>
     </div>
+    <div class="pure-u-1-3"></div>
+  </div>
 </body>
+
 </html>
