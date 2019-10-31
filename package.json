@@ -38,7 +38,7 @@
     "_cy:local-update-snapshots": "./cypress-run.sh local-update-snapshots",
     "_cy:open": "./cypress-run.sh local",
     "_cy:run": "./cypress-run.sh",
-    "_cy-server": "concurrently \"npm run dev\" \"ws -p 3001\"",
+    "_cy-server": "concurrently \"yarn dev\" \"ws -p 3001\"",
     "_server_cy_then": "start-server-and-test _cy-server http://localhost:3001",
     "docs": "bash ./build-docs.sh",
     "docs-commit": "yarn docs && git add docs && git diff-index --quiet HEAD || git commit -m 'update docs in preparation for release'",

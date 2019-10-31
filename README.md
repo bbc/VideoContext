@@ -555,7 +555,7 @@ CI will publish to npm when the release branch has been merged into master.
 2. `git pull`
 3. `git checkout -b release-xxx`
 4. tag and push using script
-   - `npm run release:patch|minor|major`
+   - `yarn release:patch|minor|major`
 5. open pull request against master
 6. merge when tests have passed
 7. merge master back in to develop:
