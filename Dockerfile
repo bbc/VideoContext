@@ -21,7 +21,7 @@ WORKDIR /cypress
 COPY package.json yarn.lock ./
 
 # Install cypress
-RUN npm install
+RUN yarn
 
 # Copy over the source, tests, etc
 # The ".dockerignore" prevents the user's `node_modules/*` from being copied
