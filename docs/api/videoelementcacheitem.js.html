@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: SourceNodes/audionode.js</title>
+    <title>JSDoc: Source: videoelementcacheitem.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: SourceNodes/audionode.js</h1>
+    <h1 class="page-title">Source: videoelementcacheitem.js</h1>
 
     
 
@@ -26,29 +26,52 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>//Matthew Shotton, R&amp;D User Experience,© BBC 2015
-import MediaNode from "./medianode";
+            <pre class="prettyprint source linenums"><code>import { SOURCENODESTATE } from "./SourceNodes/sourcenode";
 
-const TYPE = "AudioNode";
-class AudioNode extends MediaNode {
-    /**
-     * Initialise an instance of an AudioNode.
-     * This should not be called directly, but created through a call to videoContext.audio();
-     */
-    constructor() {
-        super(...arguments);
-        this._displayName = TYPE;
-        this._elementType = "audio";
+/**
+ * A video element item created and managed by the `VideoElementCache`.
+ *
+ * This creates and stores a `&lt;video />` element, which is assigned
+ * to a `MediaNode` by the `VideoElementCache` for playback. Once
+ * playback has completed the `MediaNode` association will be removed
+ * and potentially replaced with another.
+ */
+class VideoElementCacheItem {
+    constructor(node = null) {
+        this._element = this._createElement();
+        this._node = node;
     }
 
-    _update(currentTime) {
-        super._update(currentTime, false);
+    _createElement() {
+        let videoElement = document.createElement("video");
+        videoElement.setAttribute("crossorigin", "anonymous");
+        videoElement.setAttribute("webkit-playsinline", "");
+        videoElement.setAttribute("playsinline", "");
+        return videoElement;
+    }
+
+    get element() {
+        return this._element;
+    }
+
+    set element(element) {
+        this._element = element;
+    }
+
+    linkNode(node) {
+        this._node = node;
+    }
+
+    unlinkNode() {
+        this._node = null;
+    }
+
+    isPlaying() {
+        return this._node &amp;&amp; this._node._state === SOURCENODESTATE.playing;
     }
 }
 
-export { TYPE as AUDIOTYPE };
-
-export default AudioNode;
+export default VideoElementCacheItem;
 </code></pre>
         </article>
     </section>

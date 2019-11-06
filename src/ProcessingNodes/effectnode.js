@@ -40,24 +40,24 @@ class EffectNode extends ProcessingNode {
         );
         gl.clearColor(0, 0, 0, 0); // green;
         gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.blendFunc(gl.ONE, gl.ZERO);
 
         super._render();
 
         let inputs = this._renderGraph.getInputsForNode(this);
-        let textureOffset = 0;
 
-        for (var i = 0; i < this._inputTextureUnitMapping.length; i++) {
+        for (var i = 0; i < this._shaderInputsTextureUnitMapping.length; i++) {
             let inputTexture = this._placeholderTexture;
-            let textureUnit = this._inputTextureUnitMapping[i].textureUnit;
-            let textureName = this._inputTextureUnitMapping[i].name;
+            let textureUnit = this._shaderInputsTextureUnitMapping[i].textureUnit;
             if (i < inputs.length && inputs[i] !== undefined) {
                 inputTexture = inputs[i]._texture;
             }
 
             gl.activeTexture(textureUnit);
-            let textureLocation = gl.getUniformLocation(this._program, textureName);
-            gl.uniform1i(textureLocation, this._parameterTextureCount + textureOffset);
-            textureOffset += 1;
+            gl.uniform1i(
+                this._shaderInputsTextureUnitMapping[i].location,
+                this._shaderInputsTextureUnitMapping[i].textureUnitIndex
+            );
             gl.bindTexture(gl.TEXTURE_2D, inputTexture);
         }
         gl.drawArrays(gl.TRIANGLES, 0, 6);
