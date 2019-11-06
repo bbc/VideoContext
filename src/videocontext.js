@@ -881,6 +881,7 @@ export default class VideoContext {
 
                 this._currentTime += dt * this._playbackRate;
                 if (this._currentTime > this.duration && this._endOnLastSourceEnd) {
+                    this._currentTime = this.duration;
                     //Do an update od the sourcenodes in case anything in the "ended" callbacks modifes currentTime and sources haven't had a chance to stop.
                     for (let i = 0; i < this._sourceNodes.length; i++) {
                         this._sourceNodes[i]._update(this._currentTime);
