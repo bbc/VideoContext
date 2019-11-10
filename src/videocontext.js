@@ -678,7 +678,8 @@ export default class VideoContext {
             this._gl,
             this._renderGraph,
             this._currentTime,
-            ...options
+            ...options,
+            NODES
         );
         this._sourceNodes.push(customSourceNode);
         return customSourceNode;
