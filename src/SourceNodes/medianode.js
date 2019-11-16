@@ -84,7 +84,11 @@ class MediaNode extends SourceNode {
         // If the user hasn't supplied an element, videocontext is responsible for the element
         if (this._isResponsibleForElementLifeCycle) {
             if (this._mediaElementCache) {
-                this._element = this._mediaElementCache.get();
+                /**
+                 * Get a cached video element and also pass this instance so the
+                 * cache can access the current play state.
+                 */
+                this._element = this._mediaElementCache.getElementAndLinkToNode(this);
             } else {
                 this._element = document.createElement(this._elementType);
                 this._element.setAttribute("crossorigin", "anonymous");
@@ -196,6 +200,9 @@ class MediaNode extends SourceNode {
             for (let key in this._attributes) {
                 this._element.removeAttribute(key);
             }
+            // Unlink this form the cache, freeing up the element for another media node
+            if (this._mediaElementCache)
+                this._mediaElementCache.unlinkNodeFromElement(this._element);
             this._element = undefined;
             if (!this._mediaElementCache) delete this._element;
         }

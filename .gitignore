@@ -15,3 +15,5 @@ node_modules
 .nyc_output
 coverage
 /dist
+
+__diff_output__

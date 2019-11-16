@@ -42,14 +42,14 @@ class DestinationNode extends ProcessingNode {
      * You should not instantiate this directly.
      */
     constructor(gl, renderGraph) {
-        let deffinition = {
+        let definition = {
             fragmentShader,
             vertexShader,
             properties: {},
             inputs: ["u_image"]
         };
 
-        super(gl, renderGraph, deffinition, deffinition.inputs, false);
+        super(gl, renderGraph, definition, definition.inputs, false);
         this._displayName = TYPE;
     }
 
@@ -66,13 +66,10 @@ class DestinationNode extends ProcessingNode {
             super._render();
             //map the input textures input the node
             var texture = node._texture;
-            let textureOffset = 0;
 
-            for (let mapping of this._inputTextureUnitMapping) {
+            for (let mapping of this._shaderInputsTextureUnitMapping) {
                 gl.activeTexture(mapping.textureUnit);
-                let textureLocation = gl.getUniformLocation(this._program, mapping.name);
-                gl.uniform1i(textureLocation, this._parameterTextureCount + textureOffset);
-                textureOffset += 1;
+                gl.uniform1i(mapping.location, mapping.textureUnitIndex);
                 gl.bindTexture(gl.TEXTURE_2D, texture);
             }
 
@@ -94,7 +91,7 @@ export default DestinationNode;
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-VideoContext.html">VideoContext</a></li></ul><h3>Classes</h3><ul><li><a href="AudioNode.html">AudioNode</a></li><li><a href="CanvasNode.html">CanvasNode</a></li><li><a href="CompositingNode.html">CompositingNode</a></li><li><a href="DestinationNode.html">DestinationNode</a></li><li><a href="EffectNode.html">EffectNode</a></li><li><a href="GraphNode.html">GraphNode</a></li><li><a href="ImageNode.html">ImageNode</a></li><li><a href="MediaNode.html">MediaNode</a></li><li><a href="module-VideoContext.html">VideoContext</a></li><li><a href="ProcessingNode.html">ProcessingNode</a></li><li><a href="RenderGraph.html">RenderGraph</a></li><li><a href="SourceNode.html">SourceNode</a></li><li><a href="TransitionNode.html">TransitionNode</a></li><li><a href="VideoNode.html">VideoNode</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-VideoContext.html">VideoContext</a></li></ul><h3>Classes</h3><ul><li><a href="AudioNode.html">AudioNode</a></li><li><a href="CanvasNode.html">CanvasNode</a></li><li><a href="CompositingNode.html">CompositingNode</a></li><li><a href="DestinationNode.html">DestinationNode</a></li><li><a href="EffectNode.html">EffectNode</a></li><li><a href="GraphNode.html">GraphNode</a></li><li><a href="ImageNode.html">ImageNode</a></li><li><a href="MediaNode.html">MediaNode</a></li><li><a href="module-VideoContext.html">VideoContext</a></li><li><a href="ProcessingNode.html">ProcessingNode</a></li><li><a href="RenderGraph.html">RenderGraph</a></li><li><a href="SourceNode.html">SourceNode</a></li><li><a href="TransitionNode.html">TransitionNode</a></li><li><a href="VideoElementCacheItem.html">VideoElementCacheItem</a></li><li><a href="VideoNode.html">VideoNode</a></li></ul>
 </nav>
 
 <br class="clear">
