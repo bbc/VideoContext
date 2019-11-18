@@ -12,7 +12,7 @@
 
 # This uses the Cypress image with Chrome support
 # We need Chrome as Electron doesn't support WebGL
-FROM cypress/browsers:node11.13.0-chrome73
+FROM cypress/browsers:node12.6.0-chrome77
 
 # Define the working directory
 WORKDIR /cypress
@@ -21,7 +21,7 @@ WORKDIR /cypress
 COPY package.json yarn.lock ./
 
 # Install cypress
-RUN npm install
+RUN yarn
 
 # Copy over the source, tests, etc
 # The ".dockerignore" prevents the user's `node_modules/*` from being copied
