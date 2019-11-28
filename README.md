@@ -17,6 +17,7 @@ The design is heavily inspired by the Web Audio API, so it should feel familiar 
 - [Documentation](#documentation)
 - [Node Types](#node-types)
   - [VideoNode](#videonode)
+  - [AudioNode](#audionode)
   - [ImageNode](#imagenode)
   - [CanvasNode](#canvasnode)
   - [CustomSourceNode](#customsourcenode)
@@ -32,7 +33,7 @@ The design is heavily inspired by the Web Audio API, so it should feel familiar 
 
 ## Demo
 
-> View on [CodeSandbox](https://codesandbox.io/embed/nostalgic-meitner-08sh2).
+> View on [CodeSandbox](https://codesandbox.io/embed/videocontext-demo-65t8v).
 
 ```JavaScript
 <!DOCTYPE html>
@@ -92,8 +93,8 @@ If you need to debug video context graphs or get a better insight into what is h
 API Documentation can be built using [ESDoc](https://esdoc.org/) by running the following commands:
 
 ```
-npm install
-npm run doc
+yarn install
+yarn doc
 ```
 
 The documentation will be generated in the "./doc" folder of the repository.
@@ -115,7 +116,7 @@ There are a number of different types of nodes which can be used in the VideoCon
 
 A video source node.
 
-> View on [CodeSandbox](https://codesandbox.io/embed/naughty-sea-dv0x1)
+> View on [CodeSandbox](https://codesandbox.io/embed/videocontext-videonode-qmuzz).
 
 ```JavaScript
 var videoNode = videoCtx.video("./video1.mp4");
@@ -130,11 +131,24 @@ For best results the video played by a VideoNode should be encoded with a fast d
 avconv -i input.mp4 -tune fastdecode -strict experimental output.mp4
 ```
 
+### AudioNode
+
+An audio source node.
+
+> View on [CodeSandbox](https://codesandbox.io/embed/videocontext-audionode-lbqrs).
+
+```JavaScript
+var audioNode = videoCtx.audio("./audio.mp3");
+audioNode.connect(videoCtx.destination);
+audioNode.start(0);
+audioNode.stop(4);
+```
+
 ### ImageNode
 
 An image source node.
 
-> View on [CodeSandbox](https://codesandbox.io/embed/crazy-bas-6m7r7)
+> View on [CodeSandbox](https://codesandbox.io/embed/videocontext-imagenode-twy48).
 
 ```JavaScript
 var imageNode = videoCtx.image("cats.png");
@@ -147,7 +161,7 @@ imageNode.stop(4);
 
 A canvas source node.
 
-> View on [CodeSandbox](https://codesandbox.io/embed/peaceful-meninsky-jkscs)
+> View on [CodeSandbox](https://codesandbox.io/embed/videocontext-canvasnode-5myep).
 
 ```JavaScript
 var canvas = document.getElementById("input-canvas");
@@ -159,43 +173,65 @@ canvasNode.stop(4);
 
 ### CustomSourceNode
 
-Sometimes using the pre-built node is just not enough.
-You can create your own source nodes that host more logic and let you hook into the VideoContext Node API easily.
+Sometimes using the pre-built node is just not enough. You can create your own source nodes that host more logic and let you hook into the VideoContext Node API easily.
 
-View below a custom source node that can now play an HLS VOD.
+The following example shows how to create a custom source node that can play a HLS VOD:
+
+> View on [CodeSandbox](https://codesandbox.io/embed/videocontext-customsourcenode-ijzh8)
 
 ```JavaScript
 import Hls from "hls.js";
 
-class HLSNode extends VideoNode {
-    constructor(src, gl, renderGraph, currentTime, playbackRate, sourceOffset, preloadTime, hlsOptions = {}) {
+class HLSNode extends VideoContext.NODES.VideoNode {
+  constructor(src, gl, renderGraph, currentTime, playbackRate, sourceOffset, preloadTime, hlsOptions = {}) {
+    //Create a video element.
+    const video = document.createElement("video");
 
-        this._src = src;
-        const video = document.createElement("video");
-        this.hls = new Hls(hlsOptions);
-        this.hls.attachVideo(video);
+    super(video, gl, renderGraph, currentTime, playbackRate, sourceOffset, preloadTime);
 
-        super(video, gl, renderGraph, currentTime, playbackRate, sourceOffset, preloadTime);
+    //Create a HLS object.
+    this.hls = new Hls(hlsOptions);
 
-        this._displayName = "HLSNode";
-        this._elementType = "hls";
+    //Bind the video element.
+    this.hls.attachMedia(video);
+
+    //Set the source path.
+    this._src = src;
+
+    this._displayName = "HLSNode";
+    this._elementType = "hls";
+  }
+
+  _load() {
+    //Load the video source on first load.
+    if (!this._loadTriggered) {
+      this.hls.loadSource(this._src);
     }
+    super._load();
+  }
 
-    _load() {
-        this.hls.loadSource(this._src);
-        this.hls.on(Hls.Events.MANIFEST_PARSED, () => {
-            this._ready = true;
-            this._triggerCallbacks("loaded");
-        });
+  destroy() {
+    if (this.hls) {
+      this.hls.destroy();
     }
-
-    destroy() {
-        if (this.hls) {
-            this.hls.destroy();
-        }
-        super.destroy();
-    }
+    super.destroy();
+  }
 }
+
+//Setup the video context.
+const canvas = document.getElementById("canvas");
+const ctx = new VideoContext(canvas);
+
+//Create a custom HLS source node and play it for 60 seconds.
+const hlsNode = ctx.customSourceNode(HLSNode, "https://video-dev.github.io/streams/x36xhzz/x36xhzz.m3u8");
+hlsNode.start(0);
+hlsNode.stop(60);
+
+//Set-up the processing chain.
+hlsNode.connect(ctx.destination);
+
+//start playback.
+ctx.play();
 ```
 
 Another use case for custom node types would be to play GIFs. The custom node would be in charge of decode the GIF frames and paint them on a canvas depending on the `_update` calls from `VideoContext`.
@@ -208,7 +244,7 @@ The vertex and shader code is GLSL code which gets compiled to produce the shade
 
 The following is a an example of a simple shader description used to describe a monochrome effect. It has one input (the image to be processed) and two modifiable properties to control the color RGB mix for the processing result.
 
-> View on [CodeSandbox](https://codesandbox.io/embed/hopeful-shtern-q6lvy)
+> View on [CodeSandbox](https://codesandbox.io/embed/videocontext-effectnode-ysc7w).
 
 ```JavaScript
 var monochromeDescription = {
@@ -279,7 +315,7 @@ You can use them to perform a video transition effect (such as cross-fades, wipe
 
 The following is an example of a simple cross-fade shader.
 
-> View on [CodeSandbox](https://codesandbox.io/embed/modest-sutherland-gp2c5)
+> View on [CodeSandbox](https://codesandbox.io/embed/videocontext-transitionnode-gp2c5).
 
 ```JavaScript
 var crossfadeDescription = {
@@ -382,7 +418,7 @@ A common use for compositing nodes is to collect a series of source nodes which 
 
 Here's a really simple shader which renders all the inputs to the same output.
 
-> View on [CodeSandbox](https://codesandbox.io/embed/sweet-bartik-6cz3d).
+> View on [CodeSandbox](https://codesandbox.io/embed/videocontext-compositingnode-6cz3d).
 
 ```JavaScript
 var combineDecription ={
@@ -472,19 +508,24 @@ You can view more advanced usage examples [here](AdvancedExamples.md).
 
 VideoContext has a pretty standard `package.json`
 
-```
+```sh
 # install build and development dependencies
-npm install
+yarn install
 
 # run a dev server with automatic reload
-npm run dev
+yarn dev
 
 # watch unit and integration tests
-npm run test-watch
+yarn test-watch
 
-# run regression tests in headless browser
-npm run test-regression
+# run the end-to-end regression tests in a headless browser
+yarn cypress
 ```
+
+For more information on writing, running and debugging the end-to-end cypress tests
+see [./test/cypress#readme](./test/cypress#readme).
+
+For an overview of all testing see [./test#readme](./test#readme)
 
 ### Gitflow
 
@@ -496,9 +537,9 @@ To contribute raise a pull request against the `develop` branch.
 Releases are prepared in release branches. When the the release is ready run one of
 
 ```
-npm run release:major
-npm run release:minor
-npm run release:patch
+yarn release:major
+yarn release:minor
+yarn release:patch
 ```
 
 these scripts build and commit the docs, the changelog, update the `package.json` version number
@@ -512,13 +553,15 @@ CI will publish to npm when the release branch has been merged into master.
 2. `git pull`
 3. `git checkout -b release-xxx`
 4. tag and push using script
-    - `npm run release:patch|minor|major`
+   - `yarn release:patch|minor|major`
 5. open pull request against master
 6. merge when tests have passed
 7. merge master back in to develop:
-    - `git pull`
-    - `git checkout develop`
-    - `git merge master`
+   - `git checkout master`
+   - `git pull`
+   - `git checkout develop`
+   - `git merge master`
+   - `git push`
 
 There is one housekeeping task (this will be automated at some point):
 
@@ -532,9 +575,9 @@ All tests must pass before PRs can be merged.
 Other options
 
 ```
-npm run build     # build dist packages
-npm run doc       # create documentation
-npm run build_all # do all of the above
+yarn build     # build dist packages
+yarn doc       # create documentation
+yarn build_all # do all of the above
 ```
 
 The library is written in es6 and cross-compiled using babel.
