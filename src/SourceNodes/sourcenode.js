@@ -385,7 +385,6 @@ class SourceNode extends GraphNode {
         }
 
         if (currentTime >= this._stopTime) {
-            clearTexture(this._gl, this._texture);
             this._triggerCallbacks("ended");
             this._state = STATE.ended;
         }
