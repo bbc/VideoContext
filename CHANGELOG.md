@@ -1,3 +1,10 @@
+#### 0.53.2 (2020-11-06)
+
+##### Other Changes
+
+* gsouquet/VideoContext into update-tooling ([7b68029a](https://github.com/bbc/VideoContext/commit/7b68029a92236db5865dcaa6403e60aa953a6c38))
+*  working headless but not accurate enough ([3ed7b163](https://github.com/bbc/VideoContext/commit/3ed7b1633f5e2ab1e9edeb338eaeef185cc38a1a))
+
 #### 0.53.1 (2019-07-05)
 
 ### 0.53.0 (2019-04-08)
