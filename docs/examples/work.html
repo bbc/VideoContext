@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <script type="text/javascript" src="../dist/videocontext.js"></script>
+</head>
+<body>
+    <!--
+        A canvas needs to define its width and height to know how many pixels you can draw onto it.
+        Its CSS width and height will define the space it takes on screen
+        If omitted, the canvas dimensions will be 300x150 and your videos will not rendered at their
+        optimal definition
+        https://webglfundamentals.org/webgl/lessons/webgl-resizing-the-canvas.html
+    -->
+    <canvas id="canvas" width="1280" height="720" style="width: 852px; height: 480px"></canvas>
+
+    <script type="text/javascript">
+        window.onload = function(){
+            var canvas = document.getElementById("canvas");
+
+            var videoCtx = new VideoContext(canvas);
+            var videoNode1 = videoCtx.video("../assets/blah.mp4");
+            videoNode1.start(0);
+            videoNode1.stop(4);
+
+            var videoNode2 = videoCtx.video("../assets/introductions-rant.mp4");
+            videoNode2.start(2);
+            videoNode2.stop(6);
+
+            var crossFade = videoCtx.transition(VideoContext.DEFINITIONS.CROSSFADE);
+            crossFade.transition(2,4,0.0,1.0, "mix");
+
+            videoNode1.connect(crossFade);
+            videoNode2.connect(crossFade);
+            crossFade.connect(videoCtx.destination);
+
+
+            videoCtx.play();
+        };
+    </script>
+</body>
+</html>
