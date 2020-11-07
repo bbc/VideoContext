@@ -36,7 +36,14 @@ class ImageNode extends SourceNode {
                 this._ready = true;
                 if (window.createImageBitmap) {
                     window
-                        .createImageBitmap(this._image, { imageOrientation: "flipY" })
+                        .createImageBitmap(
+                            this._image,
+                            0,
+                            0,
+                            this._image.width,
+                            this._image.height,
+                            { imageOrientation: "flipY" }
+                        )
                         .then(imageBitmap => {
                             this._element = imageBitmap;
                             this._triggerCallbacks("loaded");
