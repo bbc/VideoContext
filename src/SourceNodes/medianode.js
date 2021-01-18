@@ -94,6 +94,10 @@ class MediaNode extends SourceNode {
                 this._element.setAttribute("crossorigin", "anonymous");
                 this._element.setAttribute("webkit-playsinline", "");
                 this._element.setAttribute("playsinline", "");
+                // This seems necessary to allow using video as a texture. See:
+                // https://bugs.chromium.org/p/chromium/issues/detail?id=898550
+                // https://github.com/pixijs/pixi.js/issues/5996
+                this._element.preload = "auto";
                 this._playbackRateUpdated = true;
             }
             this._element.volume = this._attributes.volume;
