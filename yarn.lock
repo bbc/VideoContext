@@ -2978,10 +2978,10 @@ cyclist@^1.0.1:
   resolved "https://registry.yarnpkg.com/cyclist/-/cyclist-1.0.1.tgz#596e9698fd0c80e12038c2b82d6eb1b35b6224d9"
   integrity sha512-NJGVKPS81XejHcLhaLJS7plab0fK3slPh11mESeeDq2W4ZI5kUKK/LRRdVDvjJseojbPB7ZwjnyOybg3Igea/A==
 
-cypress-image-snapshot@^3.1.1:
-  version "3.1.2"
-  resolved "https://registry.yarnpkg.com/cypress-image-snapshot/-/cypress-image-snapshot-3.1.2.tgz#43490159df37894f36620c3efe6d5d35e3086345"
-  integrity sha512-BlswVBf0yfcgfr7qjEgUvFtVv+6io3sPexhA6iijVSUSXF5ztH0rIEIUH4uOCJYJjx+f+e42IHb9zxHnYwEmyg==
+cypress-image-snapshot@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/cypress-image-snapshot/-/cypress-image-snapshot-4.0.1.tgz#59084e713a8d03500c8e053ad7a76f3f18609648"
+  integrity sha512-PBpnhX/XItlx3/DAk5ozsXQHUi72exybBNH5Mpqj1DVmjq+S5Jd9WE5CRa4q5q0zuMZb2V2VpXHth6MjFpgj9Q==
   dependencies:
     chalk "^2.4.1"
     fs-extra "^7.0.1"
