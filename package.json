@@ -60,7 +60,7 @@
     "babel-loader": "^7.1.4",
     "babel-plugin-add-module-exports": "^1.0.0",
     "babel-preset-env": "^1.7.0",
-    "concurrently": "^4.1.1",
+    "concurrently": "^7.0.0",
     "cypress": "^4.4.0",
     "cypress-image-snapshot": "^4.0.1",
     "eslint": "^4.18.2",
