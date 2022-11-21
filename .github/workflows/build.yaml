@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        test-suite: [ test-unit, test-integration, test-ci:cypress ]
+        test-suite: [ 'test-unit', 'test-integration', 'test-ci:cypress' ]
 
     steps:
       - uses: actions/checkout@v3
