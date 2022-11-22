@@ -43,7 +43,13 @@ const setupTransitionPipelineForDefinition = definitionName => ({ ctx, VideoCont
     { definitionName: "CROSSFADE" },
     { definitionName: "HORIZONTAL_WIPE" },
     { definitionName: "VERTICAL_WIPE" },
-    { definitionName: "RANDOM_DISSOLVE" },
+    // This is quite random, so we allow for very inconsistent runs
+    {
+        definitionName: "RANDOM_DISSOLVE",
+        options: {
+            failureThreshold: 0.6 // threshold for entire image
+        }
+    },
     { definitionName: "TO_COLOR_AND_BACK" },
     { definitionName: "STAR_WIPE" },
     // This is very frame dependent so we allow for inconsistent runs
