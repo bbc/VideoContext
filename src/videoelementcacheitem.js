@@ -19,6 +19,10 @@ class VideoElementCacheItem {
         videoElement.setAttribute("crossorigin", "anonymous");
         videoElement.setAttribute("webkit-playsinline", "");
         videoElement.setAttribute("playsinline", "");
+        // This seems necessary to allow using video as a texture. See:
+        // https://bugs.chromium.org/p/chromium/issues/detail?id=898550
+        // https://github.com/pixijs/pixi.js/issues/5996
+        videoElement.preload = "auto";
         return videoElement;
     }
 
