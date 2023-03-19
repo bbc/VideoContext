@@ -8,8 +8,8 @@ class VideoNode extends MediaNode {
      * Initialise an instance of a VideoNode.
      * This should not be called directly, but created through a call to videoContext.createVideoNode();
      */
-    constructor() {
-        super(...arguments);
+    constructor(...args: ConstructorParameters<typeof MediaNode>) {
+        super(...args);
         this._displayName = TYPE;
         this._elementType = "video";
     }

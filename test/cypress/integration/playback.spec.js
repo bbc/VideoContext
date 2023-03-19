@@ -29,7 +29,7 @@ it("plays back image", () => {
 
 it("plays back image with no creatImageBitmap", () => {
     // Set up VideoContext
-    cy.window().then(win => {
+    cy.window().then((win) => {
         const ctx = win.ctx;
         // Remove createImageBitmap to simulate being in a browser with no support
         win.createImageBitmap = undefined;
@@ -47,7 +47,7 @@ it("plays back image with no creatImageBitmap", () => {
 
 it("plays back  with user supplied element and start offset", () => {
     // Set up VideoContext
-    cy.window().then(win => {
+    cy.window().then((win) => {
         const ctx = win.ctx;
         const video = win.document.createElement("video");
         video.src = "../assets/video1.webm";

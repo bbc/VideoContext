@@ -1,6 +1,6 @@
 //Matthew Shotton, R&D User Experience,© BBC 2015
 import ProcessingNode from "./processingnode";
-import { createElementTexture } from "../utils.js";
+import { createElementTexture } from "../utils";
 
 const TYPE = "EffectNode";
 

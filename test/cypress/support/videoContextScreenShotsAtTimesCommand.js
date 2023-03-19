@@ -14,7 +14,7 @@
  * @param {{ ctx: object, id: string, options: object }} options - `ctx` VideoContext, `id` unique id to name snapshots, `options` matchImageSnapshot config overrides
  */
 const takeScreenShotAtTime = (time, { ctx, id, options }) =>
-    new Promise(resolve => {
+    new Promise((resolve) => {
         /**
          * Seeking directly to the time won't execute the registered
          * callback, so we seek to just before the target time and wait
@@ -61,7 +61,7 @@ const videoContextScreenShotsAtTimes = (times = [1, 25, 50], { id, options }) =>
     let cyPromise = cy.window();
 
     // Prepare by starting playback and storing the window object
-    cyPromise = cyPromise.then(win => {
+    cyPromise = cyPromise.then((win) => {
         /**
          * We slow down the playback rate to increase the chance of the registered
          * timeline callback always executing on exactly the same frame.
@@ -76,7 +76,7 @@ const videoContextScreenShotsAtTimes = (times = [1, 25, 50], { id, options }) =>
     });
 
     // Reduce over the times taking a screen-shot when each time is reached
-    times.forEach(time => {
+    times.forEach((time) => {
         cyPromise = cyPromise.then({ timeout: 15000 }, () =>
             takeScreenShotAtTime(time, { ctx: window.ctx, id, options })
         );

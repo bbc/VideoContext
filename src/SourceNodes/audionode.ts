@@ -7,13 +7,13 @@ class AudioNode extends MediaNode {
      * Initialise an instance of an AudioNode.
      * This should not be called directly, but created through a call to videoContext.audio();
      */
-    constructor() {
-        super(...arguments);
+    constructor(...args: ConstructorParameters<typeof MediaNode>) {
+        super(...args);
         this._displayName = TYPE;
         this._elementType = "audio";
     }
 
-    _update(currentTime) {
+    _update(currentTime: number) {
         super._update(currentTime, false);
     }
 }

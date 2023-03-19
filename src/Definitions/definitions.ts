@@ -20,6 +20,20 @@ import dreamfade from "./dreamfade";
 import opacity from "./opacity";
 import crop from "./crop";
 
+export interface IDefinition {
+    title: string;
+    description: string;
+    vertexShader: string;
+    fragmentShader: string;
+    properties: {
+        [key: string]: {
+            type: string;
+            value: any;
+        };
+    };
+    inputs: string[];
+}
+
 let DEFINITIONS = {
     AAF_VIDEO_SCALE: aaf_video_scale,
     CROSSFADE: crossfade,

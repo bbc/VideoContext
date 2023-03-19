@@ -34,7 +34,7 @@ class DestinationNode extends ProcessingNode {
         gl.clearColor(0, 0, 0, 0.0); // green;
         gl.clear(gl.COLOR_BUFFER_BIT);
 
-        this.inputs.forEach(node => {
+        this.inputs.forEach((node) => {
             super._render();
             //map the input textures input the node
             var texture = node._texture;

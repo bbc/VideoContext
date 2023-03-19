@@ -1,7 +1,12 @@
 //Matthew Shotton, R&D User Experience,© BBC 2015
+import type VideoElementCache from "../videoelementcache";
 import SourceNode, { SOURCENODESTATE } from "./sourcenode";
 
 class MediaNode extends SourceNode {
+    _globalPlaybackRate: number;
+    _playbackRateUpdated: boolean;
+    _elementType: string | undefined;
+    _sourceOffset: number;
     /**
      * Initialise an instance of a MediaNode.
      * This should not be called directly, but extended by other Node Types which use a `HTMLMediaElement`.
@@ -14,7 +19,7 @@ class MediaNode extends SourceNode {
         globalPlaybackRate = 1.0,
         sourceOffset = 0,
         preloadTime = 4,
-        mediaElementCache = undefined,
+        mediaElementCache = undefined as VideoElementCache | undefined,
         attributes = {}
     ) {
         super(src, gl, renderGraph, currentTime);
@@ -233,7 +238,7 @@ class MediaNode extends SourceNode {
         }
     }
 
-    _update(currentTime, triggerTextureUpdate = true) {
+    _update(currentTime, triggerTextureUpdate = true): boolean | void {
         //if (!super._update(currentTime)) return false;
         super._update(currentTime, triggerTextureUpdate);
         //check if the media has ended

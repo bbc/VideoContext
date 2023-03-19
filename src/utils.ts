@@ -1,12 +1,15 @@
 //Matthew Shotton, R&D User Experience,© BBC 2015
-import DEFINITIONS from "./Definitions/definitions.js";
-import { SOURCENODESTATE } from "./SourceNodes/sourcenode.js";
-import { VIDEOTYPE } from "./SourceNodes/videonode.js";
-import { CANVASTYPE } from "./SourceNodes/canvasnode.js";
-import { IMAGETYPE } from "./SourceNodes/imagenode.js";
-import { DESTINATIONTYPE } from "./DestinationNode/destinationnode.js";
-import { TRANSITIONTYPE } from "./ProcessingNodes/transitionnode.js";
-import { COMPOSITINGTYPE } from "./ProcessingNodes/compositingnode.js";
+import DEFINITIONS from "./Definitions/definitions";
+import SourceNode, { SOURCENODESTATE } from "./SourceNodes/sourcenode";
+import { VIDEOTYPE } from "./SourceNodes/videonode";
+import { CANVASTYPE } from "./SourceNodes/canvasnode";
+import { IMAGETYPE } from "./SourceNodes/imagenode";
+import { DESTINATIONTYPE } from "./DestinationNode/destinationnode";
+import { TRANSITIONTYPE } from "./ProcessingNodes/transitionnode";
+import { COMPOSITINGTYPE } from "./ProcessingNodes/compositingnode";
+import VideoContext from "./videocontext";
+import GraphNode from "./graphnode";
+import MediaNode from "./SourceNodes/medianode";
 
 /*
  * Utility function to compile a WebGL Vertex or Fragment shader.
@@ -18,8 +21,8 @@ import { COMPOSITINGTYPE } from "./ProcessingNodes/compositingnode.js";
  * @return {WebGLShader} A compiled shader.
  *
  */
-export function compileShader(gl, shaderSource, shaderType) {
-    let shader = gl.createShader(shaderType);
+export function compileShader(gl: WebGLRenderingContext, shaderSource: string, shaderType: number) {
+    let shader = gl.createShader(shaderType)!;
     gl.shaderSource(shader, shaderSource);
     gl.compileShader(shader);
     let success = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
@@ -38,8 +41,8 @@ export function compileShader(gl, shaderSource, shaderType) {
  *
  * @return {WebGLProgram} A compiled & linkde shader program.
  */
-export function createShaderProgram(gl, vertexShader, fragmentShader) {
-    let program = gl.createProgram();
+export function createShaderProgram(gl: WebGLRenderingContext, vertexShader: WebGLShader, fragmentShader: WebGLShader) {
+    let program = gl.createProgram()!;
 
     gl.attachShader(program, vertexShader);
     gl.attachShader(program, fragmentShader);
@@ -49,7 +52,7 @@ export function createShaderProgram(gl, vertexShader, fragmentShader) {
         throw {
             error: 4,
             msg: "Can't link shader program for track",
-            toString: function() {
+            toString: function () {
                 return this.msg;
             }
         };
@@ -57,7 +60,7 @@ export function createShaderProgram(gl, vertexShader, fragmentShader) {
     return program;
 }
 
-export function createElementTexture(gl) {
+export function createElementTexture(gl: WebGLRenderingContext) {
     let texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
@@ -72,8 +75,8 @@ export function createElementTexture(gl) {
     return texture;
 }
 
-export function updateTexture(gl, texture, element) {
-    if (element.readyState !== undefined && element.readyState === 0) return;
+export function updateTexture(gl: WebGLRenderingContext, texture: WebGLTexture, element: HTMLImageElement | HTMLCanvasElement | HTMLVideoElement) {
+    if ((element as HTMLMediaElement).readyState !== undefined && (element as HTMLMediaElement).readyState === 0) return;
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, element);
@@ -81,7 +84,7 @@ export function updateTexture(gl, texture, element) {
     texture._isTextureCleared = false;
 }
 
-export function clearTexture(gl, texture) {
+export function clearTexture(gl: WebGLRenderingContext, texture: WebGLTexture) {
     // A quick check to ensure we don't call 'texImage2D' when the texture has already been 'cleared' #performance
     if (!texture._isTextureCleared) {
         gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -219,12 +222,12 @@ export function generateRandomId() {
         "sea anemone"
     ];
 
-    function randomChoice(array) {
+    function randomChoice<T>(array: T[]) {
         return array[Math.floor(Math.random() * array.length)];
     }
 
-    function capitalize(word) {
-        word = word.replace(/\b\w/g, l => l.toUpperCase());
+    function capitalize(word: string): string {
+        word = word.replace(/\b\w/g, (l) => l.toUpperCase());
         return word;
     }
 
@@ -239,21 +242,21 @@ export function generateRandomId() {
     return name;
 }
 
-export function exportToJSON(vc) {
+export function exportToJSON(vc: VideoContext) {
     console.warn(
         "VideoContext.exportToJSON has been deprecated. Please use VideoContext.snapshot instead."
     );
     return JSON.stringify(snapshotNodes(vc));
 }
 
-export function snapshot(vc) {
+export function snapshot(vc: VideoContext) {
     return {
         nodes: snapshotNodes(vc),
         videoContext: snapshotVideoContext(vc)
     };
 }
 
-function snapshotVideoContext(vc) {
+function snapshotVideoContext(vc: VideoContext) {
     return {
         currentTime: vc.currentTime,
         duration: vc.duration,
@@ -263,14 +266,14 @@ function snapshotVideoContext(vc) {
 }
 
 let warningExportSourceLogged = false;
-function snapshotNodes(vc) {
-    function qualifyURL(url) {
+function snapshotNodes(vc: VideoContext) {
+    function qualifyURL(url: string): string {
         var a = document.createElement("a");
         a.href = url;
         return a.href;
     }
 
-    function getInputIDs(node, vc) {
+    function getInputIDs(node: GraphNode, vc: VideoContext): string[] {
         let inputs = [];
         for (let input of node.inputs) {
             if (input === undefined) continue;
@@ -296,7 +299,7 @@ function snapshotNodes(vc) {
 
     let sourceNodeStateMapping = [];
     for (let state in SOURCENODESTATE) {
-        sourceNodeStateMapping[SOURCENODESTATE[state]] = state;
+        sourceNodeStateMapping[SOURCENODESTATE[state as keyof typeof SOURCENODESTATE]] = state;
     }
 
     for (let index in vc._sourceNodes) {
@@ -312,9 +315,9 @@ function snapshotNodes(vc) {
                 );
                 warningExportSourceLogged = true;
             }
-            node_url = source.element.src;
+            node_url = source.element!.src;
         } else {
-            node_url = qualifyURL(source._elementURL);
+            node_url = qualifyURL(source._elementURL as string);
         }
 
         let node = {
@@ -322,17 +325,19 @@ function snapshotNodes(vc) {
             url: node_url,
             start: source.startTime,
             stop: source.stopTime,
-            state: sourceNodeStateMapping[source.state]
+            state: sourceNodeStateMapping[source.state],
+            currentTime: undefined as null | undefined | number,
+            sourceOffset: undefined as undefined | number,
         };
         if (node.type === VIDEOTYPE) {
             node.currentTime = null;
-            if (source.element && source.element.currentTime) {
-                node.currentTime = source.element.currentTime;
+            if (source.element && (source.element as HTMLVideoElement).currentTime) {
+                node.currentTime = (source.element as HTMLVideoElement).currentTime;
             }
         }
 
-        if (source._sourceOffset) {
-            node.sourceOffset = source._sourceOffset;
+        if ((source as MediaNode)._sourceOffset) {
+            (node).sourceOffset = (source as MediaNode)._sourceOffset;
         }
         result[id] = node;
     }
@@ -398,23 +403,23 @@ export function createControlFormForNode(node, nodeName) {
             number.setAttribute("value", propertyValue, toString());
 
             let mouseDown = false;
-            range.onmousedown = function() {
+            range.onmousedown = function () {
                 mouseDown = true;
             };
-            range.onmouseup = function() {
+            range.onmouseup = function () {
                 mouseDown = false;
             };
-            range.onmousemove = function() {
+            range.onmousemove = function () {
                 if (mouseDown) {
                     node[propertyName] = parseFloat(range.value);
                     number.value = range.value;
                 }
             };
-            range.onchange = function() {
+            range.onchange = function () {
                 node[propertyName] = parseFloat(range.value);
                 number.value = range.value;
             };
-            number.onchange = function() {
+            number.onchange = function () {
                 node[propertyName] = parseFloat(number.value);
                 range.value = number.value;
             };
@@ -438,24 +443,24 @@ export function createControlFormForNode(node, nodeName) {
 
                 let index = i;
                 let mouseDown = false;
-                range.onmousedown = function() {
+                range.onmousedown = function () {
                     mouseDown = true;
                 };
-                range.onmouseup = function() {
+                range.onmouseup = function () {
                     mouseDown = false;
                 };
-                range.onmousemove = function() {
+                range.onmousemove = function () {
                     if (mouseDown) {
                         node[propertyName][index] = parseFloat(range.value);
                         number.value = range.value;
                     }
                 };
-                range.onchange = function() {
+                range.onchange = function () {
                     node[propertyName][index] = parseFloat(range.value);
                     number.value = range.value;
                 };
 
-                number.onchange = function() {
+                number.onchange = function () {
                     node[propertyName][index] = parseFloat(number.value);
                     range.value = number.value;
                 };
@@ -500,7 +505,7 @@ export function visualiseVideoContextGraph(videoContext, canvas) {
 
     let nodeDepths = calculateNodeDepthFromDestination(videoContext);
     let depths = nodeDepths.values();
-    depths = Array.from(depths).sort(function(a, b) {
+    depths = Array.from(depths).sort(function (a, b) {
         return b - a;
     });
     let maxDepth = depths[0];
@@ -788,7 +793,7 @@ export class UpdateablesManager {
             type: "application/javascript"
         });
         this._webWorker = new Worker(URL.createObjectURL(blob));
-        this._webWorker.onmessage = msg => {
+        this._webWorker.onmessage = (msg) => {
             let time = msg.data;
             this._updateWorkerTime(time);
         };
