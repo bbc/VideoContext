@@ -12,12 +12,12 @@ class ProcessingNode extends GraphNode {
     _vertexShader: WebGLShader;
     _fragmentShader: WebGLShader;
     _properties: Record<any, any>;
-    _shaderInputsTextureUnitMapping: Array<{ 
+    _shaderInputsTextureUnitMapping: Array<{
         name: string;
         textureUnit: number;
         textureUnitIndex: number;
         location: WebGLUniformLocation;
-     }>;
+    }>;
     _maxTextureUnits: any;
     _boundTextureUnits: number;
     _texture: WebGLTexture;
@@ -30,7 +30,13 @@ class ProcessingNode extends GraphNode {
      *
      * This class is not used directly, but is extended to create CompositingNodes, TransitionNodes, and EffectNodes.
      */
-    constructor(gl: WebGLRenderingContext, renderGraph: RenderGraph, definition: IDefinition, inputNames: string[], limitConnections: boolean) {
+    constructor(
+        gl: WebGLRenderingContext,
+        renderGraph: RenderGraph,
+        definition: IDefinition,
+        inputNames: string[],
+        limitConnections: boolean
+    ) {
         super(gl, renderGraph, inputNames, limitConnections);
         this._vertexShader = compileShader(gl, definition.vertexShader, gl.VERTEX_SHADER);
         this._fragmentShader = compileShader(gl, definition.fragmentShader, gl.FRAGMENT_SHADER);

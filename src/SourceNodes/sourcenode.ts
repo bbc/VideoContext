@@ -2,6 +2,7 @@
 import { updateTexture, clearTexture, createElementTexture } from "../utils";
 import GraphNode from "../graphnode";
 import RenderGraph from "../rendergraph";
+import MediaNode from "./medianode";
 
 let STATE = {
     waiting: 0,
@@ -14,27 +15,31 @@ let STATE = {
 
 const TYPE = "SourceNode";
 
-class SourceNode extends GraphNode {
+abstract class SourceNode extends GraphNode {
     _startTime: number;
     _stopTime: number;
     _displayName: string;
     _state: number;
-    _element: HTMLVideoElement | HTMLImageElement | undefined;
+    _element: HTMLVideoElement | HTMLAudioElement | ImageBitmap | HTMLImageElement | undefined;
     _elementURL: string | MediaStream | undefined;
     _isResponsibleForElementLifeCycle: boolean;
     _currentTime: number;
     _ready: boolean;
     _loadCalled: boolean;
     _stretchPaused: boolean;
-    _texture: any;
-    _callbacks: Array<{ type: string, func: Function }>;
+    _texture: WebGLTexture;
+    _callbacks: Array<{ type: string; func: Function }>;
     _renderPaused: boolean;
-    _buffering: any;
     /**
      * Initialise an instance of a SourceNode.
      * This is the base class for other Nodes which generate media to be passed into the processing pipeline.
      */
-    constructor(src: any, gl: WebGLRenderingContext, renderGraph: RenderGraph, currentTime: number) {
+    constructor(
+        src: any,
+        gl: WebGLRenderingContext,
+        renderGraph: RenderGraph,
+        currentTime: number
+    ) {
         super(gl, renderGraph, [], true);
         this._element = undefined;
         this._elementURL = undefined;
@@ -59,7 +64,7 @@ class SourceNode extends GraphNode {
         this._ready = false;
         this._loadCalled = false;
         this._stretchPaused = false;
-        this._texture = createElementTexture(gl);
+        this._texture = createElementTexture(gl)!;
         gl.texImage2D(
             gl.TEXTURE_2D,
             0,
@@ -356,7 +361,7 @@ class SourceNode extends GraphNode {
     }
 
     _isReady() {
-        if (this._buffering) {
+        if ((this as SourceNode as MediaNode)._buffering) {
             return false;
         }
         if (
@@ -410,11 +415,11 @@ class SourceNode extends GraphNode {
         if (this._element === undefined || this._ready === false) return true;
 
         if (!this._renderPaused && this._state === STATE.paused) {
-            if (triggerTextureUpdate) updateTexture(this._gl, this._texture, this._element);
+            if (triggerTextureUpdate) updateTexture(this._gl, this._texture, this._element as any);
             this._renderPaused = true;
         }
         if (this._state === STATE.playing) {
-            if (triggerTextureUpdate) updateTexture(this._gl, this._texture, this._element);
+            if (triggerTextureUpdate) updateTexture(this._gl, this._texture, this._element as any);
             if (this._stretchPaused) {
                 this._stopTime += timeDelta;
             }
@@ -448,7 +453,7 @@ class SourceNode extends GraphNode {
         this._ready = false;
         this._loadCalled = false;
         this._gl.deleteTexture(this._texture);
-        this._texture = undefined;
+        this._texture = undefined!;
     }
 }
 

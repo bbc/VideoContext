@@ -1,5 +1,7 @@
 //Matthew Shotton, R&D User Experience,© BBC 2015
 import ProcessingNode from "../ProcessingNodes/processingnode";
+import RenderGraph from "../rendergraph";
+import SourceNode from "../SourceNodes/sourcenode";
 import fragmentShader from "./destinationnode.frag";
 import vertexShader from "./destinationnode.vert";
 
@@ -13,7 +15,7 @@ class DestinationNode extends ProcessingNode {
      *
      * You should not instantiate this directly.
      */
-    constructor(gl, renderGraph) {
+    constructor(gl: WebGLRenderingContext, renderGraph: RenderGraph) {
         let definition = {
             fragmentShader,
             vertexShader,
@@ -37,7 +39,7 @@ class DestinationNode extends ProcessingNode {
         this.inputs.forEach((node) => {
             super._render();
             //map the input textures input the node
-            var texture = node._texture;
+            var texture = (node as SourceNode | ProcessingNode)._texture;
 
             for (let mapping of this._shaderInputsTextureUnitMapping) {
                 gl.activeTexture(mapping.textureUnit);

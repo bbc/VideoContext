@@ -1,7 +1,6 @@
 //Matthew Shotton, R&D User Experience,© BBC 2015
 import { ConnectException } from "./exceptions";
 import GraphNode from "./graphnode";
-import SourceNode from "./SourceNodes/sourcenode";
 
 export interface BaseConnection {
     source: GraphNode;
@@ -10,13 +9,13 @@ export interface BaseConnection {
 }
 
 export interface ZindexConnection extends BaseConnection {
-    type: 'zIndex',
-    zIndex: number,
+    type: "zIndex";
+    zIndex: number;
 }
 
 export interface NameConnection extends BaseConnection {
-    type: 'name',
-    name: string,
+    type: "name";
+    name: string;
 }
 
 export type IConnection = ZindexConnection | NameConnection;
@@ -145,7 +144,11 @@ class RenderGraph {
      * @param {(string | number)} [target] - the target port of the conenction, this could be a string to specfiy a specific named port, a number to specify a port by index, or undefined, in which case the next available port will be connected to.
      * @return {boolean} Will return true if connection succeeds otherwise will throw a ConnectException.
      */
-    registerConnection(sourceNode: GraphNode, destinationNode: GraphNode, target: string | number | undefined) {
+    registerConnection(
+        sourceNode: GraphNode,
+        destinationNode: GraphNode,
+        target: string | number | undefined
+    ) {
         if (
             destinationNode.inputs.length >= destinationNode.inputNames.length &&
             destinationNode._limitConnections === true

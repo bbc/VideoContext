@@ -15,7 +15,12 @@ class GraphNode {
     /**
      * Base class from which all processing and source nodes are derrived.
      */
-    constructor(gl: WebGLRenderingContext, renderGraph: RenderGraph, inputNames: string[], limitConnections = false) {
+    constructor(
+        gl: WebGLRenderingContext,
+        renderGraph: RenderGraph,
+        inputNames: string[],
+        limitConnections = false
+    ) {
         this._renderGraph = renderGraph;
         this._limitConnections = limitConnections;
         this._inputNames = inputNames;
@@ -96,7 +101,7 @@ class GraphNode {
      * @param {(number| String)} [targetPort] - the port on the targetNode to connect to, this can be an index, a string identifier, or undefined (in which case the next available port will be connected to).
      *
      */
-    connect(targetNode: GraphNode, targetPort: number | string) {
+    connect(targetNode: GraphNode, targetPort?: number | string) {
         return this._renderGraph.registerConnection(this, targetNode, targetPort);
     }
 

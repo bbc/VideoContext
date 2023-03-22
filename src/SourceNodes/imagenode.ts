@@ -12,7 +12,14 @@ class ImageNode extends SourceNode {
      * Initialise an instance of an ImageNode.
      * This should not be called directly, but created through a call to videoContext.createImageNode();
      */
-    constructor(src: string | HTMLImageElement | ImageBitmap, gl: WebGLRenderingContext, renderGraph: RenderGraph, currentTime: number, preloadTime = 4, attributes = {}) {
+    constructor(
+        src: string | HTMLImageElement | ImageBitmap,
+        gl: WebGLRenderingContext,
+        renderGraph: RenderGraph,
+        currentTime: number,
+        preloadTime = 4,
+        attributes = {}
+    ) {
         super(src, gl, renderGraph, currentTime);
         this._preloadTime = preloadTime;
         this._attributes = attributes;

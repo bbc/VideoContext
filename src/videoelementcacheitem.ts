@@ -1,3 +1,4 @@
+import MediaNode from "./SourceNodes/medianode";
 import { SOURCENODESTATE } from "./SourceNodes/sourcenode";
 
 /**
@@ -9,7 +10,9 @@ import { SOURCENODESTATE } from "./SourceNodes/sourcenode";
  * and potentially replaced with another.
  */
 class VideoElementCacheItem {
-    constructor(node = null) {
+    _element: HTMLVideoElement;
+    _node: MediaNode | null;
+    constructor(node: MediaNode | null = null) {
         this._element = this._createElement();
         this._node = node;
     }
@@ -34,7 +37,7 @@ class VideoElementCacheItem {
         this._element = element;
     }
 
-    linkNode(node) {
+    linkNode(node: MediaNode) {
         this._node = node;
     }
 

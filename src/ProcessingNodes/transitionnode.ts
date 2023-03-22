@@ -14,8 +14,8 @@ interface Transition {
 }
 
 class TransitionNode extends EffectNode {
-    private _transitions: Record<string, Transition[]>;
-    private _initialPropertyValues: Record<string, any>;
+    _transitions: Record<string, Transition[]>;
+    _initialPropertyValues: Record<string, any>;
     /**
      * Initialise an instance of a TransitionNode. You should not instantiate this directly, but use VideoContest.createTransitonNode().
      */
@@ -67,7 +67,13 @@ class TransitionNode extends EffectNode {
      *
      * @return {Boolean} returns True if a transition is successfully added, false otherwise.
      */
-    transition(startTime: number, endTime: number, currentValue: number, targetValue: number, propertyName = "mix") {
+    transition(
+        startTime: number,
+        endTime: number,
+        currentValue: number,
+        targetValue: number,
+        propertyName = "mix"
+    ) {
         let transition = {
             start: startTime + this._currentTime,
             end: endTime + this._currentTime,
@@ -91,7 +97,13 @@ class TransitionNode extends EffectNode {
      *
      * @return {Boolean} returns True if a transition is successfully added, false otherwise.
      */
-    transitionAt(startTime: number, endTime: number, currentValue: number, targetValue: number, propertyName = "mix") {
+    transitionAt(
+        startTime: number,
+        endTime: number,
+        currentValue: number,
+        targetValue: number,
+        propertyName = "mix"
+    ) {
         let transition = {
             start: startTime,
             end: endTime,
@@ -143,7 +155,7 @@ class TransitionNode extends EffectNode {
     _update(currentTime: number) {
         super._update(currentTime);
         for (let propertyName in this._transitions) {
-            let value = (this as any)[propertyName];
+            let value: number = (this as any)[propertyName];
             if (this._transitions[propertyName].length > 0) {
                 value = this._transitions[propertyName][0].current;
             }

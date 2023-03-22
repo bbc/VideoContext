@@ -1,4 +1,4 @@
-import * as Utils from "../../src/utils.js";
+import * as Utils from "../../src/utils";
 
 describe(`Utils`, () => {
     describe(`mediaElementHasSource()`, () => {

@@ -32,7 +32,7 @@ interface TimelineCallback {
     time: number;
     func: Function;
     ordering: number;
-};
+}
 
 /**
  * VideoContext.
@@ -75,8 +75,8 @@ export default class VideoContext {
         NOCONTENT: "nocontent"
     });
 
-    
     static visualiseVideoContextTimeline = visualiseVideoContextTimeline;
+    static visualiseVideoContextGraph = visualiseVideoContextGraph;
     static createControlFormForNode = createControlFormForNode;
     static createSigmaGraphDataFromRenderGraph = createSigmaGraphDataFromRenderGraph;
     static exportToJSON = exportToJSON;
@@ -85,22 +85,22 @@ export default class VideoContext {
 
     _canvas: HTMLCanvasElement;
     _endOnLastSourceEnd: boolean;
-    _gl: RenderingContext;
-    _useVideoElementCache: boolean;
-    _videoElementCache: VideoElementCache;
-    _id: string;
-    _renderGraph: RenderGraph;
-    _sourceNodes: SourceNode[];
-    _processingNodes: ProcessingNode[];
-    _timeline: never[];
-    _currentTime: number;
-    _state: number;
-    _playbackRate: number;
-    _volume: number;
+    _gl: WebGLRenderingContext;
+    _useVideoElementCache!: boolean;
+    _videoElementCache!: VideoElementCache;
+    _id!: string;
+    _renderGraph!: RenderGraph;
+    _sourceNodes!: SourceNode[];
+    _processingNodes!: ProcessingNode[];
+    _timeline!: never[];
+    _currentTime!: number;
+    _state!: number;
+    _playbackRate!: number;
+    _volume!: number;
     _sourcesPlaying: boolean | undefined;
-    _destinationNode: DestinationNode;
-    _callbacks: Map<string, Function[]>;
-    _timelineCallbacks: Array<TimelineCallback>;
+    _destinationNode!: DestinationNode;
+    _callbacks!: Map<string, Function[]>;
+    _timelineCallbacks!: Array<TimelineCallback>;
     /**
      * Initialise the VideoContext and render to the specific canvas. A 2nd parameter can be passed to the constructor which is a function that get's called if the VideoContext fails to initialise.
      *
@@ -144,7 +144,7 @@ export default class VideoContext {
                 webglContextAttributes,
                 { alpha: false } // Can't be overriden because it is copied last
             )
-        );
+        ) as WebGLRenderingContext;
         if (this._gl === null) {
             console.error("Failed to intialise WebGL.");
             if (initErrorCallback) initErrorCallback();
@@ -530,7 +530,12 @@ export default class VideoContext {
      * var ctx = new VideoContext(canvasElement);
      * var videoNode = ctx.video("bigbuckbunny.mp4");
      */
-    video(src: string | HTMLVideoElement | MediaStream, sourceOffset = 0, preloadTime = 4, videoElementAttributes = {}) {
+    video(
+        src: string | HTMLVideoElement | MediaStream,
+        sourceOffset = 0,
+        preloadTime = 4,
+        videoElementAttributes = {}
+    ) {
         let videoNode = new VideoNode(
             src,
             this._gl,
@@ -559,7 +564,12 @@ export default class VideoContext {
      * var ctx = new VideoContext(canvasElement);
      * var audioNode = ctx.audio("ziggystardust.mp3");
      */
-    audio(src: string | HTMLAudioElement | MediaStream, sourceOffset = 0, preloadTime = 4, audioElementAttributes = {}) {
+    audio(
+        src: string | HTMLAudioElement | MediaStream,
+        sourceOffset = 0,
+        preloadTime = 4,
+        audioElementAttributes = {}
+    ) {
         let audioNode = new AudioNode(
             src,
             this._gl,
@@ -578,7 +588,12 @@ export default class VideoContext {
     /**
      * @deprecated
      */
-    createVideoSourceNode(src: Parameters<this['video']>[0], sourceOffset = 0, preloadTime = 4, videoElementAttributes = {}) {
+    createVideoSourceNode(
+        src: Parameters<this["video"]>[0],
+        sourceOffset = 0,
+        preloadTime = 4,
+        videoElementAttributes = {}
+    ) {
         this._deprecate(
             "Warning: createVideoSourceNode will be deprecated in v1.0, please switch to using VideoContext.video()"
         );
@@ -603,7 +618,11 @@ export default class VideoContext {
      * var ctx = new VideoContext(canvasElement);
      * var imageNode = ctx.image(imageElement);
      */
-    image(src: string | HTMLImageElement | ImageBitmap, preloadTime = 4, imageElementAttributes = {}) {
+    image(
+        src: string | HTMLImageElement | ImageBitmap,
+        preloadTime = 4,
+        imageElementAttributes = {}
+    ) {
         let imageNode = new ImageNode(
             src,
             this._gl,
@@ -619,7 +638,13 @@ export default class VideoContext {
     /**
      * @deprecated
      */
-    createImageSourceNode(src: Parameters<this['image']>[0], sourceOffset = 0, preloadTime = 4, imageElementAttributes = {}) {
+    createImageSourceNode(
+        src: Parameters<this["image"]>[0],
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        _sourceOffset = 0,
+        preloadTime = 4,
+        imageElementAttributes = {}
+    ) {
         this._deprecate(
             "Warning: createImageSourceNode will be deprecated in v1.0, please switch to using VideoContext.image()"
         );
@@ -640,7 +665,8 @@ export default class VideoContext {
     /**
      * @deprecated
      */
-    createCanvasSourceNode(canvas: HTMLCanvasElement, sourceOffset = 0, preloadTime = 4) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    createCanvasSourceNode(canvas: HTMLCanvasElement, _sourceOffset = 0, _preloadTime = 4) {
         this._deprecate(
             "Warning: createCanvasSourceNode will be deprecated in v1.0, please switch to using VideoContext.canvas()"
         );
@@ -742,7 +768,19 @@ export default class VideoContext {
      * @param {any} src
      * @param  {...any} options
      */
-    customSourceNode(CustomSourceNode: typeof SourceNode, src: any, ...options) {
+    customSourceNode<T extends any[]>(
+        CustomSourceNode: {
+            new (
+                src: any,
+                gl: WebGLRenderingContext,
+                renderGraph: RenderGraph,
+                currentTime: number,
+                ...args: T
+            ): SourceNode;
+        },
+        src: any,
+        ...options: T
+    ) {
         const customSourceNode = new CustomSourceNode(
             src,
             this._gl,
@@ -1026,8 +1064,8 @@ export default class VideoContext {
 
             for (let node of sortedNodes) {
                 if (this._sourceNodes.indexOf(node as SourceNode) === -1) {
-                    (node as SourceNode)._update(this._currentTime);
-                    (node as SourceNode)._render();
+                    (node as ProcessingNode)._update(this._currentTime);
+                    (node as ProcessingNode)._render();
                 }
             }
         }
@@ -1040,7 +1078,7 @@ export default class VideoContext {
         for (let callback of this._callbacks) {
             // FIXME: bug
             // this.unregisterCallback(callback);
-            callback[1].forEach((cb) => this.unregisterCallback(cb))
+            callback[1].forEach((cb) => this.unregisterCallback(cb));
         }
         for (let node of this._sourceNodes) {
             node.destroy();
@@ -1080,5 +1118,4 @@ export default class VideoContext {
     snapshot() {
         return snapshot(this);
     }
-
 }
