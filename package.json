@@ -8,6 +8,7 @@
   },
   "license": "Apache-2.0",
   "main": "dist/videocontext.js",
+  "types": "dist/videocontext.d.ts",
   "keywords": [
     "video",
     "context",
@@ -42,8 +43,8 @@
     "_server_cy_then": "start-server-and-test _cy-server http://localhost:3001",
     "docs": "bash ./build-docs.sh",
     "docs-commit": "yarn docs && git add docs && git diff-index --quiet HEAD || git commit -m 'update docs in preparation for release'",
-    "format": "prettier --write '{src,test}/**/*.js'",
-    "lint": "eslint '{src,test}/**/*.js'",
+    "format": "prettier --write  'src/**/*.ts' 'test/**/*.js'",
+    "lint": "eslint 'src/**/*.ts' 'test/**/*.js'",
     "precommit": "yarn lint && yarn format && yarn test-unit",
     "release:major": "yarn docs-commit && changelog -M && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && yarn version --new-version major",
     "release:minor": "yarn docs-commit && changelog -m && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && yarn version --new-version minor",
@@ -54,29 +55,35 @@
     "regenerator-runtime": "^0.11.1"
   },
   "devDependencies": {
+    "@babel/core": "^7.21.3",
+    "@babel/preset-env": "^7.20.2",
+    "@babel/preset-typescript": "^7.21.0",
+    "@typescript-eslint/eslint-plugin": "^5.55.0",
+    "@typescript-eslint/parser": "^5.55.0",
     "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.3",
-    "babel-jest": "^23.2.0",
-    "babel-loader": "^7.1.4",
-    "babel-plugin-add-module-exports": "^1.0.0",
-    "babel-preset-env": "^1.7.0",
+    "babel-jest": "^29.5.0",
+    "babel-loader": "^9.1.2",
+    "babel-plugin-add-module-exports": "^1.0.4",
     "concurrently": "^7.0.0",
     "cypress": "^4.4.0",
     "cypress-image-snapshot": "^4.0.1",
-    "eslint": "^4.18.2",
-    "eslint-loader": "^2.0.0",
+    "eslint": "^8.36.0",
     "eslint-plugin-cypress": "^2.2.0",
+    "eslint-webpack-plugin": "^4.0.0",
     "generate-changelog": "^1.7.1",
     "husky": "^0.14.3",
-    "jest": "^29.3.1",
-    "jest-cli": "^23.1.0",
+    "jest": "^29.5.0",
+    "jest-cli": "^29.5.0",
+    "jest-environment-jsdom": "^29.5.0",
     "jest-image-snapshot": "^6.0.0",
     "jsdoc": "^3.4.3",
     "local-web-server": "^2.6.1",
-    "prettier": "^1.13.2",
+    "prettier": "^2.8.4",
     "raw-loader": "^0.5.1",
     "sinon": "^7.2.7",
     "start-server-and-test": "^1.7.11",
+    "ts-loader": "^9.4.2",
+    "typescript": "^5.0.2",
     "webgl-mock": "^0.1.7",
     "webpack": "^5.75.0",
     "webpack-cli": "^5.0.0"
@@ -85,9 +92,14 @@
     "dist"
   ],
   "jest": {
+    "testEnvironment": "jsdom",
     "moduleNameMapper": {
       "\\.(frag|vert)$": "<rootDir>/test/__mocks__/glsl.js"
     },
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
     "testMatch": [
       "**/test/(integration|unit)/?(*.)+(spec|test).js?(x)"
     ]

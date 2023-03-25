@@ -1,7 +1,27 @@
 //Matthew Shotton, R&D User Experience,© BBC 2015
-import { ConnectException } from "./exceptions.js";
+import { ConnectException } from "./exceptions";
+import GraphNode from "./graphnode";
+
+export interface BaseConnection {
+    source: GraphNode;
+    destination: GraphNode;
+    type: string;
+}
+
+export interface ZindexConnection extends BaseConnection {
+    type: "zIndex";
+    zIndex: number;
+}
+
+export interface NameConnection extends BaseConnection {
+    type: "name";
+    name: string;
+}
+
+export type IConnection = ZindexConnection | NameConnection;
 
 class RenderGraph {
+    connections: Array<IConnection>;
     /**
      * Manages the rendering graph.
      */
@@ -15,9 +35,9 @@ class RenderGraph {
      * @param {GraphNode} node - the node to get the outputs for.
      * @return {GraphNode[]} An array of the nodes which are connected to the output.
      */
-    getOutputsForNode(node) {
-        let results = [];
-        this.connections.forEach(function(connection) {
+    getOutputsForNode(node: GraphNode) {
+        let results: GraphNode[] = [];
+        this.connections.forEach(function (connection) {
             if (connection.source === node) {
                 results.push(connection.destination);
             }
@@ -31,9 +51,9 @@ class RenderGraph {
      * @param {GraphNode} node - the node to get the named inputs for.
      * @return {Object[]} An array of objects representing the nodes and connection type, which are connected to the named inputs for the node.
      */
-    getNamedInputsForNode(node) {
-        let results = [];
-        this.connections.forEach(function(connection) {
+    getNamedInputsForNode(node: GraphNode) {
+        let results: NameConnection[] = [];
+        this.connections.forEach(function (connection) {
             if (connection.destination === node && connection.type === "name") {
                 results.push(connection);
             }
@@ -47,14 +67,14 @@ class RenderGraph {
      * @param {GraphNode} node - the node to get the z-index refernced inputs for.
      * @return {Object[]} An array of objects representing the nodes and connection type, which are connected by z-Index for the node.
      */
-    getZIndexInputsForNode(node) {
-        let results = [];
-        this.connections.forEach(function(connection) {
+    getZIndexInputsForNode(node: GraphNode) {
+        let results: ZindexConnection[] = [];
+        this.connections.forEach(function (connection) {
             if (connection.destination === node && connection.type === "zIndex") {
                 results.push(connection);
             }
         });
-        results.sort(function(a, b) {
+        results.sort(function (a, b) {
             return a.zIndex - b.zIndex;
         });
         return results;
@@ -66,7 +86,7 @@ class RenderGraph {
      * @param {GraphNode} node - the node to get the inputs for.
      * @return {GraphNode[]} An array of GraphNodes which are connected to the node.
      */
-    getInputsForNode(node) {
+    getInputsForNode(node: GraphNode) {
         let inputNames = node.inputNames;
         let results = [];
         let namedInputs = this.getNamedInputsForNode(node);
@@ -102,9 +122,9 @@ class RenderGraph {
     /**
      * Check if a named input on a node is available to connect too.
      * @param {GraphNode} node - the node to check.
-     * @param {String} inputName - the named input to check.
+     * @param {string} inputName - the named input to check.
      */
-    isInputAvailable(node, inputName) {
+    isInputAvailable(node: GraphNode, inputName: string) {
         if (node._inputNames.indexOf(inputName) === -1) return false;
         for (let connection of this.connections) {
             if (connection.type === "name") {
@@ -121,10 +141,14 @@ class RenderGraph {
      *
      * @param {GraphNode} sourceNode - the node to connect from.
      * @param {GraphNode} destinationNode - the node to connect to.
-     * @param {(String | number)} [target] - the target port of the conenction, this could be a string to specfiy a specific named port, a number to specify a port by index, or undefined, in which case the next available port will be connected to.
+     * @param {(string | number)} [target] - the target port of the conenction, this could be a string to specfiy a specific named port, a number to specify a port by index, or undefined, in which case the next available port will be connected to.
      * @return {boolean} Will return true if connection succeeds otherwise will throw a ConnectException.
      */
-    registerConnection(sourceNode, destinationNode, target) {
+    registerConnection(
+        sourceNode: GraphNode,
+        destinationNode: GraphNode,
+        target: string | number | undefined
+    ) {
         if (
             destinationNode.inputs.length >= destinationNode.inputNames.length &&
             destinationNode._limitConnections === true
@@ -186,10 +210,10 @@ class RenderGraph {
      * @param {GraphNode} destinationNode - the node to register connection to.
      * @return {boolean} Will return true if removing connection succeeds, or false if there was no connectionsction to remove.
      */
-    unregisterConnection(sourceNode, destinationNode) {
-        let toRemove = [];
+    unregisterConnection(sourceNode: GraphNode, destinationNode: GraphNode) {
+        let toRemove: IConnection[] = [];
 
-        this.connections.forEach(function(connection) {
+        this.connections.forEach(function (connection) {
             if (connection.source === sourceNode && connection.destination === destinationNode) {
                 toRemove.push(connection);
             }
@@ -197,7 +221,7 @@ class RenderGraph {
 
         if (toRemove.length === 0) return false;
 
-        toRemove.forEach(removeNode => {
+        toRemove.forEach((removeNode) => {
             let index = this.connections.indexOf(removeNode);
             this.connections.splice(index, 1);
         });
@@ -205,7 +229,7 @@ class RenderGraph {
         return true;
     }
 
-    static outputEdgesFor(node, connections) {
+    static outputEdgesFor(node: GraphNode, connections: IConnection[]) {
         let results = [];
         for (let conn of connections) {
             if (conn.source === node) {
@@ -215,7 +239,7 @@ class RenderGraph {
         return results;
     }
 
-    static inputEdgesFor(node, connections) {
+    static inputEdgesFor(node: GraphNode, connections: IConnection[]) {
         let results = [];
         for (let conn of connections) {
             if (conn.destination === node) {
@@ -225,8 +249,8 @@ class RenderGraph {
         return results;
     }
 
-    static getInputlessNodes(connections) {
-        let inputLess = [];
+    static getInputlessNodes(connections: IConnection[]) {
+        let inputLess: GraphNode[] = [];
         for (let conn of connections) {
             inputLess.push(conn.source);
         }

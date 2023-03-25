@@ -1,10 +1,11 @@
 /* eslint-env node */
+const ESLintPlugin = require("eslint-webpack-plugin");
 
 const env = process.env.TEST_SUITE;
 
 module.exports = {
     mode: env === "build" ? "production" : "development",
-    entry: __dirname + "/src/videocontext.js",
+    entry: __dirname + "/src/videocontext.ts",
     devtool: "source-map",
     stats: { warnings: false },
     output: {
@@ -13,18 +14,22 @@ module.exports = {
         libraryTarget: "umd",
         library: "VideoContext"
     },
+    resolve: {
+        extensions: [".ts", "..."],
+    },
     module: {
         rules: [
             { test: /\.css$/, use: "style!css" },
             { test: /\.(frag|vert)$/, use: "raw-loader" },
             {
-                test: /\.js$/,
+                test: /\.(js|ts)$/,
                 exclude: /node_modules/,
                 use: [
                     { loader: "babel-loader" },
-                    { loader: "eslint-loader" }
+                    { loader: "ts-loader" },
                 ]
             }
         ]
-    }
+    },
+    plugins: [new ESLintPlugin()]
 };

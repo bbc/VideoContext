@@ -1,14 +1,18 @@
 //Matthew Shotton, R&D User Experience,© BBC 2015
 import ProcessingNode from "./processingnode";
-import { createElementTexture } from "../utils.js";
+import { createElementTexture } from "../utils";
+import RenderGraph from "../rendergraph";
+import { IDefinition } from "../Definitions/definitions";
+import SourceNode from "../SourceNodes/sourcenode";
 
 const TYPE = "EffectNode";
 
 class EffectNode extends ProcessingNode {
+    _placeholderTexture: WebGLTexture | null;
     /**
      * Initialise an instance of an EffectNode. You should not instantiate this directly, but use VideoContest.createEffectNode().
      */
-    constructor(gl, renderGraph, definition) {
+    constructor(gl: WebGLRenderingContext, renderGraph: RenderGraph, definition: IDefinition) {
         let placeholderTexture = createElementTexture(gl);
         gl.texImage2D(
             gl.TEXTURE_2D,
@@ -50,7 +54,7 @@ class EffectNode extends ProcessingNode {
             let inputTexture = this._placeholderTexture;
             let textureUnit = this._shaderInputsTextureUnitMapping[i].textureUnit;
             if (i < inputs.length && inputs[i] !== undefined) {
-                inputTexture = inputs[i]._texture;
+                inputTexture = (inputs[i] as SourceNode | ProcessingNode)._texture;
             }
 
             gl.activeTexture(textureUnit);

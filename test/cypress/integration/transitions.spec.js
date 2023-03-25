@@ -12,26 +12,28 @@ beforeEach(() => {
  *
  * @param {string} definitionName - the name of the DEFINITION
  */
-const setupTransitionPipelineForDefinition = definitionName => ({ ctx, VideoContext }) => {
-    const videoNode1 = ctx.video("../assets/video1.webm");
-    const videoNode2 = ctx.video("../assets/video2.webm");
-    const crossFade = ctx.transition(VideoContext.DEFINITIONS[definitionName]);
+const setupTransitionPipelineForDefinition =
+    (definitionName) =>
+        ({ ctx, VideoContext }) => {
+            const videoNode1 = ctx.video("../assets/video1.webm");
+            const videoNode2 = ctx.video("../assets/video2.webm");
+            const crossFade = ctx.transition(VideoContext.DEFINITIONS[definitionName]);
 
-    // Setup start/stop times for video source nodes
-    videoNode1.start(0);
-    videoNode1.stop(4);
+            // Setup start/stop times for video source nodes
+            videoNode1.start(0);
+            videoNode1.stop(4);
 
-    videoNode2.start(0);
-    videoNode2.stop(4);
+            videoNode2.start(0);
+            videoNode2.stop(4);
 
-    // Configure the crossFade transition node
-    crossFade.transition(TRANSITION_START, TRANSITION_END, 0.0, 1.0, "mix");
+            // Configure the crossFade transition node
+            crossFade.transition(TRANSITION_START, TRANSITION_END, 0.0, 1.0, "mix");
 
-    // Connect the processing graph together
-    videoNode1.connect(crossFade);
-    videoNode2.connect(crossFade);
-    crossFade.connect(ctx.destination);
-};
+            // Connect the processing graph together
+            videoNode1.connect(crossFade);
+            videoNode2.connect(crossFade);
+            crossFade.connect(ctx.destination);
+        };
 
 /**
  * Definition list to test.

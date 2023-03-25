@@ -1,13 +1,25 @@
 //Matthew Shotton, R&D User Experience,© BBC 2015
+import RenderGraph from "../rendergraph";
 import SourceNode, { SOURCENODESTATE } from "./sourcenode";
 
 const TYPE = "CanvasNode";
 class ImageNode extends SourceNode {
+    _preloadTime: number;
+    _attributes: Record<string, any>;
+    _textureUploaded: boolean;
+    _image: HTMLImageElement | undefined;
     /**
      * Initialise an instance of an ImageNode.
      * This should not be called directly, but created through a call to videoContext.createImageNode();
      */
-    constructor(src, gl, renderGraph, currentTime, preloadTime = 4, attributes = {}) {
+    constructor(
+        src: string | HTMLImageElement | ImageBitmap,
+        gl: WebGLRenderingContext,
+        renderGraph: RenderGraph,
+        currentTime: number,
+        preloadTime = 4,
+        attributes = {}
+    ) {
         super(src, gl, renderGraph, currentTime);
         this._preloadTime = preloadTime;
         this._attributes = attributes;
@@ -22,7 +34,7 @@ class ImageNode extends SourceNode {
     _load() {
         if (this._image !== undefined) {
             for (var key in this._attributes) {
-                this._image[key] = this._attributes[key];
+                (this._image as any)[key] = this._attributes[key];
             }
             return;
         }
@@ -37,14 +49,14 @@ class ImageNode extends SourceNode {
                 if (window.createImageBitmap) {
                     window
                         .createImageBitmap(
-                            this._image,
+                            this._image!,
                             0,
                             0,
-                            this._image.width,
-                            this._image.height,
+                            this._image!.width,
+                            this._image!.height,
                             { imageOrientation: "flipY" }
                         )
-                        .then(imageBitmap => {
+                        .then((imageBitmap) => {
                             this._element = imageBitmap;
                             this._triggerCallbacks("loaded");
                         });
@@ -53,16 +65,16 @@ class ImageNode extends SourceNode {
                     this._triggerCallbacks("loaded");
                 }
             };
-            this._image.src = this._elementURL;
+            this._image.src = this._elementURL as string;
             this._image.onerror = () => {
                 console.error("ImageNode failed to load. url:", this._elementURL);
             };
 
             for (let key in this._attributes) {
-                this._image[key] = this._attributes[key];
+                (this._image as any)[key] = this._attributes[key];
             }
         }
-        this._image.onerror = () => {
+        this._image!.onerror = () => {
             console.debug("Error with element", this._image);
             this._state = SOURCENODESTATE.error;
             //Event though there's an error ready should be set to true so the node can output transparenn
@@ -76,7 +88,7 @@ class ImageNode extends SourceNode {
         if (this._isResponsibleForElementLifeCycle) {
             if (this._image !== undefined) {
                 this._image.src = "";
-                this._image.onerror = undefined;
+                this._image.onerror = null;
                 this._image = undefined;
                 delete this._image;
             }
@@ -87,7 +99,7 @@ class ImageNode extends SourceNode {
         this._ready = false;
     }
 
-    _seek(time) {
+    _seek(time: number) {
         super._seek(time);
         if (this.state === SOURCENODESTATE.playing || this.state === SOURCENODESTATE.paused) {
             if (this._image === undefined) this._load();
@@ -100,7 +112,7 @@ class ImageNode extends SourceNode {
         }
     }
 
-    _update(currentTime) {
+    _update(currentTime: number) {
         //if (!super._update(currentTime)) return false;
         if (this._textureUploaded) {
             super._update(currentTime, false);

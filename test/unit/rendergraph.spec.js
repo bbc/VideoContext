@@ -1,6 +1,6 @@
-import Rendergraph from "../../src/rendergraph.js";
-import GraphNode from "../../src/graphnode.js";
-import { ConnectException } from "../../src/exceptions.js";
+import Rendergraph from "../../src/rendergraph";
+import GraphNode from "../../src/graphnode";
+import { ConnectException } from "../../src/exceptions";
 
 describe("Rendergraph", () => {
     describe("#registerConnection()", () => {

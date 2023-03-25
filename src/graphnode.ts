@@ -1,12 +1,26 @@
 //Matthew Shotton, R&D User Experience,© BBC 2015
 
+import RenderGraph from "./rendergraph";
+
 const TYPE = "GraphNode";
 
 class GraphNode {
+    _limitConnections: boolean;
+    _inputNames: string[];
+    _renderGraph: RenderGraph;
+    _destroyed: boolean;
+    _gl: WebGLRenderingContext;
+    _rendered: boolean;
+    _displayName: string;
     /**
      * Base class from which all processing and source nodes are derrived.
      */
-    constructor(gl, renderGraph, inputNames, limitConnections = false) {
+    constructor(
+        gl: WebGLRenderingContext,
+        renderGraph: RenderGraph,
+        inputNames: string[],
+        limitConnections = false
+    ) {
         this._renderGraph = renderGraph;
         this._limitConnections = limitConnections;
         this._inputNames = inputNames;
@@ -54,12 +68,12 @@ class GraphNode {
      *
      * @return {GraphNode[]} An array of nodes which connect to this node.
      */
-    get inputs() {
+    get inputs(): GraphNode[] {
         let result = this._renderGraph.getInputsForNode(this);
-        result = result.filter(function(n) {
+        result = result.filter(function (n) {
             return n !== undefined;
         });
-        return result;
+        return result as GraphNode[];
     }
 
     /**
@@ -87,7 +101,7 @@ class GraphNode {
      * @param {(number| String)} [targetPort] - the port on the targetNode to connect to, this can be an index, a string identifier, or undefined (in which case the next available port will be connected to).
      *
      */
-    connect(targetNode, targetPort) {
+    connect(targetNode: GraphNode, targetPort?: number | string) {
         return this._renderGraph.registerConnection(this, targetNode, targetPort);
     }
 
@@ -97,10 +111,10 @@ class GraphNode {
      * @param {GraphNode} [targetNode] - the node to disconnect from. If undefined, disconnect from all nodes.
      *
      */
-    disconnect(targetNode) {
+    disconnect(targetNode?: GraphNode) {
         if (targetNode === undefined) {
             let toRemove = this._renderGraph.getOutputsForNode(this);
-            toRemove.forEach(target => this._renderGraph.unregisterConnection(this, target));
+            toRemove.forEach((target) => this._renderGraph.unregisterConnection(this, target));
             if (toRemove.length > 0) return true;
             return false;
         }

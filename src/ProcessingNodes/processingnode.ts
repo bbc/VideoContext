@@ -1,22 +1,42 @@
 //Matthew Shotton, R&D User Experience,© BBC 2015
 import GraphNode from "../graphnode";
-import {
-    compileShader,
-    createShaderProgram,
-    createElementTexture,
-    updateTexture
-} from "../utils.js";
-import { RenderException } from "../exceptions.js";
+import { compileShader, createShaderProgram, createElementTexture, updateTexture } from "../utils";
+import { RenderException } from "../exceptions";
+import { IDefinition } from "../Definitions/definitions";
+import RenderGraph from "../rendergraph";
 
 const TYPE = "ProcessingNode";
 
 class ProcessingNode extends GraphNode {
+    _definition: IDefinition;
+    _vertexShader: WebGLShader;
+    _fragmentShader: WebGLShader;
+    _properties: Record<any, any>;
+    _shaderInputsTextureUnitMapping: Array<{
+        name: string;
+        textureUnit: number;
+        textureUnitIndex: number;
+        location: WebGLUniformLocation;
+    }>;
+    _maxTextureUnits: any;
+    _boundTextureUnits: number;
+    _texture: WebGLTexture;
+    _program: WebGLProgram;
+    _framebuffer: WebGLFramebuffer;
+    _currentTimeLocation: WebGLUniformLocation | null;
+    _currentTime: number;
     /**
      * Initialise an instance of a ProcessingNode.
      *
      * This class is not used directly, but is extended to create CompositingNodes, TransitionNodes, and EffectNodes.
      */
-    constructor(gl, renderGraph, definition, inputNames, limitConnections) {
+    constructor(
+        gl: WebGLRenderingContext,
+        renderGraph: RenderGraph,
+        definition: IDefinition,
+        inputNames: string[],
+        limitConnections: boolean
+    ) {
         super(gl, renderGraph, inputNames, limitConnections);
         this._vertexShader = compileShader(gl, definition.vertexShader, gl.VERTEX_SHADER);
         this._fragmentShader = compileShader(gl, definition.fragmentShader, gl.FRAGMENT_SHADER);
@@ -39,7 +59,7 @@ class ProcessingNode extends GraphNode {
         this._shaderInputsTextureUnitMapping = [];
         this._maxTextureUnits = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
         this._boundTextureUnits = 0;
-        this._texture = createElementTexture(gl);
+        this._texture = createElementTexture(gl)!;
         gl.texImage2D(
             gl.TEXTURE_2D,
             0,
@@ -55,7 +75,7 @@ class ProcessingNode extends GraphNode {
         this._program = createShaderProgram(gl, this._vertexShader, this._fragmentShader);
 
         //create and setup the framebuffer
-        this._framebuffer = gl.createFramebuffer();
+        this._framebuffer = gl.createFramebuffer()!;
         gl.bindFramebuffer(gl.FRAMEBUFFER, this._framebuffer);
         gl.framebufferTexture2D(
             gl.FRAMEBUFFER,
@@ -69,10 +89,10 @@ class ProcessingNode extends GraphNode {
         //create properties on this object for the passed properties
         for (let propertyName in this._properties) {
             Object.defineProperty(this, propertyName, {
-                get: function() {
+                get: function () {
                     return this._properties[propertyName].value;
                 },
-                set: function(passedValue) {
+                set: function (passedValue) {
                     this._properties[propertyName].value = passedValue;
                 }
             });
@@ -100,7 +120,7 @@ class ProcessingNode extends GraphNode {
                 name: inputName,
                 textureUnit: gl.TEXTURE0 + this._boundTextureUnits,
                 textureUnitIndex: this._boundTextureUnits,
-                location: gl.getUniformLocation(this._program, inputName)
+                location: gl.getUniformLocation(this._program, inputName)!
             });
             this._boundTextureUnits += 1;
             if (this._boundTextureUnits > this._maxTextureUnits) {
@@ -149,7 +169,7 @@ class ProcessingNode extends GraphNode {
      * var monoNode = ctx.effect(VideoContext.DEFINITIONS.MONOCHROME);
      * monoNode.setProperty("inputMix", [1.0,0.0,0.0]); //Just use red channel
      */
-    setProperty(name, value) {
+    setProperty(name: string, value: any) {
         this._properties[name].value = value;
     }
 
@@ -163,7 +183,7 @@ class ProcessingNode extends GraphNode {
      * console.log(monoNode.getProperty("inputMix")); //Will output [0.4,0.6,0.2], the default value from the effect definition.
      *
      */
-    getProperty(name) {
+    getProperty(name: string) {
         return this._properties[name].value;
     }
 
@@ -177,12 +197,12 @@ class ProcessingNode extends GraphNode {
             let propertyValue = this._properties[propertyName].value;
             if (propertyValue instanceof Image) {
                 this._gl.deleteTexture(this._properties[propertyName].texture);
-                this._texture = undefined;
+                this._texture = undefined!;
             }
         }
         //Destroy main
         this._gl.deleteTexture(this._texture);
-        this._texture = undefined;
+        this._texture = undefined!;
         //Detach shaders
         this._gl.detachShader(this._program, this._vertexShader);
         this._gl.detachShader(this._program, this._fragmentShader);
@@ -195,11 +215,11 @@ class ProcessingNode extends GraphNode {
         this._gl.deleteFramebuffer(this._framebuffer);
     }
 
-    _update(currentTime) {
+    _update(currentTime: number) {
         this._currentTime = currentTime;
     }
 
-    _seek(currentTime) {
+    _seek(currentTime: number) {
         this._currentTime = currentTime;
     }
 
@@ -211,7 +231,7 @@ class ProcessingNode extends GraphNode {
         gl.useProgram(this._program);
 
         //upload the default uniforms
-        gl.uniform1f(this._currentTimeLocation, parseFloat(this._currentTime));
+        gl.uniform1f(this._currentTimeLocation, parseFloat(this._currentTime as any));
 
         for (let propertyName in this._properties) {
             let propertyValue = this._properties[propertyName].value;

@@ -1,14 +1,18 @@
 //Matthew Shotton, R&D User Experience,© BBC 2015
 import ProcessingNode from "./processingnode";
-import { createElementTexture } from "../utils.js";
+import { createElementTexture } from "../utils";
+import RenderGraph from "../rendergraph";
+import { IDefinition } from "../Definitions/definitions";
+import SourceNode from "../SourceNodes/sourcenode";
 
 const TYPE = "CompositingNode";
 
 class CompositingNode extends ProcessingNode {
+    _placeholderTexture: WebGLTexture | null;
     /**
      * Initialise an instance of a Compositing Node. You should not instantiate this directly, but use VideoContest.createCompositingNode().
      */
-    constructor(gl, renderGraph, definition) {
+    constructor(gl: WebGLRenderingContext, renderGraph: RenderGraph, definition: IDefinition) {
         let placeholderTexture = createElementTexture(gl);
         gl.texImage2D(
             gl.TEXTURE_2D,
@@ -40,12 +44,12 @@ class CompositingNode extends ProcessingNode {
         gl.clear(gl.COLOR_BUFFER_BIT);
         gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
-        this.inputs.forEach(node => {
+        this.inputs.forEach((node) => {
             if (node === undefined) return;
             super._render();
 
             //map the input textures input the node
-            var texture = node._texture;
+            var texture = (node as SourceNode | ProcessingNode)._texture;
 
             for (let mapping of this._shaderInputsTextureUnitMapping) {
                 gl.activeTexture(mapping.textureUnit);

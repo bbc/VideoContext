@@ -1,5 +1,5 @@
 {
-    "plugins": ["cypress"],
+    "plugins": ["cypress", "@typescript-eslint"],
     "env": {
         "browser": true,
         "es6": true,
@@ -7,6 +7,7 @@
         "cypress/globals": true
     },
     "extends": "eslint:recommended",
+    "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "sourceType": "module",
         "ecmaVersion": 2017
@@ -31,6 +32,8 @@
             "error",
             "always"
         ],
-        "no-console": 0
+        "no-console": 0,
+        "no-unused-vars": "off",
+        "@typescript-eslint/no-unused-vars": "error"
     }
 }

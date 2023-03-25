@@ -1,7 +1,10 @@
 import VideoElementCacheItem from "./videoelementcacheitem";
 import { mediaElementHasSource } from "./utils";
+import MediaNode from "./SourceNodes/medianode";
 
 class VideoElementCache {
+    _cacheItems: VideoElementCacheItem[];
+    _cacheItemsInitialised: boolean;
     constructor(cache_size = 3) {
         this._cacheItems = [];
         this._cacheItemsInitialised = false;
@@ -22,7 +25,7 @@ class VideoElementCache {
                                 cacheItem.element.pause();
                             }
                         },
-                        e => {
+                        (e) => {
                             if (e.name !== "NotSupportedError") throw e;
                         }
                     );
@@ -40,7 +43,7 @@ class VideoElementCache {
      *
      * @param {Object} mediaNode A `MediaNode` instance
      */
-    getElementAndLinkToNode(mediaNode) {
+    getElementAndLinkToNode(mediaNode: MediaNode) {
         // Try and get an already intialised element.
         for (let cacheItem of this._cacheItems) {
             // For some reason an uninitialised videoElement has its sr attribute set to the windows href. Hence the below check.
@@ -65,7 +68,7 @@ class VideoElementCache {
      *
      * @param {VideoElement} element The element to unlink from any media nodes
      */
-    unlinkNodeFromElement(element) {
+    unlinkNodeFromElement(element: HTMLVideoElement | HTMLAudioElement) {
         for (let cacheItem of this._cacheItems) {
             // Unlink the node from the element
             if (element === cacheItem._element) {

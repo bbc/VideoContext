@@ -1,13 +1,21 @@
 //Matthew Shotton, R&D User Experience,© BBC 2015
+import RenderGraph from "../rendergraph";
 import SourceNode, { SOURCENODESTATE } from "./sourcenode";
 
 const TYPE = "CanvasNode";
 class CanvasNode extends SourceNode {
+    _preloadTime: number;
     /**
      * Initialise an instance of a CanvasNode.
      * This should not be called directly, but created through a call to videoContext.createCanvasNode();
      */
-    constructor(canvas, gl, renderGraph, currentTime, preloadTime = 4) {
+    constructor(
+        canvas: HTMLCanvasElement,
+        gl: WebGLRenderingContext,
+        renderGraph: RenderGraph,
+        currentTime: number,
+        preloadTime = 4
+    ) {
         super(canvas, gl, renderGraph, currentTime);
         this._preloadTime = preloadTime;
         this._displayName = TYPE;
@@ -24,7 +32,7 @@ class CanvasNode extends SourceNode {
         this._ready = false;
     }
 
-    _seek(time) {
+    _seek(time: number) {
         super._seek(time);
         if (this.state === SOURCENODESTATE.playing || this.state === SOURCENODESTATE.paused) {
             if (this._element === undefined) this._load();
@@ -38,7 +46,7 @@ class CanvasNode extends SourceNode {
         }
     }
 
-    _update(currentTime) {
+    _update(currentTime: number) {
         //if (!super._update(currentTime)) return false;
         super._update(currentTime);
         if (

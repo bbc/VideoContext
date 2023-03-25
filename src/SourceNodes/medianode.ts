@@ -1,20 +1,41 @@
 //Matthew Shotton, R&D User Experience,© BBC 2015
+import RenderGraph from "../rendergraph";
+import type VideoElementCache from "../videoelementcache";
 import SourceNode, { SOURCENODESTATE } from "./sourcenode";
 
+type GetNonFunctionPartialOfType<T> = Pick<
+    T,
+    {
+        [P in keyof T]: T[P] extends Function ? never : P;
+    }[keyof T]
+>;
+
 class MediaNode extends SourceNode {
+    _globalPlaybackRate: number;
+    _playbackRateUpdated: boolean;
+    _elementType: string | undefined;
+    _sourceOffset: number;
+    _preloadTime: number;
+    _mediaElementCache: VideoElementCache | undefined;
+    _playbackRate: number;
+    _attributes: Partial<GetNonFunctionPartialOfType<HTMLMediaElement>>;
+    _loopElement: boolean;
+    _isElementPlaying: boolean;
+    _element: HTMLVideoElement | HTMLAudioElement | HTMLAudioElement | undefined;
+    _loadTriggered: boolean | undefined;
     /**
      * Initialise an instance of a MediaNode.
      * This should not be called directly, but extended by other Node Types which use a `HTMLMediaElement`.
      */
     constructor(
-        src,
-        gl,
-        renderGraph,
-        currentTime,
+        src: any,
+        gl: WebGLRenderingContext,
+        renderGraph: RenderGraph,
+        currentTime: number,
         globalPlaybackRate = 1.0,
         sourceOffset = 0,
         preloadTime = 4,
-        mediaElementCache = undefined,
+        mediaElementCache = undefined as VideoElementCache | undefined,
         attributes = {}
     ) {
         super(src, gl, renderGraph, currentTime);
@@ -75,7 +96,7 @@ class MediaNode extends SourceNode {
         return false;
     }
 
-    set volume(volume) {
+    set volume(volume: number) {
         this._attributes.volume = volume;
         if (this._element !== undefined) this._element.volume = this._attributes.volume;
     }
@@ -90,7 +111,7 @@ class MediaNode extends SourceNode {
                  */
                 this._element = this._mediaElementCache.getElementAndLinkToNode(this);
             } else {
-                this._element = document.createElement(this._elementType);
+                this._element = document.createElement(this._elementType!) as HTMLVideoElement;
                 this._element.setAttribute("crossorigin", "anonymous");
                 this._element.setAttribute("webkit-playsinline", "");
                 this._element.setAttribute("playsinline", "");
@@ -100,17 +121,17 @@ class MediaNode extends SourceNode {
                 this._element.preload = "auto";
                 this._playbackRateUpdated = true;
             }
-            this._element.volume = this._attributes.volume;
+            this._element.volume = this._attributes.volume!;
             if (window.MediaStream !== undefined && this._elementURL instanceof MediaStream) {
                 this._element.srcObject = this._elementURL;
             } else {
-                this._element.src = this._elementURL;
+                this._element.src = this._elementURL as string;
             }
         }
         // at this stage either the user or the element cache should have provided an element
         if (this._element) {
             for (let key in this._attributes) {
-                this._element[key] = this._attributes[key];
+                (this._element as any)[key] = (this._attributes as any)[key];
             }
 
             let currentTimeOffset = 0;
@@ -166,7 +187,7 @@ class MediaNode extends SourceNode {
          * it gets called a lot of time
          */
         if (shouldPollForElementReadyState) {
-            if (this._element.readyState > 3 && !this._element.seeking) {
+            if (this._element!.readyState > 3 && !this._element!.seeking) {
                 // at this point the element has enough data for current playback position
                 // and at least a couple of frames into the future
 
@@ -175,7 +196,7 @@ class MediaNode extends SourceNode {
                 // too many things at once
                 if (this._loopElement === false) {
                     if (this._stopTime === Infinity || this._stopTime == undefined) {
-                        this._stopTime = this._startTime + this._element.duration;
+                        this._stopTime = this._startTime + this._element!.duration;
                         this._triggerCallbacks("durationchange", this.duration);
                     }
                 }
@@ -199,7 +220,7 @@ class MediaNode extends SourceNode {
         super._unload();
         if (this._isResponsibleForElementLifeCycle && this._element !== undefined) {
             this._element.removeAttribute("src");
-            this._element.srcObject = undefined;
+            this._element.srcObject = undefined!;
             this._element.load();
             for (let key in this._attributes) {
                 this._element.removeAttribute(key);
@@ -217,12 +238,12 @@ class MediaNode extends SourceNode {
         this._loadTriggered = false;
     }
 
-    _seek(time) {
+    _seek(time: number) {
         super._seek(time);
         if (this.state === SOURCENODESTATE.playing || this.state === SOURCENODESTATE.paused) {
             if (this._element === undefined) this._load();
             let relativeTime = this._currentTime - this._startTime + this._sourceOffset;
-            this._element.currentTime = relativeTime;
+            this._element!.currentTime = relativeTime;
             this._ready = false;
         }
         if (
@@ -233,7 +254,7 @@ class MediaNode extends SourceNode {
         }
     }
 
-    _update(currentTime, triggerTextureUpdate = true) {
+    _update(currentTime: number, triggerTextureUpdate = true): boolean | void {
         //if (!super._update(currentTime)) return false;
         super._update(currentTime, triggerTextureUpdate);
         //check if the media has ended
@@ -253,19 +274,19 @@ class MediaNode extends SourceNode {
 
         if (this._state === SOURCENODESTATE.playing) {
             if (this._playbackRateUpdated) {
-                this._element.playbackRate = this._globalPlaybackRate * this._playbackRate;
+                this._element!.playbackRate = this._globalPlaybackRate * this._playbackRate;
                 this._playbackRateUpdated = false;
             }
             if (!this._isElementPlaying) {
-                this._element.play();
+                this._element!.play();
                 if (this._stretchPaused) {
-                    this._element.pause();
+                    this._element!.pause();
                 }
                 this._isElementPlaying = true;
             }
             return true;
         } else if (this._state === SOURCENODESTATE.paused) {
-            this._element.pause();
+            this._element!.pause();
             this._isElementPlaying = false;
             return true;
         } else if (this._state === SOURCENODESTATE.ended && this._element !== undefined) {
