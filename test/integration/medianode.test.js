@@ -23,7 +23,7 @@ const nodeFactory = (
             return _currentTime;
         },
         set currentTime(v) {
-            return _currentTimeSetter(v);
+            _currentTimeSetter(v);
         },
         _currentTimeSetter
     };
@@ -100,6 +100,90 @@ describe("medianode", () => {
 
             expect(element.asdf).toBe("great!");
             expect(element.notasdf).toBe(undefined);
+        });
+    });
+
+    describe("durationchange", () => {
+        /*
+         * an element mock which reports itself as ready for playback
+         * (readyState 4 = HAVE_ENOUGH_DATA) so the node's load polling completes
+         */
+        const readyElementFactory = (duration = 5) => ({
+            play: jest.fn(),
+            pause: jest.fn(),
+            readyState: 4,
+            seeking: false,
+            duration,
+            currentTime: 0
+        });
+
+        it("should fire durationchange exactly once when the duration is derived from the element", () => {
+            const element = readyElementFactory(5);
+            const node = ctx.video(element);
+            node.start(0);
+            const durationChangeSpy = jest.fn();
+            node.registerCallback("durationchange", durationChangeSpy);
+
+            ctx.update(1 / 60);
+            ctx.update(1 / 60);
+            ctx.update(1 / 60);
+
+            expect(durationChangeSpy).toHaveBeenCalledTimes(1);
+            expect(node.stopTime).toBe(5);
+        });
+
+        it("should not fire durationchange every frame for an endless source", () => {
+            const element = readyElementFactory(Infinity);
+            const node = ctx.video(element);
+            node.start(0);
+            const durationChangeSpy = jest.fn();
+            node.registerCallback("durationchange", durationChangeSpy);
+
+            ctx.update(1 / 60);
+            ctx.update(1 / 60);
+            ctx.update(1 / 60);
+
+            expect(durationChangeSpy).not.toHaveBeenCalled();
+            expect(node.stopTime).toBe(Infinity);
+        });
+    });
+
+    describe("unload behaviour", () => {
+        const readyElementFactory = (duration = 30) => ({
+            play: jest.fn(),
+            pause: jest.fn(),
+            readyState: 4,
+            seeking: false,
+            duration,
+            currentTime: 0
+        });
+
+        it("should clear the element error handler when the node is destroyed", () => {
+            const { element, node } = nodeFactory(ctx);
+            ctx.update(1);
+            expect(typeof element.onerror).toBe("function");
+
+            node.destroy();
+
+            expect(element.onerror).toBeFalsy();
+        });
+
+        it("should unload once when a paused node passes its stop time", () => {
+            const element = readyElementFactory();
+            const node = ctx.video(element);
+            node.start(0);
+            node.stop(10);
+            const destroySpy = jest.fn();
+            node.registerCallback("destroy", destroySpy);
+
+            ctx.play();
+            ctx.update(1); // node is now playing
+            node._pause();
+            node._update(1); // paused: element paused, no longer marked as playing
+            node._update(11); // past the stop time: node ends and must unload
+            node._update(12); // ...but only unload once
+
+            expect(destroySpy).toHaveBeenCalledTimes(1);
         });
     });
 

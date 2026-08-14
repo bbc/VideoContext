@@ -1,6 +1,0 @@
-{
-    "name": "verticalWipe",
-    "version": "0.0.0",
-    "private": true,
-    "main": "./verticalWipe.js"
-}

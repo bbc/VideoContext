@@ -1,0 +1,488 @@
+//Matthew Shotton, R&D User Experience,© BBC 2015
+import { updateTexture, clearTexture, createElementTexture } from "../utils.js";
+import GraphNode from "../graphnode.js";
+import type RenderGraph from "../rendergraph.js";
+
+const STATE = {
+    waiting: 0,
+    sequenced: 1,
+    playing: 2,
+    paused: 3,
+    ended: 4,
+    error: 5
+} as const;
+
+export type SourceNodeState = (typeof STATE)[keyof typeof STATE];
+
+export type SourceElement =
+    HTMLVideoElement | HTMLAudioElement | HTMLImageElement | HTMLCanvasElement | ImageBitmap;
+
+export type SourceNodeSource = string | MediaStream | SourceElement;
+
+interface ISourceNodeCallback {
+    type: string;
+    func: (node: SourceNode, data?: unknown) => void;
+}
+
+const TYPE = "SourceNode";
+
+class SourceNode extends GraphNode {
+    _element: SourceElement | undefined;
+    _elementURL: string | MediaStream | undefined;
+    _isResponsibleForElementLifeCycle: boolean;
+    _state: SourceNodeState;
+    _currentTime: number;
+    _startTime: number;
+    _stopTime: number;
+    _ready: boolean;
+    _loadCalled: boolean;
+    _stretchPaused: boolean;
+    _texture: WebGLTexture;
+    _callbacks: ISourceNodeCallback[];
+    _renderPaused: boolean;
+
+    /**
+     * Initialise an instance of a SourceNode.
+     * This is the base class for other Nodes which generate media to be passed into the processing pipeline.
+     */
+    constructor(
+        src: SourceNodeSource,
+        gl: WebGLRenderingContext,
+        renderGraph: RenderGraph,
+        currentTime: number
+    ) {
+        super(gl, renderGraph, [], true);
+        this._element = undefined;
+        this._elementURL = undefined;
+        this._isResponsibleForElementLifeCycle = true;
+
+        if (
+            typeof src === "string" ||
+            (window.MediaStream !== undefined && src instanceof MediaStream)
+        ) {
+            //create the node from the passed URL or MediaStream
+            this._elementURL = src;
+        } else {
+            //use the passed element to create the SourceNode
+            this._element = src as SourceElement;
+            this._isResponsibleForElementLifeCycle = false;
+        }
+
+        this._state = STATE.waiting;
+        this._currentTime = currentTime;
+        this._startTime = NaN;
+        this._stopTime = Infinity;
+        this._ready = false;
+        this._loadCalled = false;
+        this._stretchPaused = false;
+        this._texture = createElementTexture(gl);
+        gl.texImage2D(
+            gl.TEXTURE_2D,
+            0,
+            gl.RGBA,
+            1,
+            1,
+            0,
+            gl.RGBA,
+            gl.UNSIGNED_BYTE,
+            new Uint8Array([0, 0, 0, 0])
+        );
+        this._callbacks = [];
+        this._renderPaused = false;
+        this._displayName = TYPE;
+    }
+
+    /**
+     * Returns the state of the node.
+     * 0 - Waiting, start() has not been called on it yet.
+     * 1 - Sequenced, start() has been called but it is not playing yet.
+     * 2 - Playing, the node is playing.
+     * 3 - Paused, the node is paused.
+     * 4 - Ended, playback of the node has finished.
+     *
+     * @example
+     * var ctx = new VideoContext();
+     * var videoNode = ctx.createVideoSourceNode('video.mp4');
+     * console.log(videoNode.state); //will output 0 (for waiting)
+     * videoNode.start(5);
+     * console.log(videoNode.state); //will output 1 (for sequenced)
+     * videoNode.stop(10);
+     * ctx.play();
+     * console.log(videoNode.state); //will output 2 (for playing)
+     * ctx.paused();
+     * console.log(videoNode.state); //will output 3 (for paused)
+     */
+    get state(): SourceNodeState {
+        return this._state;
+    }
+
+    /**
+     * Returns the underlying DOM element which represents this source node.
+     * Note: If a source node is created with a url rather than passing in an existing element then this will return undefined until the source node preloads the element.
+     *
+     * @return {Element} The underlying DOM element representing the media for the node. If the lifecycle of the media is owned by the node itself, this can return undefined if the element hasn't been loaded yet.
+     *
+     * @example
+     * //Accessing the Element on a VideoNode created via a URL
+     * var ctx = new VideoContext();
+     * var videoNode = ctx.createVideoSourceNode('video.mp4');
+     * videoNode.start(0);
+     * videoNode.stop(5);
+     * //When the node starts playing the element should exist so set its volume to 0
+     * videoNode.registerCallback("play", function(){videoNode.element.volume = 0;});
+     *
+     *
+     * @example
+     * //Accessing the Element on a VideoNode created via an already existing element
+     * var ctx = new VideoContext();
+     * var videoElement = document.createElement("video");
+     * var videoNode = ctx.createVideoSourceNode(videoElement);
+     * videoNode.start(0);
+     * videoNode.stop(5);
+     * //The element can be accessed any time because its lifecycle is managed outside of the VideoContext
+     * videoNode.element.volume = 0;
+     */
+    get element(): SourceElement | undefined {
+        return this._element;
+    }
+
+    /**
+     * Returns the duration of the node on a timeline. If no start time is set will return undefined, if no stop time is set will return Infinity.
+     *
+     * @return {number} The duration of the node in seconds.
+     *
+     * @example
+     * var ctx = new VideoContext();
+     * var videoNode = ctx.createVideoSourceNode('video.mp4');
+     * videoNode.start(5);
+     * videoNode.stop(10);
+     * console.log(videoNode.duration); //will output 5
+     */
+    get duration(): number | undefined {
+        if (isNaN(this._startTime)) return undefined;
+        if (this._stopTime === Infinity) return Infinity;
+        return this._stopTime - this._startTime;
+    }
+
+    set stretchPaused(stretchPaused: boolean) {
+        this._stretchPaused = stretchPaused;
+    }
+
+    get stretchPaused(): boolean {
+        return this._stretchPaused;
+    }
+
+    _load(): void {
+        if (!this._loadCalled) {
+            this._triggerCallbacks("load");
+            this._loadCalled = true;
+        }
+    }
+
+    _unload(): void {
+        this._triggerCallbacks("destroy");
+        this._loadCalled = false;
+    }
+
+    /**
+     * Register callbacks against one of these events: "load", "destroy", "seek", "pause", "play", "ended", "durationchange", "loaded", "error"
+     *
+     * @param {String} type - the type of event to register the callback against.
+     * @param {function} func - the function to call.
+     *
+     * @example
+     * var ctx = new VideoContext();
+     * var videoNode = ctx.createVideoSourceNode('video.mp4');
+     *
+     * videoNode.registerCallback("load", function(){"video is loading"});
+     * videoNode.registerCallback("play", function(){"video is playing"});
+     * videoNode.registerCallback("ended", function(){"video has ended"});
+     */
+    registerCallback(type: string, func: (node: SourceNode, data?: unknown) => void): void {
+        this._callbacks.push({ type: type, func: func });
+    }
+
+    /**
+     * Remove callback.
+     *
+     * @param {function} [func] - the callback to remove, if undefined will remove all callbacks for this node.
+     *
+     * @example
+     * var ctx = new VideoContext();
+     * var videoNode = ctx.createVideoSourceNode('video.mp4');
+     *
+     * videoNode.registerCallback("load", function(){"video is loading"});
+     * videoNode.registerCallback("play", function(){"video is playing"});
+     * videoNode.registerCallback("ended", function(){"video has ended"});
+     * videoNode.unregisterCallback(); //remove all three callbacks.
+     */
+    unregisterCallback(func?: (node: SourceNode, data?: unknown) => void): void {
+        const toRemove: ISourceNodeCallback[] = [];
+        for (const callback of this._callbacks) {
+            if (func === undefined) {
+                toRemove.push(callback);
+            } else if (callback.func === func) {
+                toRemove.push(callback);
+            }
+        }
+        for (const callback of toRemove) {
+            const index = this._callbacks.indexOf(callback);
+            this._callbacks.splice(index, 1);
+        }
+    }
+
+    _triggerCallbacks(type: string, data?: unknown): void {
+        for (const callback of this._callbacks) {
+            if (callback.type === type) {
+                if (data !== undefined) {
+                    callback.func(this, data);
+                } else {
+                    callback.func(this);
+                }
+            }
+        }
+    }
+
+    /**
+     * Start playback at VideoContext.currentTime plus passed time. If passed time is negative, will play as soon as possible.
+     *
+     * @param {number} time - the time from the currentTime of the VideoContext which to start playing, if negative will play as soon as possible.
+     * @return {boolean} Will return true if sequencing has succeeded, or false if it is already sequenced.
+     */
+    start(time: number): boolean {
+        if (this._destroyed) {
+            console.debug("SourceNode has been destroyed. Can't sequence.");
+            return false;
+        }
+        if (this._state !== STATE.waiting) {
+            console.debug("SourceNode has already been sequenced. Can't sequence twice.");
+            return false;
+        }
+
+        this._startTime = this._currentTime + time;
+        this._state = STATE.sequenced;
+        return true;
+    }
+
+    /**
+     * Start playback at an absolute time on the VideoContext's timeline.
+     *
+     * @param {number} time - the time on the VideoContext's timeline to start playing.
+     * @return {boolean} Will return true if sequencing has succeeded, or false if it is already sequenced.
+     */
+    startAt(time: number): boolean {
+        if (this._destroyed) {
+            console.debug("SourceNode has been destroyed. Can't sequence.");
+            return false;
+        }
+        if (this._state !== STATE.waiting) {
+            console.debug("SourceNode has already been sequenced. Can't sequence twice.");
+            return false;
+        }
+        this._startTime = time;
+        this._state = STATE.sequenced;
+        return true;
+    }
+
+    get startTime(): number {
+        return this._startTime;
+    }
+
+    /**
+     * Stop playback at VideoContext.currentTime plus passed time. If passed time is negative, will stop as soon as possible.
+     *
+     * @param {number} time - the time from the currentTime of the video context which to stop playback.
+     * @return {boolean} Will return true if sequencing has succeeded, or false if the playback has already ended or if start hasn't been called yet, or if time is less than the start time.
+     */
+    stop(time: number): boolean {
+        if (this._state === STATE.ended) {
+            console.debug("SourceNode has already ended. Cannot call stop.");
+            return false;
+        } else if (this._state === STATE.waiting) {
+            console.debug("SourceNode must have start called before stop is called");
+            return false;
+        }
+        if (this._currentTime + time <= this._startTime) {
+            console.debug("SourceNode must have a stop time after its start time, not before.");
+            return false;
+        }
+        this._stopTime = this._currentTime + time;
+        this._stretchPaused = false;
+        this._triggerCallbacks("durationchange", this.duration);
+        return true;
+    }
+
+    /**
+     * Stop playback at an absolute time on the VideoContext's timeline.
+     *
+     * @param {number} time - the time on the VideoContext's timeline to stop playing.
+     * @return {boolean} Will return true if sequencing has succeeded, or false if the playback has already ended or if start hasn't been called yet, or if time is less than the start time.
+     */
+    stopAt(time: number): boolean {
+        if (this._state === STATE.ended) {
+            console.debug("SourceNode has already ended. Cannot call stop.");
+            return false;
+        } else if (this._state === STATE.waiting) {
+            console.debug("SourceNode must have start called before stop is called");
+            return false;
+        }
+        if (time <= this._startTime) {
+            console.debug("SourceNode must have a stop time after its start time, not before.");
+            return false;
+        }
+        this._stopTime = time;
+        this._stretchPaused = false;
+        this._triggerCallbacks("durationchange", this.duration);
+        return true;
+    }
+
+    get stopTime(): number {
+        return this._stopTime;
+    }
+
+    _seek(time: number): void {
+        this._renderPaused = false;
+
+        this._triggerCallbacks("seek", time);
+
+        //update the current time before the waiting-state early return, so that
+        //start()/stop() offsets are computed from the seeked time.
+        this._currentTime = time;
+
+        if (this._state === STATE.waiting) return;
+        if (time < this._startTime) {
+            clearTexture(this._gl, this._texture);
+            this._state = STATE.sequenced;
+        }
+        if (time >= this._startTime && this._state !== STATE.paused) {
+            this._state = STATE.playing;
+        }
+        if (time >= this._stopTime) {
+            clearTexture(this._gl, this._texture);
+            this._triggerCallbacks("ended");
+            this._state = STATE.ended;
+        }
+    }
+
+    _pause(): void {
+        if (this._state === STATE.playing || (this._currentTime === 0 && this._startTime === 0)) {
+            this._triggerCallbacks("pause");
+            this._state = STATE.paused;
+            this._renderPaused = false;
+        }
+    }
+
+    _play(): void {
+        if (this._state === STATE.paused) {
+            this._triggerCallbacks("play");
+            this._state = STATE.playing;
+        }
+    }
+
+    get _buffering(): boolean {
+        return false;
+    }
+
+    _isReady(): boolean {
+        if (this._buffering) {
+            return false;
+        }
+        if (
+            this._state === STATE.playing ||
+            this._state === STATE.paused ||
+            this._state === STATE.error
+        ) {
+            return this._ready;
+        }
+        return true;
+    }
+
+    _update(currentTime: number, triggerTextureUpdate = true): boolean {
+        this._rendered = true;
+        const timeDelta = currentTime - this._currentTime;
+
+        //update the current time
+        this._currentTime = currentTime;
+
+        //update the state
+        if (
+            this._state === STATE.waiting ||
+            this._state === STATE.ended ||
+            this._state === STATE.error
+        )
+            return false;
+
+        this._triggerCallbacks("render", currentTime);
+
+        if (currentTime < this._startTime) {
+            clearTexture(this._gl, this._texture);
+            this._state = STATE.sequenced;
+        }
+
+        //NOTE: the casts below stop TypeScript over-narrowing _state — the
+        //_triggerCallbacks calls above can change it as a side effect.
+        if (
+            currentTime >= this._startTime &&
+            (this._state as SourceNodeState) !== STATE.paused &&
+            (this._state as SourceNodeState) !== STATE.error
+        ) {
+            if (this._state !== STATE.playing) this._triggerCallbacks("play");
+            this._state = STATE.playing;
+        }
+
+        if (currentTime >= this._stopTime) {
+            clearTexture(this._gl, this._texture);
+            this._triggerCallbacks("ended");
+            this._state = STATE.ended;
+        }
+
+        //update this source node's texture
+        if (this._element === undefined || this._ready === false) return true;
+
+        if (!this._renderPaused && this._state === STATE.paused) {
+            if (triggerTextureUpdate) updateTexture(this._gl, this._texture, this._element);
+            this._renderPaused = true;
+        }
+        if (this._state === STATE.playing) {
+            if (triggerTextureUpdate) updateTexture(this._gl, this._texture, this._element);
+            if (this._stretchPaused) {
+                this._stopTime += timeDelta;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Clear any timeline state the node currently has, this puts the node in the "waiting" state, as if neither start nor stop had been called.
+     */
+    clearTimelineState(): void {
+        this._startTime = NaN;
+        this._stopTime = Infinity;
+        this._state = STATE.waiting;
+    }
+
+    /**
+     * Destroy and clean-up the node.
+     */
+    destroy(): void {
+        this._unload();
+        super.destroy();
+        this.unregisterCallback();
+        delete this._element;
+        this._elementURL = undefined;
+        this._state = STATE.waiting;
+        this._currentTime = 0;
+        this._startTime = NaN;
+        this._stopTime = Infinity;
+        this._ready = false;
+        this._loadCalled = false;
+        this._gl.deleteTexture(this._texture);
+        this._texture = undefined as unknown as WebGLTexture;
+    }
+}
+
+export { STATE as SOURCENODESTATE };
+export { TYPE as SOURCETYPE };
+
+export default SourceNode;

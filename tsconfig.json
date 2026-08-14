@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "target": "es2019",
+        "lib": ["dom", "es2019"],
+        "module": "esnext",
+        "moduleResolution": "bundler",
+        "strict": true,
+        "noEmit": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "allowJs": false
+    },
+    "include": ["src/**/*.ts"]
+}

@@ -1,6 +1,0 @@
-{
-    "name": "staticDissolve",
-    "version": "0.0.0",
-    "private": true,
-    "main": "./staticDissolve.js"
-}

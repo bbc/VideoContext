@@ -53,6 +53,26 @@ describe("Rendergraph", () => {
                 rendergraph.registerConnection.bind(rendergraph, node_a, node_b, "input_a")
             ).toThrow(ConnectException);
         });
+
+        test("should throw a ConnectionException for an unknown named input on an unlimited-connection node", () => {
+            const unlimitedNode = new GraphNode(undefined, rendergraph, ["input_a"], false);
+
+            expect(
+                rendergraph.registerConnection.bind(
+                    rendergraph,
+                    node_a,
+                    unlimitedNode,
+                    "non-existant input"
+                )
+            ).toThrow(ConnectException);
+        });
+
+        test("should accept a valid named input on an unlimited-connection node", () => {
+            const unlimitedNode = new GraphNode(undefined, rendergraph, ["input_a"], false);
+
+            expect(rendergraph.registerConnection(node_a, unlimitedNode, "input_a")).toBe(true);
+            expect(unlimitedNode.inputs[0]).toBe(node_a);
+        });
     });
 
     describe("#unregisterConnection()", () => {
@@ -124,6 +144,31 @@ describe("Rendergraph", () => {
 
             rendergraph.registerConnection(node_c, node_a);
             expect(rendergraph.getInputsForNode(node_a)).toEqual([node_b, node_c]);
+        });
+
+        test("should place an index-connected input on the port matching its index", () => {
+            rendergraph.registerConnection(node_b, node_a, 1);
+
+            const inputs = rendergraph.getInputsForNode(node_a);
+            expect(inputs[0]).toBeUndefined();
+            expect(inputs[1]).toBe(node_b);
+        });
+
+        test("should keep index-connected inputs on their ports alongside named connections", () => {
+            rendergraph.registerConnection(node_b, node_a, "input_a");
+            rendergraph.registerConnection(node_c, node_a, 1);
+
+            const inputs = rendergraph.getInputsForNode(node_a);
+            expect(inputs[0]).toBe(node_b);
+            expect(inputs[1]).toBe(node_c);
+        });
+
+        test("should fall back to the first free port for an out-of-range index", () => {
+            rendergraph.registerConnection(node_b, node_a, 5);
+
+            const inputs = rendergraph.getInputsForNode(node_a);
+            expect(inputs[0]).toBe(node_b);
+            expect(inputs[1]).toBeUndefined();
         });
     });
 

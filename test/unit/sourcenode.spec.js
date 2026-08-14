@@ -1,5 +1,6 @@
 import * as utils from "../../src/utils";
 import SourceNode from "../../src/SourceNodes/sourcenode";
+import RenderGraph from "../../src/rendergraph";
 import sinon from "sinon";
 import "webgl-mock";
 
@@ -39,5 +40,32 @@ describe("_update", () => {
 
         // Expect updateTexture to be called after update
         expect(updateTextureSpy.calledOnce).toBeTruthy();
+    });
+});
+
+describe("_seek", () => {
+    test("updates the node's clock even in the waiting state so start() offsets are computed from the seeked time", () => {
+        const node = new SourceNode(ELEMENT, mockGLContext, mockRenderGraph, 0);
+
+        // seek while the node is still waiting (start() not yet called)
+        node._seek(10);
+
+        // start 5 seconds after the current (seeked) time
+        node.start(5);
+
+        expect(node.startTime).toBe(15);
+    });
+});
+
+describe("destroy", () => {
+    test("a destroyed node refuses to be re-sequenced by start()/startAt()", () => {
+        const renderGraph = new RenderGraph();
+        const node = new SourceNode(ELEMENT, mockGLContext, renderGraph, 0);
+
+        node.destroy();
+
+        expect(node.start(0)).toBe(false);
+        expect(node.startAt(0)).toBe(false);
+        expect(node.state).toBe(0); // still waiting, not sequenced
     });
 });

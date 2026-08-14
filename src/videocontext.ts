@@ -1,0 +1,1147 @@
+//Matthew Shotton, R&D User Experience,© BBC 2015
+import {
+    createSigmaGraphDataFromRenderGraph,
+    visualiseVideoContextTimeline,
+    visualiseVideoContextGraph,
+    createControlFormForNode,
+    UpdateablesManager,
+    exportToJSON,
+    importSimpleEDL,
+    snapshot,
+    generateRandomId
+} from "./utils.js";
+import NODES from "./SourceNodes/nodes.js";
+import VideoNode from "./SourceNodes/videonode.js";
+import AudioNode from "./SourceNodes/audionode.js";
+import MediaNode from "./SourceNodes/medianode.js";
+import ImageNode from "./SourceNodes/imagenode.js";
+import CanvasNode from "./SourceNodes/canvasnode.js";
+import SourceNode, { SOURCENODESTATE } from "./SourceNodes/sourcenode.js";
+import CompositingNode from "./ProcessingNodes/compositingnode.js";
+import DestinationNode from "./DestinationNode/destinationnode.js";
+import EffectNode from "./ProcessingNodes/effectnode.js";
+import TransitionNode from "./ProcessingNodes/transitionnode.js";
+import ProcessingNode from "./ProcessingNodes/processingnode.js";
+import RenderGraph from "./rendergraph.js";
+import VideoElementCache from "./videoelementcache.js";
+import DEFINITIONS from "./Definitions/definitions.js";
+import type { IDefinition } from "./types.js";
+
+const updateablesManager = new UpdateablesManager();
+
+/**
+ * Video Context States
+ * @readonly
+ * @typedef {Object} STATE
+ * @property {number} STATE.PLAYING - All sources are active
+ * @property {number} STATE.PAUSED - All sources are paused
+ * @property {number} STATE.STALLED - One or more sources is unable to play
+ * @property {number} STATE.ENDED - All sources have finished playing
+ * @property {number} STATE.BROKEN - The render graph is in a broken state
+ */
+const STATE = Object.freeze({
+    PLAYING: 0,
+    PAUSED: 1,
+    STALLED: 2,
+    ENDED: 3,
+    BROKEN: 4
+});
+
+/**
+ * Video Context Events
+ * @readonly
+ * @typedef {Object} EVENTS
+ * @property {string} EVENTS.UPDATE - Called any time a frame is rendered to the screen.
+ * @property {string} EVENTS.STALLED - Happens any time the playback is stopped due to buffer starvation for playing assets.
+ * @property {string} EVENTS.ENDED - Called once playback has finished (i.e ctx.currentTime == ctx.duration).
+ * @property {string} EVENTS.CONTENT - Called at the start of a time region where there is content playing out of one or more sourceNodes.
+ * @property {string} EVENTS.NOCONTENT - Called at the start of any time region where the VideoContext is still playing, but there are currently no active playing sources.
+ */
+const EVENTS = Object.freeze({
+    UPDATE: "update",
+    STALLED: "stalled",
+    ENDED: "ended",
+    CONTENT: "content",
+    NOCONTENT: "nocontent"
+});
+
+interface ITimelineCallback {
+    time: number;
+    func: () => void;
+    ordering: number;
+}
+
+type EventCallback = (currentTime: number) => void;
+
+interface IVideoContextOptions {
+    manualUpdate?: boolean;
+    endOnLastSourceEnd?: boolean;
+    useVideoElementCache?: boolean;
+    videoElementCacheSize?: number;
+    webglContextAttributes?: WebGLContextAttributes;
+}
+
+/**
+ * VideoContext.
+ * @module VideoContext
+ */
+export default class VideoContext {
+    _canvas: HTMLCanvasElement;
+    _endOnLastSourceEnd: boolean;
+    _gl!: WebGLRenderingContext;
+    _useVideoElementCache: boolean | undefined;
+    _videoElementCache: VideoElementCache | undefined;
+    _id!: string;
+    _renderGraph!: RenderGraph;
+    _sourceNodes!: SourceNode[];
+    _processingNodes!: ProcessingNode[];
+    _timeline!: unknown[];
+    _currentTime!: number;
+    _state!: number;
+    _playbackRate!: number;
+    _volume!: number;
+    _sourcesPlaying: boolean | undefined;
+    _destinationNode!: DestinationNode;
+    _callbacks!: Map<string, EventCallback[]>;
+    _timelineCallbacks!: ITimelineCallback[];
+
+    /**
+     * Initialise the VideoContext and render to the specific canvas. A 2nd parameter can be passed to the constructor which is a function that gets called if the VideoContext fails to initialise.
+     *
+     * @param {Canvas} canvas - the canvas element to render the output to.
+     * @param {function} [initErrorCallback] - a callback for if initialising the canvas failed.
+     * @param {Object} [options] - a number of custom options which can be set on the VideoContext, generally best left as default.
+     * @param {boolean} [options.manualUpdate=false] - Make Video Context not use the updatable manager
+     * @param {boolean} [options.endOnLastSourceEnd=true] - Trigger an `ended` event when the current time goes above the duration of the composition
+     * @param {boolean} [options.useVideoElementCache=true] - Creates a pool of video elements that will be all initialised at the same time. Important for mobile support
+     * @param {number} [options.videoElementCacheSize=6] - Number of video elements in the pool
+     * @param {object} [options.webglContextAttributes] - A set of attributes used when getting the GL context. Alpha will always be `false`.
+     *
+     * @example
+     * var canvasElement = document.getElementById("canvas");
+     * var ctx = new VideoContext(canvasElement, () => console.error("Sorry, your browser doesn't support WebGL"));
+     * var videoNode = ctx.video("video.mp4");
+     * videoNode.connect(ctx.destination);
+     * videoNode.start(0);
+     * videoNode.stop(10);
+     * ctx.play();
+     */
+    constructor(
+        canvas: HTMLCanvasElement,
+        initErrorCallback?: () => void,
+        {
+            manualUpdate = false,
+            endOnLastSourceEnd = true,
+            useVideoElementCache = true,
+            videoElementCacheSize = 6,
+            webglContextAttributes = {}
+        }: IVideoContextOptions = {}
+    ) {
+        this._canvas = canvas;
+        this._endOnLastSourceEnd = endOnLastSourceEnd;
+
+        const contextAttributes = Object.assign(
+            { preserveDrawingBuffer: true }, // can be overridden
+            webglContextAttributes,
+            { alpha: false } // Can't be overridden because it is copied last
+        );
+        const gl = (canvas.getContext("webgl", contextAttributes) ||
+            canvas.getContext(
+                "experimental-webgl",
+                contextAttributes
+            )) as WebGLRenderingContext | null;
+        if (!gl) {
+            console.error("Failed to initialise WebGL.");
+            if (initErrorCallback) initErrorCallback();
+            return;
+        }
+        this._gl = gl;
+
+        // Initialise the video element cache
+        this._useVideoElementCache = useVideoElementCache;
+        if (this._useVideoElementCache) {
+            this._videoElementCache = new VideoElementCache(videoElementCacheSize);
+        }
+
+        // Create a unique ID for this VideoContext which can be used in the debugger.
+        if (this._canvas.id) {
+            if (
+                typeof this._canvas.id === "string" ||
+                (this._canvas.id as unknown) instanceof String
+            ) {
+                this._id = canvas.id;
+            }
+        }
+        if (this._id === undefined) this._id = generateRandomId();
+        if (window.__VIDEOCONTEXT_REFS__ === undefined) window.__VIDEOCONTEXT_REFS__ = {};
+        window.__VIDEOCONTEXT_REFS__[this._id] = this;
+
+        this._renderGraph = new RenderGraph();
+        this._sourceNodes = [];
+        this._processingNodes = [];
+        this._timeline = [];
+        this._currentTime = 0;
+        this._state = VideoContext.STATE.PAUSED;
+        this._playbackRate = 1.0;
+        this._volume = 1.0;
+        this._sourcesPlaying = undefined;
+        this._destinationNode = new DestinationNode(this._gl, this._renderGraph);
+
+        this._callbacks = new Map();
+        Object.keys(VideoContext.EVENTS).forEach(name =>
+            this._callbacks.set(VideoContext.EVENTS[name as keyof typeof VideoContext.EVENTS], [])
+        );
+
+        this._timelineCallbacks = [];
+
+        if (!manualUpdate) {
+            updateablesManager.register(this);
+        }
+    }
+
+    /**
+     * Returns an ID assigned to the VideoContext instance. This will either be the same id as the underlying canvas element,
+     * or a uniquely generated one.
+     */
+    get id(): string {
+        return this._id;
+    }
+
+    /**
+     * Set the ID of the VideoContext instance. This should be unique.
+     */
+    set id(newID: string) {
+        delete window.__VIDEOCONTEXT_REFS__?.[this._id];
+        if (window.__VIDEOCONTEXT_REFS__?.[newID] !== undefined)
+            console.warn("Warning; setting id to that of an existing VideoContext instance.");
+        if (window.__VIDEOCONTEXT_REFS__) window.__VIDEOCONTEXT_REFS__[newID] = this;
+        this._id = newID;
+    }
+
+    /**
+     * Register a callback to happen at a specific point in time.
+     * @param {number} time - the time at which to trigger the callback.
+     * @param {Function} func - the callback to register.
+     * @param {number} ordering - the order in which to call the callback if more than one is registered for the same time.
+     */
+    registerTimelineCallback(time: number, func: () => void, ordering = 0): void {
+        this._timelineCallbacks.push({
+            time: time,
+            func: func,
+            ordering: ordering
+        });
+    }
+
+    /**
+     * Unregister a callback which happens at a specific point in time.
+     * @param {Function} func - the callback to unregister.
+     */
+    unregisterTimelineCallback(func: () => void): void {
+        const toRemove = [];
+        for (const callback of this._timelineCallbacks) {
+            if (callback.func === func) {
+                toRemove.push(callback);
+            }
+        }
+        for (const callback of toRemove) {
+            const index = this._timelineCallbacks.indexOf(callback);
+            this._timelineCallbacks.splice(index, 1);
+        }
+    }
+
+    /**
+     * Register a callback to listen to one of the events defined in `VideoContext.EVENTS`
+     *
+     * @param {String} type - the event to register against.
+     * @param {Function} func - the callback to register.
+     *
+     * @example
+     * var canvasElement = document.getElementById("canvas");
+     * var ctx = new VideoContext(canvasElement);
+     * ctx.registerCallback(VideoContext.EVENTS.STALLED, () => console.log("Playback stalled"));
+     * ctx.registerCallback(VideoContext.EVENTS.UPDATE, () => console.log("new frame"));
+     * ctx.registerCallback(VideoContext.EVENTS.ENDED, () => console.log("Playback ended"));
+     */
+    registerCallback(type: string, func: EventCallback): false | undefined {
+        if (!this._callbacks.has(type)) return false;
+        this._callbacks.get(type)?.push(func);
+        return undefined;
+    }
+
+    /**
+     * Remove a previously registered callback
+     *
+     * @param {Function} func - the callback to remove.
+     *
+     * @example
+     * var canvasElement = document.getElementById("canvas");
+     * var ctx = new VideoContext(canvasElement);
+     *
+     * //the callback
+     * var updateCallback = () => console.log("new frame");
+     *
+     * //register the callback
+     * ctx.registerCallback(VideoContext.EVENTS.UPDATE, updateCallback);
+     * //then unregister it
+     * ctx.unregisterCallback(updateCallback);
+     */
+    unregisterCallback(func: EventCallback): boolean {
+        for (const funcArray of this._callbacks.values()) {
+            const index = funcArray.indexOf(func);
+            if (index !== -1) {
+                funcArray.splice(index, 1);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    _callCallbacks(type: string): void {
+        const funcArray = this._callbacks.get(type);
+        if (!funcArray) return;
+        for (const func of funcArray) {
+            func(this._currentTime);
+        }
+    }
+
+    /**
+     * Get the canvas that the VideoContext is using.
+     *
+     * @return {HTMLCanvasElement} The canvas that the VideoContext is using.
+     */
+    get element(): HTMLCanvasElement {
+        return this._canvas;
+    }
+
+    /**
+     * Get the current state.
+     * @return {STATE} The number representing the state.
+     */
+    get state(): number {
+        return this._state;
+    }
+
+    /**
+     * Get whether the VideoContext will trigger an `ended` event when the current time goes
+     * above the duration of the composition.
+     *
+     * @return {boolean} The value of the endOnLastSourceEnd option.
+     */
+    get endOnLastSourceEnd(): boolean {
+        return this._endOnLastSourceEnd;
+    }
+
+    /**
+     * Set the progress through the internal timeline.
+     * Setting this can be used as a way to implement a scrubbable timeline.
+     *
+     * @param {number} currentTime - this is the currentTime to set in seconds.
+     *
+     * @example
+     * var canvasElement = document.getElementById("canvas");
+     * var ctx = new VideoContext(canvasElement);
+     * var videoNode = ctx.video("video.mp4");
+     * videoNode.connect(ctx.destination);
+     * videoNode.start(0);
+     * videoNode.stop(20);
+     * ctx.currentTime = 10; // seek 10 seconds in
+     * ctx.play();
+     */
+    set currentTime(currentTime: number) {
+        if (currentTime < this.duration && this._state === VideoContext.STATE.ENDED)
+            this._state = VideoContext.STATE.PAUSED;
+
+        if (typeof currentTime === "string" || (currentTime as unknown) instanceof String) {
+            currentTime = parseFloat(currentTime as unknown as string);
+        }
+
+        for (let i = 0; i < this._sourceNodes.length; i++) {
+            this._sourceNodes[i]._seek(currentTime);
+        }
+        for (let i = 0; i < this._processingNodes.length; i++) {
+            this._processingNodes[i]._seek(currentTime);
+        }
+        this._currentTime = currentTime;
+    }
+
+    /**
+     * Get how far through the internal timeline has been played.
+     *
+     * Getting this value will give the current playhead position. Can be used for updating timelines.
+     * @return {number} The time in seconds through the current playlist.
+     *
+     * @example
+     * var canvasElement = document.getElementById("canvas");
+     * var ctx = new VideoContext(canvasElement);
+     * var videoNode = ctx.video("video.mp4");
+     * videoNode.connect(ctx.destination);
+     * videoNode.start(0);
+     * videoNode.stop(10);
+     * ctx.play();
+     * setTimeout(() => console.log(ctx.currentTime),1000); //should print roughly 1.0
+     */
+    get currentTime(): number {
+        return this._currentTime;
+    }
+
+    /**
+     * Get the time at which the last node in the current internal timeline finishes playing.
+     *
+     * @return {number} The end time in seconds of the last video node to finish playing.
+     *
+     * @example
+     * var canvasElement = document.getElementById("canvas");
+     * var ctx = new VideoContext(canvasElement);
+     * console.log(ctx.duration); //prints 0
+     *
+     * var videoNode = ctx.video("video.mp4");
+     * videoNode.connect(ctx.destination);
+     * videoNode.start(0);
+     * videoNode.stop(10);
+     *
+     * console.log(ctx.duration); //prints 10
+     *
+     * ctx.play();
+     */
+    get duration(): number {
+        let maxTime = 0;
+        for (let i = 0; i < this._sourceNodes.length; i++) {
+            if (
+                this._sourceNodes[i].state !== SOURCENODESTATE.waiting &&
+                this._sourceNodes[i]._stopTime > maxTime
+            ) {
+                maxTime = this._sourceNodes[i]._stopTime;
+            }
+        }
+        return maxTime;
+    }
+
+    /**
+     * Get the final node in the render graph which represents the canvas to display content on to.
+     *
+     * This property is read-only and there can only ever be one destination node. Other nodes can connect to this but you cannot connect this node to anything.
+     *
+     * @return {DestinationNode} A graph node representing the canvas to display the content on.
+     * @example
+     * var canvasElement = document.getElementById("canvas");
+     * var ctx = new VideoContext(canvasElement);
+     * var videoNode = ctx.video("video.mp4");
+     * videoNode.start(0);
+     * videoNode.stop(10);
+     * videoNode.connect(ctx.destination);
+     */
+    get destination(): DestinationNode {
+        return this._destinationNode;
+    }
+
+    /**
+     * Set the playback rate of the VideoContext instance.
+     * This will alter the playback speed of all media elements played through the VideoContext.
+     *
+     * @param {number} rate - this is the playback rate.
+     *
+     * @example
+     * var canvasElement = document.getElementById("canvas");
+     * var ctx = new VideoContext(canvasElement);
+     * var videoNode = ctx.video("video.mp4");
+     * videoNode.start(0);
+     * videoNode.stop(10);
+     * videoNode.connect(ctx.destination);
+     * ctx.playbackRate = 2;
+     * ctx.play(); // Double playback rate means this will finish playing in 5 seconds.
+     */
+    set playbackRate(rate: number) {
+        if (rate <= 0) {
+            throw new RangeError("playbackRate must be greater than 0");
+        }
+        for (const node of this._sourceNodes) {
+            if (node instanceof MediaNode) {
+                node._globalPlaybackRate = rate;
+                node._playbackRateUpdated = true;
+            }
+        }
+        this._playbackRate = rate;
+    }
+
+    /**
+     * Return the current playbackRate of the video context.
+     * @return {number} A value representing the playbackRate. 1.0 by default.
+     */
+    get playbackRate(): number {
+        return this._playbackRate;
+    }
+
+    /**
+     * Set the volume of all MediaNodes created in the VideoContext.
+     * @param {number} volume - the volume to apply to the media nodes.
+     */
+    set volume(vol: number) {
+        for (const node of this._sourceNodes) {
+            if (node instanceof MediaNode) {
+                node.volume = vol;
+            }
+        }
+        this._volume = vol;
+    }
+
+    /**
+     * Return the current volume of the video context.
+     * @return {number} A value representing the volume. 1.0 by default.
+     */
+    get volume(): number {
+        return this._volume;
+    }
+
+    /**
+     * Start the VideoContext playing
+     * @example
+     * var canvasElement = document.getElementById("canvas");
+     * var ctx = new VideoContext(canvasElement);
+     * var videoNode = ctx.video("video.mp4");
+     * videoNode.connect(ctx.destination);
+     * videoNode.start(0);
+     * videoNode.stop(10);
+     * ctx.play();
+     */
+    play(): boolean {
+        console.debug("VideoContext - playing");
+        //Initialise the video element cache
+        if (this._videoElementCache) this._videoElementCache.init();
+        // set the state.
+        this._state = VideoContext.STATE.PLAYING;
+        return true;
+    }
+
+    /**
+     * Pause playback of the VideoContext
+     * @example
+     * var canvasElement = document.getElementById("canvas");
+     * var ctx = new VideoContext(canvasElement);
+     * var videoNode = ctx.video("video.mp4");
+     * videoNode.connect(ctx.destination);
+     * videoNode.start(0);
+     * videoNode.stop(20);
+     * ctx.currentTime = 10; // seek 10 seconds in
+     * ctx.play();
+     * setTimeout(() => ctx.pause(), 1000); //pause playback after roughly one second.
+     */
+    pause(): boolean {
+        console.debug("VideoContext - pausing");
+        this._state = VideoContext.STATE.PAUSED;
+        return true;
+    }
+
+    /**
+     * Create a new node representing a video source
+     *
+     * @param {string|HTMLVideoElement|MediaStream} src - The URL or video element to create the video from.
+     * @param {number} [sourceOffset=0] - Offset into the start of the source video to start playing from.
+     * @param {number} [preloadTime=4] - How many seconds before the video is to be played to start loading it.
+     * @param {Object} [videoElementAttributes] - A dictionary of attributes to map onto the underlying video element.
+     * @return {VideoNode} A new video node.
+     *
+     * @example
+     * var canvasElement = document.getElementById("canvas");
+     * var ctx = new VideoContext(canvasElement);
+     * var videoNode = ctx.video("bigbuckbunny.mp4");
+     */
+    video(
+        src: string | HTMLVideoElement | MediaStream,
+        sourceOffset = 0,
+        preloadTime = 4,
+        videoElementAttributes: Record<string, unknown> = {}
+    ): VideoNode {
+        const videoNode = new VideoNode(
+            src,
+            this._gl,
+            this._renderGraph,
+            this._currentTime,
+            this._playbackRate,
+            sourceOffset,
+            preloadTime,
+            this._videoElementCache,
+            videoElementAttributes
+        );
+        this._sourceNodes.push(videoNode);
+        return videoNode;
+    }
+
+    /**
+     * Create a new node representing an audio source
+     * @param {string|HTMLAudioElement|MediaStream} src - The url or audio element to create the audio node from.
+     * @param {number} [sourceOffset=0] - Offset into the start of the source audio to start playing from.
+     * @param {number} [preloadTime=4] - How long before a node is to be displayed to attempt to load it.
+     * @param {Object} [audioElementAttributes] - Any attributes to be given to the underlying audio element.
+     * @return {AudioNode} A new audio node.
+     *
+     * @example
+     * var canvasElement = document.getElementById("canvas");
+     * var ctx = new VideoContext(canvasElement);
+     * var audioNode = ctx.audio("ziggystardust.mp3");
+     */
+    audio(
+        src: string | HTMLAudioElement | MediaStream,
+        sourceOffset = 0,
+        preloadTime = 4,
+        audioElementAttributes: Record<string, unknown> = {}
+    ): AudioNode {
+        const audioNode = new AudioNode(
+            src,
+            this._gl,
+            this._renderGraph,
+            this._currentTime,
+            this._playbackRate,
+            sourceOffset,
+            preloadTime,
+            this._videoElementCache,
+            audioElementAttributes
+        );
+        this._sourceNodes.push(audioNode);
+        return audioNode;
+    }
+
+    /**
+     * @deprecated
+     */
+    createVideoSourceNode(
+        src: string | HTMLVideoElement | MediaStream,
+        sourceOffset = 0,
+        preloadTime = 4,
+        videoElementAttributes: Record<string, unknown> = {}
+    ): VideoNode {
+        this._deprecate(
+            "Warning: createVideoSourceNode will be deprecated in v1.0, please switch to using VideoContext.video()"
+        );
+        return this.video(src, sourceOffset, preloadTime, videoElementAttributes);
+    }
+
+    /**
+     * Create a new node representing an image source
+     * @param {string|Image|ImageBitmap} src - The url or image element to create the image node from.
+     * @param {number} [preloadTime=4] - How long before a node is to be displayed to attempt to load it.
+     * @param {Object} [imageElementAttributes] - Any attributes to be given to the underlying image element.
+     * @return {ImageNode} A new image node.
+     *
+     * @example
+     * var canvasElement = document.getElementById("canvas");
+     * var ctx = new VideoContext(canvasElement);
+     * var imageNode = ctx.image("image.png");
+     *
+     * @example
+     * var canvasElement = document.getElementById("canvas");
+     * var imageElement = document.getElementById("image");
+     * var ctx = new VideoContext(canvasElement);
+     * var imageNode = ctx.image(imageElement);
+     */
+    image(
+        src: string | HTMLImageElement | ImageBitmap,
+        preloadTime = 4,
+        imageElementAttributes: Record<string, unknown> = {}
+    ): ImageNode {
+        const imageNode = new ImageNode(
+            src,
+            this._gl,
+            this._renderGraph,
+            this._currentTime,
+            preloadTime,
+            imageElementAttributes
+        );
+        this._sourceNodes.push(imageNode);
+        return imageNode;
+    }
+
+    /**
+     * @deprecated
+     */
+    createImageSourceNode(
+        src: string | HTMLImageElement | ImageBitmap,
+        _sourceOffset = 0,
+        preloadTime = 4,
+        imageElementAttributes: Record<string, unknown> = {}
+    ): ImageNode {
+        this._deprecate(
+            "Warning: createImageSourceNode will be deprecated in v1.0, please switch to using VideoContext.image()"
+        );
+        return this.image(src, preloadTime, imageElementAttributes);
+    }
+
+    /**
+     * Create a new node representing a canvas source
+     * @param {Canvas} canvas - The canvas element to create the canvas node from.
+     * @return {CanvasNode} A new canvas node.
+     */
+    canvas(canvas: HTMLCanvasElement): CanvasNode {
+        const canvasNode = new CanvasNode(canvas, this._gl, this._renderGraph, this._currentTime);
+        this._sourceNodes.push(canvasNode);
+        return canvasNode;
+    }
+
+    /**
+     * @deprecated
+     */
+    createCanvasSourceNode(canvas: HTMLCanvasElement): CanvasNode {
+        this._deprecate(
+            "Warning: createCanvasSourceNode will be deprecated in v1.0, please switch to using VideoContext.canvas()"
+        );
+        return this.canvas(canvas);
+    }
+
+    /**
+     * Create a new effect node.
+     * @param {Object} definition - this is an object defining the shaders, inputs, and properties of the effect node to create. Built-in definitions can be found by accessing VideoContext.DEFINITIONS.
+     * @return {EffectNode} A new effect node created from the passed definition
+     */
+    effect(definition: IDefinition): EffectNode {
+        const effectNode = new EffectNode(this._gl, this._renderGraph, definition);
+        this._processingNodes.push(effectNode);
+        return effectNode;
+    }
+
+    /**
+     * @deprecated
+     */
+    createEffectNode(definition: IDefinition): EffectNode {
+        this._deprecate(
+            "Warning: createEffectNode will be deprecated in v1.0, please switch to using VideoContext.effect()"
+        );
+        return this.effect(definition);
+    }
+
+    /**
+     * Create a new compositing node.
+     *
+     * Compositing nodes are used for operations such as combining multiple video sources into a single track/connection for further processing in the graph.
+     *
+     * A compositing node is slightly different to other processing nodes in that it only has one input in its definition but can have unlimited connections made to it.
+     * The shader in the definition is run for each input in turn, drawing them to the output buffer. This means there can be no interaction between the separate inputs to a compositing node, as they are individually processed in separate shader passes.
+     *
+     * @param {Object} definition - this is an object defining the shaders, inputs, and properties of the compositing node to create. Built-in definitions can be found by accessing VideoContext.DEFINITIONS
+     *
+     * @return {CompositingNode} A new compositing node created from the passed definition.
+     *
+     * @example
+     *
+     * var canvasElement = document.getElementById("canvas");
+     * var ctx = new VideoContext(canvasElement);
+     *
+     * //A simple compositing node definition which just renders all the inputs to the output buffer.
+     * var combineDefinition = {
+     *     vertexShader : "\
+     *         attribute vec2 a_position;\
+     *         attribute vec2 a_texCoord;\
+     *         varying vec2 v_texCoord;\
+     *         void main() {\
+     *             gl_Position = vec4(vec2(2.0,2.0)*vec2(1.0, 1.0), 0.0, 1.0);\
+     *             v_texCoord = a_texCoord;\
+     *         }",
+     *     fragmentShader : "\
+     *         precision mediump float;\
+     *         uniform sampler2D u_image;\
+     *         uniform float a;\
+     *         varying vec2 v_texCoord;\
+     *         varying float v_progress;\
+     *         void main(){\
+     *             vec4 color = texture2D(u_image, v_texCoord);\
+     *             gl_FragColor = color;\
+     *         }",
+     *     properties:{
+     *         "a":{type:"uniform", value:0.0},
+     *     },
+     *     inputs:["u_image"]
+     * };
+     * //Create the node, passing in the definition.
+     * var trackNode = videoCtx.compositor(combineDefinition);
+     *
+     * //create two videos which will play back to back
+     * var videoNode1 = ctx.video("video1.mp4");
+     * videoNode1.play(0);
+     * videoNode1.stop(10);
+     * var videoNode2 = ctx.video("video2.mp4");
+     * videoNode2.play(10);
+     * videoNode2.stop(20);
+     *
+     * //Connect the nodes to the combine node. This will give a single connection representing the two videos which can
+     * //be connected to other effects such as LUTs, chromakeyers, etc.
+     * videoNode1.connect(trackNode);
+     * videoNode2.connect(trackNode);
+     *
+     * //Don't do anything exciting, just connect it to the output.
+     * trackNode.connect(ctx.destination);
+     */
+    compositor(definition: IDefinition): CompositingNode {
+        const compositingNode = new CompositingNode(this._gl, this._renderGraph, definition);
+        this._processingNodes.push(compositingNode);
+        return compositingNode;
+    }
+
+    /**
+     * Instantiate a custom built source node
+     * @param {SourceNode} CustomSourceNode
+     * @param {Object} src
+     * @param  {...any} options
+     */
+    customSourceNode<T extends SourceNode>(
+        CustomSourceNode: new (
+            src: unknown,
+            gl: WebGLRenderingContext,
+            renderGraph: RenderGraph,
+            currentTime: number,
+            ...args: unknown[]
+        ) => T,
+        src: unknown,
+        ...options: unknown[]
+    ): T {
+        const customSourceNode = new CustomSourceNode(
+            src,
+            this._gl,
+            this._renderGraph,
+            this._currentTime,
+            ...options
+        );
+        this._sourceNodes.push(customSourceNode);
+        return customSourceNode;
+    }
+
+    /**
+     * @deprecated
+     */
+    createCompositingNode(definition: IDefinition): CompositingNode {
+        this._deprecate(
+            "Warning: createCompositingNode will be deprecated in v1.0, please switch to using VideoContext.compositor()"
+        );
+        return this.compositor(definition);
+    }
+
+    /**
+     * Create a new transition node.
+     *
+     * Transition nodes are a type of effect node which have parameters which can be changed as events on the timeline.
+     *
+     * For example a transition node which cross-fades between two videos could have a "mix" property which sets the
+     * progress through the transition. Rather than having to write your own code to adjust this property at specific
+     * points in time a transition node has a "transition" function which takes a startTime, stopTime, targetValue, and a
+     * propertyName (which will be "mix"). This will linearly interpolate the property from the current value to
+     * targetValue between the startTime and stopTime.
+     *
+     * @param {Object} definition - this is an object defining the shaders, inputs, and properties of the transition node to create.
+     * @return {TransitionNode} A new transition node created from the passed definition.
+     * @example
+     *
+     * var canvasElement = document.getElementById("canvas");
+     * var ctx = new VideoContext(canvasElement);
+     *
+     * //A simple cross-fade node definition which cross-fades between two videos based on the mix property.
+     * var crossfadeDefinition = {
+     *     vertexShader : "\
+     *        attribute vec2 a_position;\
+     *        attribute vec2 a_texCoord;\
+     *        varying vec2 v_texCoord;\
+     *        void main() {\
+     *            gl_Position = vec4(vec2(2.0,2.0)*a_position-vec2(1.0, 1.0), 0.0, 1.0);\
+     *            v_texCoord = a_texCoord;\
+     *         }",
+     *     fragmentShader : "\
+     *         precision mediump float;\
+     *         uniform sampler2D u_image_a;\
+     *         uniform sampler2D u_image_b;\
+     *         uniform float mix;\
+     *         varying vec2 v_texCoord;\
+     *         varying float v_mix;\
+     *         void main(){\
+     *             vec4 color_a = texture2D(u_image_a, v_texCoord);\
+     *             vec4 color_b = texture2D(u_image_b, v_texCoord);\
+     *             color_a[0] *= mix;\
+     *             color_a[1] *= mix;\
+     *             color_a[2] *= mix;\
+     *             color_a[3] *= mix;\
+     *             color_b[0] *= (1.0 - mix);\
+     *             color_b[1] *= (1.0 - mix);\
+     *             color_b[2] *= (1.0 - mix);\
+     *             color_b[3] *= (1.0 - mix);\
+     *             gl_FragColor = color_a + color_b;\
+     *         }",
+     *     properties:{
+     *         "mix":{type:"uniform", value:0.0},
+     *     },
+     *     inputs:["u_image_a","u_image_b"]
+     * };
+     *
+     * //Create the node, passing in the definition.
+     * var transitionNode = videoCtx.transition(crossfadeDefinition);
+     *
+     * //create two videos which will overlap by two seconds
+     * var videoNode1 = ctx.video("video1.mp4");
+     * videoNode1.play(0);
+     * videoNode1.stop(10);
+     * var videoNode2 = ctx.video("video2.mp4");
+     * videoNode2.play(8);
+     * videoNode2.stop(18);
+     *
+     * //Connect the nodes to the transition node.
+     * videoNode1.connect(transitionNode);
+     * videoNode2.connect(transitionNode);
+     *
+     * //Set-up a transition which happens at the crossover point of the playback of the two videos
+     * transitionNode.transition(8,10,1.0,"mix");
+     *
+     * //Connect the transition node to the output
+     * transitionNode.connect(ctx.destination);
+     *
+     * //start playback
+     * ctx.play();
+     */
+    transition(definition: IDefinition): TransitionNode {
+        const transitionNode = new TransitionNode(this._gl, this._renderGraph, definition);
+        this._processingNodes.push(transitionNode);
+        return transitionNode;
+    }
+
+    /**
+     * @deprecated
+     */
+    createTransitionNode(definition: IDefinition): TransitionNode {
+        this._deprecate(
+            "Warning: createTransitionNode will be deprecated in v1.0, please switch to using VideoContext.transition()"
+        );
+        return this.transition(definition);
+    }
+
+    _isStalled(): boolean {
+        for (let i = 0; i < this._sourceNodes.length; i++) {
+            const sourceNode = this._sourceNodes[i];
+            if (!sourceNode._isReady()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * This allows manual calling of the update loop of the videoContext.
+     *
+     * @param {Number} dt - The difference in seconds between this and the previous calling of update.
+     * @example
+     *
+     * var canvasElement = document.getElementById("canvas");
+     * var ctx = new VideoContext(canvasElement, undefined, {"manualUpdate" : true});
+     *
+     * var previousTime;
+     * function update(time){
+     *     if (previousTime === undefined) previousTime = time;
+     *     var dt = (time - previousTime)/1000;
+     *     ctx.update(dt);
+     *     previousTime = time;
+     *     requestAnimationFrame(update);
+     * }
+     * update();
+     */
+    update(dt: number): void {
+        this._update(dt);
+    }
+
+    _update(dt: number): void {
+        //Remove any destroyed nodes
+        this._sourceNodes = this._sourceNodes.filter(sourceNode => !sourceNode.destroyed);
+        this._processingNodes = this._processingNodes.filter(
+            processingNode => !processingNode.destroyed
+        );
+
+        if (
+            this._state === VideoContext.STATE.PLAYING ||
+            this._state === VideoContext.STATE.STALLED ||
+            this._state === VideoContext.STATE.PAUSED
+        ) {
+            this._callCallbacks(VideoContext.EVENTS.UPDATE);
+
+            if (this._state !== VideoContext.STATE.PAUSED) {
+                if (this._isStalled()) {
+                    this._callCallbacks(VideoContext.EVENTS.STALLED);
+                    this._state = VideoContext.STATE.STALLED;
+                } else {
+                    this._state = VideoContext.STATE.PLAYING;
+                }
+            }
+
+            if (this._state === VideoContext.STATE.PLAYING) {
+                //Handle timeline callbacks.
+                const activeCallbacks = new Map<number, ITimelineCallback[]>();
+                for (const callback of this._timelineCallbacks) {
+                    if (
+                        callback.time >= this.currentTime &&
+                        callback.time < this._currentTime + dt * this._playbackRate
+                    ) {
+                        //group the callbacks by time
+                        let callbacks = activeCallbacks.get(callback.time);
+                        if (!callbacks) {
+                            callbacks = [];
+                            activeCallbacks.set(callback.time, callbacks);
+                        }
+                        callbacks.push(callback);
+                    }
+                }
+
+                //Sort the groups of callbacks by the times of the groups
+                const timeIntervals = Array.from(activeCallbacks.keys());
+                timeIntervals.sort(function (a, b) {
+                    return a - b;
+                });
+
+                for (const t of timeIntervals) {
+                    const callbacks = activeCallbacks.get(t) as ITimelineCallback[];
+                    callbacks.sort(function (a, b) {
+                        return a.ordering - b.ordering;
+                    });
+                    for (const callback of callbacks) {
+                        callback.func();
+                    }
+                }
+
+                this._currentTime += dt * this._playbackRate;
+                if (this._currentTime > this.duration && this._endOnLastSourceEnd) {
+                    //Do an update of the source nodes in case anything in the "ended" callbacks modifies currentTime and sources haven't had a chance to stop.
+                    for (let i = 0; i < this._sourceNodes.length; i++) {
+                        this._sourceNodes[i]._update(this._currentTime);
+                    }
+                    this._state = VideoContext.STATE.ENDED;
+                    this._callCallbacks(VideoContext.EVENTS.ENDED);
+                }
+            }
+
+            let sourcesPlaying = false;
+
+            for (let i = 0; i < this._sourceNodes.length; i++) {
+                const sourceNode = this._sourceNodes[i];
+
+                if (this._state === VideoContext.STATE.STALLED) {
+                    if (sourceNode._isReady() && sourceNode._state === SOURCENODESTATE.playing)
+                        sourceNode._pause();
+                }
+                if (this._state === VideoContext.STATE.PAUSED) {
+                    sourceNode._pause();
+                }
+                if (this._state === VideoContext.STATE.PLAYING) {
+                    sourceNode._play();
+                }
+                sourceNode._update(this._currentTime);
+                if (
+                    sourceNode._state === SOURCENODESTATE.paused ||
+                    sourceNode._state === SOURCENODESTATE.playing
+                ) {
+                    sourcesPlaying = true;
+                }
+            }
+
+            if (
+                sourcesPlaying !== this._sourcesPlaying &&
+                this._state === VideoContext.STATE.PLAYING
+            ) {
+                if (sourcesPlaying === true) {
+                    this._callCallbacks(VideoContext.EVENTS.CONTENT);
+                } else {
+                    this._callCallbacks(VideoContext.EVENTS.NOCONTENT);
+                }
+                this._sourcesPlaying = sourcesPlaying;
+            }
+
+            /*
+             * Iterate the directed acyclic graph using Kahn's algorithm.
+             *
+             * This has highlighted a bunch of inefficiencies in the rendergraph class about how it stores connections.
+             * Mainly the fact that to get inputs for a node you have to iterate the full list of connections rather than
+             * a node owning its connections.
+             * The trade-off with changing this is making/removing connections becomes more costly performance wise, but
+             * this is definitely worthwhile because getting the connections is a much more common operation.
+             *
+             * TL;DR Future matt - refactor this.
+             */
+            const sortedNodes = [];
+            const connections = this._renderGraph.connections.slice();
+            const nodes = RenderGraph.getInputlessNodes(connections);
+
+            while (nodes.length > 0) {
+                const node = nodes.pop() as (typeof nodes)[number];
+                sortedNodes.push(node);
+                for (const edge of RenderGraph.outputEdgesFor(node, connections)) {
+                    const index = connections.indexOf(edge);
+                    if (index > -1) connections.splice(index, 1);
+                    if (RenderGraph.inputEdgesFor(edge.destination, connections).length === 0) {
+                        nodes.push(edge.destination);
+                    }
+                }
+            }
+
+            for (const node of sortedNodes) {
+                if (this._sourceNodes.indexOf(node as SourceNode) === -1) {
+                    (node as ProcessingNode)._update(this._currentTime);
+                    (node as ProcessingNode)._render();
+                }
+            }
+        }
+    }
+
+    /**
+     * Destroy all nodes in the graph and reset the timeline. After calling this any created nodes will be unusable.
+     */
+    reset(): void {
+        //clear all registered event callbacks first, so they don't fire during the reset
+        Object.keys(VideoContext.EVENTS).forEach(name =>
+            this._callbacks.set(VideoContext.EVENTS[name as keyof typeof VideoContext.EVENTS], [])
+        );
+        this._timelineCallbacks = [];
+        for (const node of this._sourceNodes) {
+            node.destroy();
+        }
+        for (const node of this._processingNodes) {
+            node.destroy();
+        }
+        this._update(0);
+        this._sourceNodes = [];
+        this._processingNodes = [];
+        this._timeline = [];
+        this._currentTime = 0;
+        this._state = VideoContext.STATE.PAUSED;
+        this._playbackRate = 1.0;
+        this._sourcesPlaying = undefined;
+    }
+
+    /**
+     * Destroy the VideoContext, unregistering it from the update loop and destroying all
+     * created nodes. After calling this the VideoContext is unusable.
+     */
+    destroy(): void {
+        updateablesManager.unregister(this);
+        this.reset();
+        if (window.__VIDEOCONTEXT_REFS__ !== undefined) {
+            delete window.__VIDEOCONTEXT_REFS__[this._id];
+        }
+    }
+
+    _deprecate(msg: string): void {
+        console.log(msg);
+    }
+
+    static get DEFINITIONS(): typeof DEFINITIONS {
+        return DEFINITIONS;
+    }
+
+    static get NODES(): typeof NODES {
+        return NODES;
+    }
+
+    /**
+     * Get a JS Object containing the state of the VideoContext instance and all the created nodes.
+     */
+    snapshot() {
+        return snapshot(this);
+    }
+
+    static STATE = STATE;
+    static EVENTS = EVENTS;
+    static visualiseVideoContextTimeline = visualiseVideoContextTimeline;
+    static visualiseVideoContextGraph = visualiseVideoContextGraph;
+    static createControlFormForNode = createControlFormForNode;
+    static createSigmaGraphDataFromRenderGraph = createSigmaGraphDataFromRenderGraph;
+    static exportToJSON = exportToJSON;
+    static updateablesManager = updateablesManager;
+    static importSimpleEDL = importSimpleEDL;
+}
