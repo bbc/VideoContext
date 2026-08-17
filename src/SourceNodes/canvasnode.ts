@@ -64,7 +64,11 @@ class CanvasNode extends SourceNode {
         } else if (this._state === SOURCENODESTATE.paused) {
             return true;
         } else if (this._state === SOURCENODESTATE.ended && this._element !== undefined) {
-            this._unload();
+            //_unload resets _loadCalled so this only runs once; the canvas element
+            //is user-supplied so _element never becomes undefined
+            if (this._loadCalled) {
+                this._unload();
+            }
             return false;
         }
         return false;
