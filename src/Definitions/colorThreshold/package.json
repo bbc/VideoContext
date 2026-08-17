@@ -1,6 +1,0 @@
-{
-    "name": "colorThreshold",
-    "version": "0.0.0",
-    "private": true,
-    "main": "./colorThreshold.js"
-}

@@ -91,12 +91,7 @@ describe("GraphNode", () => {
         });
 
         test("should allow connecting via a specified input port name", () => {
-            expect(
-                node_a.connect(
-                    node_b,
-                    "input_b"
-                )
-            ).toBe(true);
+            expect(node_a.connect(node_b, "input_b")).toBe(true);
 
             const expected_result = [
                 {
@@ -111,10 +106,7 @@ describe("GraphNode", () => {
         });
 
         test("should throw ConnectException if target input is taken", () => {
-            node_c.connect(
-                node_b,
-                "input_a"
-            );
+            node_c.connect(node_b, "input_a");
 
             expect(node_a.connect.bind(node_a, node_b, "input_a")).toThrow(ConnectException);
         });

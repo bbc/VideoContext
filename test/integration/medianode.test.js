@@ -1,7 +1,21 @@
 import VideoContext from "../../src/videocontext";
+import { SOURCENODESTATE } from "../../src/SourceNodes/sourcenode";
 
 let ctx;
 require("webgl-mock");
+
+/*
+ * an element mock which reports itself as ready for playback
+ * (readyState 4 = HAVE_ENOUGH_DATA) so the node's load polling completes
+ */
+const makeReadyElement = (duration = 30) => ({
+    play: jest.fn(),
+    pause: jest.fn(),
+    readyState: 4,
+    seeking: false,
+    duration,
+    currentTime: 0
+});
 
 /*
  * creates a video node with provided attributes.
@@ -23,7 +37,7 @@ const nodeFactory = (
             return _currentTime;
         },
         set currentTime(v) {
-            return _currentTimeSetter(v);
+            _currentTimeSetter(v);
         },
         _currentTimeSetter
     };
@@ -103,6 +117,90 @@ describe("medianode", () => {
         });
     });
 
+    describe("durationchange", () => {
+        /*
+         * an element mock which reports itself as ready for playback
+         * (readyState 4 = HAVE_ENOUGH_DATA) so the node's load polling completes
+         */
+        const readyElementFactory = (duration = 5) => ({
+            play: jest.fn(),
+            pause: jest.fn(),
+            readyState: 4,
+            seeking: false,
+            duration,
+            currentTime: 0
+        });
+
+        it("should fire durationchange exactly once when the duration is derived from the element", () => {
+            const element = readyElementFactory(5);
+            const node = ctx.video(element);
+            node.start(0);
+            const durationChangeSpy = jest.fn();
+            node.registerCallback("durationchange", durationChangeSpy);
+
+            ctx.update(1 / 60);
+            ctx.update(1 / 60);
+            ctx.update(1 / 60);
+
+            expect(durationChangeSpy).toHaveBeenCalledTimes(1);
+            expect(node.stopTime).toBe(5);
+        });
+
+        it("should not fire durationchange every frame for an endless source", () => {
+            const element = readyElementFactory(Infinity);
+            const node = ctx.video(element);
+            node.start(0);
+            const durationChangeSpy = jest.fn();
+            node.registerCallback("durationchange", durationChangeSpy);
+
+            ctx.update(1 / 60);
+            ctx.update(1 / 60);
+            ctx.update(1 / 60);
+
+            expect(durationChangeSpy).not.toHaveBeenCalled();
+            expect(node.stopTime).toBe(Infinity);
+        });
+    });
+
+    describe("unload behaviour", () => {
+        const readyElementFactory = (duration = 30) => ({
+            play: jest.fn(),
+            pause: jest.fn(),
+            readyState: 4,
+            seeking: false,
+            duration,
+            currentTime: 0
+        });
+
+        it("should clear the element error handler when the node is destroyed", () => {
+            const { element, node } = nodeFactory(ctx);
+            ctx.update(1);
+            expect(typeof element.onerror).toBe("function");
+
+            node.destroy();
+
+            expect(element.onerror).toBeFalsy();
+        });
+
+        it("should unload once when a paused node passes its stop time", () => {
+            const element = readyElementFactory();
+            const node = ctx.video(element);
+            node.start(0);
+            node.stop(10);
+            const destroySpy = jest.fn();
+            node.registerCallback("destroy", destroySpy);
+
+            ctx.play();
+            ctx.update(1); // node is now playing
+            node._pause();
+            node._update(1); // paused: element paused, no longer marked as playing
+            node._update(11); // past the stop time: node ends and must unload
+            node._update(12); // ...but only unload once
+
+            expect(destroySpy).toHaveBeenCalledTimes(1);
+        });
+    });
+
     describe("currentTime on provided element", () => {
         it("element.currentTime should equal ctx.currentTime be zero after load if no sourceOffset is given", () => {
             const { element } = nodeFactory(ctx, {}, { sourceOffset: undefined });
@@ -138,6 +236,251 @@ describe("medianode", () => {
             ctx.update(4);
 
             expect(element._currentTimeSetter).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    describe("playbackRate", () => {
+        const rateElementFactory = () => {
+            const element = makeReadyElement();
+            element._playbackRateSetter = jest.fn();
+            let rate;
+            Object.defineProperty(element, "playbackRate", {
+                get: () => rate,
+                set: v => {
+                    rate = v;
+                    element._playbackRateSetter(v);
+                }
+            });
+            return element;
+        };
+
+        it("applies the node playback rate to the element when playing", () => {
+            const element = rateElementFactory();
+            const node = ctx.video(element);
+            node.start(0);
+            node.playbackRate = 2;
+
+            ctx.play();
+            ctx.update(1);
+
+            expect(node.playbackRate).toBe(2);
+            expect(element.playbackRate).toBe(2);
+        });
+
+        it("re-applies the rate only when it changes, not on every frame", () => {
+            const element = rateElementFactory();
+            const node = ctx.video(element);
+            node.start(0);
+
+            ctx.play();
+            ctx.update(1);
+            ctx.update(1);
+            ctx.update(1);
+            expect(element._playbackRateSetter).toHaveBeenCalledTimes(1);
+
+            node.playbackRate = 0.5;
+            ctx.update(1);
+
+            expect(element.playbackRate).toBe(0.5);
+            expect(element._playbackRateSetter).toHaveBeenCalledTimes(2);
+        });
+    });
+
+    describe("stretchPaused", () => {
+        it("pauses the element while stretch-paused and resumes it when released", () => {
+            const element = makeReadyElement();
+            const node = ctx.video(element);
+            node.start(0);
+            ctx.play();
+            ctx.update(1);
+            expect(element.play).toHaveBeenCalledTimes(1);
+
+            node.stretchPaused = true;
+            expect(node.stretchPaused).toBe(true);
+            expect(element.pause).toHaveBeenCalledTimes(1);
+
+            node.stretchPaused = false;
+            expect(element.play).toHaveBeenCalledTimes(2);
+        });
+
+        it("does not leave the element playing when playback starts stretch-paused", () => {
+            const element = makeReadyElement();
+            const node = ctx.video(element);
+            node.start(0);
+            node.stretchPaused = true;
+
+            ctx.play();
+            ctx.update(1);
+
+            // the element must end up paused: the last pause comes after the last play
+            const lastPlay = Math.max(...element.play.mock.invocationCallOrder);
+            const lastPause = Math.max(...element.pause.mock.invocationCallOrder);
+            expect(element.play).toHaveBeenCalled();
+            expect(lastPause).toBeGreaterThan(lastPlay);
+        });
+    });
+
+    describe("buffering", () => {
+        it("is not buffering before an element exists", () => {
+            const node = ctx.video("http://example.com/video.mp4");
+
+            expect(node._buffering).toBe(false);
+        });
+
+        it("reports not ready while the element lacks buffered future data", () => {
+            const element = makeReadyElement();
+            const node = ctx.video(element);
+            node.start(0);
+            ctx.update(1);
+            expect(node._isReady()).toBe(true);
+
+            // network stall: readyState drops below HAVE_FUTURE_DATA
+            element.readyState = 1;
+
+            expect(node._buffering).toBe(true);
+            expect(node._isReady()).toBe(false);
+        });
+    });
+
+    describe("loop", () => {
+        it("keeps a looping source endless instead of stopping at the element duration", () => {
+            const element = makeReadyElement(5);
+            const node = ctx.video(element, 0, 4, { loop: true });
+            node.start(0);
+            const durationChangeSpy = jest.fn();
+            node.registerCallback("durationchange", durationChangeSpy);
+
+            ctx.update(1 / 60);
+            ctx.update(1 / 60);
+
+            expect(durationChangeSpy).not.toHaveBeenCalled();
+            expect(node.stopTime).toBe(Infinity);
+        });
+    });
+
+    describe("video element cache", () => {
+        it("borrows a pooled element for a URL source and frees it again on unload", () => {
+            const canvas = new HTMLCanvasElement(500, 500);
+            const cachedCtx = new VideoContext(canvas, undefined, {
+                useVideoElementCache: true,
+                videoElementCacheSize: 2
+            });
+            const cache = cachedCtx._videoElementCache;
+            // jsdom does not implement media playback; stub the element methods the node drives
+            for (const item of cache._cacheItems) {
+                item.element.play = jest.fn(() => Promise.resolve());
+                item.element.pause = jest.fn();
+                item.element.load = jest.fn();
+            }
+            const node = cachedCtx.video("http://example.com/video.mp4");
+            node.start(0);
+            expect(cache.unused).toBe(2);
+
+            cachedCtx.update(1);
+
+            expect(node.element).toBe(cache._cacheItems[0].element);
+            expect(cache.unused).toBe(1);
+
+            node.clearTimelineState();
+
+            expect(node.element).toBeUndefined();
+            expect(cache.unused).toBe(2);
+        });
+    });
+
+    describe("URL sources", () => {
+        it("creates a video element configured for inline cross-origin playback", () => {
+            const node = ctx.video("http://example.com/video.mp4");
+            // sequence the node inside the preload window so it loads without playing
+            node.startAt(3);
+            ctx.update(1);
+
+            const element = node.element;
+            expect(element.tagName).toBe("VIDEO");
+            expect(element.getAttribute("crossorigin")).toBe("anonymous");
+            expect(element.hasAttribute("playsinline")).toBe(true);
+            expect(element.preload).toBe("auto");
+            expect(element.src).toBe("http://example.com/video.mp4");
+        });
+
+        it("attaches a MediaStream source via srcObject", () => {
+            window.MediaStream = class MediaStream {};
+            try {
+                const stream = new window.MediaStream();
+                const node = ctx.video(stream);
+                node.startAt(3);
+                ctx.update(1);
+
+                expect(node.element.srcObject).toBe(stream);
+            } finally {
+                delete window.MediaStream;
+            }
+        });
+    });
+
+    describe("error handling", () => {
+        it("enters the error state but stays ready so the graph keeps rendering", () => {
+            const { element, node } = nodeFactory(ctx);
+            const errorSpy = jest.fn();
+            node.registerCallback("error", errorSpy);
+            ctx.update(1); // load attaches the element error handler
+
+            const debugSpy = jest.spyOn(console, "debug").mockImplementation(() => {});
+            element.onerror();
+            debugSpy.mockRestore();
+
+            expect(errorSpy).toHaveBeenCalledTimes(1);
+            expect(node.state).toBe(SOURCENODESTATE.error);
+            expect(node._isReady()).toBe(true);
+        });
+    });
+
+    describe("ended element", () => {
+        it("ends the node when the element reports ended", () => {
+            const element = makeReadyElement();
+            const node = ctx.video(element);
+            node.start(0);
+            node.stop(10);
+            const endedSpy = jest.fn();
+            node.registerCallback("ended", endedSpy);
+
+            ctx.update(1);
+            element.ended = true;
+            ctx.update(1);
+
+            expect(endedSpy).toHaveBeenCalledTimes(1);
+            expect(node.state).toBe(SOURCENODESTATE.ended);
+            expect(element.pause).toHaveBeenCalled();
+        });
+    });
+
+    describe("seek", () => {
+        it("moves the element to the seeked time including the source offset", () => {
+            const { element } = nodeFactory(ctx, {}, { sourceOffset: 2 });
+            ctx.update(1);
+            expect(element.currentTime).toBe(2);
+
+            ctx.currentTime = 3;
+
+            expect(element.currentTime).toBe(5); // 3s into the timeline + 2s source offset
+        });
+
+        it("unloads a node seeked back before its start", () => {
+            const element = makeReadyElement();
+            const node = ctx.video(element);
+            node.startAt(5);
+            node.stopAt(10);
+            const destroySpy = jest.fn();
+            node.registerCallback("destroy", destroySpy);
+
+            ctx.play();
+            ctx.update(6); // node is now playing
+            expect(node.state).toBe(SOURCENODESTATE.playing);
+
+            ctx.currentTime = 1; // seek back before the node's start time
+
+            expect(destroySpy).toHaveBeenCalledTimes(1);
+            expect(node.state).toBe(SOURCENODESTATE.sequenced);
         });
     });
 });
